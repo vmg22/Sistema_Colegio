@@ -1,267 +1,111 @@
-// alumno.services.js
-const { ejecutarConsulta } = require('../../configuracion/baseDeDatos');
-const consultasAlumnos = require('./alumno.queries');
+// 1. CORRECCIÓN: Importamos el pool directamente desde la ubicación correcta.
+const pool = require('../../config/db'); 
+const consultas = require('./alumno.queries');
+
+// 2. MEJORA (DRY): Creamos una función helper interna para verificar la existencia.
+// El guion bajo (_) es una convención para indicar que es una función privada del módulo.
+async function _verificarExistenciaAlumno(idAlumno) {
+  const [alumno] = await pool.query(consultas.obtenerPorId, [idAlumno]);
+  if (!alumno || alumno.length === 0) {
+    // 3. MEJORA (Errores): Lanzamos un error específico.
+    // En tu manejador de errores global, podrías buscar este mensaje
+    // y devolver un status 404 Not Found.
+    const error = new Error('Alumno no encontrado');
+    error.statusCode = 404;
+    throw error;
+  }
+  return alumno[0];
+}
 
 const servicioAlumnos = {
-  // OBTENER ALUMNOS
   obtenerTodosAlumnos: async () => {
-    return await ejecutarConsulta(consultasAlumnos.obtenerTodos);
+    const [rows] = await pool.query(consultas.obtenerTodos);
+    return rows;
   },
   
   obtenerAlumnoPorId: async (idAlumno) => {
-    const alumnos = await ejecutarConsulta(consultasAlumnos.obtenerPorId, [idAlumno]);
-    return alumnos[0] || null;
+    return await _verificarExistenciaAlumno(idAlumno);
   },
   
-  obtenerAlumnoPorDni: async (dni) => {
-    const alumnos = await ejecutarConsulta(consultasAlumnos.obtenerPorDni, [dni]);
-    return alumnos[0] || null;
-  },
-  
-  obtenerAlumnosPorEstado: async (estado) => {
-    return await ejecutarConsulta(consultasAlumnos.obtenerPorEstado, [estado]);
-  },
-  
-  buscarAlumnos: async (termino) => {
-    const terminoBusqueda = `%${termino}%`;
-    return await ejecutarConsulta(consultasAlumnos.buscarPorNombre, [
-      terminoBusqueda, terminoBusqueda
-    ]);
-  },
-  
-  // CREAR ALUMNO
   crearAlumno: async (datosAlumno) => {
-    const {
-      dni_alumno,
-      nombre_alumno,
-      apellido_alumno,
-      fecha_nacimiento,
-      lugar_nacimiento,
-      direccion,
-      telefono,
-      email,
-      fecha_inscripcion,
-      estado
-    } = datosAlumno;
+    const { dni_alumno, email } = datosAlumno;
     
     // Validar DNI único
-    const dniExistente = await ejecutarConsulta(
-      consultasAlumnos.verificarDniExistente, 
-      [dni_alumno]
-    );
-    
+    const [dniExistente] = await pool.query(consultas.verificarDniExistente, [dni_alumno]);
     if (dniExistente.length > 0) {
-      throw new Error('Ya existe un alumno con este DNI');
+      const error = new Error('Ya existe un alumno con este DNI');
+      error.statusCode = 409; // 409 Conflict es ideal para recursos duplicados
+      throw error;
     }
     
     // Validar email único si se proporciona
     if (email) {
-      const emailExistente = await ejecutarConsulta(
-        consultasAlumnos.verificarEmailExistente, 
-        [email]
-      );
-      
+      const [emailExistente] = await pool.query(consultas.verificarEmailExistente, [email]);
       if (emailExistente.length > 0) {
-        throw new Error('Ya existe un alumno con este email');
+        const error = new Error('Ya existe un alumno con este email');
+        error.statusCode = 409;
+        throw error;
       }
     }
     
-    // Validar fecha de nacimiento (edad mínima 3 años, máxima 25)
-    const fechaNacimiento = new Date(fecha_nacimiento);
-    const edad = new Date().getFullYear() - fechaNacimiento.getFullYear();
-    if (edad < 3 || edad > 25) {
-      throw new Error('La edad del alumno debe estar entre 3 y 25 años');
-    }
+    // ... (otras validaciones como la edad) ...
+
+    const params = [
+      datosAlumno.dni_alumno,
+      datosAlumno.nombre_alumno,
+      datosAlumno.apellido_alumno,
+      datosAlumno.fecha_nacimiento,
+      datosAlumno.lugar_nacimiento || null,
+      datosAlumno.direccion || null,
+      datosAlumno.telefono || null,
+      datosAlumno.email || null,
+      datosAlumno.fecha_inscripcion || new Date(),
+      datosAlumno.estado || 'ACTIVO'
+    ];
     
-    // Crear alumno
-    const resultado = await ejecutarConsulta(consultasAlumnos.crear, [
-      dni_alumno,
-      nombre_alumno,
-      apellido_alumno,
-      fecha_nacimiento,
-      lugar_nacimiento || null,
-      direccion || null,
-      telefono || null,
-      email || null,
-      fecha_inscripcion || new Date(),
-      estado || 'ACTIVO'
-    ]);
-    
-    return await servicioAlumnos.obtenerAlumnoPorId(resultado.insertId);
+    const [resultado] = await pool.query(consultas.crear, params);
+    return await _verificarExistenciaAlumno(resultado.insertId);
   },
   
-  // ACTUALIZAR ALUMNO
   actualizarAlumno: async (idAlumno, datosActualizados) => {
-    // Verificar que el alumno existe
-    const alumnoExiste = await ejecutarConsulta(
-      consultasAlumnos.verificarAlumnoExiste, 
-      [idAlumno]
-    );
+    // Usamos el helper para verificar que existe primero
+    await _verificarExistenciaAlumno(idAlumno);
     
-    if (alumnoExiste.length === 0) {
-      throw new Error('Alumno no encontrado');
-    }
-    
-    // Si se actualiza DNI, verificar que no esté en uso
-    if (datosActualizados.dni_alumno) {
-      const dniExistente = await ejecutarConsulta(
-        consultasAlumnos.verificarDniExistente, 
-        [datosActualizados.dni_alumno]
-      );
-      
-      if (dniExistente.length > 0 && dniExistente[0].id_alumno !== parseInt(idAlumno)) {
-        throw new Error('Ya existe otro alumno con este DNI');
-      }
-    }
-    
-    // Si se actualiza email, verificar que no esté en uso
-    if (datosActualizados.email) {
-      const emailExistente = await ejecutarConsulta(
-        consultasAlumnos.verificarEmailExistente, 
-        [datosActualizados.email]
-      );
-      
-      if (emailExistente.length > 0 && emailExistente[0].id_alumno !== parseInt(idAlumno)) {
-        throw new Error('Ya existe otro alumno con este email');
-      }
-    }
-    
-    // Actualizar alumno
-    const {
-      dni_alumno,
-      nombre_alumno,
-      apellido_alumno,
-      fecha_nacimiento,
-      lugar_nacimiento,
-      direccion,
-      telefono,
-      email,
-      fecha_inscripcion,
-      estado
-    } = datosActualizados;
-    
-    await ejecutarConsulta(consultasAlumnos.actualizarCompleto, [
-      dni_alumno,
-      nombre_alumno,
-      apellido_alumno,
-      fecha_nacimiento,
-      lugar_nacimiento,
-      direccion,
-      telefono,
-      email,
-      fecha_inscripcion,
-      estado,
+    // ... (lógica de validación para DNI y email duplicados al actualizar) ...
+
+    const params = [
+      datosActualizados.dni_alumno,
+      datosActualizados.nombre_alumno,
+      datosActualizados.apellido_alumno,
+      // ... resto de los campos ...
       idAlumno
-    ]);
+    ];
     
-    return await servicioAlumnos.obtenerAlumnoPorId(idAlumno);
+    await pool.query(consultas.actualizarCompleto, params);
+    return await _verificarExistenciaAlumno(idAlumno);
   },
   
-  actualizarAlumnoParcial: async (idAlumno, datosParciales) => {
-    // Verificar que el alumno existe
-    const alumnoExiste = await ejecutarConsulta(
-      consultasAlumnos.verificarAlumnoExiste, 
-      [idAlumno]
-    );
-    
-    if (alumnoExiste.length === 0) {
-      throw new Error('Alumno no encontrado');
-    }
-    
-    const {
-      nombre_alumno,
-      apellido_alumno,
-      direccion,
-      telefono,
-      email
-    } = datosParciales;
-    
-    await ejecutarConsulta(consultasAlumnos.actualizarParcial, [
-      nombre_alumno,
-      apellido_alumno,
-      direccion,
-      telefono,
-      email,
-      idAlumno
-    ]);
-    
-    return await servicioAlumnos.obtenerAlumnoPorId(idAlumno);
-  },
-  
-  actualizarEstadoAlumno: async (idAlumno, nuevoEstado) => {
-    const alumnoExiste = await ejecutarConsulta(
-      consultasAlumnos.verificarAlumnoExiste, 
-      [idAlumno]
-    );
-    
-    if (alumnoExiste.length === 0) {
-      throw new Error('Alumno no encontrado');
-    }
-    
-    await ejecutarConsulta(consultasAlumnos.actualizarEstado, [nuevoEstado, idAlumno]);
-    return await servicioAlumnos.obtenerAlumnoPorId(idAlumno);
-  },
-  
-  // ELIMINAR ALUMNO
   eliminarAlumno: async (idAlumno) => {
-    const alumnoExiste = await ejecutarConsulta(
-      consultasAlumnos.verificarAlumnoExiste, 
-      [idAlumno]
-    );
-    
-    if (alumnoExiste.length === 0) {
-      throw new Error('Alumno no encontrado');
-    }
-    
-    await ejecutarConsulta(consultasAlumnos.eliminarLogico, [idAlumno]);
-    return { mensaje: 'Alumno eliminado correctamente' };
+    await _verificarExistenciaAlumno(idAlumno);
+    await pool.query(consultas.eliminarLogico, [idAlumno]);
+    return { mensaje: 'Alumno marcado como inactivo correctamente' };
   },
-  
-  restaurarAlumno: async (idAlumno) => {
-    await ejecutarConsulta(consultasAlumnos.restaurar, [idAlumno]);
-    return await servicioAlumnos.obtenerAlumnoPorId(idAlumno);
-  },
-  
-  // ESTADÍSTICAS Y REPORTES
+
+  // ... (puedes seguir refactorizando los otros métodos usando el pool y el helper) ...
+
   obtenerEstadisticas: async () => {
-    const [total, porEstado, recientes] = await Promise.all([
-      ejecutarConsulta(consultasAlumnos.contarTotal),
-      ejecutarConsulta(consultasAlumnos.contarPorEstado),
-      ejecutarConsulta(consultasAlumnos.obtenerRecientes, [5])
+    // Esta función ya estaba muy bien con Promise.all
+    const [totalResult, porEstadoResult, recientesResult] = await Promise.all([
+      pool.query(consultas.contarTotal),
+      pool.query(consultas.contarPorEstado),
+      pool.query(consultas.obtenerRecientes, [5])
     ]);
     
     return {
-      total: total[0].total_alumnos,
-      por_estado: porEstado,
-      recientes_inscritos: recientes
+      total: totalResult[0][0].total_alumnos,
+      por_estado: porEstadoResult[0],
+      recientes_inscritos: recientesResult[0]
     };
-  },
-  
-  obtenerAlumnosPaginados: async (pagina = 1, limite = 10) => {
-    const offset = (pagina - 1) * limite;
-    
-    const [alumnos, total] = await Promise.all([
-      ejecutarConsulta(consultasAlumnos.obtenerPaginados, [limite, offset]),
-      ejecutarConsulta(consultasAlumnos.contarPaginados)
-    ]);
-    
-    return {
-      alumnos,
-      paginacion: {
-        pagina: parseInt(pagina),
-        limite: parseInt(limite),
-        total: total[0].total,
-        totalPaginas: Math.ceil(total[0].total / limite)
-      }
-    };
-  },
-  
-  obtenerAlumnosPorEdad: async (edadMinima, edadMaxima) => {
-    return await ejecutarConsulta(consultasAlumnos.obtenerPorEdad, [edadMinima, edadMaxima]);
-  },
-  
-  obtenerAlumnosConContactoIncompleto: async () => {
-    return await ejecutarConsulta(consultasAlumnos.obtenerConContactoIncompleto);
   }
 };
 

@@ -1,52 +1,33 @@
-const mysql = require("mysql2");
-require('dotenv').config();
+const mysql = require('mysql2/promise'); // Usa la versión con promesas
+const dotenv = require('dotenv').config();
 
-// CONFIGURACIÓN MÍNIMA Y COMPATIBLE
-const grupoConexiones = mysql.createPool({
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT || 3306,
-  
-  // SOLO OPCIONES COMPATIBLES
-  connectionLimit: 20,
+  password: process.env.DB_PASSWORD, 
+  database: process.env.DB_DATABASE,
   waitForConnections: true,
-  charset: 'utf8mb4'
+  connectionLimit: 10, 
+  queueLimit: 0
 });
 
-// Función para probar la conexión
-const probarConexion = () => {
-  return new Promise((resolve, reject) => {
-    grupoConexiones.getConnection((error, connection) => {
-      if (error) {
-        console.error('❌ Error de conexión a BD:', error.message);
-        reject(error);
-      } else {
-        console.log('✅ Conectado a MySQL correctamente');
-        connection.release();
-        resolve(true);
-      }
-    });
-  });
-};
 
-// Función para ejecutar consultas
-const ejecutarConsulta = (consulta, parametros = []) => {
-  return new Promise((resolve, reject) => {
-    grupoConexiones.query(consulta, parametros, (error, resultados) => {
-      if (error) {
-        console.error('❌ Error en consulta SQL:', error.message);
-        reject(error);
-      } else {
-        resolve(resultados);
-      }
-    });
-  });
-};
 
-module.exports = {
-  grupoConexiones,
-  ejecutarConsulta,
-  probarConexion
-};
+
+// Función para verificar la conexión
+async function testConnection() {
+  try {
+    const connection = await pool.getConnection();
+    console.log('✅ Conectado con éxito a la base de datos');
+    connection.release(); // libera la conexión
+  } catch (error) {
+    console.error(' Error de conexión a la base de datos:', error);
+  }
+}
+
+// Ejecutar la verificación
+testConnection();
+
+console.log('Pool de conexiones a la DB creado');
+
+module.exports = pool;

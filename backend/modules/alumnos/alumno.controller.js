@@ -1,6 +1,6 @@
 // alumno.controller.js
 const servicioAlumnos = require('./alumno.services');
-const { exito, error } = require('../../utilidades/respuestas');
+const { exito, error } = require('../../utils/responses');
 
 const controladorAlumnos = {
   // GET /api/alumnos

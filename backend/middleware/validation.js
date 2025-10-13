@@ -1,63 +1,46 @@
-// middleware/validation.js
-const validarCamposRequeridos = (camposRequeridos) => {
-  return (solicitud, respuesta, siguiente) => {
-    const errores = [];
-    const datos = { ...solicitud.body, ...solicitud.params, ...solicitud.query };
+const Joi = require('joi');
 
-    camposRequeridos.forEach(campo => {
-      if (datos[campo] === undefined || datos[campo] === null || datos[campo] === '') {
-        errores.push(`El campo '${campo}' es requerido`);
-      }
-    });
+/**
+ * Middleware que valida el cuerpo de una solicitud (req.body) contra un esquema de Joi.
+ * @param {Joi.Schema} schema El esquema de Joi para validar.
+ */
+const validarEsquema = (schema) => {
+  return (req, res, next) => {
+    // Validamos req.body con el esquema proporcionado.
+    // { abortEarly: false } asegura que se reporten todos los errores, no solo el primero.
+    const { error } = schema.validate(req.body, { abortEarly: false });
 
-    if (errores.length > 0) {
-      return respuesta.status(400).json({
-        error: 'Error de validación',
-        detalles: errores
+    if (error) {
+      // Si hay un error de validación, formateamos los detalles y respondemos con un 400.
+      const errores = error.details.map(detalle => ({
+        mensaje: detalle.message.replace(/"/g, "'"), // Limpiamos las comillas dobles
+        campo: detalle.context.key,
+      }));
+      
+      return res.status(400).json({
+        error: 'Error de Validación',
+        detalles: errores,
       });
     }
 
-    siguiente();
+    // Si la validación es exitosa, continuamos con el siguiente middleware o controlador.
+    next();
   };
 };
 
-const validarTipos = (esquema) => {
-  return (solicitud, respuesta, siguiente) => {
-    const errores = [];
-    const datos = solicitud.body;
+module.exports = { validarEsquema };
 
-    for (const [campo, tipo] of Object.entries(esquema)) {
-      if (datos[campo] !== undefined) {
-        switch (tipo) {
-          case 'string':
-            if (typeof datos[campo] !== 'string') {
-              errores.push(`El campo '${campo}' debe ser una cadena de texto`);
-            }
-            break;
-          case 'number':
-            if (typeof datos[campo] !== 'number' || isNaN(datos[campo])) {
-              errores.push(`El campo '${campo}' debe ser un número válido`);
-            }
-            break;
-          case 'email':
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(datos[campo])) {
-              errores.push(`El campo '${campo}' debe ser un email válido`);
-            }
-            break;
-        }
-      }
-    }
+// --- Ejemplo de cómo se crearía un esquema en otro archivo (ej: alumno.schemas.js) ---
+/*
+const crearAlumnoEsquema = Joi.object({
+  nombre_alumno: Joi.string().min(3).max(50).required(),
+  apellido_alumno: Joi.string().min(3).max(50).required(),
+  dni_alumno: Joi.string().pattern(/^[0-9]{7,8}$/).required(),
+  email: Joi.string().email().optional().allow(null, ''),
+  fecha_nacimiento: Joi.date().iso().required(),
+  // ... y otros campos
+});
 
-    if (errores.length > 0) {
-      return respuesta.status(400).json({
-        error: 'Error de validación',
-        detalles: errores
-      });
-    }
-
-    siguiente();
-  };
-};
-
-module.exports = { validarCamposRequeridos, validarTipos };
+// En alumno.routes.js se usaría así:
+// router.post('/', validarEsquema(crearAlumnoEsquema), alumnoController.crear);
+*/

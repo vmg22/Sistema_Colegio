@@ -1,29 +1,35 @@
-// alumno.routes.js
 const express = require('express');
-const enrutador = express.Router();
+// Se crea el enrutador con el nombre convencional 'router'
+const router = express.Router(); 
 const controladorAlumnos = require('./alumno.controller');
 
-// Middleware de autenticación (opcional)
+// Middleware de autenticación (opcional, actualmente comentado)
 // const { autenticarToken } = require('../../middleware/autenticacion');
-// enrutador.use(autenticarToken);
+// router.use(autenticarToken);
 
-// Rutas de alumnos
-enrutador.get('/', controladorAlumnos.obtenerTodos);
-enrutador.get('/paginados', controladorAlumnos.obtenerPaginados);
-enrutador.get('/estadisticas/generales', controladorAlumnos.obtenerEstadisticas);
-enrutador.get('/buscar/:termino', controladorAlumnos.buscarAlumnos);
-enrutador.get('/dni/:dni', controladorAlumnos.obtenerPorDni);
-enrutador.get('/reporte/contacto-incompleto', controladorAlumnos.obtenerContactoIncompleto);
-enrutador.get('/reporte/por-edad', controladorAlumnos.obtenerPorEdad);
-enrutador.get('/:id', controladorAlumnos.obtenerPorId);
+// --- DEFINICIÓN DE RUTAS PARA ALUMNOS ---
 
-enrutador.post('/', controladorAlumnos.crearAlumno);
-enrutador.post('/:id/restaurar', controladorAlumnos.restaurarAlumno);
+// Rutas GET
+router.get('/', controladorAlumnos.obtenerTodos);
+router.get('/paginados', controladorAlumnos.obtenerPaginados);
+router.get('/estadisticas/generales', controladorAlumnos.obtenerEstadisticas);
+router.get('/buscar/:termino', controladorAlumnos.buscarAlumnos);
+router.get('/dni/:dni', controladorAlumnos.obtenerPorDni);
+router.get('/reporte/contacto-incompleto', controladorAlumnos.obtenerContactoIncompleto);
+router.get('/reporte/por-edad', controladorAlumnos.obtenerPorEdad);
+router.get('/:id', controladorAlumnos.obtenerPorId);
 
-enrutador.put('/:id', controladorAlumnos.actualizarAlumno);
-enrutador.patch('/:id', controladorAlumnos.actualizarAlumnoParcial);
-enrutador.patch('/:id/estado', controladorAlumnos.actualizarEstado);
+// Rutas POST
+router.post('/', controladorAlumnos.crearAlumno);
+router.post('/:id/restaurar', controladorAlumnos.restaurarAlumno);
 
-enrutador.delete('/:id', controladorAlumnos.eliminarAlumno);
+// Rutas PUT y PATCH
+router.put('/:id', controladorAlumnos.actualizarAlumno);
+router.patch('/:id', controladorAlumnos.actualizarAlumnoParcial);
+router.patch('/:id/estado', controladorAlumnos.actualizarEstado);
 
-module.exports = enrutador;
+// Ruta DELETE
+router.delete('/:id', controladorAlumnos.eliminarAlumno);
+
+// Se exporta la variable 'router'
+module.exports = router;

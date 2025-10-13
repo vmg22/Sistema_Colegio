@@ -1,33 +1,46 @@
-const manejadorErrores = (error, solicitud, respuesta, siguiente) => {
-  console.error('🔥 Error:', error);
+/**
+ * Middleware centralizado para el manejo de errores.
+ * Captura todos los errores pasados por next(error) y envía una respuesta HTTP estandarizada.
+ */
+const manejadorErrores = (err, req, res, next) => {
+  console.error('🔥 ERROR CAPTURADO:', err);
 
-  // Error de validación
-  if (error.nombre === 'ErrorValidacion') {
-    return respuesta.status(400).json({
-      error: 'Error de validación',
-      detalles: error.detalles || error.mensaje
+  // Usamos el statusCode del error si existe, si no, es un 500
+  const statusCode = err.statusCode || 500;
+
+  // --- MANEJO DE ERRORES ESPECÍFICOS DE MYSQL ---
+  if (err.code === 'ER_DUP_ENTRY') {
+    return res.status(409).json({ // 409 Conflict
+      error: 'Conflicto de Datos',
+      mensaje: 'El registro que intenta crear ya existe (por ejemplo, DNI o email duplicado).',
     });
   }
 
-  // Error de base de datos - entrada duplicada
-  if (error.codigo === 'ER_DUP_ENTRY') {
-    return respuesta.status(409).json({
-      error: 'Registro duplicado',
-      mensaje: 'El registro ya existe en la base de datos'
+  // --- MANEJO DE ERRORES ESPECÍFICOS DE JWT ---
+  if (err.name === 'JsonWebTokenError') {
+    return res.status(401).json({ // 401 Unauthorized
+      error: 'Token Inválido',
+      mensaje: 'El token proporcionado no es válido o ha sido alterado.',
+    });
+  }
+  if (err.name === 'TokenExpiredError') {
+    return res.status(401).json({ // 401 Unauthorized
+        error: 'Token Expirado',
+        mensaje: 'Su sesión ha expirado. Por favor, inicie sesión de nuevo.',
     });
   }
 
-  // Error JWT
-  if (error.nombre === 'JsonWebTokenError') {
-    return respuesta.status(401).json({
-      error: 'Token inválido'
-    });
-  }
-
-  // Error genérico
-  respuesta.status(error.estado || 500).json({
-    error: process.env.NODE_ENV === 'development' ? error.mensaje : 'Error interno del servidor',
-    ...(process.env.NODE_ENV === 'development' && { pila: error.pila })
+  // --- RESPUESTA GENÉRICA ---
+  // Para un entorno de producción, no queremos filtrar detalles internos del error.
+  const enProduccion = process.env.NODE_ENV === 'production';
+  
+  res.status(statusCode).json({
+    error: err.name || 'ErrorInternoDelServidor',
+    // Si el error tiene un mensaje y no estamos en producción, lo mostramos.
+    // Si estamos en producción, mostramos un mensaje genérico.
+    mensaje: !enProduccion || err.isOperational ? err.message : 'Ocurrió un error inesperado en el servidor.',
+    // Solo mostramos el stack trace en desarrollo
+    ...( !enProduccion && { stack: err.stack })
   });
 };
 
