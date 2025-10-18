@@ -1,0 +1,57 @@
+/* Contenedor de cada pestaña (docentes, alumnos, etc.) */
+.gestion-container {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Barra de herramientas (Buscar y Agregar) */
+.gestion-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap; /* Para responsiveness */
+  gap: 1rem;
+}
+
+.search-input {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  width: 300px; /* Ancho fijo para el input */
+}
+
+/* Tabla de datos */
+.gestion-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.gestion-tabla th,
+.gestion-tabla td {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.gestion-tabla th {
+  background-color: #f8f9fa;
+  color: #555;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.gestion-tabla tr:hover {
+  background-color: #fdfdfd;
+}
+
+/* Celda de botones de acción */
+.acciones-cell {
+  display: flex;
+  gap: 0.5rem;
+}
