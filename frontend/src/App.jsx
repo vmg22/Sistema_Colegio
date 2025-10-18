@@ -9,7 +9,7 @@ function App() {
   return (
     <>
       <Navv/>
-      {/* <ButtonShowcase/> */}
+      <ButtonShowcase/>
       <Dashboard/>
       
       <h1>hola matias</h1>

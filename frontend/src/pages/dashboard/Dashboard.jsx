@@ -5,9 +5,9 @@ import { useState } from 'react'
 
 const Dashboard = () => {
 
-  const [TipoConsulta, setConsulta]= useState("alumno");
-  const [resultado, setResultado]= useState(null);
-  const [cargando, setCargando]= useState(false);
+  const [tipoConsulta, setConsulta]= useState("alumno");
+  // const [resultado, setResultado]= useState(null);
+  // const [cargando, setCargando]= useState(false);
   
 
 
@@ -19,14 +19,14 @@ const Dashboard = () => {
       {/*seleccion x tipo de consultas alumno / curso*/}
       <button
       clasname={`btn-tipo ${tipoConsulta === 'alumno' ? 'activo' : ""}`}
-      onClick={()=> setTipoConsulta("alumno")}
+      onClick={()=> setConsulta("alumno")}
       >
         Consulta por Alumno
       </button>
 
       <button
       clasname={`btn-tipo ${tipoConsulta === 'curso' ? 'activo' : ""}`}
-      onClick={()=> setTipoConsulta("curso")}
+      onClick={()=> setConsulta("curso")}
       >
         Consulta por Curso
       </button>

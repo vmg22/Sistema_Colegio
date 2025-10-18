@@ -1,35 +1,36 @@
+/**
+ * =======================================
+ * ALUMNO.ROUTES.JS (VERSIÓN COMPLETA)
+ * =======================================
+ * Define todos los endpoints de la API para el módulo de alumnos,
+ * asociando cada ruta a su respectivo controlador.
+ */
+
 const express = require('express');
-// Se crea el enrutador con el nombre convencional 'router'
-const router = express.Router(); 
+const router = express.Router();
 const controladorAlumnos = require('./alumno.controller');
 
-// Middleware de autenticación (opcional, actualmente comentado)
-// const { autenticarToken } = require('../../middleware/autenticacion');
-// router.use(autenticarToken);
-
-// --- DEFINICIÓN DE RUTAS PARA ALUMNOS ---
-
-// Rutas GET
-router.get('/', controladorAlumnos.obtenerTodos);
+// --- RUTAS DE REPORTES Y BÚSQUEDAS ---
+// (Deben ir primero para no chocar con las rutas con parámetros como /:id)
 router.get('/paginados', controladorAlumnos.obtenerPaginados);
-router.get('/estadisticas/generales', controladorAlumnos.obtenerEstadisticas);
-router.get('/buscar/:termino', controladorAlumnos.buscarAlumnos);
+router.get('/estadisticas', controladorAlumnos.obtenerEstadisticas);
+router.get('/reportes/contacto-incompleto', controladorAlumnos.obtenerConContactoIncompleto);
+router.get('/reportes/por-edad', controladorAlumnos.obtenerPorEdad);
+router.get('/reportes/por-inscripcion', controladorAlumnos.obtenerPorRangoInscripcion);
+router.get('/buscar/:termino', controladorAlumnos.buscarPorNombre);
+router.get('/estado/:estado', controladorAlumnos.obtenerPorEstado);
 router.get('/dni/:dni', controladorAlumnos.obtenerPorDni);
-router.get('/reporte/contacto-incompleto', controladorAlumnos.obtenerContactoIncompleto);
-router.get('/reporte/por-edad', controladorAlumnos.obtenerPorEdad);
+
+// --- RUTAS CRUD PRINCIPALES ---
+router.get('/', controladorAlumnos.obtenerTodos);
+router.post('/', controladorAlumnos.crear);
 router.get('/:id', controladorAlumnos.obtenerPorId);
+router.put('/:id', controladorAlumnos.actualizarCompleto);
+router.patch('/:id', controladorAlumnos.actualizarParcial);
+router.delete('/:id', controladorAlumnos.eliminar);
 
-// Rutas POST
-router.post('/', controladorAlumnos.crearAlumno);
-router.post('/:id/restaurar', controladorAlumnos.restaurarAlumno);
-
-// Rutas PUT y PATCH
-router.put('/:id', controladorAlumnos.actualizarAlumno);
-router.patch('/:id', controladorAlumnos.actualizarAlumnoParcial);
+// --- RUTAS DE ACCIONES ESPECIALES ---
 router.patch('/:id/estado', controladorAlumnos.actualizarEstado);
+router.post('/:id/restaurar', controladorAlumnos.restaurar);
 
-// Ruta DELETE
-router.delete('/:id', controladorAlumnos.eliminarAlumno);
-
-// Se exporta la variable 'router'
-module.exports = router;
+module.exports = router;        
