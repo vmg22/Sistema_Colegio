@@ -1,78 +1,91 @@
-/**
- * =======================================
- * DOCENTE.CONTROLLER.JS
- * =======================================
- * Maneja las solicitudes y respuestas HTTP (req, res) para docentes.
- * Llama al servicio correspondiente y usa los helpers de respuesta.
- */
-
 const servicioDocentes = require('./docente.services');
-const { exito, error } = require('../../utils/responses'); 
+const { exito, error } = require('../../utils/responses');
 
 const controladorDocentes = {
-
-  obtenerTodos: async (req, res) => {
+  // GET /api/docentes
+  getAllDocentes: async (solicitud, respuesta) => {
     try {
-      const resultado = await servicioDocentes.obtenerTodos();
-      exito(res, 'Lista de docentes obtenida.', resultado);
+      const docentes = await servicioDocentes.obtenerTodosDocentes();
+      exito(respuesta, 'Docentes obtenidos correctamente', docentes);
     } catch (err) {
-      error(res, 'Error al obtener docentes.', err.statusCode, err.message);
+      error(respuesta, 'Error al obtener docentes', 500, err.message);
     }
   },
 
-  obtenerPorId: async (req, res) => {
+  // GET /api/docentes/:id
+  getDocenteById: async (solicitud, respuesta) => {
     try {
-      const resultado = await servicioDocentes.obtenerPorId(req.params.id);
-      exito(res, 'Docente encontrado.', resultado);
-    } catch (err) {
-      error(res, 'Error al buscar docente por ID.', err.statusCode, err.message);
-    }
-  },
-
-  obtenerPorDni: async (req, res) => {
-    try {
-      const resultado = await servicioDocentes.obtenerPorDni(req.params.dni);
-      exito(res, 'Docente encontrado por DNI.', resultado);
-    } catch (err) {
-      error(res, 'Error al buscar docente por DNI.', err.statusCode, err.message);
-    }
-  },
-
-  crear: async (req, res) => {
-    try {
-      // Validación básica en el controlador
-      const { dni_docente, nombre, apellido } = req.body;
-      if (!dni_docente || !nombre || !apellido) {
-        return error(res, 'DNI, nombre y apellido son obligatorios.', 400);
+      const { id } = solicitud.params;
+      const docente = await servicioDocentes.obtenerDocentePorId(id);
+      
+      if (!docente) {
+        return error(respuesta, 'Docente no encontrado', 404);
       }
       
-      const resultado = await servicioDocentes.crear(req.body);
-      exito(res, 'Docente creado exitosamente.', resultado, 201);
+      exito(respuesta, 'Docente obtenido correctamente', docente);
     } catch (err) {
-      error(res, 'Error al crear el docente.', err.statusCode, err.message);
+      error(respuesta, 'Error al obtener docente', 500, err.message);
     }
   },
 
-  actualizar: async (req, res) => {
+  // POST /api/docentes
+  createDocente: async (solicitud, respuesta) => {
     try {
-      const { dni_docente, nombre, apellido } = req.body;
-      if (!dni_docente || !nombre || !apellido) {
-        return error(res, 'DNI, nombre y apellido son obligatorios.', 400);
+      const datosDocente = solicitud.body;
+      
+      if (!datosDocente.dni_docente || !datosDocente.nombre || !datosDocente.apellido) {
+        return error(respuesta, 'DNI, nombre y apellido son obligatorios', 400);
       }
-
-      const resultado = await servicioDocentes.actualizar(req.params.id, req.body);
-      exito(res, 'Docente actualizado correctamente.', resultado);
+      
+      const docenteCreado = await servicioDocentes.crearDocente(datosDocente);
+      exito(respuesta, 'Docente creado exitosamente', docenteCreado, 201);
     } catch (err) {
-      error(res, 'Error al actualizar el docente.', err.statusCode, err.message);
+      error(respuesta, 'Error al crear docente', 400, err.message);
     }
   },
 
-  eliminar: async (req, res) => {
+  // PUT /api/docentes/:id
+  updateDocente: async (solicitud, respuesta) => {
     try {
-      const resultado = await servicioDocentes.eliminar(req.params.id);
-      exito(res, resultado.mensaje); // No hay código 204 porque 'exito' envía JSON
+      const { id } = solicitud.params;
+      const datosActualizados = solicitud.body;
+      
+      const docenteActualizado = await servicioDocentes.actualizarDocente(id, datosActualizados);
+      exito(respuesta, 'Docente actualizado correctamente', docenteActualizado);
     } catch (err) {
-      error(res, 'Error al eliminar el docente.', err.statusCode, err.message);
+      error(respuesta, 'Error al actualizar docente', 400, err.message);
+    }
+  },
+
+  // DELETE /api/docentes/:id
+  deleteDocente: async (solicitud, respuesta) => {
+    try {
+      const { id } = solicitud.params;
+      const resultado = await servicioDocentes.eliminarDocente(id);
+      exito(respuesta, resultado.mensaje);
+    } catch (err) {
+      error(respuesta, 'Error al eliminar docente', 400, err.message);
+    }
+  },
+
+  // GET /api/docentes/eliminados/listar
+  getDocentesEliminados: async (solicitud, respuesta) => {
+    try {
+      const docentesEliminados = await servicioDocentes.obtenerDocentesEliminados();
+      exito(respuesta, 'Docentes eliminados obtenidos', docentesEliminados);
+    } catch (err) {
+      error(respuesta, 'Error al obtener docentes eliminados', 500, err.message);
+    }
+  },
+
+  // POST /api/docentes/:id/restaurar
+  restaurarDocente: async (solicitud, respuesta) => {
+    try {
+      const { id } = solicitud.params;
+      const docenteRestaurado = await servicioDocentes.restaurarDocente(id);
+      exito(respuesta, 'Docente restaurado correctamente', docenteRestaurado);
+    } catch (err) {
+      error(respuesta, 'Error al restaurar docente', 400, err.message);
     }
   }
 };

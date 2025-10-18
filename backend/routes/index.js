@@ -2,16 +2,18 @@ const express = require('express');
 const router = express.Router();
 
 // Importar los enrutadores de cada módulo
-const alumnosRoutes = require('../modules/alumnos/alumno.routes');
-// const anioLectivosRoutes = require('../modules/anios-lectivos/anio.routes');
+const alumnoRoutes = require('../modules/alumnos/alumno.routes');
+// const docenteRoutes = require('../modules/docentes/docente.routes');
+// const docentesTestRoutes = require('../modules/docentes/docente.routes');
+const docenteRoutes = require('../modules/docentes/docente.routes');
+const cursoRoutes = require('../modules/cursos/curso.routes');
+const materiaRoutes = require('../modules/materias/materia.routes');
+const calificacionRoutes = require('../modules/calificaciones/calificacion.routes');
+const anioLectivoRoutes = require('../modules/anios-lectivos/anio.routes');
+const tutorRoutes = require('../modules/tutores/tutor.routes');
+const comunicacionRoutes = require('../modules/comunicaciones/comunicacion.routes');
+const authRoutes = require('../modules/auth/auth.routes');
 // const authRoutes = require('../modules/auth/auth.routes'); 
-// const calificacionesRoutes = require('../modules/calificaciones/calificacion.routes');
-// const comunicacionesRoutes = require('../modules/comunicaciones/comunicacion.routes');
-// const cursosRoutes = require('../modules/cursos/curso.routes');
-const docentesRoutes = require('../modules/docentes/docente.routes');
-// const materiasRoutes = require('../modules/materias/materia.routes');
-// const reportesRoutes = require('../modules/reportes/reporte.routes');
-// const tutoresRoutes = require('../modules/tutores/tutor.routes');
 // ... y así con todos los demás módulos
 
 // Ruta principal de la API
@@ -23,17 +25,16 @@ router.get('/', (req, res) => {
 });
 
 // Delegar las rutas a sus respectivos módulos
-router.use('/alumnos', alumnosRoutes);
-// router.use('/anios-lectivos', anioLectivosRoutes);
-// router.use('/auth', authRoutes);
-// router.use('/calificaciones', calificacionesRoutes);
-// router.use('/comunicaciones', comunicacionesRoutes);
-// router.use('cursos', cursosRoutes);
-router.use('/docentes', docentesRoutes);
-// router.use('/materias', materiasRoutes);
-// router.use('/reportes', reportesRoutes);
-// router.use('/tutores', tutoresRoutes);
-
+router.use('/anios-lectivos', anioLectivoRoutes);
+router.use('/alumnos', alumnoRoutes);
+router.use('/docentes', docenteRoutes);
+// router.use('/docentes', docentesTestRoutes);
+router.use('/cursos', cursoRoutes);
+router.use('/materias', materiaRoutes);
+router.use('/calificaciones', calificacionRoutes);
+router.use('/tutores', tutorRoutes);
+router.use('/comunicaciones', comunicacionRoutes);
+router.use('/auth', authRoutes);
 
 // ... etc.
 
