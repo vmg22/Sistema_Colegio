@@ -1,37 +1,15 @@
 const db = require('../../config/db');
+const consultas = require('./comunicacion.queries');
 
 // Obtener todas las comunicaciones activas
 exports.obtenerTodasComunicaciones = async () => {
-  const [rows] = await db.query(`
-    SELECT 
-      id_comunicacion,
-      asunto,
-      contenido,
-      fecha_envio,
-      id_usuario,
-      destinatario_tipo,
-      created_at
-    FROM comunicacion
-    WHERE deleted_at IS NULL
-  `);
+  const [rows] = await db.query(consultas.obtenerTodas);
   return rows;
 };
 
 // Obtener una comunicación por su ID
 exports.obtenerComunicacionPorId = async (id) => {
-  const [rows] = await db.query(
-    `SELECT 
-      id_comunicacion,
-      asunto,
-      contenido,
-      fecha_envio,
-      id_usuario,
-      destinatario_tipo,
-      created_at
-     FROM comunicacion 
-     WHERE id_comunicacion = ? AND deleted_at IS NULL`,
-    [id]
-  );
+  const [rows] = await db.query(consultas.obtenerPorId, [id]);
   return rows[0];
 };
 
@@ -45,24 +23,34 @@ exports.crearComunicacion = async (data) => {
     fecha_envio
   } = data;
 
-  const [result] = await db.query(
-    `INSERT INTO comunicacion 
-      (asunto, contenido, id_usuario, destinatario_tipo, fecha_envio)
-     VALUES (?, ?, ?, ?, ?)`,
-    [
-      asunto,
-      contenido,
-      id_usuario,
-      destinatario_tipo,
-      fecha_envio || null
-    ]
-  );
+  // Validación adicional
+  if (!asunto || !contenido || !destinatario_tipo) {
+    throw new Error('Asunto, contenido y destinatario_tipo son obligatorios');
+  }
 
-  return { id_comunicacion: result.insertId, ...data };
+  const [result] = await db.query(consultas.crear, [
+    asunto,
+    contenido,
+    id_usuario,
+    destinatario_tipo,
+    fecha_envio || null
+  ]);
+
+  // Obtener la comunicación recién creada
+  const [comunicacionCreada] = await db.query(consultas.obtenerPorId, [result.insertId]);
+  
+  return comunicacionCreada[0];
 };
 
-// Actualizar una comunicación
+// Actualizar una comunicación completa
 exports.actualizarComunicacion = async (id, data) => {
+  // Verificar que existe
+  const comunicacionExistente = await exports.obtenerComunicacionPorId(id);
+  
+  if (!comunicacionExistente) {
+    throw new Error('Comunicación no encontrada');
+  }
+
   const {
     asunto,
     contenido,
@@ -71,85 +59,89 @@ exports.actualizarComunicacion = async (id, data) => {
     fecha_envio
   } = data;
 
-  const [result] = await db.query(
-    `UPDATE comunicacion
-     SET 
-       asunto = ?,
-       contenido = ?,
-       id_usuario = ?,
-       destinatario_tipo = ?,
-       fecha_envio = ?
-     WHERE id_comunicacion = ? AND deleted_at IS NULL`,
-    [
-      asunto,
-      contenido,
-      id_usuario,
-      destinatario_tipo,
-      fecha_envio,
-      id
-    ]
-  );
+  const [result] = await db.query(consultas.actualizarCompleto, [
+    asunto || comunicacionExistente.asunto,
+    contenido || comunicacionExistente.contenido,
+    id_usuario !== undefined ? id_usuario : comunicacionExistente.id_usuario,
+    destinatario_tipo || comunicacionExistente.destinatario_tipo,
+    fecha_envio !== undefined ? fecha_envio : comunicacionExistente.fecha_envio,
+    id
+  ]);
 
-  return result.affectedRows > 0;
+  if (result.affectedRows === 0) {
+    throw new Error('No se pudo actualizar la comunicación');
+  }
+
+  // Retornar la comunicación actualizada
+  const [comunicacionActualizada] = await db.query(consultas.obtenerPorId, [id]);
+  return comunicacionActualizada[0];
 };
 
-// Eliminar (lógicamente) una comunicación
+// Actualizar comunicación parcial
+exports.actualizarComunicacionParcial = async (id, data) => {
+  // Verificar que existe
+  const comunicacionExistente = await exports.obtenerComunicacionPorId(id);
+  
+  if (!comunicacionExistente) {
+    throw new Error('Comunicación no encontrada');
+  }
+
+  const {
+    asunto,
+    contenido,
+    destinatario_tipo,
+    fecha_envio
+  } = data;
+
+  const [result] = await db.query(consultas.actualizarParcial, [
+    asunto !== undefined ? asunto : null,
+    contenido !== undefined ? contenido : null,
+    destinatario_tipo !== undefined ? destinatario_tipo : null,
+    fecha_envio !== undefined ? fecha_envio : null,
+    id
+  ]);
+
+  if (result.affectedRows === 0) {
+    throw new Error('No se pudo actualizar la comunicación');
+  }
+
+  // Retornar la comunicación actualizada
+  const [comunicacionActualizada] = await db.query(consultas.obtenerPorId, [id]);
+  return comunicacionActualizada[0];
+};
+
+// Eliminar lógicamente una comunicación
 exports.eliminarComunicacion = async (id) => {
-  const [result] = await db.query(
-    `UPDATE comunicacion 
-     SET deleted_at = CURRENT_TIMESTAMP 
-     WHERE id_comunicacion = ? AND deleted_at IS NULL`,
-    [id]
-  );
+  // Verificar que existe
+  const comunicacionExistente = await exports.obtenerComunicacionPorId(id);
+  
+  if (!comunicacionExistente) {
+    throw new Error('Comunicación no encontrada');
+  }
+
+  const [result] = await db.query(consultas.eliminarLogico, [id]);
+  
   return { 
-    mensaje: result.affectedRows > 0 ? 'Comunicación eliminada correctamente' : 'Comunicación no encontrada' 
+    mensaje: result.affectedRows > 0 ? 'Comunicación eliminada correctamente' : 'No se pudo eliminar la comunicación',
+    id_comunicacion: id
   };
 };
 
 // Obtener comunicaciones eliminadas
 exports.obtenerComunicacionesEliminadas = async () => {
-  const [rows] = await db.query(`
-    SELECT 
-      id_comunicacion,
-      asunto,
-      contenido,
-      fecha_envio,
-      id_usuario,
-      destinatario_tipo,
-      created_at,
-      deleted_at
-    FROM comunicacion
-    WHERE deleted_at IS NOT NULL
-    ORDER BY deleted_at DESC
-  `);
+  const [rows] = await db.query(consultas.obtenerEliminadas);
   return rows;
 };
 
 // Restaurar una comunicación eliminada
 exports.restaurarComunicacion = async (id) => {
-  const [result] = await db.query(
-    `UPDATE comunicacion 
-     SET deleted_at = NULL 
-     WHERE id_comunicacion = ? AND deleted_at IS NOT NULL`,
-    [id]
-  );
+  const [result] = await db.query(consultas.restaurar, [id]);
   
   if (result.affectedRows === 0) {
     throw new Error('Comunicación no encontrada o no está eliminada');
   }
 
-  const [comunicacion] = await db.query(
-    `SELECT 
-      id_comunicacion,
-      asunto,
-      contenido,
-      fecha_envio,
-      id_usuario,
-      destinatario_tipo
-     FROM comunicacion 
-     WHERE id_comunicacion = ?`,
-    [id]
-  );
-
+  // Retornar la comunicación restaurada
+  const [comunicacion] = await db.query(consultas.obtenerPorId, [id]);
   return comunicacion[0];
 };
