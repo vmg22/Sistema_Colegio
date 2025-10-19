@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 const docenteController = require('./docente.controller');
 
-router.get('/', docenteController.getAllDocentes);
-router.get('/eliminados/listar', docenteController.getDocentesEliminados);
-router.get('/:id', docenteController.getDocenteById);
-router.post('/', docenteController.createDocente);
+router.get('/', docenteController.obtenerTodosDocentes);
+router.get('/eliminados/listar', docenteController.obtenerDocentesEliminados);
+router.get('/:id', docenteController.obtenerDocentePorId);
+router.post('/', docenteController.crearDocente);
 router.post('/:id/restaurar', docenteController.restaurarDocente);
-router.put('/:id', docenteController.updateDocente);
-router.delete('/:id', docenteController.deleteDocente);
+router.put('/:id', docenteController.actualizarDocente);
+router.delete('/:id', docenteController.eliminarDocente);
 
 module.exports = router;

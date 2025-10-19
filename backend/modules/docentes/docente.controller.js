@@ -3,7 +3,7 @@ const { exito, error } = require('../../utils/responses');
 
 const controladorDocentes = {
  
-  getAllDocentes: async (solicitud, respuesta) => {
+  obtenerTodosDocentes: async (solicitud, respuesta) => {
     try {
       const docentes = await servicioDocentes.obtenerTodosDocentes();
       exito(respuesta, 'Docentes obtenidos correctamente', docentes);
@@ -13,7 +13,7 @@ const controladorDocentes = {
   },
 
   
-  getDocenteById: async (solicitud, respuesta) => {
+  obtenerDocentePorId: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const docente = await servicioDocentes.obtenerDocentePorId(id);
@@ -29,7 +29,7 @@ const controladorDocentes = {
   },
 
 
-  createDocente: async (solicitud, respuesta) => {
+  crearDocente: async (solicitud, respuesta) => {
     try {
       const datosDocente = solicitud.body;
       
@@ -55,7 +55,7 @@ const controladorDocentes = {
   },
 
 
-  updateDocente: async (solicitud, respuesta) => {
+  actualizarDocente: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const datosActualizados = solicitud.body;
@@ -77,7 +77,7 @@ const controladorDocentes = {
   },
 
 
-  deleteDocente: async (solicitud, respuesta) => {
+  eliminarDocente: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const resultado = await servicioDocentes.eliminarDocente(id);
@@ -94,7 +94,7 @@ const controladorDocentes = {
   },
 
 
-  getDocentesEliminados: async (solicitud, respuesta) => {
+  obtenerDocentesEliminados: async (solicitud, respuesta) => {
     try {
       const docentesEliminados = await servicioDocentes.obtenerDocentesEliminados();
       exito(respuesta, 'Docentes eliminados obtenidos', docentesEliminados);
