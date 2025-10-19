@@ -2,8 +2,8 @@ const servicioCursos = require('./curso.services');
 const { exito, error } = require('../../utils/responses');
 
 const controladorCursos = {
-  // GET /api/cursos
-  getAllCursos: async (solicitud, respuesta) => {
+ 
+  obtenerTodosCursos: async (solicitud, respuesta) => {
     try {
       const cursos = await servicioCursos.obtenerTodosCursos();
       exito(respuesta, 'Cursos obtenidos correctamente', cursos);
@@ -12,8 +12,8 @@ const controladorCursos = {
     }
   },
 
-  // GET /api/cursos/:id
-  getCursoById: async (solicitud, respuesta) => {
+  
+  obtenerCursoPorId: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const curso = await servicioCursos.obtenerCursoPorId(id);
@@ -28,8 +28,8 @@ const controladorCursos = {
     }
   },
 
-  // POST /api/cursos
-  createCurso: async (solicitud, respuesta) => {
+
+  crearCurso: async (solicitud, respuesta) => {
     try {
       const datosCurso = solicitud.body;
       
@@ -38,38 +38,50 @@ const controladorCursos = {
       }
       
       const cursoCreado = await servicioCursos.crearCurso(datosCurso);
+      
       exito(respuesta, 'Curso creado exitosamente', cursoCreado, 201);
     } catch (err) {
-      error(respuesta, 'Error al crear curso', 400, err.message);
+      if (err.message.includes('obligatorios')) {
+        return error(respuesta, err.message, 400);
+      }
+      error(respuesta, 'Error al crear curso', 500, err.message);
     }
   },
 
-  // PUT /api/cursos/:id
-  updateCurso: async (solicitud, respuesta) => {
+
+  actualizarCurso: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const datosActualizados = solicitud.body;
       
       const cursoActualizado = await servicioCursos.actualizarCurso(id, datosActualizados);
+      
       exito(respuesta, 'Curso actualizado correctamente', cursoActualizado);
     } catch (err) {
-      error(respuesta, 'Error al actualizar curso', 400, err.message);
+      if (err.message === 'Curso no encontrado') {
+        return error(respuesta, 'Curso no encontrado', 404);
+      }
+      error(respuesta, 'Error al actualizar curso', 500, err.message);
     }
   },
 
-  // DELETE /api/cursos/:id
-  deleteCurso: async (solicitud, respuesta) => {
+
+  eliminarCurso: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const resultado = await servicioCursos.eliminarCurso(id);
-      exito(respuesta, resultado.mensaje);
+      
+      exito(respuesta, resultado.mensaje, { id_curso: resultado.id_curso });
     } catch (err) {
-      error(respuesta, 'Error al eliminar curso', 400, err.message);
+      if (err.message === 'Curso no encontrado') {
+        return error(respuesta, 'Curso no encontrado', 404);
+      }
+      error(respuesta, 'Error al eliminar curso', 500, err.message);
     }
   },
 
-  // GET /api/cursos/eliminados/listar
-  getCursosEliminados: async (solicitud, respuesta) => {
+
+  obtenerCursosEliminados: async (solicitud, respuesta) => {
     try {
       const cursosEliminados = await servicioCursos.obtenerCursosEliminados();
       exito(respuesta, 'Cursos eliminados obtenidos', cursosEliminados);
@@ -78,14 +90,18 @@ const controladorCursos = {
     }
   },
 
-  // POST /api/cursos/:id/restaurar
+
   restaurarCurso: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const cursoRestaurado = await servicioCursos.restaurarCurso(id);
+      
       exito(respuesta, 'Curso restaurado correctamente', cursoRestaurado);
     } catch (err) {
-      error(respuesta, 'Error al restaurar curso', 400, err.message);
+      if (err.message.includes('no encontrado') || err.message.includes('no está eliminado')) {
+        return error(respuesta, err.message, 404);
+      }
+      error(respuesta, 'Error al restaurar curso', 500, err.message);
     }
   }
 };
