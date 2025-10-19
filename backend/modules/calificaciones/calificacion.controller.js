@@ -2,8 +2,8 @@ const servicioCalificaciones = require('./calificacion.services');
 const { exito, error } = require('../../utils/responses');
 
 const controladorCalificaciones = {
-  // GET /api/calificaciones
-  getAllCalificaciones: async (solicitud, respuesta) => {
+ 
+  obtenerTodasCalificaciones: async (solicitud, respuesta) => {
     try {
       const calificaciones = await servicioCalificaciones.obtenerTodasCalificaciones();
       exito(respuesta, 'Calificaciones obtenidas correctamente', calificaciones);
@@ -12,8 +12,8 @@ const controladorCalificaciones = {
     }
   },
 
-  // GET /api/calificaciones/:id
-  getCalificacionById: async (solicitud, respuesta) => {
+  
+  obtenerCalificacionPorId: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const calificacion = await servicioCalificaciones.obtenerCalificacionPorId(id);
@@ -28,8 +28,8 @@ const controladorCalificaciones = {
     }
   },
 
-  // POST /api/calificaciones
-  createCalificacion: async (solicitud, respuesta) => {
+
+  crearCalificacion: async (solicitud, respuesta) => {
     try {
       const datosCalificacion = solicitud.body;
       
@@ -40,12 +40,18 @@ const controladorCalificaciones = {
       const calificacionCreada = await servicioCalificaciones.crearCalificacion(datosCalificacion);
       exito(respuesta, 'Calificación creada exitosamente', calificacionCreada, 201);
     } catch (err) {
-      error(respuesta, 'Error al crear calificación', 400, err.message);
+      if (err.message.includes('obligatorios')) {
+        return error(respuesta, err.message, 400);
+      }
+      if (err.code === 'ER_DUP_ENTRY') {
+        return error(respuesta, 'La calificación ya está registrada', 409, err.message);
+      }
+      error(respuesta, 'Error al crear calificación', 500, err.message);
     }
   },
 
-  // PUT /api/calificaciones/:id
-  updateCalificacion: async (solicitud, respuesta) => {
+
+  actualizarCalificacion: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const datosActualizados = solicitud.body;
@@ -53,23 +59,48 @@ const controladorCalificaciones = {
       const calificacionActualizada = await servicioCalificaciones.actualizarCalificacion(id, datosActualizados);
       exito(respuesta, 'Calificación actualizada correctamente', calificacionActualizada);
     } catch (err) {
-      error(respuesta, 'Error al actualizar calificación', 400, err.message);
+      if (err.message === 'Calificación no encontrada') {
+        return error(respuesta, 'Calificación no encontrada', 404);
+      }
+      if (err.code === 'ER_DUP_ENTRY') {
+        return error(respuesta, 'La calificación ya está registrada', 409, err.message);
+      }
+      error(respuesta, 'Error al actualizar calificación', 500, err.message);
     }
   },
 
-  // DELETE /api/calificaciones/:id
-  deleteCalificacion: async (solicitud, respuesta) => {
+  actualizarCalificacionParcial: async (solicitud, respuesta) => {
+  try {
+    const { id } = solicitud.params;
+    const datosActualizados = solicitud.body;
+    
+    const calificacionActualizada = await servicioCalificaciones.actualizarCalificacionParcial(id, datosActualizados);
+    
+    exito(respuesta, 'Calificación actualizada correctamente', calificacionActualizada);
+  } catch (err) {
+    if (err.message === 'Calificación no encontrada') {
+      return error(respuesta, 'Calificación no encontrada', 404);
+    }
+    error(respuesta, 'Error al actualizar calificación', 500, err.message);
+  }
+},
+
+
+  eliminarCalificacion: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const resultado = await servicioCalificaciones.eliminarCalificacion(id);
-      exito(respuesta, resultado.mensaje);
+      exito(respuesta, resultado.mensaje, { id_calificacion: resultado.id_calificacion });
     } catch (err) {
-      error(respuesta, 'Error al eliminar calificación', 400, err.message);
+      if (err.message === 'Calificación no encontrada') {
+        return error(respuesta, 'Calificación no encontrada', 404);
+      }
+      error(respuesta, 'Error al eliminar calificación', 500, err.message);
     }
   },
 
-  // GET /api/calificaciones/eliminados/listar
-  getCalificacionesEliminadas: async (solicitud, respuesta) => {
+
+  obtenerCalificacionesEliminadas: async (solicitud, respuesta) => {
     try {
       const calificacionesEliminadas = await servicioCalificaciones.obtenerCalificacionesEliminadas();
       exito(respuesta, 'Calificaciones eliminadas obtenidas', calificacionesEliminadas);
@@ -78,14 +109,17 @@ const controladorCalificaciones = {
     }
   },
 
-  // POST /api/calificaciones/:id/restaurar
+
   restaurarCalificacion: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const calificacionRestaurada = await servicioCalificaciones.restaurarCalificacion(id);
       exito(respuesta, 'Calificación restaurada correctamente', calificacionRestaurada);
     } catch (err) {
-      error(respuesta, 'Error al restaurar calificación', 400, err.message);
+      if (err.message.includes('no encontrada') || err.message.includes('no está eliminada')) {
+        return error(respuesta, err.message, 404);
+      }
+      error(respuesta, 'Error al restaurar calificación', 500, err.message);
     }
   }
 };
