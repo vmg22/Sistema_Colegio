@@ -1,45 +1,15 @@
 const db = require('../../config/db');
+const consultas = require('./docente.queries'); 
 
 // Obtener todos los docentes activos
 exports.obtenerTodosDocentes = async () => {
-  const [rows] = await db.query(`
-    SELECT 
-      id_docente, 
-      id_usuario, 
-      dni_docente, 
-      nombre, 
-      apellido, 
-      email, 
-      telefono, 
-      especialidad, 
-      estado, 
-      created_at, 
-      updated_at
-    FROM docente
-    WHERE deleted_at IS NULL
-  `);
+  const [rows] = await db.query(consultas.obtenerTodos);
   return rows;
 };
 
 // Obtener un docente por su ID
 exports.obtenerDocentePorId = async (id) => {
-  const [rows] = await db.query(
-    `SELECT 
-      id_docente, 
-      id_usuario, 
-      dni_docente, 
-      nombre, 
-      apellido, 
-      email, 
-      telefono, 
-      especialidad, 
-      estado, 
-      created_at, 
-      updated_at
-     FROM docente 
-     WHERE id_docente = ? AND deleted_at IS NULL`,
-    [id]
-  );
+  const [rows] = await db.query(consultas.obtenerPorId, [id]);
   return rows[0];
 };
 
@@ -56,27 +26,37 @@ exports.crearDocente = async (data) => {
     estado
   } = data;
 
-  const [result] = await db.query(
-    `INSERT INTO docente 
-      (id_usuario, dni_docente, nombre, apellido, email, telefono, especialidad, estado)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      id_usuario || null,
-      dni_docente,
-      nombre,
-      apellido,
-      email,
-      telefono,
-      especialidad,
-      estado || 'activo'
-    ]
-  );
+  // Validación adicional
+  if (!dni_docente || !nombre || !apellido) {
+    throw new Error('DNI, nombre y apellido son obligatorios');
+  }
 
-  return { id_docente: result.insertId, ...data };
+  const [result] = await db.query(consultas.crear, [
+    id_usuario || null,
+    dni_docente,
+    nombre,
+    apellido,
+    email || null,
+    telefono || null,
+    especialidad || null,
+    estado || 'activo'
+  ]);
+
+  // Obtener el docente recién creado con todos sus campos
+  const [docenteCreado] = await db.query(consultas.obtenerPorId, [result.insertId]);
+  
+  return docenteCreado[0];
 };
 
 // Actualizar un docente
 exports.actualizarDocente = async (id, data) => {
+  // Primero verificar que el docente existe
+  const docenteExistente = await exports.obtenerDocentePorId(id);
+  
+  if (!docenteExistente) {
+    throw new Error('Docente no encontrado');
+  }
+
   const {
     id_usuario,
     dni_docente,
@@ -88,99 +68,59 @@ exports.actualizarDocente = async (id, data) => {
     estado
   } = data;
 
-  const [result] = await db.query(
-    `UPDATE docente
-     SET 
-       id_usuario = ?, 
-       dni_docente = ?, 
-       nombre = ?, 
-       apellido = ?, 
-       email = ?, 
-       telefono = ?, 
-       especialidad = ?, 
-       estado = ?, 
-       updated_at = CURRENT_TIMESTAMP
-     WHERE id_docente = ? AND deleted_at IS NULL`,
-    [
-      id_usuario || null,
-      dni_docente,
-      nombre,
-      apellido,
-      email,
-      telefono,
-      especialidad,
-      estado,
-      id
-    ]
-  );
+  const [result] = await db.query(consultas.actualizarCompleto, [
+    id_usuario !== undefined ? id_usuario : docenteExistente.id_usuario,
+    dni_docente || docenteExistente.dni_docente,
+    nombre || docenteExistente.nombre,
+    apellido || docenteExistente.apellido,
+    email !== undefined ? email : docenteExistente.email,
+    telefono !== undefined ? telefono : docenteExistente.telefono,
+    especialidad !== undefined ? especialidad : docenteExistente.especialidad,
+    estado || docenteExistente.estado,
+    id
+  ]);
 
-  return result.affectedRows > 0;
+  if (result.affectedRows === 0) {
+    throw new Error('No se pudo actualizar el docente');
+  }
+
+  // Retornar el docente actualizado
+  const [docenteActualizado] = await db.query(consultas.obtenerPorId, [id]);
+  return docenteActualizado[0];
 };
 
-// Eliminar (lógicamente) un docente
+// Eliminar lógicamente un docente
 exports.eliminarDocente = async (id) => {
-  const [result] = await db.query(
-    `UPDATE docente 
-     SET deleted_at = CURRENT_TIMESTAMP 
-     WHERE id_docente = ? AND deleted_at IS NULL`,
-    [id]
-  );
+  // Verificar que existe antes de eliminar
+  const docenteExistente = await exports.obtenerDocentePorId(id);
+  
+  if (!docenteExistente) {
+    throw new Error('Docente no encontrado');
+  }
+
+  const [result] = await db.query(consultas.eliminarLogico, [id]);
+  
   return { 
-    mensaje: result.affectedRows > 0 ? 'Docente eliminado correctamente' : 'Docente no encontrado' 
+    mensaje: result.affectedRows > 0 ? 'Docente eliminado correctamente' : 'No se pudo eliminar el docente',
+    id_docente: id
   };
 };
 
 // Obtener docentes eliminados
 exports.obtenerDocentesEliminados = async () => {
-  const [rows] = await db.query(`
-    SELECT 
-      id_docente, 
-      id_usuario, 
-      dni_docente, 
-      nombre, 
-      apellido, 
-      email, 
-      telefono, 
-      especialidad, 
-      estado, 
-      created_at, 
-      updated_at,
-      deleted_at
-    FROM docente
-    WHERE deleted_at IS NOT NULL
-    ORDER BY deleted_at DESC
-  `);
+  const [rows] = await db.query(consultas.obtenerEliminados);
   return rows;
 };
 
 // Restaurar un docente eliminado
 exports.restaurarDocente = async (id) => {
-  const [result] = await db.query(
-    `UPDATE docente 
-     SET deleted_at = NULL 
-     WHERE id_docente = ? AND deleted_at IS NOT NULL`,
-    [id]
-  );
+  const [result] = await db.query(consultas.restaurar, [id]);
   
   if (result.affectedRows === 0) {
     throw new Error('Docente no encontrado o no está eliminado');
   }
 
-  const [docente] = await db.query(
-    `SELECT 
-      id_docente, 
-      id_usuario, 
-      dni_docente, 
-      nombre, 
-      apellido, 
-      email, 
-      telefono, 
-      especialidad, 
-      estado
-     FROM docente 
-     WHERE id_docente = ?`,
-    [id]
-  );
-
+  // Retornar el docente restaurado
+  const [docente] = await db.query(consultas.obtenerPorId, [id]);
   return docente[0];
 };
