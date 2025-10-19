@@ -5,7 +5,7 @@ import Header from './components/layout/Header'
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { DocenteProvider } from './context/DocenteContext';
 
-import { Admin } from './pages/admin/Admin';
+import Admin from './pages/admin/Admin';
 
 function App() {
 

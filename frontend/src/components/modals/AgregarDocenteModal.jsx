@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useDocentes } from '../../context/DocenteContext';
 import '../../styles/Modal.css'; // (Añade un CSS básico para el modal)
 
-export const AgregarDocenteModal = ({ isOpen, onClose }) => {
+const AgregarDocenteModal = ({ isOpen, onClose }) => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
   const { createDocente } = useDocentes(); // Traemos la función del context
 
@@ -78,3 +78,5 @@ export const AgregarDocenteModal = ({ isOpen, onClose }) => {
     </div>
   );
 };
+
+export default AgregarDocenteModal

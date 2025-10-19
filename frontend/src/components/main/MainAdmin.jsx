@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { GestionDocentes } from '../../components/gestion/GestionDocentes';
-import './GestionAcademica.css'; // CSS para las pestañas
+import  GestionDocentes from '../../components/gestion/GestionDocentes';
+import '../../styles/gestion.css'; // CSS para las pestañas
 
-export const MainAdmin = () => {
+const MainAdmin = () => {
   // Estado local para manejar la pestaña activa
   const [activeTab, setActiveTab] = useState('docentes'); // 'docentes' por defecto
 
@@ -66,3 +66,5 @@ export const MainAdmin = () => {
     </div>
   );
 };
+
+export default MainAdmin;

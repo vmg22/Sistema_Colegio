@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// La URL base de tu backend (que usa CommonJS)
+// La URL base de tu backend 
 const API = 'http://localhost:3000/api/v1'; // Ajusta el puerto si es necesario
 
 // (C) Create

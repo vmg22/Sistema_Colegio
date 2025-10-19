@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDocentes } from '../../context/DocenteContext';
-import { AgregarDocenteModal } from '../modals/AgregarDocenteModal';
+import  AgregarDocenteModal  from '../modals/AgregarDocenteModal';
 // Asumo que tienes un componente de tabla reutilizable
 // import { Tabla } from '../ui/Tablas'; 
 import '../../styles/gestion.css'
-export const GestionDocentes = () => {
+const GestionDocentes = () => {
   // Estado local para el modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -22,7 +22,7 @@ export const GestionDocentes = () => {
       <div className="gestion-toolbar">
         <input type="text" placeholder="Buscar docente" />
         <button>Buscar</button>
-        <button className="btn-agregar" onClick={() => setIsModalOpen(true)}>
+        <button className="btn-agregardocente" onClick={() => setIsModalOpen(true)}>
           Agregar docente
         </button>
       </div>
@@ -62,3 +62,5 @@ export const GestionDocentes = () => {
     </div>
   );
 };
+
+export default GestionDocentes
