@@ -1,0 +1,63 @@
+/* Contenedor principal de la página */
+.gestion-academica-container {
+  max-width: 1600px;
+  margin: 2rem auto;
+  padding: 1.5rem 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.gestion-header {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--grey-border);
+  padding-bottom: 1rem;
+}
+
+.gestion-header h1 {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: 1.75rem;
+}
+
+.gestion-header p {
+  margin: 0;
+  color: var(--grey-text);
+  font-size: 0.9rem;
+}
+
+/* --- Navegación de Pestañas (Tabs) --- */
+.tab-navigation {
+  display: flex;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--grey-border);
+}
+
+.tab-navigation button,
+.tab-navigation a { /* Funciona para <button> o <NavLink> */
+  background: none;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--grey-text);
+  border-bottom: 3px solid transparent;
+  transform: translateY(2px); /* Alinea con el borde inferior */
+  text-decoration: none; /* Para NavLink */
+}
+
+.tab-navigation button:hover,
+.tab-navigation a:hover {
+  color: var(--blue-primary);
+}
+
+.tab-navigation button.active,
+.tab-navigation a.active { /* Para <NavLink> activo */
+  color: var(--blue-secondary);
+  font-weight: 600;
+  border-bottom-color: var(--blue-secondary);
+}
+
+.tab-content {
+  /* El contenido de la pestaña se carga aquí */
+}

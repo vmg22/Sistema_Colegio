@@ -1,0 +1,57 @@
+/* Botón principal para "Agregar" */
+.btn-agregar,
+.btn-guardar {
+  background-color: #27ae60; /* Verde */
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+.btn-agregar:hover,
+.btn-guardar:hover {
+  background-color: #2ecc71;
+}
+
+/* Botón secundario para "Buscar" */
+.btn-buscar,
+.btn-cancelar {
+  background-color: #7f8c8d; /* Gris */
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+.btn-buscar:hover,
+.btn-cancelar:hover {
+  background-color: #95a5a6;
+}
+
+/* Botones de acción en la tabla */
+.btn-accion {
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: white;
+}
+
+.btn-editar {
+  background-color: #f39c12; /* Naranja */
+}
+.btn-editar:hover {
+  background-color: #f1c40f;
+}
+
+.btn-eliminar {
+  background-color: #e74c3c; /* Rojo */
+}
+.btn-eliminar:hover {
+  background-color: #c0392b;
+}
