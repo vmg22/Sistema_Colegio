@@ -1,5 +1,5 @@
 import './styles/index.css'
-import "../src/App.css"
+import "./App.css"
 import Navv from './components/layout/Navv'
 import ButtonShowcase from './components/ui/Botones'
 import Dashboard from './pages/dashboard/Dashboard'
@@ -14,10 +14,6 @@ function App() {
   return (
     <>
       <Header />
-      
-      <ButtonShowcase/>
-      <Dashboard/>
- 
       <DocenteProvider>
 
           <BrowserRouter>
@@ -32,11 +28,9 @@ function App() {
             </Routes>
           </BrowserRouter>
       </DocenteProvider>
-
-      <h1>hola matias</h1>
       
     </>
   );
 }
 
-export default App
+export default App 
