@@ -62,6 +62,25 @@ const consultasTutores = {
     WHERE id_tutor = ? AND deleted_at IS NULL
   `,
 
+
+
+
+  // Actualizar tutor parcial 
+  actualizarParcial: `
+    UPDATE tutor
+    SET 
+      nombre = COALESCE(?, nombre),
+      apellido = COALESCE(?, apellido),
+      email = COALESCE(?, email),
+      telefono = COALESCE(?, telefono),
+      direccion = COALESCE(?, direccion),
+      parentesco = COALESCE(?, parentesco),
+      estado = COALESCE(?, estado),
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id_tutor = ? AND deleted_at IS NULL
+  `,
+
+  
   // Eliminar lógicamente un tutor
   eliminarLogico: `
     UPDATE tutor 

@@ -69,6 +69,22 @@ const controladorAniosLectivos = {
     }
   },
 
+  actualizarAnioLectivoParcial: async (solicitud, respuesta) => {
+  try {
+    const { id } = solicitud.params;
+    const datosActualizados = solicitud.body;
+    
+    const anioLectivoActualizado = await servicioAniosLectivos.actualizarAnioLectivoParcial(id, datosActualizados);
+    
+    exito(respuesta, 'Año lectivo actualizado correctamente', anioLectivoActualizado);
+  } catch (err) {
+    if (err.message === 'Año lectivo no encontrado') {
+      return error(respuesta, 'Año lectivo no encontrado', 404);
+    }
+    error(respuesta, 'Error al actualizar año lectivo', 500, err.message);
+  }
+},
+
 
   eliminarAnioLectivo: async (solicitud, respuesta) => {
     try {

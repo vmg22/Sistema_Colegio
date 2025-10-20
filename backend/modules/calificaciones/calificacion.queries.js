@@ -76,7 +76,7 @@ const consultasCalificaciones = {
     WHERE id_calificacion = ? AND deleted_at IS NULL
   `,
 
-// Agregar después de actualizarCompleto:
+// Actualizar calificación parcial
 
 actualizarParcial: `
   UPDATE calificacion

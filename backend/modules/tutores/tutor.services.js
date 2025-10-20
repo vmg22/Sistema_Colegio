@@ -93,6 +93,46 @@ exports.actualizarTutor = async (id, data) => {
   return tutorActualizado[0];
 };
 
+// Agregar después de actualizarTutor:
+
+exports.actualizarTutorParcial = async (id, data) => {
+  // Verificar que existe
+  const tutorExistente = await exports.obtenerTutorPorId(id);
+  
+  if (!tutorExistente) {
+    throw new Error('Tutor no encontrado');
+  }
+
+  const {
+    nombre,
+    apellido,
+    email,
+    telefono,
+    direccion,
+    parentesco,
+    estado
+  } = data;
+
+  const [result] = await db.query(consultas.actualizarParcial, [
+    nombre !== undefined ? nombre : null,
+    apellido !== undefined ? apellido : null,
+    email !== undefined ? email : null,
+    telefono !== undefined ? telefono : null,
+    direccion !== undefined ? direccion : null,
+    parentesco !== undefined ? parentesco : null,
+    estado !== undefined ? estado : null,
+    id
+  ]);
+
+  if (result.affectedRows === 0) {
+    throw new Error('No se pudo actualizar el tutor');
+  }
+
+  // Retornar el tutor actualizado
+  const [tutorActualizado] = await db.query(consultas.obtenerPorId, [id]);
+  return tutorActualizado[0];
+};
+
 // Eliminar lógicamente un tutor
 exports.eliminarTutor = async (id) => {
   // Verificar que existe antes de eliminar

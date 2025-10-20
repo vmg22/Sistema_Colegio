@@ -9,5 +9,6 @@ router.post('/', cursoController.crearCurso);
 router.post('/:id/restaurar', cursoController.restaurarCurso);
 router.put('/:id', cursoController.actualizarCurso);
 router.delete('/:id', cursoController.eliminarCurso);
+router.patch('/:id', cursoController.actualizarCursoParcial);
 
 module.exports = router;

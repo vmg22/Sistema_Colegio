@@ -75,7 +75,24 @@ const controladorDocentes = {
       error(respuesta, 'Error al actualizar docente', 500, err.message);
     }
   },
-
+actualizarDocenteParcial: async (solicitud, respuesta) => {
+  try {
+    const { id } = solicitud.params;
+    const datosActualizados = solicitud.body;
+    
+    const docenteActualizado = await servicioDocentes.actualizarDocenteParcial(id, datosActualizados);
+    exito(respuesta, 'Docente actualizado correctamente', docenteActualizado);
+  } catch (err) {
+    // Manejo de errores más específico
+    if (err.message === 'Docente no encontrado') {
+      return error(respuesta, 'Docente no encontrado', 404);
+    }
+    if (err.code === 'ER_DUP_ENTRY') {
+      return error(respuesta, 'El DNI ya está registrado', 409, err.message);
+    }
+    error(respuesta, 'Error al actualizar docente', 500, err.message);
+  }
+},
 
   eliminarDocente: async (solicitud, respuesta) => {
     try {

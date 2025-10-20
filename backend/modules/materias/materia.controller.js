@@ -65,6 +65,20 @@ const controladorMaterias = {
     }
   },
 
+actualizarMateriaParcial: async (solicitud, respuesta) => {
+  try {
+    const { id } = solicitud.params;
+    const datosActualizados = solicitud.body;
+    
+    const materiaActualizada = await servicioMaterias.actualizarMateriaParcial(id, datosActualizados);
+    exito(respuesta, 'Materia actualizada correctamente', materiaActualizada);
+  } catch (err) {
+    if (err.message === 'Materia no encontrada') {
+      return error(respuesta, 'Materia no encontrada', 404);
+    }
+    error(respuesta, 'Error al actualizar materia', 500, err.message);
+  }
+},
 
   eliminarMateria: async (solicitud, respuesta) => {
     try {

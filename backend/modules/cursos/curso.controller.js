@@ -65,6 +65,20 @@ const controladorCursos = {
     }
   },
 
+  actualizarCursoParcial: async (solicitud, respuesta) => {
+  try {
+    const { id } = solicitud.params;
+    const datosActualizados = solicitud.body;
+    
+    const cursoActualizado = await servicioCursos.actualizarCursoParcial(id, datosActualizados);
+    exito(respuesta, 'Curso actualizado correctamente', cursoActualizado);
+  } catch (err) {
+    if (err.message === 'Curso no encontrado') {
+      return error(respuesta, 'Curso no encontrado', 404);
+    }
+    error(respuesta, 'Error al actualizar curso', 500, err.message);
+  }
+},
 
   eliminarCurso: async (solicitud, respuesta) => {
     try {

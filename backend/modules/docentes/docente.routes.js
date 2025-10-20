@@ -8,6 +8,7 @@ router.get('/:id', docenteController.obtenerDocentePorId);
 router.post('/', docenteController.crearDocente);
 router.post('/:id/restaurar', docenteController.restaurarDocente);
 router.put('/:id', docenteController.actualizarDocente);
+router.patch('/:id', docenteController.actualizarDocenteParcial);
 router.delete('/:id', docenteController.eliminarDocente);
 
 module.exports = router;

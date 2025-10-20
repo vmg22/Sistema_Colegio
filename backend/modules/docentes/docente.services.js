@@ -89,6 +89,63 @@ exports.actualizarDocente = async (id, data) => {
   return docenteActualizado[0];
 };
 
+exports.actualizarDocenteParcial = async (id, data) => {
+  // Primero verificar que el docente existe
+  const docenteExistente = await exports.obtenerDocentePorId(id);
+  
+  if (!docenteExistente) {
+    throw new Error('Docente no encontrado');
+  }
+
+  // Filtrar solo los campos que vienen en data
+  const camposActualizar = {};
+  const camposPermitidos = [
+    'id_usuario',
+    'dni_docente',
+    'nombre',
+    'apellido',
+    'email',
+    'telefono',
+    'especialidad',
+    'estado'
+  ];
+
+  camposPermitidos.forEach(campo => {
+    if (data[campo] !== undefined) {
+      camposActualizar[campo] = data[campo];
+    }
+  });
+
+  // Si no hay campos para actualizar, retornar el docente actual
+  if (Object.keys(camposActualizar).length === 0) {
+    return docenteExistente;
+  }
+
+  // Construir la query dinámica
+  const setClauses = Object.keys(camposActualizar).map(campo => `${campo} = ?`);
+  const valores = Object.values(camposActualizar);
+  
+  const query = `
+    UPDATE docente
+    SET 
+      ${setClauses.join(', ')},
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id_docente = ? AND deleted_at IS NULL
+  `;
+
+  valores.push(id); // Agregar el ID al final
+
+  const [result] = await db.query(query, valores);
+
+  if (result.affectedRows === 0) {
+    throw new Error('No se pudo actualizar el docente');
+  }
+
+  // Retornar el docente actualizado
+  const [docenteActualizado] = await db.query(consultas.obtenerPorId, [id]);
+  return docenteActualizado[0];
+};
+
 // Eliminar lógicamente un docente
 exports.eliminarDocente = async (id) => {
   // Verificar que existe antes de eliminar

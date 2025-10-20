@@ -66,6 +66,23 @@ const controladorTutores = {
   },
 
 
+
+actualizarTutorParcial: async (solicitud, respuesta) => {
+  try {
+    const { id } = solicitud.params;
+    const datosActualizados = solicitud.body;
+    
+    const tutorActualizado = await servicioTutores.actualizarTutorParcial(id, datosActualizados);
+    
+    exito(respuesta, 'Tutor actualizado correctamente', tutorActualizado);
+  } catch (err) {
+    if (err.message === 'Tutor no encontrado') {
+      return error(respuesta, 'Tutor no encontrado', 404);
+    }
+    error(respuesta, 'Error al actualizar tutor', 500, err.message);
+  }
+},
+
   eliminarTutor: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;

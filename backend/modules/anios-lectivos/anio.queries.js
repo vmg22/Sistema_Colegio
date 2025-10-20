@@ -46,7 +46,16 @@ const consultasAniosLectivos = {
       updated_at = CURRENT_TIMESTAMP
     WHERE id_anio_lectivo = ? AND deleted_at IS NULL
   `,
-
+// Actualizar año lectivo parcial 
+  actualizarParcial: `
+    UPDATE anio_lectivo
+    SET 
+      fecha_inicio = COALESCE(?, fecha_inicio),
+      fecha_fin = COALESCE(?, fecha_fin),
+      estado = COALESCE(?, estado),
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id_anio_lectivo = ? AND deleted_at IS NULL
+  `,
   // Eliminar lógicamente un año lectivo
   eliminarLogico: `
     UPDATE anio_lectivo 

@@ -8,6 +8,7 @@ router.get('/:id', anioLectivoController.obtenerAnioLectivoPorId);
 router.post('/', anioLectivoController.crearAnioLectivo);
 router.post('/:id/restaurar', anioLectivoController.restaurarAnioLectivo);
 router.put('/:id', anioLectivoController.actualizarAnioLectivo);
+router.patch('/:id', anioLectivoController.actualizarAnioLectivoParcial);
 router.delete('/:id', anioLectivoController.eliminarAnioLectivo);
 
 module.exports = router;

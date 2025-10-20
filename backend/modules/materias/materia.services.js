@@ -80,7 +80,61 @@ exports.actualizarMateria = async (id, data) => {
   const [materiaActualizada] = await db.query(consultas.obtenerPorId, [id]);
   return materiaActualizada[0];
 };
+// Actualizar una materia parcialmente (PATCH)
+exports.actualizarMateriaParcial = async (id, data) => {
+  // Primero verificar que la materia existe
+  const materiaExistente = await exports.obtenerMateriaPorId(id);
+  
+  if (!materiaExistente) {
+    throw new Error('Materia no encontrada');
+  }
 
+  // Filtrar solo los campos que vienen en data
+  const camposActualizar = {};
+  const camposPermitidos = [
+    'nombre',
+    'descripcion',
+    'carga_horaria',
+    'nivel',
+    'ciclo',
+    'estado'
+  ];
+
+  camposPermitidos.forEach(campo => {
+    if (data[campo] !== undefined) {
+      camposActualizar[campo] = data[campo];
+    }
+  });
+
+  // Si no hay campos para actualizar, retornar la materia actual
+  if (Object.keys(camposActualizar).length === 0) {
+    return materiaExistente;
+  }
+
+  // Construir la query dinámica
+  const setClauses = Object.keys(camposActualizar).map(campo => `${campo} = ?`);
+  const valores = Object.values(camposActualizar);
+  
+  const query = `
+    UPDATE materia
+    SET 
+      ${setClauses.join(', ')},
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id_materia = ? AND deleted_at IS NULL
+  `;
+
+  valores.push(id); // Agregar el ID al final
+
+  const [result] = await db.query(query, valores);
+
+  if (result.affectedRows === 0) {
+    throw new Error('No se pudo actualizar la materia');
+  }
+
+  // Retornar la materia actualizada
+  const [materiaActualizada] = await db.query(consultas.obtenerPorId, [id]);
+  return materiaActualizada[0];
+};
 // Eliminar lógicamente una materia
 exports.eliminarMateria = async (id) => {
   // Verificar que existe antes de eliminar

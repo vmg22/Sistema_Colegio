@@ -73,6 +73,36 @@ exports.actualizarAnioLectivo = async (id, data) => {
   return anioLectivoActualizado[0];
 };
 
+exports.actualizarAnioLectivoParcial = async (id, data) => {
+  // Verificar que existe
+  const anioLectivoExistente = await exports.obtenerAnioLectivoPorId(id);
+  
+  if (!anioLectivoExistente) {
+    throw new Error('Año lectivo no encontrado');
+  }
+
+  const {
+    fecha_inicio,
+    fecha_fin,
+    estado
+  } = data;
+
+  const [result] = await db.query(consultas.actualizarParcial, [
+    fecha_inicio !== undefined ? fecha_inicio : null,
+    fecha_fin !== undefined ? fecha_fin : null,
+    estado !== undefined ? estado : null,
+    id
+  ]);
+
+  if (result.affectedRows === 0) {
+    throw new Error('No se pudo actualizar el año lectivo');
+  }
+
+  // Retornar el año lectivo actualizado
+  const [anioLectivoActualizado] = await db.query(consultas.obtenerPorId, [id]);
+  return anioLectivoActualizado[0];
+};
+
 // Eliminar lógicamente un año lectivo
 exports.eliminarAnioLectivo = async (id) => {
   // Verificar que existe antes de eliminar
