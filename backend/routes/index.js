@@ -5,7 +5,7 @@ const router = express.Router();
 const alumnoRoutes = require('../modules/alumnos/alumno.routes');
 // const docenteRoutes = require('../modules/docentes/docente.routes');
 // const docentesTestRoutes = require('../modules/docentes/docente.routes');
-const docenteRoutes = require('../modules/docentes/docente.routes');
+//const docenteRoutes = require('../modules/docentes/docente.routes');
 const cursoRoutes = require('../modules/cursos/curso.routes');
 const materiaRoutes = require('../modules/materias/materia.routes');
 const calificacionRoutes = require('../modules/calificaciones/calificacion.routes');
@@ -27,7 +27,7 @@ router.get('/', (req, res) => {
 // Delegar las rutas a sus respectivos módulos
 router.use('/anios-lectivos', anioLectivoRoutes);
 router.use('/alumnos', alumnoRoutes);
-router.use('/docentes', docenteRoutes);
+//router.use('/docentes', docenteRoutes);
 // router.use('/docentes', docentesTestRoutes);
 router.use('/cursos', cursoRoutes);
 router.use('/materias', materiaRoutes);
