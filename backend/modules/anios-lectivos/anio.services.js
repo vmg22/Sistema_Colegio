@@ -1,37 +1,15 @@
 const db = require('../../config/db');
+const consultas = require('./anio.queries'); 
 
 // Obtener todos los años lectivos activos
 exports.obtenerTodosAniosLectivos = async () => {
-  const [rows] = await db.query(`
-    SELECT 
-      id_anio_lectivo,
-      anio,
-      fecha_inicio,
-      fecha_fin,
-      estado,
-      created_at,
-      updated_at
-    FROM anio_lectivo
-    WHERE deleted_at IS NULL
-  `);
+  const [rows] = await db.query(consultas.obtenerTodos);
   return rows;
 };
 
 // Obtener un año lectivo por su ID
 exports.obtenerAnioLectivoPorId = async (id) => {
-  const [rows] = await db.query(
-    `SELECT 
-      id_anio_lectivo,
-      anio,
-      fecha_inicio,
-      fecha_fin,
-      estado,
-      created_at,
-      updated_at
-     FROM anio_lectivo 
-     WHERE id_anio_lectivo = ? AND deleted_at IS NULL`,
-    [id]
-  );
+  const [rows] = await db.query(consultas.obtenerPorId, [id]);
   return rows[0];
 };
 
@@ -44,23 +22,33 @@ exports.crearAnioLectivo = async (data) => {
     estado
   } = data;
 
-  const [result] = await db.query(
-    `INSERT INTO anio_lectivo 
-      (anio, fecha_inicio, fecha_fin, estado)
-     VALUES (?, ?, ?, ?)`,
-    [
-      anio,
-      fecha_inicio,
-      fecha_fin,
-      estado || 'planificacion'
-    ]
-  );
+  // Validación adicional
+  if (!anio || !fecha_inicio || !fecha_fin) {
+    throw new Error('Año, fecha inicio y fecha fin son obligatorios');
+  }
 
-  return { id_anio_lectivo: result.insertId, ...data };
+  const [result] = await db.query(consultas.crear, [
+    anio,
+    fecha_inicio,
+    fecha_fin,
+    estado || 'planificacion'
+  ]);
+
+  // Obtener el año lectivo recién creado con todos sus campos
+  const [anioLectivoCreado] = await db.query(consultas.obtenerPorId, [result.insertId]);
+  
+  return anioLectivoCreado[0];
 };
 
 // Actualizar un año lectivo
 exports.actualizarAnioLectivo = async (id, data) => {
+  // Primero verificar que el año lectivo existe
+  const anioLectivoExistente = await exports.obtenerAnioLectivoPorId(id);
+  
+  if (!anioLectivoExistente) {
+    throw new Error('Año lectivo no encontrado');
+  }
+
   const {
     anio,
     fecha_inicio,
@@ -68,83 +56,85 @@ exports.actualizarAnioLectivo = async (id, data) => {
     estado
   } = data;
 
-  const [result] = await db.query(
-    `UPDATE anio_lectivo
-     SET 
-       anio = ?,
-       fecha_inicio = ?,
-       fecha_fin = ?,
-       estado = ?,
-       updated_at = CURRENT_TIMESTAMP
-     WHERE id_anio_lectivo = ? AND deleted_at IS NULL`,
-    [
-      anio,
-      fecha_inicio,
-      fecha_fin,
-      estado,
-      id
-    ]
-  );
+  const [result] = await db.query(consultas.actualizarCompleto, [
+    anio || anioLectivoExistente.anio,
+    fecha_inicio || anioLectivoExistente.fecha_inicio,
+    fecha_fin || anioLectivoExistente.fecha_fin,
+    estado || anioLectivoExistente.estado,
+    id
+  ]);
 
-  return result.affectedRows > 0;
+  if (result.affectedRows === 0) {
+    throw new Error('No se pudo actualizar el año lectivo');
+  }
+
+  // Retornar el año lectivo actualizado
+  const [anioLectivoActualizado] = await db.query(consultas.obtenerPorId, [id]);
+  return anioLectivoActualizado[0];
 };
 
-// Eliminar (lógicamente) un año lectivo
+exports.actualizarAnioLectivoParcial = async (id, data) => {
+  // Verificar que existe
+  const anioLectivoExistente = await exports.obtenerAnioLectivoPorId(id);
+  
+  if (!anioLectivoExistente) {
+    throw new Error('Año lectivo no encontrado');
+  }
+
+  const {
+    fecha_inicio,
+    fecha_fin,
+    estado
+  } = data;
+
+  const [result] = await db.query(consultas.actualizarParcial, [
+    fecha_inicio !== undefined ? fecha_inicio : null,
+    fecha_fin !== undefined ? fecha_fin : null,
+    estado !== undefined ? estado : null,
+    id
+  ]);
+
+  if (result.affectedRows === 0) {
+    throw new Error('No se pudo actualizar el año lectivo');
+  }
+
+  // Retornar el año lectivo actualizado
+  const [anioLectivoActualizado] = await db.query(consultas.obtenerPorId, [id]);
+  return anioLectivoActualizado[0];
+};
+
+// Eliminar lógicamente un año lectivo
 exports.eliminarAnioLectivo = async (id) => {
-  const [result] = await db.query(
-    `UPDATE anio_lectivo 
-     SET deleted_at = CURRENT_TIMESTAMP 
-     WHERE id_anio_lectivo = ? AND deleted_at IS NULL`,
-    [id]
-  );
+  // Verificar que existe antes de eliminar
+  const anioLectivoExistente = await exports.obtenerAnioLectivoPorId(id);
+  
+  if (!anioLectivoExistente) {
+    throw new Error('Año lectivo no encontrado');
+  }
+
+  const [result] = await db.query(consultas.eliminarLogico, [id]);
+  
   return { 
-    mensaje: result.affectedRows > 0 ? 'Año lectivo eliminado correctamente' : 'Año lectivo no encontrado' 
+    mensaje: result.affectedRows > 0 ? 'Año lectivo eliminado correctamente' : 'No se pudo eliminar el año lectivo',
+    id_anio_lectivo: id
   };
 };
 
 // Obtener años lectivos eliminados
 exports.obtenerAniosLectivosEliminados = async () => {
-  const [rows] = await db.query(`
-    SELECT 
-      id_anio_lectivo,
-      anio,
-      fecha_inicio,
-      fecha_fin,
-      estado,
-      created_at,
-      updated_at,
-      deleted_at
-    FROM anio_lectivo
-    WHERE deleted_at IS NOT NULL
-    ORDER BY deleted_at DESC
-  `);
+  const [rows] = await db.query(consultas.obtenerEliminados);
   return rows;
 };
 
 // Restaurar un año lectivo eliminado
 exports.restaurarAnioLectivo = async (id) => {
-  const [result] = await db.query(
-    `UPDATE anio_lectivo 
-     SET deleted_at = NULL 
-     WHERE id_anio_lectivo = ? AND deleted_at IS NOT NULL`,
-    [id]
-  );
+  const [result] = await db.query(consultas.restaurar, [id]);
   
   if (result.affectedRows === 0) {
     throw new Error('Año lectivo no encontrado o no está eliminado');
   }
 
-  const [anioLectivo] = await db.query(
-    `SELECT 
-      id_anio_lectivo,
-      anio,
-      fecha_inicio,
-      fecha_fin,
-      estado
-     FROM anio_lectivo 
-     WHERE id_anio_lectivo = ?`,
-    [id]
-  );
-
+  // Retornar el año lectivo restaurado
+  const [anioLectivo] = await db.query(consultas.obtenerPorId, [id]);
   return anioLectivo[0];
 };

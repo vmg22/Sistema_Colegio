@@ -2,8 +2,8 @@ const servicioComunicaciones = require('./comunicacion.services');
 const { exito, error } = require('../../utils/responses');
 
 const controladorComunicaciones = {
-  // GET /api/comunicaciones
-  getAllComunicaciones: async (solicitud, respuesta) => {
+ 
+  obtenerTodasComunicaciones: async (solicitud, respuesta) => {
     try {
       const comunicaciones = await servicioComunicaciones.obtenerTodasComunicaciones();
       exito(respuesta, 'Comunicaciones obtenidas correctamente', comunicaciones);
@@ -12,8 +12,8 @@ const controladorComunicaciones = {
     }
   },
 
-  // GET /api/comunicaciones/:id
-  getComunicacionById: async (solicitud, respuesta) => {
+  
+  obtenerComunicacionPorId: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const comunicacion = await servicioComunicaciones.obtenerComunicacionPorId(id);
@@ -28,8 +28,8 @@ const controladorComunicaciones = {
     }
   },
 
-  // POST /api/comunicaciones
-  createComunicacion: async (solicitud, respuesta) => {
+
+  crearComunicacion: async (solicitud, respuesta) => {
     try {
       const datosComunicacion = solicitud.body;
       
@@ -38,38 +38,67 @@ const controladorComunicaciones = {
       }
       
       const comunicacionCreada = await servicioComunicaciones.crearComunicacion(datosComunicacion);
+      
       exito(respuesta, 'Comunicación creada exitosamente', comunicacionCreada, 201);
     } catch (err) {
-      error(respuesta, 'Error al crear comunicación', 400, err.message);
+      if (err.message.includes('obligatorios')) {
+        return error(respuesta, err.message, 400);
+      }
+      error(respuesta, 'Error al crear comunicación', 500, err.message);
     }
   },
 
-  // PUT /api/comunicaciones/:id
-  updateComunicacion: async (solicitud, respuesta) => {
+
+  actualizarComunicacion: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const datosActualizados = solicitud.body;
       
       const comunicacionActualizada = await servicioComunicaciones.actualizarComunicacion(id, datosActualizados);
+      
       exito(respuesta, 'Comunicación actualizada correctamente', comunicacionActualizada);
     } catch (err) {
-      error(respuesta, 'Error al actualizar comunicación', 400, err.message);
+      if (err.message === 'Comunicación no encontrada') {
+        return error(respuesta, 'Comunicación no encontrada', 404);
+      }
+      error(respuesta, 'Error al actualizar comunicación', 500, err.message);
     }
   },
 
-  // DELETE /api/comunicaciones/:id
-  deleteComunicacion: async (solicitud, respuesta) => {
+
+  actualizarComunicacionParcial: async (solicitud, respuesta) => {
+    try {
+      const { id } = solicitud.params;
+      const datosActualizados = solicitud.body;
+      
+      const comunicacionActualizada = await servicioComunicaciones.actualizarComunicacionParcial(id, datosActualizados);
+      
+      exito(respuesta, 'Comunicación actualizada correctamente', comunicacionActualizada);
+    } catch (err) {
+      if (err.message === 'Comunicación no encontrada') {
+        return error(respuesta, 'Comunicación no encontrada', 404);
+      }
+      error(respuesta, 'Error al actualizar comunicación', 500, err.message);
+    }
+  },
+
+
+  eliminarComunicacion: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const resultado = await servicioComunicaciones.eliminarComunicacion(id);
-      exito(respuesta, resultado.mensaje);
+      
+      exito(respuesta, resultado.mensaje, { id_comunicacion: resultado.id_comunicacion });
     } catch (err) {
-      error(respuesta, 'Error al eliminar comunicación', 400, err.message);
+      if (err.message === 'Comunicación no encontrada') {
+        return error(respuesta, 'Comunicación no encontrada', 404);
+      }
+      error(respuesta, 'Error al eliminar comunicación', 500, err.message);
     }
   },
 
-  // GET /api/comunicaciones/eliminados/listar
-  getComunicacionesEliminadas: async (solicitud, respuesta) => {
+
+  obtenerComunicacionesEliminadas: async (solicitud, respuesta) => {
     try {
       const comunicacionesEliminadas = await servicioComunicaciones.obtenerComunicacionesEliminadas();
       exito(respuesta, 'Comunicaciones eliminadas obtenidas', comunicacionesEliminadas);
@@ -78,14 +107,18 @@ const controladorComunicaciones = {
     }
   },
 
-  // POST /api/comunicaciones/:id/restaurar
+
   restaurarComunicacion: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const comunicacionRestaurada = await servicioComunicaciones.restaurarComunicacion(id);
+      
       exito(respuesta, 'Comunicación restaurada correctamente', comunicacionRestaurada);
     } catch (err) {
-      error(respuesta, 'Error al restaurar comunicación', 400, err.message);
+      if (err.message.includes('no encontrada') || err.message.includes('no está eliminada')) {
+        return error(respuesta, err.message, 404);
+      }
+      error(respuesta, 'Error al restaurar comunicación', 500, err.message);
     }
   }
 };
