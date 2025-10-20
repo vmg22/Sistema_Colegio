@@ -105,17 +105,17 @@ const consultasAlumnos = {
   // CONSULTAS DE ELIMINACIÓN
   // ====================
   
-  eliminarLogico: `
-    UPDATE alumno 
-    SET deleted_at = CURRENT_TIMESTAMP, estado = 'inactivo'
-    WHERE id_alumno = ?
-  `,
-  
-  restaurar: `
-    UPDATE alumno 
-    SET deleted_at = NULL, estado = 'activo'
-    WHERE id_alumno = ?
-  `,
+ eliminarLogico: `
+  UPDATE alumno
+  SET deleted_at = CURRENT_TIMESTAMP, estado = 'inactivo'
+  WHERE id_alumno = ? AND deleted_at IS NULL
+`,
+
+restaurar: `
+  UPDATE alumno
+  SET deleted_at = NULL, estado = 'activo'
+  WHERE id_alumno = ?
+`,
   
   // ====================
   // CONSULTAS DE VERIFICACIÓN
@@ -126,16 +126,22 @@ const consultasAlumnos = {
     WHERE dni_alumno = ? AND deleted_at IS NULL
   `,
   
-  verificarEmailExistente: `
-    SELECT id_alumno FROM alumno 
-    WHERE email = ? AND deleted_at IS NULL
-  `,
+verificarAlumnoExiste: `
+  SELECT id_alumno, estado, deleted_at FROM alumno 
+  WHERE id_alumno = ?
+`,
+
   
   verificarAlumnoExiste: `
     SELECT id_alumno, estado FROM alumno 
     WHERE id_alumno = ? AND deleted_at IS NULL
   `,
-  
+  verificarEmailExistente: `
+    SELECT id_alumno FROM alumno
+    WHERE email = ? AND deleted_at IS NULL
+  `,
+
+ 
   // ====================
   // CONSULTAS ESTADÍSTICAS
   // ====================
