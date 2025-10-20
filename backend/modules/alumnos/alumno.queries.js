@@ -107,13 +107,13 @@ const consultasAlumnos = {
   
   eliminarLogico: `
     UPDATE alumno 
-    SET deleted_at = CURRENT_TIMESTAMP, estado = 'INACTIVO'
+    SET deleted_at = CURRENT_TIMESTAMP, estado = 'inactivo'
     WHERE id_alumno = ?
   `,
   
   restaurar: `
     UPDATE alumno 
-    SET deleted_at = NULL, estado = 'ACTIVO'
+    SET deleted_at = NULL, estado = 'activo'
     WHERE id_alumno = ?
   `,
   
