@@ -1,13 +1,6 @@
-/**
- * =======================================
- * DOCENTE.ROUTES.JS
- * =======================================
- * Define los endpoints de la API para el módulo de docentes.
- */
-
 const express = require('express');
 const router = express.Router();
-const controladorDocentes = require('./docente.controller');
+const docenteController = require('./docente.controller');
 
 router.get('/', docenteController.obtenerTodosDocentes);
 router.get('/eliminados/listar', docenteController.obtenerDocentesEliminados);

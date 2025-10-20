@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-/**
- * =======================================
- * DOCENTE.SERVICES.JS
- * =======================================
- * Lógica de negocio para el módulo de docentes.
- * Ejecuta las consultas y maneja la lógica de validación.
- */
-
-// Asumo que tu pool está en ../../config/db
-const pool = require('../../config/db'); 
-const consultas = require('./docente.queries');
-
-/**
- * Función helper interna para obtener un docente por ID
- * y lanzar un error 404 si no se encuentra.
- */
-async function _obtenerDocentePorId(id) {
-  const [rows] = await pool.query(consultas.obtenerPorId, [id]);
-  if (rows.length === 0) {
-    const error = new Error('El docente con el ID proporcionado no fue encontrado.');
-    error.statusCode = 404;
-    throw error;
-=======
 const db = require('../../config/db');
 const consultas = require('./docente.queries'); 
 
@@ -310,8 +286,9 @@ const servicioDocentes = {
 
 module.exports = servicioDocentes;
 =======
+  }
+
   // Retornar el docente restaurado
   const [docente] = await db.query(consultas.obtenerPorId, [id]);
   return docente[0];
 };
->>>>>>> origin/medina_marcelo
