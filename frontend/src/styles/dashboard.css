@@ -108,9 +108,27 @@ h4 {
   flex-direction: column;
   background-color: white;
   width: 80%;
-  margin: 0 auto;
+  margin: 30px auto;
 }
 
+.formLabel{
+  color: #303F9F;
+  font-weight: 550;
+}
+
+.tituloForm{
+    color: #303F9F;
+  font-weight: 550;
+  margin-left: 15px;
+  margin-top: 15px;
+}
+
+.btnBuscar{
+  background-color:#1e40af;
+}
+.btnBuscar:hover{
+  background-color: rgb(16, 45, 141)
+}
 /* Responsive */
 @media (max-width: 768px) {
   .contenedor-botones-dash {

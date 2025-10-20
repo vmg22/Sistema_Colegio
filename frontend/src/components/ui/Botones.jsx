@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from 'react-bootstrap/esm/Button';
 
 const ButtonShowcase = () => {
   return (
@@ -49,6 +50,19 @@ const ButtonShowcase = () => {
             <i className="fas fa-plus"></i>
             Agregar Item
           </button>
+          <Button
+                type="submit"
+                className="d-flex align-items-center gap-2 px-4 py-2"
+                style={{backgroundColor:"#1e40af"}}
+              >
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: "20px" }}
+                >
+                  search
+                </span>
+                <span>Buscar Alumno</span>
+              </Button>
           <button className="btn btn-secondary btn-icon">
             <i className="fas fa-cog"></i>
           </button>
