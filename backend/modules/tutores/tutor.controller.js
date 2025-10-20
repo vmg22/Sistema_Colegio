@@ -2,8 +2,8 @@ const servicioTutores = require('./tutor.services');
 const { exito, error } = require('../../utils/responses');
 
 const controladorTutores = {
-  // GET /api/tutores
-  getAllTutores: async (solicitud, respuesta) => {
+ 
+  obtenerTodosTutores: async (solicitud, respuesta) => {
     try {
       const tutores = await servicioTutores.obtenerTodosTutores();
       exito(respuesta, 'Tutores obtenidos correctamente', tutores);
@@ -12,8 +12,8 @@ const controladorTutores = {
     }
   },
 
-  // GET /api/tutores/:id
-  getTutorById: async (solicitud, respuesta) => {
+  
+  obtenerTutorPorId: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const tutor = await servicioTutores.obtenerTutorPorId(id);
@@ -28,8 +28,8 @@ const controladorTutores = {
     }
   },
 
-  // POST /api/tutores
-  createTutor: async (solicitud, respuesta) => {
+
+  crearTutor: async (solicitud, respuesta) => {
     try {
       const datosTutor = solicitud.body;
       
@@ -38,38 +38,67 @@ const controladorTutores = {
       }
       
       const tutorCreado = await servicioTutores.crearTutor(datosTutor);
+      
       exito(respuesta, 'Tutor creado exitosamente', tutorCreado, 201);
     } catch (err) {
-      error(respuesta, 'Error al crear tutor', 400, err.message);
+      if (err.message.includes('obligatorios')) {
+        return error(respuesta, err.message, 400);
+      }
+      error(respuesta, 'Error al crear tutor', 500, err.message);
     }
   },
 
-  // PUT /api/tutores/:id
-  updateTutor: async (solicitud, respuesta) => {
+
+  actualizarTutor: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const datosActualizados = solicitud.body;
       
       const tutorActualizado = await servicioTutores.actualizarTutor(id, datosActualizados);
+      
       exito(respuesta, 'Tutor actualizado correctamente', tutorActualizado);
     } catch (err) {
-      error(respuesta, 'Error al actualizar tutor', 400, err.message);
+      if (err.message === 'Tutor no encontrado') {
+        return error(respuesta, 'Tutor no encontrado', 404);
+      }
+      error(respuesta, 'Error al actualizar tutor', 500, err.message);
     }
   },
 
-  // DELETE /api/tutores/:id
-  deleteTutor: async (solicitud, respuesta) => {
+
+
+actualizarTutorParcial: async (solicitud, respuesta) => {
+  try {
+    const { id } = solicitud.params;
+    const datosActualizados = solicitud.body;
+    
+    const tutorActualizado = await servicioTutores.actualizarTutorParcial(id, datosActualizados);
+    
+    exito(respuesta, 'Tutor actualizado correctamente', tutorActualizado);
+  } catch (err) {
+    if (err.message === 'Tutor no encontrado') {
+      return error(respuesta, 'Tutor no encontrado', 404);
+    }
+    error(respuesta, 'Error al actualizar tutor', 500, err.message);
+  }
+},
+
+  eliminarTutor: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const resultado = await servicioTutores.eliminarTutor(id);
-      exito(respuesta, resultado.mensaje);
+      
+      exito(respuesta, resultado.mensaje, { id_tutor: resultado.id_tutor });
     } catch (err) {
-      error(respuesta, 'Error al eliminar tutor', 400, err.message);
+      if (err.message === 'Tutor no encontrado') {
+        return error(respuesta, 'Tutor no encontrado', 404);
+      }
+      error(respuesta, 'Error al eliminar tutor', 500, err.message);
     }
   },
 
-  // GET /api/tutores/eliminados/listar
-  getTutoresEliminados: async (solicitud, respuesta) => {
+
+  obtenerTutoresEliminados: async (solicitud, respuesta) => {
     try {
       const tutoresEliminados = await servicioTutores.obtenerTutoresEliminados();
       exito(respuesta, 'Tutores eliminados obtenidos', tutoresEliminados);
@@ -78,14 +107,18 @@ const controladorTutores = {
     }
   },
 
-  // POST /api/tutores/:id/restaurar
+
   restaurarTutor: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const tutorRestaurado = await servicioTutores.restaurarTutor(id);
+      
       exito(respuesta, 'Tutor restaurado correctamente', tutorRestaurado);
     } catch (err) {
-      error(respuesta, 'Error al restaurar tutor', 400, err.message);
+      if (err.message.includes('no encontrado') || err.message.includes('no está eliminado')) {
+        return error(respuesta, err.message, 404);
+      }
+      error(respuesta, 'Error al restaurar tutor', 500, err.message);
     }
   }
 };

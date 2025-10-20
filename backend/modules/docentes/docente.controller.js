@@ -2,8 +2,8 @@ const servicioDocentes = require('./docente.services');
 const { exito, error } = require('../../utils/responses');
 
 const controladorDocentes = {
-  // GET /api/docentes
-  getAllDocentes: async (solicitud, respuesta) => {
+ 
+  obtenerTodosDocentes: async (solicitud, respuesta) => {
     try {
       const docentes = await servicioDocentes.obtenerTodosDocentes();
       exito(respuesta, 'Docentes obtenidos correctamente', docentes);
@@ -12,8 +12,8 @@ const controladorDocentes = {
     }
   },
 
-  // GET /api/docentes/:id
-  getDocenteById: async (solicitud, respuesta) => {
+  
+  obtenerDocentePorId: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const docente = await servicioDocentes.obtenerDocentePorId(id);
@@ -28,48 +28,90 @@ const controladorDocentes = {
     }
   },
 
-  // POST /api/docentes
-  createDocente: async (solicitud, respuesta) => {
+
+  crearDocente: async (solicitud, respuesta) => {
     try {
       const datosDocente = solicitud.body;
       
+      // La validación ya está en el service, pero dejamos esta por si acaso
       if (!datosDocente.dni_docente || !datosDocente.nombre || !datosDocente.apellido) {
         return error(respuesta, 'DNI, nombre y apellido son obligatorios', 400);
       }
       
       const docenteCreado = await servicioDocentes.crearDocente(datosDocente);
+      
+      // Ahora el service retorna el objeto completo del docente
       exito(respuesta, 'Docente creado exitosamente', docenteCreado, 201);
     } catch (err) {
-      error(respuesta, 'Error al crear docente', 400, err.message);
+      // Manejo de errores más específico
+      if (err.message.includes('obligatorios')) {
+        return error(respuesta, err.message, 400);
+      }
+      if (err.code === 'ER_DUP_ENTRY') {
+        return error(respuesta, 'El DNI ya está registrado', 409, err.message);
+      }
+      error(respuesta, 'Error al crear docente', 500, err.message);
     }
   },
 
-  // PUT /api/docentes/:id
-  updateDocente: async (solicitud, respuesta) => {
+
+  actualizarDocente: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const datosActualizados = solicitud.body;
       
       const docenteActualizado = await servicioDocentes.actualizarDocente(id, datosActualizados);
+      
+      // Ahora el service retorna el docente actualizado completo
       exito(respuesta, 'Docente actualizado correctamente', docenteActualizado);
     } catch (err) {
-      error(respuesta, 'Error al actualizar docente', 400, err.message);
+      // Manejo de errores más específico
+      if (err.message === 'Docente no encontrado') {
+        return error(respuesta, 'Docente no encontrado', 404);
+      }
+      if (err.code === 'ER_DUP_ENTRY') {
+        return error(respuesta, 'El DNI ya está registrado', 409, err.message);
+      }
+      error(respuesta, 'Error al actualizar docente', 500, err.message);
     }
   },
+actualizarDocenteParcial: async (solicitud, respuesta) => {
+  try {
+    const { id } = solicitud.params;
+    const datosActualizados = solicitud.body;
+    
+    const docenteActualizado = await servicioDocentes.actualizarDocenteParcial(id, datosActualizados);
+    exito(respuesta, 'Docente actualizado correctamente', docenteActualizado);
+  } catch (err) {
+    // Manejo de errores más específico
+    if (err.message === 'Docente no encontrado') {
+      return error(respuesta, 'Docente no encontrado', 404);
+    }
+    if (err.code === 'ER_DUP_ENTRY') {
+      return error(respuesta, 'El DNI ya está registrado', 409, err.message);
+    }
+    error(respuesta, 'Error al actualizar docente', 500, err.message);
+  }
+},
 
-  // DELETE /api/docentes/:id
-  deleteDocente: async (solicitud, respuesta) => {
+  eliminarDocente: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const resultado = await servicioDocentes.eliminarDocente(id);
-      exito(respuesta, resultado.mensaje);
+      
+      // El service ahora retorna { mensaje, id_docente }
+      exito(respuesta, resultado.mensaje, { id_docente: resultado.id_docente });
     } catch (err) {
-      error(respuesta, 'Error al eliminar docente', 400, err.message);
+      // Manejo de error específico
+      if (err.message === 'Docente no encontrado') {
+        return error(respuesta, 'Docente no encontrado', 404);
+      }
+      error(respuesta, 'Error al eliminar docente', 500, err.message);
     }
   },
 
-  // GET /api/docentes/eliminados/listar
-  getDocentesEliminados: async (solicitud, respuesta) => {
+
+  obtenerDocentesEliminados: async (solicitud, respuesta) => {
     try {
       const docentesEliminados = await servicioDocentes.obtenerDocentesEliminados();
       exito(respuesta, 'Docentes eliminados obtenidos', docentesEliminados);
@@ -78,14 +120,20 @@ const controladorDocentes = {
     }
   },
 
-  // POST /api/docentes/:id/restaurar
+
   restaurarDocente: async (solicitud, respuesta) => {
     try {
       const { id } = solicitud.params;
       const docenteRestaurado = await servicioDocentes.restaurarDocente(id);
+      
+      // El service retorna el docente completo restaurado
       exito(respuesta, 'Docente restaurado correctamente', docenteRestaurado);
     } catch (err) {
-      error(respuesta, 'Error al restaurar docente', 400, err.message);
+      // Manejo de error específico
+      if (err.message.includes('no encontrado') || err.message.includes('no está eliminado')) {
+        return error(respuesta, err.message, 404);
+      }
+      error(respuesta, 'Error al restaurar docente', 500, err.message);
     }
   }
 };

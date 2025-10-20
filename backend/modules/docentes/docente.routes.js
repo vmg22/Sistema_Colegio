@@ -9,6 +9,7 @@ const express = require('express');
 const router = express.Router();
 const controladorDocentes = require('./docente.controller');
 
+<<<<<<< HEAD
 // (Aquí importarías tus middlewares de auth y roles)
 // const { authRequired } = require('../../middlewares/auth.middleware');
 // const { checkRole } = require('../../middlewares/checkRole.middleware');
@@ -25,5 +26,15 @@ router.post('/', controladorDocentes.crear);
 router.get('/:id', controladorDocentes.obtenerPorId);
 router.put('/:id', controladorDocentes.actualizar);
 router.delete('/:id', controladorDocentes.eliminar);
+=======
+router.get('/', docenteController.obtenerTodosDocentes);
+router.get('/eliminados/listar', docenteController.obtenerDocentesEliminados);
+router.get('/:id', docenteController.obtenerDocentePorId);
+router.post('/', docenteController.crearDocente);
+router.post('/:id/restaurar', docenteController.restaurarDocente);
+router.put('/:id', docenteController.actualizarDocente);
+router.patch('/:id', docenteController.actualizarDocenteParcial);
+router.delete('/:id', docenteController.eliminarDocente);
+>>>>>>> origin/medina_marcelo
 
 module.exports = router;
