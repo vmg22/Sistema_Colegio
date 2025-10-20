@@ -1,162 +1,168 @@
-/**
- * =======================================
- * ALUMNO.CONTROLLER.JS (VERSIÓN COMPLETA)
- * =======================================
- * Maneja las solicitudes y respuestas HTTP, llamando a la función
- * de servicio apropiada para cada endpoint.
- */
+// src/modules/alumnos/alumno.controller.js
 
 const servicioAlumnos = require('./alumno.services');
-const { exito, error } = require('../../utils/responses');
+
+// Helper para manejar errores de forma centralizada
+const manejarError = (res, error, mensajeDefault) => {
+  console.error(error);
+  const statusCode = error.statusCode || 500;
+  const mensaje = error.message || mensajeDefault;
+  res.status(statusCode).json({ mensaje });
+};
 
 const controladorAlumnos = {
-
-    // --- CRUD ---
-    obtenerTodos: async (req, res) => {
-        try {
-            const resultado = await servicioAlumnos.obtenerTodos();
-            exito(res, 'Lista de alumnos obtenida.', resultado);
-        } catch (err) {
-            error(res, 'Error al obtener alumnos.', err.statusCode, err.message);
-        }
-    },
-    obtenerPorId: async (req, res) => {
-        try {
-            const resultado = await servicioAlumnos.obtenerPorId(req.params.id);
-            exito(res, 'Alumno encontrado.', resultado);
-        } catch (err) {
-            error(res, 'Error al buscar alumno por ID.', err.statusCode, err.message);
-        }
-    },
-    obtenerPorDni: async (req, res) => {
-        try {
-            const resultado = await servicioAlumnos.obtenerPorDni(req.params.dni);
-            exito(res, 'Alumno encontrado por DNI.', resultado);
-        } catch (err) {
-            error(res, 'Error al buscar alumno por DNI.', err.statusCode, err.message);
-        }
-    },
-    crear: async (req, res) => {
+  // --- CRUD PRINCIPAL ---
+  obtenerTodos: async (req, res) => {
     try {
-        if (!req.body.dni_alumno || !req.body.nombre_alumno || !req.body.apellido_alumno) {
-            return error(res, 'DNI, nombre y apellido son obligatorios.', 400);
-        }
-        const resultado = await servicioAlumnos.crear(req.body);
-        exito(res, 'Alumno creado exitosamente.', resultado, 201);
-    } catch (err) {
-        // Esta línea ahora recibirá el 'err.statusCode' (409) del servicio
-        error(res, 'Error al crear el alumno.', err.statusCode, err.message);
+      const alumnos = await servicioAlumnos.obtenerTodos();
+      res.status(200).json(alumnos);
+    } catch (error) {
+      manejarError(res, error, 'Error al obtener los alumnos.');
     }
-},
-    actualizarCompleto: async (req, res) => {
-        try {
-            const resultado = await servicioAlumnos.actualizarCompleto(req.params.id, req.body);
-            exito(res, 'Alumno actualizado correctamente.', resultado);
-        } catch (err) {
-            error(res, 'Error al actualizar el alumno.', err.statusCode, err.message);
-        }
-    },
-    actualizarParcial: async (req, res) => {
-        try {
-            const resultado = await servicioAlumnos.actualizarParcial(req.params.id, req.body);
-            exito(res, 'Alumno actualizado parcialmente.', resultado);
-        } catch (err) {
-            error(res, 'Error en la actualización parcial.', err.statusCode, err.message);
-        }
-    },
-    actualizarEstado: async (req, res) => {
-        try {
-            if (!req.body.estado) {
-                return error(res, 'El campo "estado" es requerido.', 400);
-            }
-            const resultado = await servicioAlumnos.actualizarEstado(req.params.id, req.body.estado);
-            exito(res, 'Estado del alumno actualizado.', resultado);
-        } catch (err) {
-            error(res, 'Error al actualizar el estado.', err.statusCode, err.message);
-        }
-    },
-    eliminar: async (req, res) => {
+  },
+
+  crear: async (req, res) => {
+    try {
+      const alumnoCreado = await servicioAlumnos.crear(req.body);
+      res.status(201).json({ mensaje: 'Alumno creado exitosamente.', data: alumnoCreado });
+    } catch (error) {
+      manejarError(res, error, 'Error al crear el alumno.');
+    }
+  },
+  
+  obtenerPorId: async (req, res) => {
+    try {
+      const alumno = await servicioAlumnos.obtenerPorId(req.params.id);
+      res.status(200).json(alumno);
+    } catch (error) {
+      manejarError(res, error, 'Error al obtener el alumno.');
+    }
+  },
+
+  actualizarCompleto: async (req, res) => {
+    try {
+      const alumnoActualizado = await servicioAlumnos.actualizarCompleto(req.params.id, req.body);
+      res.status(200).json({ mensaje: 'Alumno actualizado correctamente.', data: alumnoActualizado });
+    } catch (error) {
+      manejarError(res, error, 'Error al actualizar el alumno.');
+    }
+  },
+
+  actualizarParcial: async (req, res) => {
+    try {
+      const alumnoActualizado = await servicioAlumnos.actualizarParcial(req.params.id, req.body);
+      res.status(200).json({ mensaje: 'Alumno actualizado parcialmente.', data: alumnoActualizado });
+    } catch (error) {
+      manejarError(res, error, 'Error en la actualización parcial.');
+    }
+  },
+  
+  eliminar: async (req, res) => {
+    try {
+      const resultado = await servicioAlumnos.eliminar(req.params.id);
+      res.status(200).json(resultado);
+    } catch (error) {
+      manejarError(res, error, 'Error al eliminar el alumno.');
+    }
+  },
+
+  // --- ACCIONES ESPECIALES ---
+  actualizarEstado: async (req, res) => {
+    try {
+      const { estado } = req.body;
+      if (!estado) return res.status(400).json({ mensaje: 'El campo "estado" es requerido.' });
+      const alumnoActualizado = await servicioAlumnos.actualizarEstado(req.params.id, estado);
+      res.status(200).json({ mensaje: 'Estado del alumno actualizado.', data: alumnoActualizado });
+    } catch (error) {
+      manejarError(res, error, 'Error al actualizar el estado.');
+    }
+  },
+
+  restaurar: async (req, res) => {
+    try {
+      const alumnoRestaurado = await servicioAlumnos.restaurar(req.params.id);
+      res.status(200).json({ mensaje: 'Alumno restaurado con éxito.', data: alumnoRestaurado });
+    } catch (error) {
+      manejarError(res, error, 'Error al restaurar el alumno.');
+    }
+  },
+  
+  // --- REPORTES Y BÚSQUEDAS ---
+  obtenerPorDni: async (req, res) => {
+    try {
+      const alumno = await servicioAlumnos.obtenerPorDni(req.params.dni);
+      res.status(200).json(alumno);
+    } catch (error) {
+      manejarError(res, error, 'Error al buscar por DNI.');
+    }
+  },
+
+  buscarPorNombre: async (req, res) => {
+    try {
+        const alumnos = await servicioAlumnos.buscarPorNombre(req.params.termino);
+        res.status(200).json(alumnos);
+    } catch (error) {
+        manejarError(res, error, 'Error al buscar alumnos.');
+    }
+  },
+
+  obtenerPorEstado: async (req, res) => {
+    try {
+        const alumnos = await servicioAlumnos.obtenerPorEstado(req.params.estado);
+        res.status(200).json(alumnos);
+    } catch (error) {
+        manejarError(res, error, 'Error al filtrar por estado.');
+    }
+  },
+  
+  obtenerPaginados: async (req, res) => {
+    try {
+      const pagina = parseInt(req.query.pagina || 1, 10);
+      const limite = parseInt(req.query.limite || 10, 10);
+      const resultado = await servicioAlumnos.obtenerPaginados(pagina, limite);
+      res.status(200).json(resultado);
+    } catch (error) {
+      manejarError(res, error, 'Error al obtener la paginación.');
+    }
+  },
+
+  obtenerEstadisticas: async (req, res) => {
+    try {
+      const estadisticas = await servicioAlumnos.obtenerEstadisticas();
+      res.status(200).json(estadisticas);
+    } catch (error) {
+      manejarError(res, error, 'Error al obtener las estadísticas.');
+    }
+  },
+  obtenerConContactoIncompleto: async (req, res) => {
   try {
-    const id = parseInt(req.params.id, 10);
-    const resultado = await servicioAlumnos.eliminar(id);
-    exito(res, resultado.mensaje);
-  } catch (err) {
-    console.error('❌ ERROR al eliminar alumno:', err.message);
-    error(res, 'Error al eliminar el alumno.', err.statusCode || 500, err.message);
+    const alumnos = await servicioAlumnos.obtenerConContactoIncompleto();
+    res.status(200).json(alumnos);
+  } catch (error) {
+    manejarError(res, error, 'Error al obtener alumnos con contacto incompleto.');
   }
 },
-    restaurar: async (req, res) => {
-        try {
-            const resultado = await servicioAlumnos.restaurar(req.params.id);
-            exito(res, 'Alumno restaurado correctamente.', resultado);
-        } catch (err) {
-            error(res, 'Error al restaurar el alumno.', err.statusCode, err.message);
-        }
-    },
 
-    // --- REPORTES Y BÚSQUEDAS ---
-    buscarPorNombre: async (req, res) => {
-        try {
-            const resultado = await servicioAlumnos.buscarPorNombre(req.params.termino);
-            exito(res, 'Búsqueda de alumnos completada.', resultado);
-        } catch (err) {
-            error(res, 'Error en la búsqueda.', err.statusCode, err.message);
-        }
-    },
-    obtenerPaginados: async (req, res) => {
-        try {
-            const { pagina = 1, limite = 10 } = req.query;
-            const resultado = await servicioAlumnos.obtenerPaginados(pagina, limite);
-            exito(res, 'Alumnos paginados obtenidos.', resultado);
-        } catch (err) {
-            error(res, 'Error al obtener alumnos paginados.', err.statusCode, err.message);
-        }
-    },
-    obtenerPorEstado: async (req, res) => {
-        try {
-            const resultado = await servicioAlumnos.obtenerPorEstado(req.params.estado);
-            exito(res, `Alumnos con estado "${req.params.estado}" obtenidos.`, resultado);
-        } catch (err) {
-            error(res, 'Error al filtrar por estado.', err.statusCode, err.message);
-        }
-    },
-    obtenerPorRangoInscripcion: async (req, res) => {
-        try {
-            const { inicio, fin } = req.query;
-            if (!inicio || !fin) {
-                return error(res, 'Los parámetros "inicio" y "fin" son requeridos (YYYY-MM-DD).', 400);
-            }
-            const resultado = await servicioAlumnos.obtenerPorRangoInscripcion(inicio, fin);
-            exito(res, 'Alumnos por rango de inscripción obtenidos.', resultado);
-        } catch (err) {
-            error(res, 'Error al filtrar por rango de inscripción.', err.statusCode, err.message);
-        }
-    },
-    obtenerPorEdad: async (req, res) => {
-        try {
-            const { minima = 0, maxima = 100 } = req.query;
-            const resultado = await servicioAlumnos.obtenerPorEdad(minima, maxima);
-            exito(res, 'Alumnos por rango de edad obtenidos.', resultado);
-        } catch (err) {
-            error(res, 'Error al filtrar por edad.', err.statusCode, err.message);
-        }
-    },
-    obtenerConContactoIncompleto: async (req, res) => {
-        try {
-            const resultado = await servicioAlumnos.obtenerConContactoIncompleto();
-            exito(res, 'Reporte de contacto incompleto obtenido.', resultado);
-        } catch (err) {
-            error(res, 'Error al generar el reporte.', err.statusCode, err.message);
-        }
-    },
-    obtenerEstadisticas: async (req, res) => {
-        try {
-            const resultado = await servicioAlumnos.obtenerEstadisticas();
-            exito(res, 'Estadísticas de alumnos obtenidas.', resultado);
-        } catch (err) {
-            error(res, 'Error al obtener estadísticas.', err.statusCode, err.message);
-        }
-    }
+obtenerPorEdad: async (req, res) => {
+  try {
+    const { edadMin, edadMax } = req.query;
+    const alumnos = await servicioAlumnos.obtenerPorEdad(edadMin, edadMax);
+    res.status(200).json(alumnos);
+  } catch (error) {
+    manejarError(res, error, 'Error al obtener alumnos por edad.');
+  }
+},
+
+obtenerPorRangoInscripcion: async (req, res) => {
+  try {
+    const { inicio, fin } = req.query;
+    const alumnos = await servicioAlumnos.obtenerPorRangoInscripcion(inicio, fin);
+    res.status(200).json(alumnos);
+  } catch (error) {
+    manejarError(res, error, 'Error al obtener alumnos por rango de inscripción.');
+  }
+},
+  // ... (SE puede agregar el resto de controladores para reportes de la misma manera)
 };
 
 module.exports = controladorAlumnos;
