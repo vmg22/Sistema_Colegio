@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import "../../styles/dashboard.css";
 import Button from "react-bootstrap/Button";
@@ -6,19 +6,51 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Row from "react-bootstrap/Row";
+import { getAlumnoDni } from "../../services/alumnosService";
+
 
 const Dashboard = () => {
   const [tipoConsulta, setConsulta] = useState("alumno");
   const [validated, setValidated] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [dniInput, setDniInput] = useState("");
+  const [alumno, setAlumno] = useState(null);
 
-  const handleSubmit = (event) => {
+
+    const setConsulta2 = (tipo) => {
+    setConsulta(tipo);
+    setAlumno(null);
+    setError('');
+    setDniInput('');
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
       event.stopPropagation();
+      setValidated(true);
+      return;
     }
 
-    setValidated(true);
+    setLoading(true); // Empezamos la carga
+    setError('');     // Limpiamos errores previos
+    setAlumno(null);   // Limpiamos el alumno previo
+
+    try {
+      const data = await getAlumnoDni(dniInput);
+      
+      setAlumno(data);
+      console.log(alumno)
+    } catch (err) {
+      // 4. Si hay un error, lo guardamos en el estado de error
+      setError('No se pudo encontrar un alumno con ese DNI.');
+      console.error("Error al traer alumno:", err);
+    } finally {
+      setLoading(false); // Terminamos la carga (tanto si hubo éxito como si no)
+    }
   };
 
   return (
@@ -81,11 +113,12 @@ const Dashboard = () => {
                     required
                     type="text"
                     placeholder="Ingrese DNI"
+                    onChange={(e)=> setDniInput(e.target.value) }
                   />
                 </InputGroup>
               </Form.Group>
             </Row>
-            <Row className="mb-3 d-flex justify-content-around">
+            {/* <Row className="mb-3 d-flex justify-content-around">
               <Form.Group as={Col} md="4" controlId="validationCustomPeriodo">
                 <Form.Label className="formLabel">Periodo</Form.Label>
                 <Form.Select required>
@@ -103,11 +136,12 @@ const Dashboard = () => {
                   <option value="2026">2026</option>
                 </Form.Select>
               </Form.Group>
-            </Row>
+            </Row> */}
             <div className="d-flex justify-content-center my-4">
               <Button
                 type="submit"
                 className="d-flex align-items-center gap-2 px-4 py-2 btnBuscar"
+                disabled={loading}
               >
                 <span
                   className="material-symbols-outlined"
@@ -184,6 +218,18 @@ const Dashboard = () => {
               </Button>
             </div>
           </Form>
+        )}
+      </div>
+
+      <div className="resultados-busqueda" style={{ textAlign: 'center', marginTop: '20px' }}>
+        {loading && <p>Cargando...</p>}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {alumno && (
+          <div>
+            <h4>Alumno Encontrado</h4>
+            <p><strong>Nombre:</strong> {alumno.nombre_alumno} {alumno.apellido_alumno}</p>
+            <p><strong>DNI:</strong> {alumno.dni_alumno}</p>
+          </div>
         )}
       </div>
     </div>
