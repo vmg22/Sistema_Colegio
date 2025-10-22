@@ -1,6 +1,6 @@
 // docente.queries.js
 const consultasDocentes = {
-  // Obtener todos los docentes activos
+  // Obtener todos los docentes activoss
   obtenerTodos: `
     SELECT 
       id_docente, 
