@@ -1,96 +1,34 @@
-/* Importar la fuente Inter */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-/* Importar sistema de botones */
-@import './buttons.css';
-
-
-
-
-/* Aplicar Inter a todo el proyecto */
-* {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-}
-
-/* Sobrescribir Bootstrap con tus especificaciones tipográficas */
+/* --- Variables de Color (basadas en tu prototipo) --- */
 :root {
-  /* Headings */
-  --h1-font-size: 3rem;        /* 48px */
-  --h2-font-size: 2.25rem;     /* 36px */
-  --h3-font-size: 1.875rem;    /* 30px */
-  --h4-font-size: 1.5rem;      /* 24px */
-  
-  /* Body text */
-  --body-font-size: 1rem;      /* 16px */
-  --small-font-size: 0.875rem; /* 14px */
-  --subheading-font-size: 1.25rem; /* 20px */
-  
-  /* Font weights */
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+  --blue-primary: #0D6EFD; /* Azul principal */
+  --blue-secondary: #2980b9; /* Azul de pestaña activa */
+  --green-add: #28a745;     /* Verde para "Agregar" */
+  --orange-edit: #f39c12;   /* Naranja para "Editar" */
+  --red-delete: #e74c3c;    /* Rojo para "Eliminar" */
+  --grey-text: #6c757d;    /* Texto de subtítulos */
+  --grey-light: #f8f9fa;  /* Fondo de página */
+  --grey-border: #dfe6e9; /* Bordes suaves */
+  --text-dark: #212529;   /* Texto principal */
 }
 
-/* Aplicar estilos globales */
+/* --- Reseteo Básico --- */
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-size: var(--body-font-size);
-  font-weight: var(--font-weight-normal);
-  line-height: 1.6;
-  color: #1a1a1a;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--grey-light);
+  color: var(--text-dark);
+  margin: 0;
 }
 
-/* Headings - Sobrescribir Bootstrap */
-h1, .h1 {
-  font-size: var(--h1-font-size) !important;
-  font-weight: var(--font-weight-bold) !important;
-  line-height: 1.2 !important;
-}
-
-h2, .h2 {
-  font-size: var(--h2-font-size) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  line-height: 1.3 !important;
-}
-
-h3, .h3 {
-  font-size: var(--h3-font-size) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  line-height: 1.4 !important;
-}
-
-h4, .h4 {
-  font-size: var(--h4-font-size) !important;
-  font-weight: var(--font-weight-medium) !important;
-  line-height: 1.5 !important;
-}
-
-/* Subheading */
-.subheading {
-  font-size: var(--subheading-font-size) !important;
-  font-weight: var(--font-weight-medium) !important;
-  line-height: 1.6 !important;
-}
-
-/* Body text */
-p, .text-body {
-  font-size: var(--body-font-size) !important;
-  font-weight: var(--font-weight-normal) !important;
-  line-height: 1.6 !important;
-}
-
-/* Small text */
-.small-text, small, .text-small {
-  font-size: var(--small-font-size) !important;
-  font-weight: var(--font-weight-normal) !important;
-  line-height: 1.6 !important;
-}
-
-/* Clases de utilidad para pesos de fuente */
-.fw-medium {
-  font-weight: var(--font-weight-medium) !important;
-}
-
-.fw-semibold {
-  font-weight: var(--font-weight-semibold) !important;
+button {
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }

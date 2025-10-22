@@ -3,7 +3,6 @@ import ButtonShowcase from './components/ui/Botones'
 import Dashboard from './pages/dashboard/Dashboard'
 import Header from './components/layout/Header'
 
-import { Admin } from './pages/admin/Admin';
 
 function App() {
 
@@ -13,7 +12,6 @@ function App() {
       
       <ButtonShowcase/>
       <Dashboard/>
- 
 
       <h1>hola matias</h1>
       
