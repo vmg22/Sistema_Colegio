@@ -3,7 +3,7 @@ const consultasAlumnos = {
   // ====================
   // CONSULTAS DE LECTURA
   // ====================
-  
+
   obtenerTodos: `
     SELECT 
       id_alumno, dni_alumno, nombre_alumno, apellido_alumno,
@@ -13,7 +13,7 @@ const consultasAlumnos = {
     WHERE deleted_at IS NULL
     ORDER BY apellido_alumno, nombre_alumno
   `,
-  
+
   obtenerPorId: `
     SELECT 
       id_alumno, dni_alumno, nombre_alumno, apellido_alumno,
@@ -22,7 +22,7 @@ const consultasAlumnos = {
     FROM alumno 
     WHERE id_alumno = ? AND deleted_at IS NULL
   `,
-  
+
   obtenerPorDni: `
     SELECT 
       id_alumno, dni_alumno, nombre_alumno, apellido_alumno,
@@ -30,7 +30,7 @@ const consultasAlumnos = {
     FROM alumno 
     WHERE dni_alumno = ? AND deleted_at IS NULL
   `,
-  
+
   obtenerPorEstado: `
     SELECT 
       id_alumno, dni_alumno, nombre_alumno, apellido_alumno, 
@@ -39,7 +39,7 @@ const consultasAlumnos = {
     WHERE estado = ? AND deleted_at IS NULL
     ORDER BY apellido_alumno, nombre_alumno
   `,
-  
+
   buscarPorNombre: `
     SELECT 
       id_alumno, dni_alumno, nombre_alumno, apellido_alumno, 
@@ -49,7 +49,7 @@ const consultasAlumnos = {
       AND deleted_at IS NULL
     ORDER BY apellido_alumno, nombre_alumno
   `,
-  
+
   obtenerPorRangoInscripcion: `
     SELECT 
       id_alumno, dni_alumno, nombre_alumno, apellido_alumno, 
@@ -59,11 +59,11 @@ const consultasAlumnos = {
       AND deleted_at IS NULL
     ORDER BY fecha_inscripcion DESC
   `,
-  
+
   // ====================
   // CONSULTAS DE CREACIÓN
   // ====================
-  
+
   crear: `
     INSERT INTO alumno (
       dni_alumno, nombre_alumno, apellido_alumno, 
@@ -71,11 +71,11 @@ const consultasAlumnos = {
       telefono, email, fecha_inscripcion, estado
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `,
-  
+
   // ====================
   // CONSULTAS DE ACTUALIZACIÓN
   // ====================
-  
+
   actualizarCompleto: `
     UPDATE alumno 
     SET 
@@ -85,7 +85,7 @@ const consultasAlumnos = {
       updated_at = CURRENT_TIMESTAMP
     WHERE id_alumno = ? AND deleted_at IS NULL
   `,
-  
+
   actualizarParcial: `
     UPDATE alumno 
     SET 
@@ -94,64 +94,63 @@ const consultasAlumnos = {
       updated_at = CURRENT_TIMESTAMP
     WHERE id_alumno = ? AND deleted_at IS NULL
   `,
-  
+
   actualizarEstado: `
     UPDATE alumno 
     SET estado = ?, updated_at = CURRENT_TIMESTAMP
     WHERE id_alumno = ? AND deleted_at IS NULL
   `,
-  
+
   // ====================
   // CONSULTAS DE ELIMINACIÓN
   // ====================
-  
- eliminarLogico: `
+
+  eliminarLogico: `
   UPDATE alumno
   SET deleted_at = CURRENT_TIMESTAMP, estado = 'inactivo'
   WHERE id_alumno = ? AND deleted_at IS NULL
 `,
 
-restaurar: `
+  restaurar: `
   UPDATE alumno
   SET deleted_at = NULL, estado = 'activo'
   WHERE id_alumno = ?
 `,
-  
+
   // ====================
   // CONSULTAS DE VERIFICACIÓN
   // ====================
-  
+
   verificarDniExistente: `
     SELECT id_alumno FROM alumno 
     WHERE dni_alumno = ? AND deleted_at IS NULL
   `,
-  
-verificarAlumnoExiste: `
-  SELECT id_alumno, estado, deleted_at FROM alumno 
-  WHERE id_alumno = ?
-`,
 
-  
   verificarAlumnoExiste: `
     SELECT id_alumno, estado FROM alumno 
     WHERE id_alumno = ? AND deleted_at IS NULL
   `,
+  // Para verificar si una fila existe en la BD
   verificarEmailExistente: `
     SELECT id_alumno FROM alumno
     WHERE email = ? AND deleted_at IS NULL
   `,
+  // Para verificar si una fila existe en la BD, sin importar si está "eliminada"
+  verificarFilaExiste: `
+  SELECT id_alumno FROM alumno 
+  WHERE id_alumno = ?
+`,
 
- 
   // ====================
   // CONSULTAS ESTADÍSTICAS
   // ====================
-  
+
   contarTotal: `
     SELECT COUNT(*) as total_alumnos
     FROM alumno 
     WHERE deleted_at IS NULL
   `,
-  
+
   contarPorEstado: `
     SELECT estado, COUNT(*) as cantidad
     FROM alumno 
@@ -159,7 +158,7 @@ verificarAlumnoExiste: `
     GROUP BY estado
     ORDER BY cantidad DESC
   `,
-  
+
   obtenerRecientes: `
     SELECT 
       id_alumno, dni_alumno, nombre_alumno, apellido_alumno, 
@@ -169,11 +168,11 @@ verificarAlumnoExiste: `
     ORDER BY created_at DESC
     LIMIT ?
   `,
-  
+
   // ====================
   // CONSULTAS ESPECIALIZADAS
   // ====================
-  
+
   obtenerPorEdad: `
     SELECT 
       id_alumno, dni_alumno, nombre_alumno, apellido_alumno,
@@ -184,7 +183,7 @@ verificarAlumnoExiste: `
       AND TIMESTAMPDIFF(YEAR, fecha_nacimiento, CURDATE()) BETWEEN ? AND ?
     ORDER BY edad, apellido_alumno
   `,
-  
+
   obtenerConContactoIncompleto: `
     SELECT 
       id_alumno, dni_alumno, nombre_alumno, apellido_alumno, 
@@ -194,11 +193,11 @@ verificarAlumnoExiste: `
       AND (telefono IS NULL OR telefono = '' OR email IS NULL OR email = '')
     ORDER BY apellido_alumno
   `,
-  
+
   // ====================
   // CONSULTAS PARA PAGINACIÓN
   // ====================
-  
+
   obtenerPaginados: `
     SELECT 
       id_alumno, dni_alumno, nombre_alumno, apellido_alumno,
@@ -208,12 +207,12 @@ verificarAlumnoExiste: `
     ORDER BY apellido_alumno, nombre_alumno
     LIMIT ? OFFSET ?
   `,
-  
+
   contarPaginados: `
     SELECT COUNT(*) as total
     FROM alumno 
     WHERE deleted_at IS NULL
-  `
+  `,
 };
 
 module.exports = consultasAlumnos;

@@ -70,7 +70,7 @@ const Dashboard = () => {
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <h5 className="tituloForm">Buscar Alumno</h5>
             <hr className="linea-separadora" />
-            <Row className="mb-3 d-flex justify-content-center">
+            <Row className="mb-3 d-flex justify-content-start " style={{marginLeft:'93px'}}> 
               <Form.Group as={Col} md="4" controlId="validationCustom01">
                 <Form.Label className="formLabel">DNI</Form.Label>
                 <InputGroup>

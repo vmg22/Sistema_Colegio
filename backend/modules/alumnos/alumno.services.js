@@ -25,7 +25,7 @@ const servicioAlumnos = {
     return rows;
   },
 
-  obtenerPorId: async (id) => _obtenerAlumnoPorId(id),
+  
 
   obtenerPorDni: async (dni) => {
     const [rows] = await pool.query(consultas.obtenerPorDni, [dni]);
