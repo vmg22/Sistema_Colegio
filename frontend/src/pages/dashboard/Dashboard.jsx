@@ -9,9 +9,6 @@ import Row from "react-bootstrap/Row";
 
 const Dashboard = () => {
   const [tipoConsulta, setConsulta] = useState("alumno");
-  const [resultado, setResultado] = useState(null);
-  const [cargando, setCargando] = useState(false);
-
   const [validated, setValidated] = useState(false);
 
   const handleSubmit = (event) => {
