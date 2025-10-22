@@ -2,6 +2,7 @@
 :root {
   --blue-primary: #0D6EFD; /* Azul principal */
   --blue-secondary: #2980b9; /* Azul de pestaña activa */
+  --blue-dark: #1e40af
   --green-add: #28a745;     /* Verde para "Agregar" */
   --orange-edit: #f39c12;   /* Naranja para "Editar" */
   --red-delete: #e74c3c;    /* Rojo para "Eliminar" */
@@ -32,3 +33,4 @@ button {
   font-weight: 500;
   transition: all 0.2s ease;
 }
+

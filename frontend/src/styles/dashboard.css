@@ -1,3 +1,143 @@
-*{
-    background-color: #F1F5F9;
+.nombre_vista {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h4 {
+  text-align: start;
+  color: #303F9F;
+  font-weight: bolder !important;
+}
+
+.search{
+    color: #303F9F;
+  font-size: 30px;
+  font-weight: bolder;
+}
+
+.contenedor-botones-dash {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-bottom: 20px;
+}
+
+.btn-tipo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 180px;
+  width: 306px;
+  padding: 20px;
+  border: none;
+  border-radius: 12px;
+  background-color: white;
+  color: #2563eb;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-tipo:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid #1d4ed8;
+}
+
+.btn-tipo:active {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid #1d4ed8;
+}
+
+.icono-contenedor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  background-color: #D6DBFF;
+  border-radius: 50%;
+  height: 90px;
+  width: 90px;
+}
+
+
+.person{
+  font-size: 60px;
+  color: #1e40af;
+}
+
+.icono-contenedor-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  background-color: #FDE1EB;
+  border-radius: 50%;
+  height: 90px;
+  width: 90px;
+}
+
+.group {
+  font-size: 60px;
+    color: #F50057;
+
+}
+
+.linea-separadora{
+  border: none;
+  height: 1px;
+  width: 100%;
+  background-color: #6b7280;
+  margin: 20px 0;
+}
+
+.btn-texto {
+  text-align: center;
+  font-weight: 600;
+  font-size: medium;
+  color: #303F9F;
+  padding-top: 12px;
+}
+
+.contenedor-busqueda{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  background-color: white;
+  width: 80%;
+  margin: 30px auto;
+}
+
+.formLabel{
+  color: #303F9F;
+  font-weight: 550;
+}
+
+.tituloForm{
+    color: #303F9F;
+  font-weight: 550;
+  margin-left: 15px;
+  margin-top: 15px;
+}
+
+.btnBuscar{
+  background-color:#1e40af;
+}
+.btnBuscar:hover{
+  background-color: rgb(16, 45, 141)
+}
+/* Responsive */
+@media (max-width: 768px) {
+  .contenedor-botones-dash {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn-tipo {
+    width: 100%;
+    max-width: 280px;
+  }
 }
