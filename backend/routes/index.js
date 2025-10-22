@@ -31,7 +31,7 @@ router.get("/", (req, res) => {
       tutores: "/api/v1/tutores",
       comunicaciones: "/api/v1/comunicaciones",
       auth: "/api/v1/auth",
-      asistencia: "/api/v1/asistencia",
+      asistencia: "/api/v1/asistencias",
     },
   });
 });
@@ -45,7 +45,7 @@ router.use("/anios-lectivos", anioLectivoRoutes);
 router.use("/tutores", tutorRoutes);
 router.use("/comunicaciones", comunicacionRoutes);
 router.use("/auth", authRoutes);
-router.use('/asistencia', asistenciaRoutes);
+router.use('/asistencias', asistenciaRoutes);
 
 // ... etc.
 
