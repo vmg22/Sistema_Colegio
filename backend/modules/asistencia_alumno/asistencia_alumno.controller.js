@@ -1,8 +1,6 @@
 const servicioAsistencia = require('./asistencia_alumno.services');
 const { exito, error } = require('../../utils/responses');
 
-
-// control de aisstencia por fecha materia y curso docente año // 
 const controladorAsistencia = {
   obtenerListaClase: async (req, res) => {
     try {
@@ -15,9 +13,9 @@ const controladorAsistencia = {
 
   obtenerReportePorAlumno: async (req, res) => {
     try {
-      const { id_alumno } = req.params;
+      const { dni_alumno } = req.params;
       const { anio_lectivo } = req.query;
-      const reporte = await servicioAsistencia.obtenerReportePorAlumno(id_alumno, anio_lectivo);
+      const reporte = await servicioAsistencia.obtenerReportePorAlumno(dni_alumno, anio_lectivo);
       exito(res, 'Reporte obtenido', reporte);
     } catch (err) {
       error(res, err.message, 400);
@@ -33,11 +31,13 @@ const controladorAsistencia = {
     }
   },
 
-  obtenerAsistenciaPorId: async (req, res) => {
+  obtenerAsistenciaPorDNI: async (req, res) => {
     try {
-      const asistencia = await servicioAsistencia.obtenerAsistenciaPorId(req.params.id);
-      if (!asistencia) return error(res, 'Registro no encontrado', 404);
-      exito(res, 'Registro obtenido', asistencia);
+      const { dni } = req.params;
+      const asistencia = await servicioAsistencia.obtenerAsistenciaPorDNI(dni);
+      if (!asistencia || asistencia.length === 0)
+        return error(res, 'No se encontraron registros para este alumno', 404);
+      exito(res, 'Asistencias obtenidas', asistencia);
     } catch (err) {
       error(res, err.message, 400);
     }

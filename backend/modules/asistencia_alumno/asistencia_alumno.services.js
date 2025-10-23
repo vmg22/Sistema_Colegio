@@ -57,9 +57,15 @@ exports.obtenerListaClase = async (filtros) => {
   return rows;
 };
 
-exports.obtenerReportePorAlumno = async (id_alumno, anio_lectivo) => {
-  if (!id_alumno || !anio_lectivo) throw new Error('id_alumno y anio_lectivo son obligatorios');
-  const [rows] = await db.query(consultas.reportePorAlumno, [id_alumno, anio_lectivo]);
+exports.obtenerReportePorAlumno = async (dni_alumno, anio_lectivo) => {
+  if (!dni_alumno || !anio_lectivo) throw new Error('dni_alumno y anio_lectivo son obligatorios');
+  const [rows] = await db.query(consultas.reportePorAlumno, [dni_alumno, anio_lectivo]);
+  return rows;
+};
+
+exports.obtenerAsistenciaPorDNI = async (dni_alumno) => {
+  if (!dni_alumno) throw new Error('dni_alumno es obligatorio');
+  const [rows] = await db.query(consultas.obtenerPorDNI, [dni_alumno]);
   return rows;
 };
 
