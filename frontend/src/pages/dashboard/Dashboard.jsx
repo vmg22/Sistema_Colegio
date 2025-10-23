@@ -91,7 +91,7 @@ const Dashboard = () => {
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <h5 className="tituloForm">Buscar Alumno</h5>
             <hr className="linea-separadora" />
-            <Row className="mb-3 d-flex justify-content-start" style={{ marginLeft: "93px" }}>
+            <Row className="mb-3 d-flex justify-content-around">
               <Form.Group as={Col} md="4" controlId="validationCustom01">
                 <Form.Label className="formLabel">DNI</Form.Label>
                 <InputGroup>
@@ -106,6 +106,14 @@ const Dashboard = () => {
                     onChange={(e) => setDniInput(e.target.value)}
                   />
                 </InputGroup>
+              </Form.Group>
+              <Form.Group as={Col} md="4">
+                <Form.Label className="formLabel">Año</Form.Label>
+                <Form.Select required>
+                  {[2025, 2026].map((a) => (
+                    <option key={a} value={a}>{a}</option>
+                  ))}
+                </Form.Select>
               </Form.Group>
             </Row>
 
