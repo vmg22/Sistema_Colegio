@@ -7,20 +7,27 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Row from "react-bootstrap/Row";
 import { getAlumnoDni } from "../../services/alumnosService";
+import {useConsultaStore} from "../../store/consultaStore"
+import Consulta from "../../components/ui/Consulta";
 
 const Dashboard = () => {
   const [tipoConsulta, setConsulta] = useState("alumno");
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [dniInput, setDniInput] = useState("");
   const [alumno, setAlumno] = useState(null);
+  const [dniInput, setDniInput] = useState(""); 
+  const [anioInput, setAnioInput] = useState("2025"); 
 
+//para manejar zustand
+const {setAlumnoDni, setAlumnoAnio} = useConsultaStore();
+  
   const setConsulta2 = (tipo) => {
     setConsulta(tipo);
     setAlumno(null);
     setError("");
     setDniInput("");
+    setAnioInput("");
   };
 
   const handleSubmit = async (event) => {
@@ -37,9 +44,14 @@ const Dashboard = () => {
       return;
     }
 
-    setLoading(true);
-    setError("");
-    setAlumno(null);
+    // almacenar en zustand
+    setAlumnoDni(dniInput);
+    setAlumnoAnio(anioInput);
+        // console.log(anioInput)
+    
+    setLoading(true);
+    setError("");
+    setAlumno(null);
 
     try {
       const data = await getAlumnoDni(dniInput);
@@ -109,7 +121,10 @@ const Dashboard = () => {
               </Form.Group>
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Año</Form.Label>
-                <Form.Select required>
+                <Form.Select 
+                value={anioInput}
+                onChange={(e) => setAnioInput(e.target.value)}
+                required>
                   {[2025, 2026].map((a) => (
                     <option key={a} value={a}>{a}</option>
                   ))}
@@ -130,9 +145,7 @@ const Dashboard = () => {
               </Button>
             </div>
           </Form>
-          
         ) : (
-          // Consulta por curso
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <h5 className="tituloForm">Buscar Curso</h5>
             <hr className="linea-separadora" />
@@ -191,23 +204,10 @@ const Dashboard = () => {
             </div>
           </Form>
         )}
+
       </div>
 
-      <div className="resultados-busqueda" style={{ textAlign: "center", marginTop: "20px" }}>
-        {loading && <p>Cargando...</p>}
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {alumno && (
-          <div>
-            <h4>Alumno Encontrado</h4>
-            <p>
-              <strong>Nombre:</strong> {alumno.nombre_alumno} {alumno.apellido_alumno}
-            </p>
-            <p>
-              <strong>DNI:</strong> {alumno.dni_alumno}
-            </p>
-          </div>
-        )}
-      </div>
+      
     </div>
   );
 };
