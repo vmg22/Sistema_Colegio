@@ -122,6 +122,7 @@ const Dashboard = () => {
               </Button>
             </div>
           </Form>
+          
         ) : (
           // Consulta por curso
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
