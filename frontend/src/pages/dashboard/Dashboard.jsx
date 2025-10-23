@@ -1,14 +1,13 @@
-// src/components/Dashboard/Dashboard.jsx
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import "../../styles/dashboard.css";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Row from "react-bootstrap/Row";
-import { getAlumnoDni } from "../../services/alumnosService";
-import {useConsultaStore} from "../../store/consultaStore"
-import Consulta from "../../components/ui/Consulta";
+import { useConsultaStore } from "../../store/consultaStore";
+import { getReporteAlumno } from "../../services/reportesService";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [tipoConsulta, setConsulta] = useState("alumno");
@@ -16,22 +15,27 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [alumno, setAlumno] = useState(null);
- 
+  const [dniInput, setDniInput] = useState("");
+  const [anioInput, setAnioInput] = useState("2025");
 
-//para manejar zustand
-const {setAlumnoDni, setAlumnoAnio} = useConsultaStore();
-  
+  const navigate = useNavigate();
+
+  // Zustand store
+  const { setAlumnoDni, setAlumnoAnio } = useConsultaStore();
+
   const setConsulta2 = (tipo) => {
     setConsulta(tipo);
     setAlumno(null);
     setError("");
     setDniInput("");
-    setAnioInput("");
+    setAnioInput("2025");
+    setValidated(false);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
+
     if (form.checkValidity() === false) {
       event.stopPropagation();
       setValidated(true);
@@ -43,22 +47,35 @@ const {setAlumnoDni, setAlumnoAnio} = useConsultaStore();
       return;
     }
 
-    // almacenar en zustand
+    // Guardar en Zustand
     setAlumnoDni(dniInput);
     setAlumnoAnio(anioInput);
-        // console.log(anioInput)
-    
-    setLoading(true);
-    setError("");
-    setAlumno(null);
+
+    setLoading(true);
+    setError("");
+    setAlumno(null);
 
     try {
-      const data = await getAlumnoDni(dniInput);
+      // 🔥 Llamamos al backend para obtener el reporte completo
+      const data = await getReporteAlumno(dniInput, anioInput);
+
+      if (!data) {
+        throw new Error("No se encontró información para ese alumno.");
+      }
+
+      console.log("✅ Reporte obtenido:", data);
       setAlumno(data);
-      console.log("Alumno obtenido:", data);
+
+      // Guardamos temporalmente en sessionStorage (por si recarga la página)
+      sessionStorage.setItem("reporteAlumno", JSON.stringify(data));
+
+      // Redirigimos a la vista de resultados
+      navigate("/consulta");
     } catch (err) {
-      setError("No se pudo encontrar un alumno con ese DNI.");
-      console.error("Error al traer alumno:", err);
+      console.error("❌ Error al traer reporte:", err);
+      setError(
+        err?.message || "No se pudo obtener el reporte del alumno."
+      );
     } finally {
       setLoading(false);
     }
@@ -66,8 +83,18 @@ const {setAlumnoDni, setAlumnoAnio} = useConsultaStore();
 
   return (
     <div className="nombre_vista">
-      <div style={{ display: "flex", alignItems: "center", marginLeft: "20px", gap: "10px" }}>
-        <span className="material-symbols-outlined search" style={{ marginRight: "15px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginLeft: "20px",
+          gap: "10px",
+        }}
+      >
+        <span
+          className="material-symbols-outlined search"
+          style={{ marginRight: "15px" }}
+        >
           search
         </span>
         <h4>Consulta Académica</h4>
@@ -79,6 +106,7 @@ const {setAlumnoDni, setAlumnoAnio} = useConsultaStore();
         <button
           className={`btn-tipo ${tipoConsulta === "alumno" ? "activo" : ""}`}
           onClick={() => setConsulta2("alumno")}
+          type="button"
         >
           <div className="icono-contenedor">
             <span className="material-symbols-outlined person">person</span>
@@ -89,6 +117,7 @@ const {setAlumnoDni, setAlumnoAnio} = useConsultaStore();
         <button
           className={`btn-tipo ${tipoConsulta === "curso" ? "activo" : ""}`}
           onClick={() => setConsulta2("curso")}
+          type="button"
         >
           <div className="icono-contenedor-group">
             <span className="material-symbols-outlined group">group</span>
@@ -114,22 +143,29 @@ const {setAlumnoDni, setAlumnoAnio} = useConsultaStore();
                     type="text"
                     placeholder="Ingrese DNI"
                     value={dniInput}
-                    onChange={(e) => setDniInput(e.target.value)}
+                    onChange={(e) => setDniInput(e.target.value.trim())}
                   />
                 </InputGroup>
               </Form.Group>
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Año</Form.Label>
-                <Form.Select 
-                value={anioInput}
-                onChange={(e) => setAnioInput(e.target.value)}
-                required>
+                <Form.Select
+                  value={anioInput}
+                  onChange={(e) => setAnioInput(e.target.value)}
+                  required
+                >
                   {[2025, 2026].map((a) => (
-                    <option key={a} value={a}>{a}</option>
+                    <option key={a} value={a}>
+                      {a}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Row>
+
+            {error && (
+              <p style={{ color: "red", textAlign: "center" }}>{error}</p>
+            )}
 
             <div className="d-flex justify-content-center my-4">
               <Button
@@ -137,7 +173,10 @@ const {setAlumnoDni, setAlumnoAnio} = useConsultaStore();
                 className="d-flex align-items-center gap-2 px-4 py-2 btnBuscar"
                 disabled={loading}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: "20px" }}
+                >
                   search
                 </span>
                 <span>{loading ? "Buscando..." : "Buscar Alumno"}</span>
@@ -145,6 +184,7 @@ const {setAlumnoDni, setAlumnoAnio} = useConsultaStore();
             </div>
           </Form>
         ) : (
+          // 🔸 Consulta por curso (a completar en el futuro)
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <h5 className="tituloForm">Buscar Curso</h5>
             <hr className="linea-separadora" />
@@ -154,7 +194,9 @@ const {setAlumnoDni, setAlumnoAnio} = useConsultaStore();
                 <Form.Select required>
                   <option value="">Seleccione curso</option>
                   {[1, 2, 3, 4, 5, 6].map((n) => (
-                    <option key={n} value={n}>{n}</option>
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
@@ -162,13 +204,19 @@ const {setAlumnoDni, setAlumnoAnio} = useConsultaStore();
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Materia</Form.Label>
                 <Form.Select required>
-                  {["", "Biologia", "Historia", "Matematicas", "Lengua", "Geografia", "Ingles"].map(
-                    (m) => (
-                      <option key={m} value={m}>
-                        {m || "Seleccione materia"}
-                      </option>
-                    )
-                  )}
+                  {[
+                    "",
+                    "Biologia",
+                    "Historia",
+                    "Matematicas",
+                    "Lengua",
+                    "Geografia",
+                    "Ingles",
+                  ].map((m) => (
+                    <option key={m} value={m}>
+                      {m || "Seleccione materia"}
+                    </option>
+                  ))}
                 </Form.Select>
               </Form.Group>
             </Row>
@@ -187,15 +235,23 @@ const {setAlumnoDni, setAlumnoAnio} = useConsultaStore();
                 <Form.Label className="formLabel">Año</Form.Label>
                 <Form.Select required>
                   {[2025, 2026].map((a) => (
-                    <option key={a} value={a}>{a}</option>
+                    <option key={a} value={a}>
+                      {a}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Row>
 
             <div className="d-flex justify-content-center my-4">
-              <Button type="submit" className="d-flex align-items-center gap-2 px-4 py-2 btnBuscar">
-                <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>
+              <Button
+                type="submit"
+                className="d-flex align-items-center gap-2 px-4 py-2 btnBuscar"
+              >
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: "20px" }}
+                >
                   search
                 </span>
                 <span>Buscar Curso</span>
@@ -203,10 +259,7 @@ const {setAlumnoDni, setAlumnoAnio} = useConsultaStore();
             </div>
           </Form>
         )}
-
       </div>
-
-      
     </div>
   );
 };

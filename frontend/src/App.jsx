@@ -10,6 +10,8 @@ import Materias from "./pages/crud/materias/Materias"
 import PlanEquivalencias from './pages/crud/plan/PlanEquivalencias'
 import Docentes from './pages/crud/docentes/Docentes'
 import NotFountPage from './pages/NotFoundPage'
+import Consulta from './components/ui/Consulta'
+
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
           <Route path="/materias" element={<Materias/>} />
           <Route path="/plan-de-equivalencias" element={<PlanEquivalencias />} />
           <Route path="/botones" element={<ButtonShowcase />} />
+          <Route path="/consulta" element={<Consulta/>} />
+
           <Route path="*" element={<NotFountPage/>} />
         </Routes>
       </BrowserRouter>
