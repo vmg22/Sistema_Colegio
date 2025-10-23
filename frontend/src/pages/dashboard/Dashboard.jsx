@@ -15,6 +15,7 @@ const Dashboard = () => {
   const [error, setError] = useState("");
   const [dniInput, setDniInput] = useState("");
   const [alumno, setAlumno] = useState(null);
+ 
 
   const setConsulta2 = (tipo) => {
     setConsulta(tipo);

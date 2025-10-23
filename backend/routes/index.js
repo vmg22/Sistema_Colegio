@@ -14,6 +14,9 @@ const comunicacionRoutes = require("../modules/comunicaciones/comunicacion.route
 const authRoutes = require("../modules/auth/auth.routes");
 
 const asistenciaRoutes = require('../modules/asistencia_alumno/asistencia_alumno.routes');
+//reporte para obtener el reporte del alumno por dni y año lectivo para el primer modulo dashboard 
+const reportesRoutes = require("../modules/reportes/reporte.routes");
+
 
 
 // Ruta principal de la API
@@ -46,6 +49,7 @@ router.use("/tutores", tutorRoutes);
 router.use("/comunicaciones", comunicacionRoutes);
 router.use("/auth", authRoutes);
 router.use('/asistencias', asistenciaRoutes);
+router.use("/reportes", reportesRoutes);
 
 // ... etc.
 
