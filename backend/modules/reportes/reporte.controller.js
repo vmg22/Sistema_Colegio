@@ -16,11 +16,13 @@ exports.getReporteAlumnoPorDNIyAnio = async (req, res) => {
       nombre: rows[0].nombre_alumno,
       apellido: rows[0].apellido_alumno,
       email: rows[0].email,
+      estado:rows[0].estado,
       curso: {
         id: rows[0].id_curso,
         nombre: rows[0].nombre_curso,
         division: rows[0].division,
         turno: rows[0].turno,
+        anio_curso: rows[0].anio_curso,
         anio_lectivo: rows[0].anio_lectivo,
       },
       materias: {},
