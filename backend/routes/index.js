@@ -14,6 +14,7 @@ const comunicacionRoutes = require("../modules/comunicaciones/comunicacion.route
 const authRoutes = require("../modules/auth/auth.routes");
 
 const asistenciaRoutes = require('../modules/asistencia_alumno/asistencia_alumno.routes');
+const alumnoTutorRoutes = require('../modules/alumno_tutor/alumno_tutor.routes');
 
 
 // Ruta principal de la API
@@ -32,6 +33,7 @@ router.get("/", (req, res) => {
       comunicaciones: "/api/v1/comunicaciones",
       auth: "/api/v1/auth",
       asistencia: "/api/v1/asistencia",
+     alumnoTutor: "/api/v1/alumno-tutor",
     },
   });
 });
@@ -46,6 +48,7 @@ router.use("/tutores", tutorRoutes);
 router.use("/comunicaciones", comunicacionRoutes);
 router.use("/auth", authRoutes);
 router.use('/asistencia', asistenciaRoutes);
+router.use('/alumno-tutor', alumnoTutorRoutes);
 
 // ... etc.
 
