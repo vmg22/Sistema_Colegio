@@ -13,7 +13,7 @@ const LinkCrud = ({showBackButton = false}) => {
         </div>
         <hr className="linea-separadora2" />
           {showBackButton && (
-        <BtnVolver/>
+        <BtnVolver rutaVolver={"/crud"} mostrarAgregar="true"/>
           )}
 
     </div>

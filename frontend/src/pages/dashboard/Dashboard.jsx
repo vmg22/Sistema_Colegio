@@ -8,6 +8,7 @@ import Row from "react-bootstrap/Row";
 import { useConsultaStore } from "../../store/consultaStore";
 import { getReporteAlumno } from "../../services/reportesService";
 import { useNavigate } from "react-router-dom";
+import LineaSeparadora from "../../components/ui/LineaSeparadora";
 
 const Dashboard = () => {
   const [tipoConsulta, setConsulta] = useState("alumno");
@@ -101,7 +102,7 @@ const Dashboard = () => {
         <h4>Consulta Académica</h4>
       </div>
 
-      <hr className="linea-separadora" />
+      <LineaSeparadora/>
 
       <div className="contenedor-botones-dash">
         <button
