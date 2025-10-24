@@ -15,6 +15,7 @@ const authRoutes = require("../modules/auth/auth.routes");
 const asistenciaRoutes = require('../modules/asistencia_alumno/asistencia_alumno.routes');
 const reportesAlumnoRoutes = require("../modules/reportesAlumnoDni/reporte.routes");
 const reportesCursoRoutes = require("../modules/reportesCurso/reporteCurso.routes");
+const alumnoTutorRoutes = require('../modules/alumno_tutor/alumno_tutor.routes');
 
 
 
@@ -34,9 +35,9 @@ router.use('/asistencias', asistenciaRoutes);
 //rutas de reportes
 router.use("/reportes/alumno", reportesAlumnoRoutes);
 router.use("/reportes/curso", reportesCursoRoutes);
-router.use('/alumno-tutor', alumnoTutorRoutes);
+router.use('/alumno_tutor', alumnoTutorRoutes);
 
-const alumnoTutorRoutes = require('../modules/alumno_tutor/alumno_tutor.routes');
+
 
 
 // Ruta principal de la API
