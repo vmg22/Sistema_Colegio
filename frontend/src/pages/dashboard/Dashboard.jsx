@@ -1,27 +1,85 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import "../../styles/dashboard.css";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Row from "react-bootstrap/Row";
+import { useConsultaStore } from "../../store/consultaStore";
+import { getReporteAlumno } from "../../services/reportesService";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [tipoConsulta, setConsulta] = useState("alumno");
-  const [resultado, setResultado] = useState(null);
-  const [cargando, setCargando] = useState(false);
-
   const [validated, setValidated] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  // const [alumno, setAlumno] = useState(null);
+  const [dniInput, setDniInput] = useState("");
+  const [anioInput, setAnioInput] = useState("2025");
 
-  const handleSubmit = (event) => {
+  const navigate = useNavigate();
+
+  // Zustand store
+  const { setAlumnoDni, setAlumnoAnio , setReporteAlumno} = useConsultaStore();
+
+  const setConsulta2 = (tipo) => {
+    setConsulta(tipo);
+    // setAlumno(null);
+    setError("");
+    setDniInput("");
+    setAnioInput("2025");
+    setValidated(false);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     const form = event.currentTarget;
+
     if (form.checkValidity() === false) {
-      event.preventDefault();
       event.stopPropagation();
+      setValidated(true);
+      return;
     }
 
-    setValidated(true);
+    if (!/^\d+$/.test(dniInput)) {
+      setError("El DNI debe contener solo números.");
+      return;
+    }
+
+    // Guardar en Zustand
+    setAlumnoDni(dniInput);
+    setAlumnoAnio(anioInput);
+
+    setLoading(true);
+    setError("");
+    // setAlumno(null);
+
+    try {
+      const data = await getReporteAlumno(dniInput, anioInput);
+
+      if (!data) {
+        throw new Error("No se encontró información para ese alumno.");
+      }
+
+      console.log("✅ Reporte obtenido:", data);
+      // setAlumno(data);
+      setReporteAlumno(data)
+
+
+      // Guardamos temporalmente en sessionStorage (por si recarga la página)
+      sessionStorage.setItem("reporteAlumno", JSON.stringify(data));
+
+      // Redirigimos a la vista de resultados
+      navigate("/consulta");
+    } catch (err) {
+      console.error("❌ Error al traer reporte:", err);
+      setError(
+        err?.message || "No se pudo obtener el reporte del alumno."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -35,7 +93,7 @@ const Dashboard = () => {
         }}
       >
         <span
-          class="material-symbols-outlined search"
+          className="material-symbols-outlined search"
           style={{ marginRight: "15px" }}
         >
           search
@@ -48,7 +106,8 @@ const Dashboard = () => {
       <div className="contenedor-botones-dash">
         <button
           className={`btn-tipo ${tipoConsulta === "alumno" ? "activo" : ""}`}
-          onClick={() => setConsulta("alumno")}
+          onClick={() => setConsulta2("alumno")}
+          type="button"
         >
           <div className="icono-contenedor">
             <span className="material-symbols-outlined person">person</span>
@@ -58,7 +117,8 @@ const Dashboard = () => {
 
         <button
           className={`btn-tipo ${tipoConsulta === "curso" ? "activo" : ""}`}
-          onClick={() => setConsulta("curso")}
+          onClick={() => setConsulta2("curso")}
+          type="button"
         >
           <div className="icono-contenedor-group">
             <span className="material-symbols-outlined group">group</span>
@@ -69,11 +129,10 @@ const Dashboard = () => {
 
       <div className="contenedor-busqueda">
         {tipoConsulta === "alumno" ? (
-          
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <h5 className="tituloForm">Buscar Alumno</h5>
             <hr className="linea-separadora" />
-            <Row className="mb-3 d-flex justify-content-center">
+            <Row className="mb-3 d-flex justify-content-around">
               <Form.Group as={Col} md="4" controlId="validationCustom01">
                 <Form.Label className="formLabel">DNI</Form.Label>
                 <InputGroup>
@@ -84,33 +143,36 @@ const Dashboard = () => {
                     required
                     type="text"
                     placeholder="Ingrese DNI"
+                    value={dniInput}
+                    onChange={(e) => setDniInput(e.target.value.trim())}
                   />
                 </InputGroup>
               </Form.Group>
-            </Row>
-            <Row className="mb-3 d-flex justify-content-around">
-              <Form.Group as={Col} md="4" controlId="validationCustomPeriodo">
-                <Form.Label className="formLabel">Periodo</Form.Label>
-                <Form.Select required>
-                  <option value="">Seleccione cuatrimestre</option>
-                  <option value="1">1er Cuatrimestre</option>
-                  <option value="2">2do Cuatrimestre</option>
-                </Form.Select>
-              </Form.Group>
-
-              <Form.Group as={Col} md="4" controlId="validationCustomPeriodo">
+              <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Año</Form.Label>
-                <Form.Select required>
-                  <option value="">Seleccione año</option>
-                  <option value="2025">2025</option>
-                  <option value="2026">2026</option>
+                <Form.Select
+                  value={anioInput}
+                  onChange={(e) => setAnioInput(e.target.value)}
+                  required
+                >
+                  {[2025, 2026].map((a) => (
+                    <option key={a} value={a}>
+                      {a}
+                    </option>
+                  ))}
                 </Form.Select>
               </Form.Group>
             </Row>
+
+            {error && (
+              <p style={{ color: "red", textAlign: "center" }}>{error}</p>
+            )}
+
             <div className="d-flex justify-content-center my-4">
               <Button
                 type="submit"
                 className="d-flex align-items-center gap-2 px-4 py-2 btnBuscar"
+                disabled={loading}
               >
                 <span
                   className="material-symbols-outlined"
@@ -118,43 +180,50 @@ const Dashboard = () => {
                 >
                   search
                 </span>
-                <span>Buscar Alumno</span>
+                <span>{loading ? "Buscando..." : "Buscar Alumno"}</span>
               </Button>
             </div>
           </Form>
         ) : (
+         
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <h5 className="tituloForm">Buscar Curso</h5>
             <hr className="linea-separadora" />
             <Row className="mb-3 d-flex justify-content-around">
-              <Form.Group as={Col} md="4" controlId="validationCustomPeriodo">
+              <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Curso</Form.Label>
                 <Form.Select required>
                   <option value="">Seleccione curso</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
+                  {[1, 2, 3, 4, 5, 6].map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
                 </Form.Select>
               </Form.Group>
 
-              <Form.Group as={Col} md="4" controlId="validationCustomPeriodo">
+              <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Materia</Form.Label>
                 <Form.Select required>
-                  <option value="">Seleccione materia</option>
-                  <option value="Biologia">Biologia</option>
-                  <option value="Historia">Historia</option>
-                  <option value="Matematicas">Matematicas</option>
-                  <option value="Lengua">Lengua</option>
-                  <option value="Geografia">Geografia</option>
-                  <option value="Ingles">Ingles</option>
+                  {[
+                    "",
+                    "Biologia",
+                    "Historia",
+                    "Matematicas",
+                    "Lengua",
+                    "Geografia",
+                    "Ingles",
+                  ].map((m) => (
+                    <option key={m} value={m}>
+                      {m || "Seleccione materia"}
+                    </option>
+                  ))}
                 </Form.Select>
               </Form.Group>
             </Row>
+
             <Row className="mb-3 d-flex justify-content-around">
-              <Form.Group as={Col} md="4" controlId="validationCustomPeriodo">
+              <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Periodo</Form.Label>
                 <Form.Select required>
                   <option value="">Seleccione cuatrimestre</option>
@@ -163,15 +232,18 @@ const Dashboard = () => {
                 </Form.Select>
               </Form.Group>
 
-              <Form.Group as={Col} md="4" controlId="validationCustomPeriodo">
+              <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Año</Form.Label>
                 <Form.Select required>
-                  <option value="">Seleccione año</option>
-                  <option value="2025">2025</option>
-                  <option value="2026">2026</option>
+                  {[2025, 2026].map((a) => (
+                    <option key={a} value={a}>
+                      {a}
+                    </option>
+                  ))}
                 </Form.Select>
               </Form.Group>
             </Row>
+
             <div className="d-flex justify-content-center my-4">
               <Button
                 type="submit"
@@ -192,4 +264,5 @@ const Dashboard = () => {
     </div>
   );
 };
+
 export default Dashboard;

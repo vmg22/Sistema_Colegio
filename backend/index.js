@@ -22,7 +22,7 @@ app.use(logger);
 app.get('/', (req, res) => {
   res.status(200).send(`
     <div style="font-family: Arial, sans-serif; text-align: center; padding: 40px; background-color: #f4f4f9; border-radius: 10px;">
-      <h1 style="color: #333;">🚀 Backend del Sistema Escolar SGGS</h1>
+      <h1 style="color: #333;"> Backend del Sistema Escolar SGGS</h1>
       <p style="color: #555; font-size: 1.2em;">¡El servidor está funcionando correctamente!</p>
       <p style="color: #777;">La API principal se encuentra en la ruta: <a href="/api/v1" style="color: #007bff; text-decoration: none;">/api/v1</a></p>
     </div>
@@ -48,9 +48,9 @@ app.use(manejadorErrores);
 async function iniciarSistema() {
   try {
     console.log('='.repeat(50));
-    console.log('🚀 INICIANDO SISTEMA ESCOLAR SGGS');
+    console.log(' INICIANDO SISTEMA ESCOLAR SGGS');
     
-    console.log('🔌 Verificando conexión a la base de datos...');
+    console.log(' Verificando conexión a la base de datos...');
     const connection = await pool.getConnection();
     
     console.log('   ✅ Conexión a BD exitosa.'); 
@@ -61,8 +61,8 @@ async function iniciarSistema() {
     app.listen(PORT, () => {
       console.log('='.repeat(50));
       console.log('   ✅ SISTEMA INICIADO CORRECTAMENTE');
-      console.log(`   📡 Servidor escuchando en: http://localhost:${PORT}`);
-      console.log(`   ✨ API disponible en: http://localhost:${PORT}/api/v1`);
+      console.log(`    Servidor escuchando en: http://localhost:${PORT}`);
+      console.log(`    API disponible en: http://localhost:${PORT}/api/v1`);
       console.log('='.repeat(50));
     });
     
@@ -75,7 +75,7 @@ async function iniciarSistema() {
 
 // --- MANEJO ELEGANTE DE CIERRE ---
 const cerrarSistema = async () => {
-  console.log('\n🔌 Cerrando conexiones y terminando el sistema...');
+  console.log('\n Cerrando conexiones y terminando el sistema...');
   try {
     await pool.end();
     console.log('   ✅ Pool de conexiones cerrado.');

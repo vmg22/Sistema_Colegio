@@ -6,7 +6,7 @@ UPDATE asistencia_alumno
 SET deleted_at = NOW() 
 WHERE id_asistencia = ?`,
 
-  // Reporte de Asistencia por Alumno (Detallado por Materia)
+  // Reporte de Asistencia por Alumno (Detallado por Materia) /// modificar consulta para que la busqueda sea por DNI 
   reporteAsistenciaPorAlumno: `
 SELECT 
     m.nombre AS materia,
@@ -95,7 +95,84 @@ WHERE
     AND ac.anio_lectivo = ? 
     AND a.deleted_at IS NULL
 ORDER BY 
-    a.apellido_alumno, a.nombre_alumno; `
- 
+    a.apellido_alumno, a.nombre_alumno; `,
+
+    
+    consultaAlumnoPorDNIyAnioLectivo: `
+      SELECT
+    JSON_OBJECT(
+        'datosAlumno', JSON_OBJECT(
+            'id_alumno', a.id_alumno,
+            'nombre_alumno', a.nombre_alumno,
+            'apellido_alumno', a.apellido_alumno,
+            'dni_alumno', a.dni_alumno,
+            'email', a.email
+        ),
+        'datosCurso', JSON_OBJECT(
+            'nombre_curso', c.nombre,
+            'division', c.division,
+            'turno', c.turno,
+            'anio_lectivo', al.anio
+        ),
+        'rendimiento', (
+            SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'materia', m.nombre,
+                    'estadoFinal', ame.estado,
+                    'calificacionFinal', ame.calificacion_final,
+                    'calificaciones', COALESCE(cal_agrupadas.lista_calificaciones, JSON_ARRAY()),
+                    'asistencias', COALESCE(asi_agrupadas.resumen_asistencias, JSON_OBJECT())
+                )
+            )
+            FROM
+                alumno_materia_estado ame
+            JOIN
+                materia m ON ame.id_materia = m.id_materia
+            LEFT JOIN (
+                SELECT
+                    id_materia,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'cuatrimestre', cuatrimestre,
+                            'nota1', nota_1,
+                            'nota2', nota_2,
+                            'nota3', nota_3,
+                            'promedio', promedio_cuatrimestre
+                        )
+                    ) AS lista_calificaciones
+                FROM calificacion
+                WHERE id_alumno = a.id_alumno AND anio_lectivo = al.anio
+                GROUP BY id_materia
+            ) AS cal_agrupadas ON m.id_materia = cal_agrupadas.id_materia
+            LEFT JOIN (
+                SELECT
+                    id_materia,
+                    JSON_OBJECT(
+                        'presentes', COUNT(CASE WHEN estado = 'presente' THEN 1 END),
+                        'ausentes', COUNT(CASE WHEN estado = 'ausente' THEN 1 END),
+                        'tardes', COUNT(CASE WHEN estado = 'tarde' THEN 1 END),
+                        'justificadas', COUNT(CASE WHEN estado = 'justificada' THEN 1 END),
+                        'total_clases', COUNT(id_asistencia)
+                    ) AS resumen_asistencias
+                FROM asistencia_alumno
+                WHERE id_alumno = a.id_alumno AND anio_lectivo = al.anio
+                GROUP BY id_materia
+            ) AS asi_agrupadas ON m.id_materia = asi_agrupadas.id_materia
+            WHERE
+                ame.id_alumno = a.id_alumno 
+                AND ame.anio_lectivo = al.anio
+        )
+    ) AS reporte_academico
+FROM 
+    alumno a
+JOIN 
+    alumno_curso ac ON a.id_alumno = ac.id_alumno
+JOIN 
+    curso c ON ac.id_curso = c.id_curso
+JOIN 
+    anio_lectivo al ON ac.anio_lectivo = al.anio
+WHERE 
+    a.dni_alumno = ? AND al.anio = ? `
+
 
 };

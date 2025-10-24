@@ -4,6 +4,19 @@ const consultasAsistencia = {
     SELECT * FROM asistencia_alumno 
     WHERE id_asistencia = ? AND deleted_at IS NULL
   `,
+  obtenerPorDNI: `
+    SELECT 
+      aa.*, 
+      m.nombre AS materia, 
+      c.nombre AS curso
+    FROM asistencia_alumno aa
+    JOIN alumno a ON aa.id_alumno = a.id_alumno
+    LEFT JOIN materia m ON aa.id_materia = m.id_materia
+    LEFT JOIN curso c ON aa.id_curso = c.id_curso
+    WHERE a.dni_alumno = ? 
+      AND aa.deleted_at IS NULL
+    ORDER BY aa.fecha_clase DESC
+  `,
 
   crear: `
     INSERT INTO asistencia_alumno (
@@ -65,19 +78,25 @@ const consultasAsistencia = {
   `,
 
   reportePorAlumno: `
-    SELECT 
-      m.nombre AS materia,
-      COUNT(CASE WHEN aa.estado = 'presente' THEN 1 END) AS presentes,
-      COUNT(CASE WHEN aa.estado = 'ausente' THEN 1 END) AS ausentes,
-      COUNT(CASE WHEN aa.estado = 'tarde' THEN 1 END) AS tardes,
-      COUNT(CASE WHEN aa.estado = 'justificada' THEN 1 END) AS justificadas,
-      (COUNT(CASE WHEN aa.estado IN ('presente','tarde','justificada') THEN 1 END)*100)/COUNT(*) AS porcentaje_asistencia,
-      COUNT(*) AS total_clases_registradas
-    FROM asistencia_alumno aa
-    JOIN materia m ON aa.id_materia = m.id_materia
-    WHERE aa.id_alumno = ? AND aa.anio_lectivo = ? AND aa.deleted_at IS NULL
-    GROUP BY m.id_materia, m.nombre
-    ORDER BY m.nombre
+SELECT
+  m.nombre AS materia,
+  COUNT(CASE WHEN aa.estado = 'presente' THEN 1 END) AS presentes,
+  COUNT(CASE WHEN aa.estado = 'ausente' THEN 1 END) AS ausentes,
+  COUNT(CASE WHEN aa.estado = 'tarde' THEN 1 END) AS tardes,
+  COUNT(CASE WHEN aa.estado = 'justificada' THEN 1 END) AS justificadas,
+  (COUNT(CASE WHEN aa.estado IN ('presente', 'tarde', 'justificada') THEN 1 END) * 100) / COUNT(*) AS porcentaje_asistencia,
+  COUNT(*) AS total_clases_registradas
+FROM asistencia_alumno aa
+JOIN materia m ON aa.id_materia = m.id_materia
+JOIN alumno a ON aa.id_alumno = a.id_alumno
+WHERE a.dni_alumno = ? 
+  AND aa.anio_lectivo = ?
+  AND aa.deleted_at IS NULL
+GROUP BY
+  m.id_materia,
+  m.nombre
+ORDER BY
+  m.nombre;
   `,
 
   upsertMasivo: `
@@ -90,7 +109,8 @@ const consultasAsistencia = {
       estado = VALUES(estado), 
       updated_at = CURRENT_TIMESTAMP,
       deleted_at = NULL
-  `
+  `,
 };
+
 
 module.exports = consultasAsistencia;
