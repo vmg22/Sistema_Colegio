@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-// Importar los enrutadores de cada módulo
-// --- IMPORTACIÓN DE MÓDULOS
+
+//  IMPORTACIÓN DE MÓDULOS
 const alumnoRoutes = require("../modules/alumnos/alumno.routes");
 const docenteRoutes = require("../modules/docentes/docente.routes");
 const cursoRoutes = require("../modules/cursos/curso.routes");
@@ -12,10 +12,28 @@ const anioLectivoRoutes = require("../modules/anios-lectivos/anio.routes");
 const tutorRoutes = require("../modules/tutores/tutor.routes");
 const comunicacionRoutes = require("../modules/comunicaciones/comunicacion.routes");
 const authRoutes = require("../modules/auth/auth.routes");
-
 const asistenciaRoutes = require('../modules/asistencia_alumno/asistencia_alumno.routes');
-//reporte para obtener el reporte del alumno por dni y año lectivo para el primer modulo dashboard 
-const reportesRoutes = require("../modules/reportes/reporte.routes");
+const reportesAlumnoRoutes = require("../modules/reportesAlumnoDni/reporte.routes");
+const reportesCursoRoutes = require("../modules/reportesCurso/reporteCurso.routes");
+
+
+
+
+// Registrar rutas de los módulos
+router.use("/alumnos", alumnoRoutes);
+router.use("/docentes", docenteRoutes);
+router.use("/cursos", cursoRoutes);
+router.use("/materias", materiaRoutes);
+router.use("/calificaciones", calificacionRoutes);
+router.use("/anios-lectivos", anioLectivoRoutes);
+router.use("/tutores", tutorRoutes);
+router.use("/comunicaciones", comunicacionRoutes);
+router.use("/auth", authRoutes);
+router.use('/asistencias', asistenciaRoutes);
+
+//rutas de reportes
+router.use("/reportes/alumno", reportesAlumnoRoutes);
+router.use("/reportes/curso", reportesCursoRoutes);
 
 
 
@@ -35,27 +53,12 @@ router.get("/", (req, res) => {
       comunicaciones: "/api/v1/comunicaciones",
       auth: "/api/v1/auth",
       asistencia: "/api/v1/asistencias",
+      reportesAlumno: "/api/v1/reportes/alumno?dni_alumno=X&anio_lectivo=Y",
+      reportesCurso: "/api/v1/reportes/curso?id_curso=X&id_materia=Y&anio_lectivo=Z&cuatrimestre=N"
     },
   });
 });
 
-router.use("/alumnos", alumnoRoutes);
-router.use("/docentes", docenteRoutes);
-router.use("/cursos", cursoRoutes);
-router.use("/materias", materiaRoutes);
-router.use("/calificaciones", calificacionRoutes);
-router.use("/anios-lectivos", anioLectivoRoutes);
-router.use("/tutores", tutorRoutes);
-router.use("/comunicaciones", comunicacionRoutes);
-router.use("/auth", authRoutes);
-router.use('/asistencias', asistenciaRoutes);
-router.use("/reportes", reportesRoutes);
 
-// ... etc.
-
-// No olvides tus rutas de diagnóstico
-// const { healthRouter, diagnosticoRouter } = require('./system.routes'); // Idea: Moverlas a su propio archivo
-// router.use('/health', healthRouter);
-// router.use('/diagnostico', diagnosticoRouter);
 
 module.exports = router;
