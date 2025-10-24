@@ -1,13 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const BtnVolver = () => {
+const BtnVolver = ({rutaVolver, mostrarAgregar = false}) => {
   return (
     <div
       className="d-flex align-items-center justify-content-between"
       style={{ padding: "20px " }}
     >
-      <Link to="/crud" style={{ textDecoration: "none" }}>
+      <Link to={rutaVolver} style={{ textDecoration: "none" }}>
         <button
           className="d-flex align-items-center gap-2"
           style={{
@@ -29,7 +29,8 @@ const BtnVolver = () => {
         </button>
       </Link>
 
-      <button
+{mostrarAgregar && (
+<button
         className=" btn btn-success d-flex align-items-center gap-2 px-4 py-2"
         style={{
           border: "none",
@@ -40,6 +41,8 @@ const BtnVolver = () => {
         <i className="fas fa-plus"></i>
         <span>Agregar</span>
       </button>
+)}
+      
     </div>
   );
 };

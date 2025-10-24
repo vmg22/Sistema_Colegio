@@ -1,7 +1,5 @@
 /* === CONTENEDOR GENERAL === */
 .consulta-container {
-  background-color: #f4f8fc;
-  padding: 30px;
   border-radius: 12px;
   min-height: 80vh;
 }
@@ -9,12 +7,12 @@
 /* === TÍTULOS Y ENCABEZADOS === */
 .consulta-container h4 {
   font-weight: 600;
-  color: #1a2b6d;
+  color: #303F9F;
 }
 
 .consulta-container .card-title {
   font-weight: 600;
-  color: #1a2b6d;
+  color: #303F9F;
 }
 
 /* === TARJETAS === */
