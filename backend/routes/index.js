@@ -32,7 +32,7 @@ router.use("/auth", authRoutes);
 router.use('/asistencias', asistenciaRoutes);
 
 //rutas de reportes
-router.use("/reportes/alumno", reportesAlumnoRoutes);
+router.use("/reportes/alumnos", reportesAlumnoRoutes);
 router.use("/reportes/curso", reportesCursoRoutes);
 
 

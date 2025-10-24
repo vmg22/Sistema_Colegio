@@ -10,6 +10,7 @@ import HeaderPages from "../../../components/ui/HeaderPages";
 import BtnVolver from "../../../components/ui/BtnVolver";
 import LineaSeparadora from "../../../components/ui/LineaSeparadora";
 import DivHeaderInfo from "../../../components/alumno/DivHeaderInfo";
+import DivBodyInfo from "../../../components/alumno/DivBodyInfo";
 
 const Consulta = () => {
   const { reporteAlumno } = useConsultaStore();
@@ -66,7 +67,7 @@ const Consulta = () => {
       <HeaderPages titulo="Informacion Alumno" icono="search"/>
       <LineaSeparadora/>
       <DivHeaderInfo/>
-      
+      <DivBodyInfo/>
 
       {/* 📘 Materias y notas (¡Descomentado!) */}
       {/* <Card className="mb-4 sombra-card">
@@ -104,44 +105,7 @@ const Consulta = () => {
             <p>No hay materias registradas para este año.</p>
           )}
         </Card.Body>
-      </Card> */}
-
-      {/* 👨‍👩‍👧 Tutores (¡Descomentado!) */}
-      {/* <Card className="mb-4 sombra-card">
-        <Card.Body>
-          <Card.Title className="mb-3">Tutores del Alumno</Card.Title>
-          {tutores && tutores.length > 0 ? (
-            <Table bordered hover responsive>
-              <thead className="table-success">
-                <tr>
-                  <th>Nombre</th>
-                  <th>Parentesco</th>
-                  <th>Teléfono</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tutores.map((t, i) => (
-                  <tr key={i}>
-                    <td>{t.nombre}</td>
-                    <td>{t.parentesco}</td>
-                    <td>{t.telefono}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          ) : (
-            <p>No hay tutores registrados.</p>
-          )}
-        </Card.Body>
-      </Card> */}
-
-      <div className="text-center mt-4">
-        <Link to={"/"}>
-          <Button variant="secondary" className="px-4">
-            Volver al Panel
-          </Button>
-        </Link>
-      </div>
+</Card> */}                                 
     </div>
   );
 };
