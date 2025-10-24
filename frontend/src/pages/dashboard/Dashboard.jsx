@@ -14,18 +14,18 @@ const Dashboard = () => {
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [alumno, setAlumno] = useState(null);
+  // const [alumno, setAlumno] = useState(null);
   const [dniInput, setDniInput] = useState("");
   const [anioInput, setAnioInput] = useState("2025");
 
   const navigate = useNavigate();
 
   // Zustand store
-  const { setAlumnoDni, setAlumnoAnio } = useConsultaStore();
+  const { setAlumnoDni, setAlumnoAnio , setReporteAlumno} = useConsultaStore();
 
   const setConsulta2 = (tipo) => {
     setConsulta(tipo);
-    setAlumno(null);
+    // setAlumno(null);
     setError("");
     setDniInput("");
     setAnioInput("2025");
@@ -53,10 +53,9 @@ const Dashboard = () => {
 
     setLoading(true);
     setError("");
-    setAlumno(null);
+    // setAlumno(null);
 
     try {
-      // 🔥 Llamamos al backend para obtener el reporte completo
       const data = await getReporteAlumno(dniInput, anioInput);
 
       if (!data) {
@@ -64,7 +63,9 @@ const Dashboard = () => {
       }
 
       console.log("✅ Reporte obtenido:", data);
-      setAlumno(data);
+      // setAlumno(data);
+      setReporteAlumno(data)
+
 
       // Guardamos temporalmente en sessionStorage (por si recarga la página)
       sessionStorage.setItem("reporteAlumno", JSON.stringify(data));
@@ -184,7 +185,7 @@ const Dashboard = () => {
             </div>
           </Form>
         ) : (
-          // 🔸 Consulta por curso (a completar en el futuro)
+         
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <h5 className="tituloForm">Buscar Curso</h5>
             <hr className="linea-separadora" />
