@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import "../../styles/dashboard.css";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -6,50 +6,89 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Row from "react-bootstrap/Row";
 import { useConsultaStore } from "../../store/consultaStore";
-import { getReporteAlumno } from "../../services/reportesService";
+import { getReporteAlumno, getReporteCurso } from "../../services/reportesService";
 import { useNavigate } from "react-router-dom";
 import LineaSeparadora from "../../components/ui/LineaSeparadora";
 import { getMaterias } from "../../services/materiasServices";
+import { getCursos } from "../../services/cursosService";
+import { getAniosLectivos } from "../../services/aniosServices";
 
 const Dashboard = () => {
   const [tipoConsulta, setConsulta] = useState("alumno");
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  // const [alumno, setAlumno] = useState(null);
   const [dniInput, setDniInput] = useState("");
   const [anioInput, setAnioInput] = useState("2025");
-  const [materias, setMaterias] = useState([]); // tomamos los nombres de las materias para generar un menu dinámico
+  const [materias, setMaterias] = useState([]);
+  const [cursos, setCursos] = useState([]);
+  const [anios, setAnios] = useState([]);
+
+  // Estados para la selección del formulario de curso
+  const [selectedCurso, setSelectedCurso] = useState("");
+  const [selectedMateria, setSelectedMateria] = useState("");
+  const [selectedPeriodo, setSelectedPeriodo] = useState("");
+  const [selectedAnio, setSelectedAnio] = useState("");
 
   const navigate = useNavigate();
+  
   // Zustand store
-  const { setAlumnoDni, setAlumnoAnio, setReporteAlumno } = useConsultaStore();
+  const { setAlumnoDni, setAlumnoAnio, setReporteAlumno, setReporteCurso } =
+    useConsultaStore();
 
   useEffect(() => {
-    const cargarMaterias = async () => {
+    const cargarDatos = async () => {
       try {
-        const data = await getMaterias(); // data ES EL ARRAY [Array(10)]
-        console.log("Datos recibidos de la API:", data);
-        
-        // --- ESTA ES LA CORRECCIÓN ---
-        setMaterias(data); // Guarda el array directamente
-        // -----------------------------
+        const [dataMaterias, dataCursos, dataAnios] = await Promise.all([
+          getMaterias(),
+          getCursos(),
+          getAniosLectivos(),
+        ]);
+        console.log(
+          "Datos recibidos de la API:",
+          dataMaterias,
+          dataCursos,
+          dataAnios
+        );
 
+        setMaterias(dataMaterias);
+        setCursos(dataCursos);
+        setAnios(dataAnios);
       } catch (error) {
         console.error("Error al cargar materias:", error);
       }
     };
-    cargarMaterias();
+    cargarDatos();
   }, []);
+
+  // 🎯 FILTRADO DE MATERIAS según el curso seleccionado
+  const materiasFiltradas = useMemo(() => {
+    if (!selectedCurso) return [];
+    
+    // Buscar el curso seleccionado para obtener su año
+    const cursoActual = cursos.find(c => c.id_curso === parseInt(selectedCurso));
+    
+    if (!cursoActual) return [];
+    
+    // Filtrar materias que coincidan con el nivel del curso y estén activas
+    return materias.filter(materia => 
+      materia.nivel === cursoActual.anio && 
+      materia.estado === 'activa'
+    );
+  }, [selectedCurso, cursos, materias]);
 
   const setConsulta2 = (tipo) => {
     setConsulta(tipo);
-
-    // setAlumno(null);
     setError("");
     setDniInput("");
     setAnioInput("2025");
     setValidated(false);
+    
+    // Resetear selecciones de curso cuando cambia el tipo de consulta
+    setSelectedCurso("");
+    setSelectedMateria("");
+    setSelectedPeriodo("");
+    setSelectedAnio("");
   };
 
   const handleSubmit = async (event) => {
@@ -73,7 +112,6 @@ const Dashboard = () => {
 
     setLoading(true);
     setError("");
-    // setAlumno(null);
 
     try {
       const data = await getReporteAlumno(dniInput, anioInput);
@@ -83,7 +121,6 @@ const Dashboard = () => {
       }
 
       console.log("✅ Reporte obtenido:", data);
-      // setAlumno(data);
       setReporteAlumno(data);
 
       // Guardamos temporalmente en sessionStorage (por si recarga la página)
@@ -97,8 +134,8 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-      
   };
+
   const handleSubmitCurso = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -109,10 +146,48 @@ const Dashboard = () => {
       return;
     }
 
-    // Aquí irá tu lógica para buscar el curso
-    console.log("Buscando curso...");
+    console.log("Buscando curso con:", {
+      id_curso: selectedCurso,
+      id_materia: selectedMateria,
+      anio_lectivo: selectedAnio,
+      cuatrimestre: selectedPeriodo,
+    });
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const dataReporte = await getReporteCurso(
+        selectedCurso,
+        selectedMateria,
+        selectedAnio,
+        selectedPeriodo
+      );
+
+      console.log("✅ Reporte de curso obtenido:", dataReporte);
+
+      // Guardar en Zustand
+      setReporteCurso(dataReporte);
+
+      // Guardar en sessionStorage (para recargas)
+      sessionStorage.setItem("reporteCurso", JSON.stringify(dataReporte));
+
+      // Navegar a la página de resultados
+      navigate("/consulta-curso");
+    } catch (err) {
+      console.error("❌ Error al traer reporte de curso:", err);
+      setError(err.message || "No se pudo obtener el reporte del curso.");
+    } finally {
+      setLoading(false);
+    }
   };
-  
+
+  // 🎯 Resetear materia cuando cambia el curso
+  const handleCursoChange = (e) => {
+    setSelectedCurso(e.target.value);
+    setSelectedMateria(""); // Limpiar la materia seleccionada
+  };
+
   return (
     <div className="nombre_vista">
       <div
@@ -220,67 +295,94 @@ const Dashboard = () => {
             <h5 className="tituloForm">Buscar Curso</h5>
             <hr className="linea-separadora" />
             <Row className="mb-3 d-flex justify-content-around">
+              {/* 🎯 CURSO (DINÁMICO) */}
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Curso</Form.Label>
-                <Form.Select required>
+                <Form.Select
+                  required
+                  value={selectedCurso}
+                  onChange={handleCursoChange}
+                >
                   <option value="">Seleccione curso</option>
-                  {[1, 2, 3, 4, 5, 6].map((n) => (
-                    <option key={n} value={n}>
-                      {n}
+                  {cursos?.map((curso) => (
+                    <option key={curso.id_curso} value={curso.id_curso}>
+                      {curso.nombre} - {curso.anio}° {curso.division} ({curso.turno})
                     </option>
                   ))}
                 </Form.Select>
               </Form.Group>
 
+              {/* 🎯 MATERIA (FILTRADA DINÁMICAMENTE) */}
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Materia</Form.Label>
-                <Form.Select required>
-                  {/* Opción por defecto */}
-                  <option value="">Seleccione materia</option>
-
-                  {/* Mapeamos el estado 'materias'.
-      Asumo que tu API devuelve algo como:
-      [
-        { "id_materia": 1, "nombre": "Biologia" },
-        { "id_materia": 2, "nombre": "Historia" },
-        ...
-      ]
-    */}
-                  {materias.map((materia) => (
+                <Form.Select
+                  required
+                  value={selectedMateria}
+                  onChange={(e) => setSelectedMateria(e.target.value)}
+                  disabled={!selectedCurso}
+                >
+                  <option value="">
+                    {!selectedCurso 
+                      ? "Primero seleccione un curso" 
+                      : "Seleccione materia"}
+                  </option>
+                  {materiasFiltradas?.map((materia) => (
                     <option key={materia.id_materia} value={materia.id_materia}>
                       {materia.nombre}
                     </option>
                   ))}
                 </Form.Select>
+                {selectedCurso && materiasFiltradas.length === 0 && (
+                  <Form.Text className="text-warning">
+                    No hay materias activas para este curso
+                  </Form.Text>
+                )}
               </Form.Group>
             </Row>
 
             <Row className="mb-3 d-flex justify-content-around">
+              {/* PERIODO (ESTÁTICO) */}
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Periodo</Form.Label>
-                <Form.Select required>
+                <Form.Select
+                  required
+                  value={selectedPeriodo}
+                  onChange={(e) => setSelectedPeriodo(e.target.value)}
+                >
                   <option value="">Seleccione cuatrimestre</option>
                   <option value="1">1er Cuatrimestre</option>
                   <option value="2">2do Cuatrimestre</option>
                 </Form.Select>
               </Form.Group>
 
+              {/* AÑO (DINÁMICO) */}
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Año</Form.Label>
-                <Form.Select required>
-                  {[2025, 2026].map((a) => (
-                    <option key={a} value={a}>
-                      {a}
+                <Form.Select
+                  required
+                  value={selectedAnio}
+                  onChange={(e) => setSelectedAnio(e.target.value)}
+                >
+                  <option value="">Seleccione año</option>
+                  {anios?.map((anioObj) => (
+                    <option key={anioObj.id_anio_lectivo} value={anioObj.anio}>
+                      {anioObj.anio}
                     </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Row>
 
+            {error && (
+              <p style={{ color: "red", textAlign: "center" }}>{error}</p>
+            )}
+
+            {/* BOTÓN */}
             <div className="d-flex justify-content-center my-4">
               <Button
                 type="submit"
                 className="d-flex align-items-center gap-2 px-4 py-2 btnBuscar"
+                disabled={loading}
               >
                 <span
                   className="material-symbols-outlined"
@@ -288,7 +390,7 @@ const Dashboard = () => {
                 >
                   search
                 </span>
-                <span>Buscar Curso</span>
+                <span>{loading ? "Buscando..." : "Buscar Curso"}</span>
               </Button>
             </div>
           </Form>
