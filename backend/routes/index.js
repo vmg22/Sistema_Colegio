@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-
-//  IMPORTACIÓN DE MÓDULOS
+// IMPORTACIÓN DE MÓDULOS
 const alumnoRoutes = require("../modules/alumnos/alumno.routes");
 const docenteRoutes = require("../modules/docentes/docente.routes");
 const cursoRoutes = require("../modules/cursos/curso.routes");
@@ -16,8 +15,8 @@ const asistenciaRoutes = require('../modules/asistencia_alumno/asistencia_alumno
 const reportesAlumnoRoutes = require("../modules/reportesAlumnoDni/reporte.routes");
 const reportesCursoRoutes = require("../modules/reportesCurso/reporteCurso.routes");
 
-
-
+// ✅ NUEVO: Módulo de altas (Docente + Usuario)
+const altasRoutes = require("../modules/altas/alta.routes");
 
 // Registrar rutas de los módulos
 router.use("/alumnos", alumnoRoutes);
@@ -31,11 +30,12 @@ router.use("/comunicaciones", comunicacionRoutes);
 router.use("/auth", authRoutes);
 router.use('/asistencias', asistenciaRoutes);
 
-//rutas de reportes
+// Rutas de reportes
 router.use("/reportes/alumnos", reportesAlumnoRoutes);
 router.use("/reportes/curso", reportesCursoRoutes);
 
-
+//  Ruta de altas
+router.use("/altas", altasRoutes);
 
 // Ruta principal de la API
 router.get("/", (req, res) => {
@@ -54,11 +54,11 @@ router.get("/", (req, res) => {
       auth: "/api/v1/auth",
       asistencia: "/api/v1/asistencias",
       reportesAlumno: "/api/v1/reportes/alumno?dni_alumno=X&anio_lectivo=Y",
-      reportesCurso: "/api/v1/reportes/curso?id_curso=X&id_materia=Y&anio_lectivo=Z&cuatrimestre=N"
+      reportesCurso: "/api/v1/reportes/curso?id_curso=X&id_materia=Y&anio_lectivo=Z&cuatrimestre=N",
+      //  NUEVO: Endpoint de altas para crar docentes y usuarios ya que sin usuario no se puede crear docente
+      altas: "/api/v1/altas/docente"
     },
   });
 });
-
-
 
 module.exports = router;

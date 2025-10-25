@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/LinkCrud.css';
+<<<<<<< HEAD
 import BtnVolver from '../ui/BtnVolver'
+=======
+import BtnVolver from '../ui/BtnVolver';
+
+>>>>>>> 5b63e5da4b725c1fa0bf6d25fff5a4f3222bcf5c
 
 /**
  * Datos para las tarjetas de navegación.
