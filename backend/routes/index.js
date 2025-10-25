@@ -16,7 +16,8 @@ const asistenciaRoutes = require('../modules/asistencia_alumno/asistencia_alumno
 const reportesAlumnoRoutes = require("../modules/reportesAlumnoDni/reporte.routes");
 const reportesCursoRoutes = require("../modules/reportesCurso/reporteCurso.routes");
 const alumnoTutorRoutes = require('../modules/alumno_tutor/alumno_tutor.routes');
-
+const materiaCorrelativaRoutes = require('../modules/materia_correlativa/materia_correlativa.routes');
+const destinatarioRoutes = require('../modules/comunicacion_destinatario/comunicacion_destinatario.routes');
 
 
 
@@ -31,11 +32,13 @@ router.use("/tutores", tutorRoutes);
 router.use("/comunicaciones", comunicacionRoutes);
 router.use("/auth", authRoutes);
 router.use('/asistencias', asistenciaRoutes);
+router.use('/materia-correlativa', materiaCorrelativaRoutes);
+// router.use('/destinatarios', destinatarioRoutes);
 
 //rutas de reportes
 router.use("/reportes/alumno", reportesAlumnoRoutes);
 router.use("/reportes/curso", reportesCursoRoutes);
-router.use('/alumno_tutor', alumnoTutorRoutes);
+router.use('/alumno-tutor', alumnoTutorRoutes);
 
 
 
@@ -60,6 +63,8 @@ router.get("/", (req, res) => {
       reportesCurso: "/api/v1/reportes/curso?id_curso=X&id_materia=Y&anio_lectivo=Z&cuatrimestre=N",
       asistencia: "/api/v1/asistencia",
      alumnoTutor: "/api/v1/alumno-tutor",
+     alumnoCorrelativa: "/api/v1/materia-correlativa",
+    //  comunicacionDestinario: "/api/v1/destinatarios"
     },
   });
 });
