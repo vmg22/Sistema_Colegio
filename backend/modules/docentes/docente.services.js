@@ -2,8 +2,24 @@ const db = require('../../config/db');
 const consultas = require('./docente.queries'); 
 
 // Obtener todos los docentes activos
-exports.obtenerTodosDocentes = async () => {
-  const [rows] = await db.query(consultas.obtenerTodos);
+// docente.services.js
+
+// Obtener todos los docentes activos (AHORA CON BÚSQUEDA)
+exports.obtenerTodosDocentes = async (buscar) => { // 1. Recibe el parámetro 'buscar'
+  
+  let query = consultas.obtenerTodos; 
+  const params = [];
+
+  if (buscar) {
+
+    query += ` AND (nombre LIKE ? OR apellido LIKE ? OR dni_docente LIKE ?)`;
+    
+    params.push(`%${buscar}%`);
+    params.push(`%${buscar}%`);
+    params.push(`%${buscar}%`);
+  }
+
+  const [rows] = await db.query(query, params);
   return rows;
 };
 

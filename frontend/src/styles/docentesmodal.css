@@ -1,0 +1,91 @@
+/* --- Modal Overlay --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background-color: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 500px;
+    animation: slide-down 0.3s ease-out;
+}
+@keyframes slide-down {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    text-align: center;
+    color: #333;
+}
+
+/* --- Formulario --- */
+.form-group {
+    margin-bottom: 16px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #555;
+}
+.form-group input, .form-group select {
+    width: calc(100% - 20px); /* Resta padding */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+.form-group input:focus, .form-group select:focus {
+    border-color: #0d6efd;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
+/* --- Acciones del Modal --- */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 16px;
+}
+.modal-actions button {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+}
+.btn-cancel {
+    background-color: #6c757d;
+    color: white;
+}
+.btn-save {
+    background-color: #0d6efd;
+    color: white;
+}
+.btn-save:disabled, .btn-cancel:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.error-message {
+    color: #dc3545;
+    text-align: center;
+    margin-bottom: 16px;
+    font-weight: 600;
+}
