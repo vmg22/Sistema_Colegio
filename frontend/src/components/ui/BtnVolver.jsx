@@ -5,7 +5,7 @@ const BtnVolver = ({rutaVolver, mostrarAgregar = false}) => {
   return (
     <div
       className="d-flex align-items-center justify-content-between"
-      style={{ padding: "20px " }}
+      style={{ paddingBottom: "20px " }}
     >
       <Link to={rutaVolver} style={{ textDecoration: "none" }}>
         <button

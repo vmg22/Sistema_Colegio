@@ -11,6 +11,9 @@ import PlanEquivalencias from './pages/crud/plan/PlanEquivalencias'
 import Docentes from './pages/crud/docentes/Docentes'
 import NotFountPage from './pages/NotFoundPage'
 import Consulta from './pages/crud/alumnos/Consulta'
+import AsistenciaAlumno from './pages/alumno/AsistenciaAlumno'
+import EstadoAcademicoAlumno from './pages/alumno/EstadoAcademicoAlumno'
+import HistorialComunicaciones from './pages/alumno/HistorialComunicaciones'
 
 
 function App() {
@@ -27,6 +30,9 @@ function App() {
           <Route path="/plan-de-equivalencias" element={<PlanEquivalencias />} />
           <Route path="/botones" element={<ButtonShowcase />} />
           <Route path="/consulta" element={<Consulta/>} />
+          <Route path="/asistencia-alumno" element={<AsistenciaAlumno/>} />
+          <Route path="/estado-academico" element={<EstadoAcademicoAlumno/>} />
+          <Route path="/historial-comunicaciones" element={<HistorialComunicaciones/>} />
 
           <Route path="*" element={<NotFountPage/>} />
         </Routes>

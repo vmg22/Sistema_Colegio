@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useConsultaStore } from "../../store/consultaStore";
 import { Spinner, Button } from "react-bootstrap";
+import BtnVolver from "../ui/BtnVolver"
 
 const DivHeaderInfo = () => {
   const { reporteAlumno } = useConsultaStore();
@@ -20,7 +21,6 @@ const DivHeaderInfo = () => {
         dataToSet = JSON.parse(storedData);
       }
     }
-
     setReporte(dataToSet);
     setLoading(false);
   }, [reporteAlumno]);
@@ -39,19 +39,15 @@ const DivHeaderInfo = () => {
       <div className="text-center mt-5">
         <h5>No se encontraron datos del alumno.</h5>
         <p>Vuelve al panel e intenta realizar una nueva búsqueda.</p>
-        <Link to={"/"}>
-          <Button variant="secondary" className="px-4">
-            Volver
-          </Button>
-        </Link>
+        <BtnVolver rutaVolver="/"/>
       </div>
     );
   }
 
   const { materias, tutores } = reporte;
-  console.log("Datos del Alumno:", reporte);
-  console.log(materias);
-  console.log(tutores);
+//   console.log("Datos del Alumno:", reporte);
+//   console.log(materias);
+//   console.log(tutores);
   return (
     <>
       <div
