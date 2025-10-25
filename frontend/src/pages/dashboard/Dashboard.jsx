@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/dashboard.css";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -9,6 +9,7 @@ import { useConsultaStore } from "../../store/consultaStore";
 import { getReporteAlumno } from "../../services/reportesService";
 import { useNavigate } from "react-router-dom";
 import LineaSeparadora from "../../components/ui/LineaSeparadora";
+import { getMaterias } from "../../services/materiasServices";
 
 const Dashboard = () => {
   const [tipoConsulta, setConsulta] = useState("alumno");
@@ -18,14 +19,32 @@ const Dashboard = () => {
   // const [alumno, setAlumno] = useState(null);
   const [dniInput, setDniInput] = useState("");
   const [anioInput, setAnioInput] = useState("2025");
+  const [materias, setMaterias] = useState([]); // tomamos los nombres de las materias para generar un menu dinámico
 
   const navigate = useNavigate();
-
   // Zustand store
-  const { setAlumnoDni, setAlumnoAnio , setReporteAlumno} = useConsultaStore();
+  const { setAlumnoDni, setAlumnoAnio, setReporteAlumno } = useConsultaStore();
+
+  useEffect(() => {
+    const cargarMaterias = async () => {
+      try {
+        const data = await getMaterias(); // data ES EL ARRAY [Array(10)]
+        console.log("Datos recibidos de la API:", data);
+        
+        // --- ESTA ES LA CORRECCIÓN ---
+        setMaterias(data); // Guarda el array directamente
+        // -----------------------------
+
+      } catch (error) {
+        console.error("Error al cargar materias:", error);
+      }
+    };
+    cargarMaterias();
+  }, []);
 
   const setConsulta2 = (tipo) => {
     setConsulta(tipo);
+
     // setAlumno(null);
     setError("");
     setDniInput("");
@@ -65,8 +84,7 @@ const Dashboard = () => {
 
       console.log("✅ Reporte obtenido:", data);
       // setAlumno(data);
-      setReporteAlumno(data)
-
+      setReporteAlumno(data);
 
       // Guardamos temporalmente en sessionStorage (por si recarga la página)
       sessionStorage.setItem("reporteAlumno", JSON.stringify(data));
@@ -75,14 +93,26 @@ const Dashboard = () => {
       navigate("/consulta");
     } catch (err) {
       console.error("❌ Error al traer reporte:", err);
-      setError(
-        err?.message || "No se pudo obtener el reporte del alumno."
-      );
+      setError(err?.message || "No se pudo obtener el reporte del alumno.");
     } finally {
       setLoading(false);
     }
+      
   };
+  const handleSubmitCurso = async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
 
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+      setValidated(true);
+      return;
+    }
+
+    // Aquí irá tu lógica para buscar el curso
+    console.log("Buscando curso...");
+  };
+  
   return (
     <div className="nombre_vista">
       <div
@@ -102,7 +132,7 @@ const Dashboard = () => {
         <h4>Consulta Académica</h4>
       </div>
 
-      <LineaSeparadora/>
+      <LineaSeparadora />
 
       <div className="contenedor-botones-dash">
         <button
@@ -186,8 +216,7 @@ const Dashboard = () => {
             </div>
           </Form>
         ) : (
-         
-          <Form noValidate validated={validated} onSubmit={handleSubmit}>
+          <Form noValidate validated={validated} onSubmit={handleSubmitCurso}>
             <h5 className="tituloForm">Buscar Curso</h5>
             <hr className="linea-separadora" />
             <Row className="mb-3 d-flex justify-content-around">
@@ -206,17 +235,20 @@ const Dashboard = () => {
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Materia</Form.Label>
                 <Form.Select required>
-                  {[
-                    "",
-                    "Biologia",
-                    "Historia",
-                    "Matematicas",
-                    "Lengua",
-                    "Geografia",
-                    "Ingles",
-                  ].map((m) => (
-                    <option key={m} value={m}>
-                      {m || "Seleccione materia"}
+                  {/* Opción por defecto */}
+                  <option value="">Seleccione materia</option>
+
+                  {/* Mapeamos el estado 'materias'.
+      Asumo que tu API devuelve algo como:
+      [
+        { "id_materia": 1, "nombre": "Biologia" },
+        { "id_materia": 2, "nombre": "Historia" },
+        ...
+      ]
+    */}
+                  {materias.map((materia) => (
+                    <option key={materia.id_materia} value={materia.id_materia}>
+                      {materia.nombre}
                     </option>
                   ))}
                 </Form.Select>
