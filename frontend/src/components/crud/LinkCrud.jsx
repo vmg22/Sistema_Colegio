@@ -1,7 +1,31 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+<<<<<<< HEAD
 import '../../styles/LinkCrud.css';
 import BtnVolver from '../ui/BtnVolver'
+=======
+import "../../styles/LinkCrud.css";
+
+/**
+ * Componente de botón para volver atrás
+ */
+const BtnVolver = ({ rutaVolver }) => {
+  return (
+    <div className="btn-volver-container">
+      <Link
+        to={rutaVolver}
+        className="btn-volver-link"
+      >
+        {/* Google Material Icon para "Volver" */}
+        <span className="material-icons btn-volver-icon">
+          arrow_back
+        </span>
+        Volver
+      </Link>
+    </div>
+  );
+};
+>>>>>>> b8758d5e7443100aa1136b26a3d908e356acb961
 
 /**
  * Datos para las tarjetas de navegación.

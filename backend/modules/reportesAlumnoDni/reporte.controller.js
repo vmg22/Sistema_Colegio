@@ -17,6 +17,11 @@ exports.getReporteAlumnoPorDNIyAnio = async (req, res) => {
       apellido: rows[0].apellido_alumno,
       email: rows[0].email,
       estado:rows[0].estado,
+      fecha_nacimiento:rows[0].fecha_nacimiento,
+      fecha_inscripcion:rows[0].fecha_inscripcion,
+      lugar_nacimiento:rows[0].lugar_nacimiento,
+      direccion:rows[0].direccion,
+      telefono:rows[0].telefono,
       curso: {
         id: rows[0].id_curso,
         nombre: rows[0].nombre_curso,
@@ -61,6 +66,8 @@ exports.getReporteAlumnoPorDNIyAnio = async (req, res) => {
           id: r.id_tutor,
           nombre: r.nombre_tutor,
           apellido: r.apellido_tutor,
+          dni_tutor: r.dni_tutor,
+          direccion: r.direccion,
           parentesco: r.parentesco,
           telefono: r.telefono_tutor,
           email: r.email_tutor
