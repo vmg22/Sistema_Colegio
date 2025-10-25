@@ -1,4 +1,6 @@
+/* LinkCrud.css */
 
+/* Estilos para el contenedor principal */
 .link-crud-container {
   padding: 32px;
   max-width: 1280px;
@@ -6,14 +8,16 @@
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
+/* Grid container para las tarjetas */
 .grid-container {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
   justify-content: center;
-  margin: 20px 0;
+  padding-top: 80px;
 }
 
+/* Estilos base de las tarjetas */
 .card-base {
   padding: 24px;
   background-color: white;
@@ -33,24 +37,29 @@
   max-width: 300px;
 }
 
+/* Efecto hover para las tarjetas */
 .card-hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   transform: translateY(-4px);
 }
 
+/* Contenedor del ícono */
 .card-icon-container {
   margin-bottom: 16px;
 }
 
+/* Estilo del ícono */
 .card-icon {
   font-size: 64px;
 }
 
+/* Etiqueta de la tarjeta */
 .card-label {
   font-size: 20px;
   font-weight: 600;
 }
 
+/* Separador */
 .separator {
   margin-top: 48px;
   margin-bottom: 48px;
@@ -58,9 +67,32 @@
   border-top: 1px solid #E5E7EB;
 }
 
+/* Estilos para el botón volver */
 .btn-volver-container {
   margin-top: 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.btn-volver-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #E5E7EB;
+  color: #1F2937;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-volver-link:hover {
+  background-color: #D1D5DB;
+}
+
+.btn-volver-icon {
+  font-size: 18px;
+  margin-right: 8px;
 }
