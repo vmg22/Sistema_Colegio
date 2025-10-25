@@ -33,7 +33,7 @@ router.use("/comunicaciones", comunicacionRoutes);
 router.use("/auth", authRoutes);
 router.use('/asistencias', asistenciaRoutes);
 router.use('/materia-correlativa', materiaCorrelativaRoutes);
-// router.use('/destinatarios', destinatarioRoutes);
+router.use('/destinatarios', destinatarioRoutes);
 
 //rutas de reportes
 router.use("/reportes/alumno", reportesAlumnoRoutes);
@@ -64,7 +64,7 @@ router.get("/", (req, res) => {
       asistencia: "/api/v1/asistencia",
      alumnoTutor: "/api/v1/alumno-tutor",
      alumnoCorrelativa: "/api/v1/materia-correlativa",
-    //  comunicacionDestinario: "/api/v1/destinatarios"
+     comunicacionDestinario: "/api/v1/destinatarios"
     },
   });
 });
