@@ -58,43 +58,53 @@ const DivHeaderInfo = () => {
         className="d-flex align-items-center justify-content-between"
         style={{
           backgroundColor: "white",
-          padding: "20px 30px", 
-          borderRadius: "15px", 
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)", 
-          marginTop: "20px", 
+          padding: "20px 30px",
+          borderRadius: "15px",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          marginTop: "20px",
         }}
       >
         <div className="d-flex align-items-center">
           <div
             style={{
-              borderRadius: "50%", 
+              borderRadius: "50%",
               backgroundColor: "#303F9F",
-              height: "45px", 
-              width: "45px", 
+              height: "45px",
+              width: "45px",
               textAlign: "center",
               marginRight: "15px",
-              display: "flex", 
+              display: "flex",
               justifyContent: "center",
               alignItems: "center",
             }}
           >
-            <span className="material-symbols-outlined" style={{ color: "white", fontSize: "28px" }}>
+            <span
+              className="material-symbols-outlined"
+              style={{ color: "white", fontSize: "28px" }}
+            >
               person
             </span>
           </div>
           <h4 style={{ margin: 0, fontWeight: "600", color: "#333" }}>
             {reporte.nombre} {reporte.apellido}
           </h4>
-          
         </div>
 
-        <div className="d-flex align-items-center gap-4"> 
+        <div className="d-flex align-items-center gap-4">
           <h5 style={{ margin: 0, color: "#303F9F" }}>DNI: {reporte.dni}</h5>
-          {reporte.curso && ( 
+          {reporte.curso && (
             <>
-              <h5 style={{ margin: 0, color: "#303F9F" }}>Curso: {reporte.curso.anio_curso} {reporte.curso.division}</h5>
+              <h5 style={{ margin: 0, color: "#303F9F" }}>
+                Curso: {reporte.curso.anio_curso} {reporte.curso.division}
+              </h5>
             </>
           )}
+          {/* Botón agregado para navegar a ConstAluTramite */}
+          {/* <Link to="/constanciaAlumnoTramite">
+            <Button variant="primary" className="px-4 py-2">
+              Constancia
+            </Button>
+          </Link> */}
         </div>
       </div>
     </>

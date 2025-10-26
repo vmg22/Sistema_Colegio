@@ -1,0 +1,467 @@
+/* ========================================
+   CONSTANCIA - DOCUMENTO OFICIAL
+   Diseño formal para presentar ante autoridades
+   TODAS las clases tienen prefijo "constancia-" para evitar conflictos
+   ======================================== */
+
+/* ========================================
+   CONTENEDOR PRINCIPAL
+   ======================================== */
+.constancia-body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+/* ========================================
+   CERTIFICADO / DOCUMENTO
+   ======================================== */
+.constancia-body .certificate-container {
+  max-width: 21cm; /* Tamaño A4 */
+  min-height: 29.7cm;
+  margin: 0 auto;
+  background: white;
+  padding: 3.5rem 3rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  position: relative;
+  
+  /* Borde decorativo oficial */
+  border: 3px solid #2c3e50;
+  outline: 1px solid #34495e;
+  outline-offset: -12px;
+}
+
+/* Marca de agua sutil */
+.constancia-body .certificate-container::before {
+  content: 'CONSTANCIA OFICIAL';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  font-size: 4rem;
+  color: rgba(52, 152, 219, 0.03);
+  font-weight: bold;
+  z-index: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ========================================
+   ENCABEZADO DEL CERTIFICADO
+   ======================================== */
+.constancia-body .certificate-header {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 2.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-bottom: 3px double #2c3e50;
+  padding-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ========================================
+   CONTENIDO DEL DOCUMENTO
+   ======================================== */
+.constancia-body .certificate-container p {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: #2c3e50;
+  text-align: justify;
+  text-justify: inter-word;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.constancia-body .certificate-container p b {
+  font-weight: 600;
+  color: #1a252f;
+}
+
+/* ========================================
+   CAMPOS EDITABLES DEL FORMULARIO
+   ======================================== */
+.constancia-body .form-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.constancia-body .form-group label {
+  display: block;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.constancia-body .form-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #bdc3c7;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: 'Georgia', serif;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+}
+
+.constancia-body .form-group input:focus {
+  outline: none;
+  border-color: #3498db;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.constancia-body .form-group input::placeholder {
+  color: #95a5a6;
+  font-style: italic;
+}
+
+/* Campos editables con fondo destacado */
+.constancia-body .form-group.editable {
+  background: rgba(52, 152, 219, 0.05);
+  padding: 1rem;
+  border-radius: 6px;
+  border-left: 4px solid #3498db;
+}
+
+/* ========================================
+   ESPACIOS PARA FIRMAS
+   ======================================== */
+.constancia-body .signature-space {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 4rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.constancia-body .signature-box {
+  flex: 1;
+  text-align: center;
+  padding-top: 3rem;
+  border-top: 2px solid #2c3e50;
+  font-size: 0.9rem;
+  color: #34495e;
+  font-weight: 500;
+  position: relative;
+}
+
+.constancia-body .signature-box::before {
+  content: '✓';
+  position: absolute;
+  top: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  color: #27ae60;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.constancia-body .signature-box:hover::before {
+  opacity: 0.3;
+}
+
+/* ========================================
+   ESPACIOS PARA SELLOS
+   ======================================== */
+.constancia-body .seal-space {
+  display: flex;
+  justify-content: space-around;
+  gap: 2rem;
+  margin-top: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.constancia-body .seal {
+  width: 150px;
+  height: 150px;
+  border: 3px dashed #7f8c8d;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  font-weight: 600;
+  padding: 1rem;
+  background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================
+   BOTONES DE ACCIÓN
+   ======================================== */
+.constancia-body .actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.constancia-body .actions button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.constancia-body .actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.constancia-body .actions button:active {
+  transform: translateY(0);
+}
+
+/* Botón primario */
+.constancia-body .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.constancia-body .btn-primary:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+}
+
+/* Botón secundario */
+.constancia-body .btn-secondary {
+  background: white;
+  color: #2c3e50;
+  border: 2px solid #2c3e50 !important;
+}
+
+.constancia-body .btn-secondary:hover {
+  background: #2c3e50;
+  color: white;
+}
+
+/* Iconos de Material Symbols */
+.constancia-body .actions .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+/* ========================================
+   ESTADOS DE CARGA Y ERROR
+   ======================================== */
+.constancia-body .loading-container,
+.constancia-body .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Spinner de carga */
+.constancia-body .spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(103, 126, 234, 0.2);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: constancia-spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes constancia-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.constancia-body .loading-container p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+/* Contenedor de error */
+.constancia-body .error-container {
+  color: #e74c3c;
+}
+
+.constancia-body .error-icon {
+  font-size: 4rem;
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.constancia-body .error-container h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #c0392b;
+}
+
+.constancia-body .error-container p {
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+}
+
+.constancia-body .btn-back {
+  padding: 0.75rem 1.5rem;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.constancia-body .btn-back:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   ESTILOS PARA IMPRESIÓN
+   ======================================== */
+@media print {
+  .constancia-body {
+    background: white;
+    padding: 0;
+  }
+
+  .constancia-body .certificate-container {
+    max-width: 100%;
+    min-height: auto;
+    box-shadow: none;
+    border-radius: 0;
+    border: 2px solid #2c3e50;
+    page-break-after: always;
+  }
+
+  .constancia-body .actions,
+  .constancia-body .no-print {
+    display: none !important;
+  }
+
+  .constancia-body .form-group.editable label {
+    display: none;
+  }
+
+  .constancia-body .form-group.editable {
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+
+  .constancia-body .form-group.editable input {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-weight: 600;
+    color: #1a252f;
+  }
+
+  .constancia-body .signature-box,
+  .constancia-body .seal {
+    border-color: #2c3e50;
+  }
+
+  /* Forzar saltos de página */
+  .constancia-body .certificate-container {
+    page-break-inside: avoid;
+  }
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .constancia-body {
+    padding: 1rem;
+  }
+
+  .constancia-body .certificate-container {
+    padding: 2rem 1.5rem;
+    min-height: auto;
+  }
+
+  .constancia-body .certificate-header {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+  }
+
+  .constancia-body .certificate-container p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .constancia-body .signature-space {
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .constancia-body .seal-space {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .constancia-body .actions {
+    flex-direction: column;
+  }
+
+  .constancia-body .actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ========================================
+   MEJORAS DE ACCESIBILIDAD
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  .constancia-body * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Mejora de contraste para texto */
+@media (prefers-contrast: high) {
+  .constancia-body .certificate-container p {
+    color: #000;
+  }
+
+  .constancia-body .form-group input {
+    border-color: #000;
+  }
+}
+
+/* ========================================
+   HOVER EN EL DOCUMENTO
+   ======================================== */
+.constancia-body .certificate-container:hover {
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35);
+  transition: box-shadow 0.3s ease;
+}

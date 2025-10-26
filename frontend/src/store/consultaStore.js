@@ -5,7 +5,7 @@ export const useConsultaStore = create((set) => ({
   alumnoDni: "",
   alumnoAnio: "",
   reporteAlumno: null,
-  reporteCurso: null, // <-- El estado de curso va aquí
+  reporteCurso: null, 
 
   // --- 2. DEFINICIÓN DE ACCIONES (SETTERS) ---
   setAlumnoDni: (dni) => set({ alumnoDni: dni }),
@@ -19,6 +19,6 @@ export const useConsultaStore = create((set) => ({
       alumnoDni: "",
       alumnoAnio: "",
       reporteAlumno: null,
-      reporteCurso: null, // <-- Aquí solo reseteamos el valor
+      reporteCurso: null, 
     }),
 }));
