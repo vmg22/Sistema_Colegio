@@ -3,9 +3,15 @@ const { exito, error } = require('../../utils/responses');
 
 const controladorDocentes = {
  
+// docente.controller.js
+
   obtenerTodosDocentes: async (solicitud, respuesta) => {
     try {
-      const docentes = await servicioDocentes.obtenerTodosDocentes();
+      const { buscar } = solicitud.query; 
+      
+      // Se lo pasamos a la función del servicio
+      const docentes = await servicioDocentes.obtenerTodosDocentes(buscar); 
+      
       exito(respuesta, 'Docentes obtenidos correctamente', docentes);
     } catch (err) {
       error(respuesta, 'Error al obtener docentes', 500, err.message);

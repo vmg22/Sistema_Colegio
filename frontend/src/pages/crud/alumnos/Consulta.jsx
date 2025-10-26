@@ -6,6 +6,11 @@ import Spinner from "react-bootstrap/Spinner";
 import Button from "react-bootstrap/Button";
 import "../../../styles/consulta.css";
 import { Link } from "react-router-dom";
+import HeaderPages from "../../../components/ui/HeaderPages";
+import BtnVolver from "../../../components/ui/BtnVolver";
+import LineaSeparadora from "../../../components/ui/LineaSeparadora";
+import DivHeaderInfo from "../../../components/alumno/DivHeaderInfo";
+import DivBodyInfo from "../../../components/alumno/DivBodyInfo";
 
 const Consulta = () => {
   const { reporteAlumno } = useConsultaStore();
@@ -58,58 +63,11 @@ const Consulta = () => {
 
   return (
     <div className="container mt-4 consulta-container">
-      <div className="d-flex align-items-center mb-4">
-        <span className="material-symbols-outlined search me-2">person</span>
-        <h4>Reporte Académico del Alumno</h4>
-      </div>
-
-      <Card className="mb-4 sombra-card">
-        <Card.Body>
-          <Card.Title className="mb-3">Datos del Alumno</Card.Title>
-          <div className="row">
-            <div className="col-md-6">
-              <p>
-                <strong>Nombre:</strong> {reporte.nombre} {reporte.apellido}
-              </p>
-              <p>
-                <strong>DNI:</strong> {reporte.dni}
-              </p>
-              <p>
-                <strong>Curso:</strong> {reporte.curso.anio_curso}{" "}
-                {reporte.curso.division}
-              </p>
-            </div>
-            <div className="col-md-6">
-              <p>
-                <strong>Año:</strong> {reporte.curso.anio_lectivo}
-              </p>
-              <p>
-                <strong>Estado:</strong>
-                {(() => {
-                  const estados = {
-                    activo: { class: "bg-success", text: "Activo" },
-                    egresado: { class: "bg-primary", text: "Egresado" },
-                    baja: { class: "bg-danger", text: "Baja" },
-                    suspendido: { class: "bg-warning", text: "Suspendido" },
-                    inactivo: { class: "bg-secondary", text: "Inactivo" },
-                  };
-
-                  const estadoConfig = estados[reporte.estado] || {
-                    class: "bg-dark",
-                    text: "Desconocido",
-                  };
-
-                  return (
-                    <span className={`badge ${estadoConfig.class}`}>
-                      {estadoConfig.text}
-                    </span>
-                  );
-                })()}
-              </p>
-            </div>
-          </div>
-        </Card.Body>
-      </Card>
+      <BtnVolver rutaVolver={"/"} />
+      <HeaderPages titulo="Informacion Alumno" icono="search"/>
+      <LineaSeparadora/>
+      <DivHeaderInfo/>
+      <DivBodyInfo/>
 
       {/* 📘 Materias y notas (¡Descomentado!) */}
       {/* <Card className="mb-4 sombra-card">
@@ -147,44 +105,7 @@ const Consulta = () => {
             <p>No hay materias registradas para este año.</p>
           )}
         </Card.Body>
-      </Card> */}
-
-      {/* 👨‍👩‍👧 Tutores (¡Descomentado!) */}
-      {/* <Card className="mb-4 sombra-card">
-        <Card.Body>
-          <Card.Title className="mb-3">Tutores del Alumno</Card.Title>
-          {tutores && tutores.length > 0 ? (
-            <Table bordered hover responsive>
-              <thead className="table-success">
-                <tr>
-                  <th>Nombre</th>
-                  <th>Parentesco</th>
-                  <th>Teléfono</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tutores.map((t, i) => (
-                  <tr key={i}>
-                    <td>{t.nombre}</td>
-                    <td>{t.parentesco}</td>
-                    <td>{t.telefono}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          ) : (
-            <p>No hay tutores registrados.</p>
-          )}
-        </Card.Body>
-      </Card> */}
-
-      <div className="text-center mt-4">
-        <Link to={"/"}>
-          <Button variant="secondary" className="px-4">
-            Volver al Panel
-          </Button>
-        </Link>
-      </div>
+</Card> */}                                 
     </div>
   );
 };
