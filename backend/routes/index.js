@@ -18,6 +18,7 @@ const reportesCursoRoutes = require("../modules/reportesCurso/reporteCurso.route
 const alumnoTutorRoutes = require('../modules/alumno_tutor/alumno_tutor.routes');
 const materiaCorrelativaRoutes = require('../modules/materia_correlativa/materia_correlativa.routes');
 const destinatarioRoutes = require('../modules/comunicacion_destinatario/comunicacion_destinatario.routes');
+const logActividadRoutes = require('../modules/log_actividad/log_actividad.routes');
 
 
 
@@ -34,7 +35,7 @@ router.use("/auth", authRoutes);
 router.use('/asistencias', asistenciaRoutes);
 router.use('/materia-correlativa', materiaCorrelativaRoutes);
 router.use('/destinatarios', destinatarioRoutes);
-
+router.use('/actividades', logActividadRoutes);
 //rutas de reportes
 router.use("/reportes/alumno", reportesAlumnoRoutes);
 router.use("/reportes/curso", reportesCursoRoutes);
@@ -64,7 +65,8 @@ router.get("/", (req, res) => {
       asistencia: "/api/v1/asistencia",
      alumnoTutor: "/api/v1/alumno-tutor",
      alumnoCorrelativa: "/api/v1/materia-correlativa",
-     comunicacionDestinario: "/api/v1/destinatarios"
+     comunicacionDestinario: "/api/v1/destinatarios",
+    logActividad: "/api/v1/actividades"
     },
   });
 });
