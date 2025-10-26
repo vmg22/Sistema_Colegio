@@ -69,7 +69,7 @@ router.get("/", (req, res) => {
       reportesAlumno: "/api/v1/reportes/alumno?dni_alumno=X&anio_lectivo=Y",
       reportesCurso: "/api/v1/reportes/curso?id_curso=X&id_materia=Y&anio_lectivo=Z&cuatrimestre=N",
       //  NUEVO: Endpoint de altas para crar docentes y usuarios ya que sin usuario no se puede crear docente
-      altas: "/api/v1/altas/docente"
+      altas: "/api/v1/altas/docente",
       reportesCurso: "/api/v1/reportes/curso?id_curso=X&id_materia=Y&anio_lectivo=Z&cuatrimestre=N",
       asistencia: "/api/v1/asistencia",
      alumnoTutor: "/api/v1/alumno-tutor",
