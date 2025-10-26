@@ -1,50 +1,98 @@
-// src/services/docenteService.js (¡ESTE ES EL ARCHIVO CORREGIDO!)
+import API from "../api/api";
+import axios from "axios";
 
-// 1. Importamos la instancia de Axios (que ahora sí tiene .get, .post, etc.)
-// (Asegúrate de que la ruta sea correcta)
-import apiClient from "../API CRUD/apinuevo"; 
 
-// 2. El endpoint es relativo, la URL base ya está en apiClient
-const ENDPOINT = "/docentes";
+const ALTASDOCENTES_URL = `${API}/docentes`;
+
 
 export const getDocentes = async (params = {}) => {
-  // 3. Ahora llamamos a apiClient.get (o como lo llames al importar)
-  // y usamos la ruta relativa
-  const data = await apiClient.get(ENDPOINT, { params });
-  return data; // 'data' ya es el array gracias al interceptor
+  try {
+    // Se llama a 'axios.get' (el paquete importado)
+    const response = await axios.get(ALTASDOCENTES_URL, { params });
+    // Devuelve el array que está DENTRO de la propiedad 'datos'
+    return response.data.datos || [];
+  } catch (error) {
+    // Mensaje de error corregido
+    console.error("Error al obtener docentes:", error);
+    return [];
+  }
 };
+
 
 export const getDocentesEliminados = async () => {
-  const data = await apiClient.get(`${ENDPOINT}/eliminados/listar`);
-  return data;
+  try {
+    const response = await axios.get(`${ALTASDOCENTES_URL}/eliminados/listar`);
+    return response.data.datos || [];
+  } catch (error) {
+    console.error("Error al obtener docentes eliminados:", error);
+    return [];
+  }
 };
+
 
 export const getDocenteById = async (id) => {
-  const data = await apiClient.get(`${ENDPOINT}/${id}`);
-  return data;
+  try {
+    // Se llama a 'axios.get'
+    const response = await axios.get(`${ALTASDOCENTES_URL}/${id}`);
+    // Un 'getById' suele devolver el objeto directamente
+    return response.data.datos; 
+  } catch (error) {
+    console.error(`Error al obtener el docente ${id}:`, error);
+    return null; // Devolver null es una mejor práctica si no se encuentra
+  }
 };
+
 
 export const createDocente = async (docenteData) => {
-  const data = await apiClient.post(ENDPOINT, docenteData);
-  return data;
+  try {
+    const response = await axios.post(ALTASDOCENTES_URL, docenteData);
+    return response.data;
+  } catch (error) {
+    console.error("Error al crear docente:", error);
+    throw error; // Lanzamos el error para que el formulario lo pueda manejar
+  }
 };
+
 
 export const restaurarDocente = async (id) => {
-  const data = await apiClient.post(`${ENDPOINT}/${id}/restaurar`, null);
-  return data;
+  try {
+    const response = await axios.post(`${ALTASDOCENTES_URL}/${id}/restaurar`, null);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al restaurar docente ${id}:`, error);
+    throw error;
+  }
 };
+
 
 export const updateDocente = async (id, docenteData) => {
-  const data = await apiClient.put(`${ENDPOINT}/${id}`, docenteData);
-  return data;
+  try {
+    const response = await axios.put(`${ALTASDOCENTES_URL}/${id}`, docenteData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al actualizar docente ${id}:`, error);
+    throw error;
+  }
 };
+
 
 export const updateDocenteParcial = async (id, docenteData) => {
-  const data = await apiClient.patch(`${ENDPOINT}/${id}`, docenteData);
-  return data;
+  try {
+    const response = await axios.patch(`${ALTASDOCENTES_URL}/${id}`, docenteData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al actualizar parcialmente docente ${id}:`, error);
+    throw error;
+  }
 };
 
+
 export const deleteDocente = async (id) => {
-  const data = await apiClient.delete(`${ENDPOINT}/${id}`);
-  return data;
+  try {
+    const response = await axios.delete(`${ALTASDOCENTES_URL}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al eliminar docente ${id}:`, error);
+    throw error;
+  }
 };
