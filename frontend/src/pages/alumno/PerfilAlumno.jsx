@@ -2,73 +2,46 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Spinner, Button } from "react-bootstrap";
 import { useConsultaStore } from "../../store/consultaStore";
-import BtnVolver from "../../components/ui/BtnVolver.jsx";
+// Corregidas las rutas de importación y el nombre del componente
+import BtnVolver from "../../components/ui/BtnVolver.jsx"; 
 import AccionCard from "../../components/ui/AccionCard.jsx";
 
-// Estilos actualizados con la nueva paleta y tipografía
+import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
+
+// Estilos actualizados
 const styles = {
   pageContainer: {
     padding: "0 40px 40px 40px",
     backgroundColor: "#f4f7fa",
     minHeight: "calc(100vh - 80px)",
-    fontFamily: "'Inter', sans-serif", // Aplicar fuente Inter
-    
+    fontFamily: "'Inter', sans-serif",
   },
   header: {
     display: "flex",
     alignItems: "center",
     gap: "10px",
     padding: "20px 0",
-    color: "#303F9F", // Primary Dark
+    color: "#303F9F",
   },
   title: {
-    fontSize: "1.5rem", // 24px (Heading 4)
-    fontWeight: 600, // Coincide con Heading 2/3 (usamos 600 para más jerarquía)
+    fontSize: "1.5rem",
+    fontWeight: 600,
     margin: 0,
   },
-  studentCard: {
-    backgroundColor: "white",
-    borderRadius: "15px",
-    padding: "25px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
-    display: "flex",
-    alignItems: "center",
-    gap: "20px",
-    marginBottom: "30px",
-    border: "1px solid #3f51b5",
-    
-  },
-  studentIconCircle: {
-    height: "60px",
-    width: "60px",
-    borderRadius: "50%",
-    backgroundColor: "#c5cae9", // Primary Light
-    color: "#303F9F", // Primary Dark
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  studentIcon: {
-    fontSize: "36px",
-  },
-  studentName: {
-    fontSize: "1.875rem", // 30px (Heading 3)
-    fontWeight: 600, // Heading 3
-    color: "#333",
-    margin: 0,
-  },
+  // Eliminamos los estilos 'studentCard', 'studentIconCircle', 'studentIcon', 'studentName'
+  // porque ahora están dentro de StudentHeader.jsx
   actionsTitle: {
-    fontSize: "1.25rem", // 20px (Subheading)
-    fontWeight: 500, // Subheading
+    fontSize: "1.25rem",
+    fontWeight: 500,
     color: "#444",
     marginBottom: "20px",
   },
   cardGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)", // Forzar 3 columnas
+    gridTemplateColumns: "repeat(3, 1fr)",
     gap: "25px",
-    maxWidth: "1000px", // Ancho máximo para el grid
-    margin: "0 auto", // Centrar el grid si es más angosto que el contenedor
+    maxWidth: "1000px",
+    margin: "0 auto",
   },
   loadingContainer: {
     textAlign: "center",
@@ -123,8 +96,8 @@ const PerfilAlumno = () => {
 
   return (
     <div style={styles.pageContainer}>
-      {/* 1. Botón Volver y Título */}
-      <BtnVolver rutaVolver={"/"} />
+      {/* 1. Botón Volver (sin prop 'rutaVolver') */}
+      <BtnVolver />
       <div style={styles.header}>
         <span
           className="material-symbols-outlined"
@@ -135,50 +108,41 @@ const PerfilAlumno = () => {
         <h2 style={styles.title}>Perfil de Alumno</h2>
       </div>
 
-      {/* 2. Card de Información del Alumno */}
-      <div style={styles.studentCard}>
-        <div style={styles.studentIconCircle}>
-          <span className="material-symbols-outlined" style={styles.studentIcon}>
-            person
-          </span>
-        </div>
-        <h3 style={styles.studentName}>
-          {reporte.nombre} {reporte.apellido}
-        </h3>
-      </div>
+      {/* 2. Card de Información (usando el nuevo componente) */}
+      <EncabezadoEstudiante reporte={reporte} variant="card" />
 
-      {/* 3. Acciones Disponibles */}
+      {/* 3. Acciones Disponibles (corregidas las rutas 'to') */}
       <h4 style={styles.actionsTitle}>Acciones Disponibles</h4>
       <div style={styles.cardGrid}>
         <AccionCard
           titulo="Info alumno"
           icono="account_circle"
-          to="/consulta" // Debes crear esta ruta
+          to="/consulta" 
         />
         <AccionCard
           titulo="Ver Asistencias"
           icono="task_alt"
-          to="/perfil-alumno/asistencias" // Debes crear esta ruta
+          to="/asistenciasAlumno" // Esta es la ruta que creamos
         />
         <AccionCard
           titulo="Estado Academico"
           icono="trending_up"
-          to="/perfil-alumno/estado-academico" // Debes crear esta ruta
+          to="/perfil-alumno/estado-academico"
         />
         <AccionCard
           titulo="Historial de Comunicaciones"
           icono="chat"
-          to="/perfil-alumno/comunicaciones" // Debes crear esta ruta
+          to="/perfil-alumno/comunicaciones"
         />
         <AccionCard
           titulo="Certificados y actas"
           icono="description"
-          to="/perfil-alumno/certificados" // Debes crear esta ruta
+          to="/perfil-alumno/certificados"
         />
         <AccionCard
           titulo="Generar Mail"
           icono="mail"
-          to="/perfil-alumno/generar-mail" // Debes crear esta ruta
+          to="/perfil-alumno/generar-mail"
         />
       </div>
     </div>
@@ -186,3 +150,4 @@ const PerfilAlumno = () => {
 };
 
 export default PerfilAlumno;
+

@@ -13,6 +13,7 @@ import NotFountPage from './pages/NotFoundPage'
 import Consulta from './pages/crud/alumnos/Consulta'
 import ConstAluTramite from './pages/alumno/ConstAluTramite.jsx'
 import PerfilAlumno from './pages/alumno/PerfilAlumno.jsx'
+import AsistenciasAlumno from './pages/alumno/AsistenciaAlumno.jsx'
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path="/botones" element={<ButtonShowcase />} />
           <Route path="/consulta" element={<Consulta/>} />
           <Route path="/perfilAlumno" element={<PerfilAlumno/>} />
+          <Route path="/asistenciasAlumno" element={<AsistenciasAlumno/>} />
           <Route path="/constanciaAlumnoTramite" element={<ConstAluTramite/>} />
           <Route path="*" element={<NotFountPage/>} />
         </Routes>
