@@ -99,12 +99,12 @@ const DivHeaderInfo = () => {
               </h5>
             </>
           )}
-          {/* Botón agregado para navegar a ConstAluTramite */}
-          {/* <Link to="/constanciaAlumnoTramite">
+          {/* Botón agregado para navegar a ConstAluTramite  */}
+          {/* <Link to="/constanciaAlumnoTramite"> 
             <Button variant="primary" className="px-4 py-2">
               Constancia
             </Button>
-          </Link> */}
+          </Link>  */}
         </div>
       </div>
     </>

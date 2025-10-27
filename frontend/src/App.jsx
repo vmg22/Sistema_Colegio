@@ -12,6 +12,7 @@ import Docentes from './pages/crud/docentes/Docentes'
 import NotFountPage from './pages/NotFoundPage'
 import Consulta from './pages/crud/alumnos/Consulta'
 import ConstAluTramite from './pages/alumno/ConstAluTramite.jsx'
+import PerfilAlumno from './pages/alumno/PerfilAlumno.jsx'
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path="/plan-de-equivalencias" element={<PlanEquivalencias/>} />
           <Route path="/botones" element={<ButtonShowcase />} />
           <Route path="/consulta" element={<Consulta/>} />
+          <Route path="/perfilAlumno" element={<PerfilAlumno/>} />
           <Route path="/constanciaAlumnoTramite" element={<ConstAluTramite/>} />
           <Route path="*" element={<NotFountPage/>} />
         </Routes>
