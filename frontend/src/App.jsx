@@ -34,6 +34,7 @@ function App() {
           <Route path="/plan-de-equivalencias" element={<PlanEquivalencias/>} />
           <Route path="/botones" element={<ButtonShowcase />} />
           <Route path="/consulta" element={<Consulta/>} />
+          <Route path="/constanciaAlumnoTramite" element={<ConstAluTramite/>} />
           <Route path="/perfilAlumno" element={<PerfilAlumno/>} />
           <Route path="/asistenciasAlumno" element={<AsistenciasAlumno/>} />
           <Route path="/constanciaAlumnoTramite" element={<ConstAluTramite/>} />
