@@ -127,7 +127,7 @@ const Dashboard = () => {
       sessionStorage.setItem("reporteAlumno", JSON.stringify(data));
 
       // Redirigimos a la vista de resultados
-      navigate("/consulta");
+      navigate("/perfilAlumno");
     } catch (err) {
       console.error("❌ Error al traer reporte:", err);
       setError(err?.message || "No se pudo obtener el reporte del alumno.");

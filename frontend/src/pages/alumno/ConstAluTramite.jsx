@@ -199,29 +199,19 @@ const Constancia = () => {
           {datosFormulario.dia} días del mes de {datosFormulario.mes} de 20
           {datosFormulario.anioActual}.
         </p>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br /><br />
+        
 
-        {/* Campos editables */}
-        <div className="form-group editable">
-          <label>Solicitante:</label>
-          <input
-            type="text"
-            name="solicitante"
-            placeholder="Ej: Juan Pérez"
-            value={datosFormulario.solicitante}
-            onChange={manejarCambio}
-          />
-        </div>
 
-        <div className="form-group editable">
-          <label>Autoridad destinataria:</label>
-          <input
-            type="text"
-            name="autoridad"
-            placeholder="Ej: Ministerio de Educación"
-            value={datosFormulario.autoridad}
-            onChange={manejarCambio}
-          />
-        </div>
+        
+        
 
         <div className="signature-space">
           <div className="signature-box">Firma del Secretario / Prosecretario</div>
@@ -249,8 +239,30 @@ const Constancia = () => {
           Imprimir
         </button>
       </div>
+      <div className="form-group editable">
+          <label>Solicitante:</label>
+          <input
+            type="text"
+            name="solicitante"
+            placeholder="Ej: Juan Pérez"
+            value={datosFormulario.solicitante}
+            onChange={manejarCambio}
+          />
+        </div>
+
+        <div className="form-group editable">
+          <label>Autoridad destinataria:</label>
+          <input
+            type="text"
+            name="autoridad"
+            placeholder="Ej: Ministerio de Educación"
+            value={datosFormulario.autoridad}
+            onChange={manejarCambio}
+          />
+        </div>
     </div>
   );
+  
 };
 
 export default Constancia;
