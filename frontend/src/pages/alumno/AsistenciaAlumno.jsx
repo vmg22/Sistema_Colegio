@@ -8,6 +8,7 @@ import AsistenciaMateriaCard from "../../components/ui/AsistenciaMateriaCard.jsx
 
 // ¡CORREGIDO! Cambiamos 'EncabezadoEstudiande.jsx' por 'EncabezadoEstudiante.jsx'
 import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
+import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx"
 
 // Estilos
 const styles = {
@@ -124,7 +125,8 @@ const AsistenciasPage = () => {
       <BtnVolver />
       
       {/* 2. Header con nombre y curso (usando el nuevo componente) */}
-      <EncabezadoEstudiante reporte={reporte} variant="text" />
+      <DivHeaderInfo reporte={reporte} variant="text" />
+      <br /><br /><br />
 
       {/* 3. Grilla de tarjetas de asistencia */}
       <div style={styles.cardGrid}>

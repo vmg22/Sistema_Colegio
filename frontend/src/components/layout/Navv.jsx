@@ -38,7 +38,7 @@ const Navv = () => {
 
             <Nav className="d-flex align-items-center gap-3">
               <Nav.Link
-                href="/principal "
+                to="/"
                 className="text-white px-3 py-1 rounded small"
                 style={{ color: "white" }}
               >

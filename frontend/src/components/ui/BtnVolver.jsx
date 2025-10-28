@@ -15,7 +15,7 @@ const BtnVolver = ({ mostrarAgregar = false }) => {
   return (
     <div
       className="d-flex align-items-center justify-content-between"
-      style={{ padding: "20px " }}
+      style={{ paddingBottom: "20px " }}
     >
       {/* Quitamos el componente <Link> y usamos un <button> normal 
         con un evento onClick

@@ -127,7 +127,7 @@ const PerfilAlumno = () => {
         <AccionCard
           titulo="Estado Academico"
           icono="trending_up"
-          to="/perfil-alumno/estado-academico"
+          to="/estadoAcademicoAlumno"
         />
         <AccionCard
           titulo="Historial de Comunicaciones"
@@ -137,7 +137,7 @@ const PerfilAlumno = () => {
         <AccionCard
           titulo="Certificados y actas"
           icono="description"
-          to="/perfil-alumno/certificados"
+          to="/constanciaAlumnoTramite"
         />
         <AccionCard
           titulo="Generar Mail"

@@ -14,6 +14,7 @@ import Consulta from './pages/crud/alumnos/Consulta'
 import ConstAluTramite from './pages/alumno/ConstAluTramite.jsx'
 import PerfilAlumno from './pages/alumno/PerfilAlumno.jsx'
 import AsistenciasAlumno from './pages/alumno/AsistenciaAlumno.jsx'
+import EstadoAcademicoPage from './pages/alumno/EstadoAcademicoAlumno.jsx'
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <Route path="/perfilAlumno" element={<PerfilAlumno/>} />
           <Route path="/asistenciasAlumno" element={<AsistenciasAlumno/>} />
           <Route path="/constanciaAlumnoTramite" element={<ConstAluTramite/>} />
+          <Route path="/estadoAcademicoAlumno" element={<EstadoAcademicoPage/>} />
           <Route path="*" element={<NotFountPage/>} />
         </Routes>
       </BrowserRouter>
