@@ -1,120 +1,154 @@
-import React from 'react';
-import { Table, Badge } from 'react-bootstrap';
+import React from "react";
 
-// Estilos
-const styles = {
-  tableContainer: {
-    backgroundColor: 'white',
-    borderRadius: '8px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-    overflow: 'hidden',
-    fontFamily: "'Inter', sans-serif",
-  },
-  th: {
-    backgroundColor: '#f4f7fa',
-    color: '#303F9F',
-    fontWeight: 600,
-    fontSize: '0.9rem',
-    verticalAlign: 'middle',
-  },
-  td: {
-    verticalAlign: 'middle',
-    fontSize: '0.95rem',
-  },
-  notaBuena: {
-    color: '#333',
-    fontWeight: 500,
-  },
-  notaMala: {
-    color: '#f44336', // Rojo (Error)
-    fontWeight: 700,
-  },
-  asistenciaBuena: {
-    color: '#4caf50', // Verde (Success)
-    fontWeight: 600,
-  },
-  asistenciaMala: {
-    color: '#f44336', // Rojo (Error)
-    fontWeight: 600,
-  },
-};
+const ReporteCursoTable = ({ alumnos = [] }) => {
+  const styles = {
+    container: {
+      overflowX: "auto",
+      borderRadius: "12px",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+      backgroundColor: "#fff",
+      marginTop: "15px",
+    },
+    table: {
+      width: "100%",
+      borderCollapse: "collapse",
+      textAlign: "center",
+      borderRadius: "12px",
+      overflow: "hidden",
+    },
+    th: {
+      backgroundColor: "#004b9b",
+      color: "white",
+      padding: "12px 8px",
+      fontWeight: "600",
+      fontSize: "14px",
+      borderBottom: "2px solid #003b7d",
+    },
+    td: {
+      padding: "10px 8px",
+      borderBottom: "1px solid #e0e0e0",
+      fontSize: "14px",
+      color: "#333",
+      transition: "background-color 0.2s ease-in-out",
+    },
+    trEven: {
+      backgroundColor: "#f9f9f9",
+    },
+    trHover: {
+      backgroundColor: "#e6f0ff",
+    },
+    notaPromedio: {
+      fontWeight: "bold",
+    },
+    asistencia: {
+      fontWeight: "bold",
+    },
+  };
 
-// Helper para estilo de notas
-const getNotaStyle = (nota) => {
-  const n = parseFloat(nota);
-  return (n < 6) ? styles.notaMala : styles.notaBuena;
-};
+  const getNotaStyle = (nota) => {
+    if (nota >= 7) return { color: "#2e8b57" };
+    if (nota >= 4) return { color: "#ff9800" };
+    return { color: "#d32f2f" };
+  };
 
-// Helper para calcular y estilar asistencia
-const getAsistenciaStyle = (asistencias) => {
-  const { presentes, total } = asistencias;
-  if (total === 0) return { style: styles.notaBuena, text: '100%' };
-  
-  const porcentaje = Math.round((presentes / total) * 100);
-  const style = (porcentaje < 75) ? styles.asistenciaMala : styles.asistenciaBuena;
-  return { style, text: `${porcentaje}%` };
-};
+  const getAsistenciaStyle = (asistencia) => {
+    const porcentaje = asistencia?.porcentaje ?? 0;
+    if (porcentaje >= 85) return { color: "#2e8b57" };
+    if (porcentaje >= 70) return { color: "#ff9800" };
+    return { color: "#d32f2f" };
+  };
 
-const ReporteCursoTable = ({ alumnos }) => {
+  const formatNota = (nota) => {
+    if (nota === undefined || nota === null || isNaN(nota)) return "-";
+    return Number(nota).toFixed(1);
+  };
+
   return (
-    <div style={styles.tableContainer}>
-      <Table hover responsive="lg">
-        {/* --- Encabezado de la Tabla --- */}
+    <div style={styles.container}>
+      <table style={styles.table}>
         <thead>
           <tr>
-            <th style={styles.th}>N°</th>
-            <th style={styles.th}>Alumno (Nombre Completo)</th>
             <th style={styles.th}>DNI</th>
-            <th style={{ ...styles.th, textAlign: 'center' }}>Nota 1</th>
-            <th style={{ ...styles.th, textAlign: 'center' }}>Nota 2</th>
-            <th style={{ ...styles.th, textAlign: 'center' }}>Nota 3</th>
-            <th style={{ ...styles.th, textAlign: 'center' }}>Promedio</th>
-            <th style={{ ...styles.th, textAlign: 'center' }}>Asistencia</th>
-            <th style={{ ...styles.th, textAlign: 'center' }}>Faltas</th>
+            <th style={styles.th}>Nombre</th>
+            <th style={styles.th}>Apellido</th>
+            <th style={styles.th}>Nota 1</th>
+            <th style={styles.th}>Nota 2</th>
+            <th style={styles.th}>Nota 3</th>
+            <th style={styles.th}>Promedio</th>
+            <th style={styles.th}>Asistencia (%)</th>
+            <th style={styles.th}>Faltas</th>
           </tr>
         </thead>
-        
-        {/* --- Cuerpo de la Tabla --- */}
         <tbody>
-          {alumnos.map((item, index) => {
-            const { alumno, calificaciones, asistencias } = item;
-            const asistenciaInfo = getAsistenciaStyle(asistencias);
+          {alumnos.length > 0 ? (
+            alumnos.map((item, index) => {
+              const { alumno = {}, calificaciones, asistencias } = item || {};
+              const safeCalificaciones = calificaciones ?? {};
+              const safeAsistencias = asistencias ?? {};
+              const asistenciaInfo = getAsistenciaStyle(safeAsistencias);
+              const faltas = Number(safeAsistencias.ausentes ?? 0);
 
-            return (
-              <tr key={alumno.id}>
-                <td style={styles.td}><strong>{index + 1}</strong></td>
-                <td style={styles.td}>{alumno.nombreCompleto}</td>
-                <td style={styles.td}>{alumno.dni}</td>
-                
-                {/* Calificaciones */}
-                <td style={{ ...styles.td, ...getNotaStyle(calificaciones.nota1), textAlign: 'center' }}>
-                  {calificaciones.nota1 ? parseFloat(calificaciones.nota1).toFixed(2) : '-'}
-                </td>
-                <td style={{ ...styles.td, ...getNotaStyle(calificaciones.nota2), textAlign: 'center' }}>
-                  {calificaciones.nota2 ? parseFloat(calificaciones.nota2).toFixed(2) : '-'}
-                </td>
-                <td style={{ ...styles.td, ...getNotaStyle(calificaciones.nota3), textAlign: 'center' }}>
-                  {calificaciones.nota3 ? parseFloat(calificaciones.nota3).toFixed(2) : '-'}
-                </td>
-                <td style={{ ...styles.td, ...getNotaStyle(calificaciones.promedio), textAlign: 'center', fontWeight: '700' }}>
-                  {calificaciones.promedio ? parseFloat(calificaciones.promedio).toFixed(2) : '-'}
-                </td>
-                
-                {/* Asistencias */}
-                <td style={{ ...styles.td, ...asistenciaInfo.style, textAlign: 'center' }}>
-                  {asistenciaInfo.text}
-                </td>
-                <td style={{ ...styles.td, textAlign: 'center', fontWeight: '500', color: asistencias.ausentes > 0 ? '#f44336' : '#333' }}>
-                  {asistencias.ausentes}
-                </td>
-              </tr>
-            );
-          })}
+              return (
+                <tr
+                  key={index}
+                  style={
+                    index % 2 === 0
+                      ? styles.trEven
+                      : {}
+                  }
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = styles.trHover.backgroundColor)
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor =
+                      index % 2 === 0 ? styles.trEven.backgroundColor : "#fff")
+                  }
+                >
+                  <td style={styles.td}>{alumno.dni ?? "-"}</td>
+                  <td style={styles.td}>{alumno.nombre ?? "-"}</td>
+                  <td style={styles.td}>{alumno.apellido ?? "-"}</td>
+                  <td style={{ ...styles.td, ...getNotaStyle(safeCalificaciones.nota1) }}>
+                    {formatNota(safeCalificaciones.nota1)}
+                  </td>
+                  <td style={{ ...styles.td, ...getNotaStyle(safeCalificaciones.nota2) }}>
+                    {formatNota(safeCalificaciones.nota2)}
+                  </td>
+                  <td style={{ ...styles.td, ...getNotaStyle(safeCalificaciones.nota3) }}>
+                    {formatNota(safeCalificaciones.nota3)}
+                  </td>
+                  <td
+                    style={{
+                      ...styles.td,
+                      ...getNotaStyle(safeCalificaciones.promedio),
+                      ...styles.notaPromedio,
+                    }}
+                  >
+                    {formatNota(safeCalificaciones.promedio)}
+                  </td>
+                  <td
+                    style={{
+                      ...styles.td,
+                      ...asistenciaInfo,
+                      ...styles.asistencia,
+                    }}
+                  >
+                    {safeAsistencias.porcentaje ?? 0}%
+                  </td>
+                  <td style={styles.td}>{faltas}</td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan="9" style={styles.td}>
+                No hay registros disponibles
+              </td>
+            </tr>
+          )}
         </tbody>
-      </Table>
+      </table>
     </div>
   );
 };
 
 export default ReporteCursoTable;
-
