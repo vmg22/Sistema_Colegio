@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import '../../styles/LinkCrud.css';
-import BtnVolver from '../ui/BtnVolver'
+import React from 'react';
+import BtnVolver from '../ui/BtnVolver';
 
-/**
- * Datos para las tarjetas de navegación.
- */
+
+import CardNavegacion from '../../components/ui/CardNavegacion'; 
+
 const cardData = [
   {
     to: "/alumnos",
@@ -33,46 +31,13 @@ const cardData = [
   },
 ];
 
-/**
- * Componente LinkCrud rediseñado con CSS separado
- */
+
 const LinkCrud = ({ showBackButton = false }) => {
-  // Estado para manejar el efecto hover de cada tarjeta
-  const [hoveredIndex, setHoveredIndex] = useState(null);
 
   return (
     <div className="link-crud-container">
-      <div className="grid-container">
-        {cardData.map((card, index) => (
-          <Link
-            key={card.to}
-            to={card.to}
-            className={`card-base ${hoveredIndex === index ? 'card-hover' : ''}`}
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
-          >
-            {/* Contenedor del Ícono */}
-            <div className="card-icon-container">
-              {/* Google Material Icon */}
-              <span
-                className="material-icons card-icon"
-                style={{ color: card.color }}
-              >
-                {card.icon}
-              </span>
-            </div>
-
-            {/* Etiqueta de la tarjeta */}
-            <span className="card-label">
-              {card.label}
-            </span>
-          </Link>
-        ))}
-      </div>
-
-      {/* Separador y botón de volver */}
+      <CardNavegacion cardData={cardData} />
       <hr className="separator" />
-
       {showBackButton && (
         <BtnVolver rutaVolver={"/crud"} />
       )}
