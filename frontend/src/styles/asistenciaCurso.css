@@ -1,0 +1,140 @@
+.asistencia-panel {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.fecha-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.fecha-section h2 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5em;
+}
+
+.btn-cambiar-fecha {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.busqueda-section {
+    margin: 20px 0;
+}
+
+.busqueda-section h3 {
+    margin-bottom: 10px;
+    color: #555;
+    font-size: 1.1em;
+}
+
+.busqueda-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.lista-alumnos {
+    margin: 20px 0;
+}
+
+.alumno-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.nombre-alumno {
+    font-size: 1em;
+    color: #333;
+}
+
+.opciones-asistencia {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-asistencia {
+    width: 35px;
+    height: 35px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-asistencia.active {
+    color: white;
+}
+
+.btn-asistencia.active:nth-child(1) { background: #28a745; border-color: #28a745; } /* Presente */
+.btn-asistencia.active:nth-child(2) { background: #dc3545; border-color: #dc3545; } /* Ausente */
+.btn-asistencia.active:nth-child(3) { background: #ffc107; border-color: #ffc107; color: #000; } /* Justificado */
+.btn-asistencia.active:nth-child(4) { background: #17a2b8; border-color: #17a2b8; } /* Tardanza */
+
+.acciones-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.btn-resumen {
+    background: #17a2b8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.botones-accion {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-cancelar {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-guardar {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-cambiar-fecha:hover,
+.btn-resumen:hover,
+.btn-cancelar:hover,
+.btn-guardar:hover {
+    opacity: 0.9;
+}
+
+hr {
+    border: none;
+    border-top: 2px solid #eee;
+    margin: 20px 0;
+}

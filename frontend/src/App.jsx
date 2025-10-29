@@ -12,6 +12,12 @@ import Docentes from './pages/crud/docentes/Docentes'
 import NotFountPage from './pages/NotFoundPage'
 import Consulta from './pages/crud/alumnos/Consulta'
 import ConstAluTramite from './pages/alumno/ConstAluTramite.jsx'
+import AsistenciaAlumno from './pages/alumno/AsistenciaAlumno'
+import EstadoAcademicoAlumno from './pages/alumno/EstadoAcademicoAlumno'
+import HistorialComunicaciones from './pages/alumno/HistorialComunicaciones'
+import CursoPrincipal from './pages/curso/CursoPrincipal.jsx'
+import AsistenciaCurso from './pages/curso/AsistenciaCurso.jsx'
+import NotasCurso from './pages/curso/NotasCurso.jsx'
 
 
 function App() {
@@ -27,8 +33,16 @@ function App() {
           <Route path="/materias" element={<Materias/>} />
           <Route path="/plan-de-equivalencias" element={<PlanEquivalencias/>} />
           <Route path="/botones" element={<ButtonShowcase />} />
-          <Route path="/consulta" element={<Consulta/>} />
+          <Route path="/consulta-alumno" element={<Consulta/>} />
+          <Route path="/asistencia-alumno" element={<AsistenciaAlumno/>} />
+          <Route path="/estado-academico" element={<EstadoAcademicoAlumno/>} />
+          <Route path="/historial-comunicaciones" element={<HistorialComunicaciones/>} />
           <Route path="/constanciaAlumnoTramite" element={<ConstAluTramite/>} />
+          <Route path="/consulta-curso" element={<CursoPrincipal/>} />
+          <Route path="/asistencia-curso" element={<AsistenciaCurso/>} />
+          <Route path="/notas-curso" element={<NotasCurso/>} />
+
+          
           <Route path="*" element={<NotFountPage/>} />
         </Routes>
       </BrowserRouter>
