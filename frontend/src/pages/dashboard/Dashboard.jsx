@@ -6,7 +6,10 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Row from "react-bootstrap/Row";
 import { useConsultaStore } from "../../store/consultaStore";
-import { getReporteAlumno, getReporteCurso } from "../../services/reportesService";
+import {
+  getReporteAlumno,
+  getReporteCurso,
+} from "../../services/reportesService";
 import { useNavigate } from "react-router-dom";
 import LineaSeparadora from "../../components/ui/LineaSeparadora";
 import { getMaterias } from "../../services/materiasServices";
@@ -31,10 +34,18 @@ const Dashboard = () => {
   const [selectedAnio, setSelectedAnio] = useState("");
 
   const navigate = useNavigate();
-  
-  // Zustand store
-  const { setAlumnoDni, setAlumnoAnio, setReporteAlumno, setReporteCurso } =
-    useConsultaStore();
+
+  // Zustand store  SETEAMOS LOS DATOS PARA GUARDARLOS GLOBALMENTE
+  const {
+    setAlumnoDni,
+    setAlumnoAnio,
+    setReporteAlumno,
+    setReporteCurso,
+    setSelectedCursoNombre,
+    setSelectedMateriaNombre,
+    setSelectedPeriodoNombre,
+    setSelectedAnioNombre,
+  } = useConsultaStore();
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -61,19 +72,21 @@ const Dashboard = () => {
     cargarDatos();
   }, []);
 
-  // 🎯 FILTRADO DE MATERIAS según el curso seleccionado
+  //  FILTRADO DE MATERIAS según el curso seleccionado
   const materiasFiltradas = useMemo(() => {
     if (!selectedCurso) return [];
-    
+
     // Buscar el curso seleccionado para obtener su año
-    const cursoActual = cursos.find(c => c.id_curso === parseInt(selectedCurso));
-    
+    const cursoActual = cursos.find(
+      (c) => c.id_curso === parseInt(selectedCurso)
+    );
+
     if (!cursoActual) return [];
-    
+
     // Filtrar materias que coincidan con el nivel del curso y estén activas
-    return materias.filter(materia => 
-      materia.nivel === cursoActual.anio && 
-      materia.estado === 'activa'
+    return materias.filter(
+      (materia) =>
+        materia.nivel === cursoActual.anio && materia.estado === "activa"
     );
   }, [selectedCurso, cursos, materias]);
 
@@ -83,7 +96,7 @@ const Dashboard = () => {
     setDniInput("");
     setAnioInput("2025");
     setValidated(false);
-    
+
     // Resetear selecciones de curso cuando cambia el tipo de consulta
     setSelectedCurso("");
     setSelectedMateria("");
@@ -166,14 +179,30 @@ const Dashboard = () => {
 
       console.log("✅ Reporte de curso obtenido:", dataReporte);
 
-      // Guardar en Zustand
+      // --- ¡NUEVO! Guardamos los nombres seleccionados ---
+      const cursoObj = cursos.find(
+        (c) => c.id_curso === parseInt(selectedCurso)
+      );
+      const materiaObj = materiasFiltradas.find(
+        (m) => m.id_materia === parseInt(selectedMateria)
+      );
+      const periodoNombre =
+        selectedPeriodo === "1" ? "1er Cuatrimestre" : "2do Cuatrimestre";
+
+      // Guardar en Zustand los datos del reporte y los nombres PARA UTILIZARLO EN UI
       setReporteCurso(dataReporte);
+      setSelectedCursoNombre(
+        cursoObj ? `${cursoObj.anio}° ${cursoObj.division}` : "Curso"
+      );
+      setSelectedMateriaNombre(materiaObj ? materiaObj.nombre : "Materia");
+      setSelectedPeriodoNombre(periodoNombre);
+      setSelectedAnioNombre(selectedAnio);
 
       // Guardar en sessionStorage (para recargas)
       sessionStorage.setItem("reporteCurso", JSON.stringify(dataReporte));
 
       // Navegar a la página de resultados
-      navigate("/consulta-curso");
+      navigate("/cursoDashboard");
     } catch (err) {
       console.error("❌ Error al traer reporte de curso:", err);
       setError(err.message || "No se pudo obtener el reporte del curso.");
@@ -182,7 +211,7 @@ const Dashboard = () => {
     }
   };
 
-  // 🎯 Resetear materia cuando cambia el curso
+  //  Resetear materia cuando cambia el curso
   const handleCursoChange = (e) => {
     setSelectedCurso(e.target.value);
     setSelectedMateria(""); // Limpiar la materia seleccionada
@@ -306,7 +335,8 @@ const Dashboard = () => {
                   <option value="">Seleccione curso</option>
                   {cursos?.map((curso) => (
                     <option key={curso.id_curso} value={curso.id_curso}>
-                      {curso.nombre} - {curso.anio}° {curso.division} ({curso.turno})
+                      {curso.nombre} - {curso.anio}° {curso.division} (
+                      {curso.turno})
                     </option>
                   ))}
                 </Form.Select>
@@ -322,8 +352,8 @@ const Dashboard = () => {
                   disabled={!selectedCurso}
                 >
                   <option value="">
-                    {!selectedCurso 
-                      ? "Primero seleccione un curso" 
+                    {!selectedCurso
+                      ? "Primero seleccione un curso"
                       : "Seleccione materia"}
                   </option>
                   {materiasFiltradas?.map((materia) => (
