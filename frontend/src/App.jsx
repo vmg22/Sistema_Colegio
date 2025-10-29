@@ -15,7 +15,7 @@ import ConstAluTramite from './pages/alumno/ConstAluTramite.jsx'
 import PerfilAlumno from './pages/alumno/PerfilAlumno.jsx'
 import AsistenciasAlumno from './pages/alumno/AsistenciaAlumno.jsx'
 import EstadoAcademicoPage from './pages/alumno/EstadoAcademicoAlumno.jsx'
-
+import InscripcionWizard from './components/crud/InscripcionWizard.jsx'
 
 function App() {
   return (
@@ -35,6 +35,7 @@ function App() {
           <Route path="/asistenciasAlumno" element={<AsistenciasAlumno/>} />
           <Route path="/constanciaAlumnoTramite" element={<ConstAluTramite/>} />
           <Route path="/estadoAcademicoAlumno" element={<EstadoAcademicoPage/>} />
+          <Route path="/inscripcionWizard" element={<InscripcionWizard/>} />
           <Route path="*" element={<NotFountPage/>} />
         </Routes>
       </BrowserRouter>
