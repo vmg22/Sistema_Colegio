@@ -121,7 +121,7 @@ const altaDocenteUsuario = {
     FROM docente d
     LEFT JOIN usuario u ON d.id_usuario = u.id_usuario
     WHERE d.deleted_at IS NULL
-    ORDER BY d.apellido, d.nombre
+    ORDER BY d.id_docente ASC
   `,
 
   /**
