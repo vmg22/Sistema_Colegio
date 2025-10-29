@@ -73,7 +73,7 @@ const CursoDashboardPage = () => {
         <AccionCard
           titulo="Resumen de Asistencias"
           icono="task_alt"
-          to="/reporte-curso/asistencias" // TODO: Crear esta ruta
+          to="/reporte-curso/Asistecias" // TODO: Crear esta ruta
         />
         <AccionCard
           titulo="Comunicación Grupal"
