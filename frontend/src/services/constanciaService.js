@@ -1,12 +1,12 @@
 import { getReporteAlumno } from './reportesService';
 
-/**
- * Obtiene los datos del alumno para generar una constancia
- * Reutiliza el endpoint de reportes que ya existe
- * @param {string} dni - DNI del alumno
- * @param {number} anio - Año lectivo
- * @returns {Promise<Object>} Datos del alumno
- */
+
+// Obtiene los datos del alumno para generar una constancia
+ // Reutiliza el endpoint de reportes que ya existe
+ // dni - DNI del alumno
+ // - Año lectivo
+ // {Promise<Object>} Datos del alumno
+ 
 export const getConstanciaAlumno = async (dni, anio) => {
   try {
     // Reutilizamos el servicio de reportes existente
@@ -34,9 +34,9 @@ export const getConstanciaAlumno = async (dni, anio) => {
 
 /**
  * Genera y guarda una constancia para un alumno
- * @param {string} dni - DNI del alumno
- * @param {Object} datosConstancia - Datos adicionales de la constancia
- * @returns {Promise<Object>} Constancia generada
+ //{string} dni - DNI del alumno
+ // {Object} datosConstancia - Datos adicionales de la constancia
+ //{Promise<Object>} Constancia generada
  */
 export const generarConstancia = async (dni, datosConstancia) => {
   try {

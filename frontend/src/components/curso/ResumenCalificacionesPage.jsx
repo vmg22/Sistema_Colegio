@@ -5,7 +5,7 @@ import { useConsultaStore } from "../../store/consultaStore.js";
 import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import EncabezadoCurso from "./EncabezadoCurso.jsx";
+import EncabezadoCurso from "../../components/curso/EncabezadoCurso.jsx";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -140,42 +140,48 @@ const ResumenCalificacionesPage = () => {
     if (!reporte?.alumnos?.length) return { stats: null, chartData: null };
 
     const alumnos = reporte.alumnos;
-    const total = alumnos.length;
+    const totalAlumnos = alumnos.length;
 
-    const aprobados = alumnos.filter(a => parseFloat(a.calificaciones.promedio) >= 6).length;
-    const desaprobados = total - aprobados;
-    const destacados = alumnos.filter(a => parseFloat(a.calificaciones.promedio) >= 8).length;
+    // --- Calificaciones ---
+    const alumnosAprobados = alumnos.filter(a => parseFloat(a.calificaciones?.promedio || 0) >= 6).length;
+    const alumnosDesaprobados = totalAlumnos - alumnosAprobados;
+    const alumnosDestacados = alumnos.filter(a => parseFloat(a.calificaciones?.promedio || 0) >= 8).length;
 
     const promedioGeneral = (
-      alumnos.reduce((acc, a) => acc + parseFloat(a.calificaciones.promedio || 0), 0) / total
+      alumnos.reduce((acc, a) => acc + parseFloat(a.calificaciones?.promedio || 0), 0) / totalAlumnos
     ).toFixed(2);
 
-    const top3 = [...alumnos].sort(
-      (a, b) => parseFloat(b.calificaciones.promedio) - parseFloat(a.calificaciones.promedio)
-    ).slice(0, 3);
+    const top3 = [...alumnos]
+      .sort((a, b) => parseFloat(b.calificaciones?.promedio || 0) - parseFloat(a.calificaciones?.promedio || 0))
+      .slice(0, 3);
 
-    const mejor = top3[0];
-    const totalAusencias = alumnos.reduce((acc, a) => acc + (a.asistencias?.ausentes || 0), 0);
+    const mejorAlumno = top3[0];
+
+    // --- Asistencias ---
+    const totalAusenciasCurso = alumnos.reduce((acc, a) => acc + (a.asistencias?.ausentes || 0), 0);
 
     const asistenciaPromedio = (
       alumnos.reduce((acc, a) => {
         if (!a.asistencias?.total) return acc + 100;
-        return acc + (a.asistencias.presentes / a.asistencias.total) * 100;
-      }, 0) / total
+        const presentes = Number(a.asistencias.presentes || 0);
+        const totalClases = Number(a.asistencias.total);
+        return acc + (presentes / totalClases) * 100;
+      }, 0) / totalAlumnos
     ).toFixed(1);
 
-    const riesgoLista = alumnos
+    // --- Riesgo ---
+    const alumnosEnRiesgoLista = alumnos
       .filter(a => {
-        const prom = parseFloat(a.calificaciones.promedio);
+        const prom = parseFloat(a.calificaciones?.promedio || 0);
         const asistenciaPorc = a.asistencias?.total
-          ? (a.asistencias.presentes / a.asistencias.total) * 100
+          ? (Number(a.asistencias.presentes || 0) / Number(a.asistencias.total)) * 100
           : 100;
         return prom < 6 || asistenciaPorc < 70;
       })
       .map(a => {
-        const prom = parseFloat(a.calificaciones.promedio);
+        const prom = parseFloat(a.calificaciones?.promedio || 0);
         const asistenciaPorc = a.asistencias?.total
-          ? (a.asistencias.presentes / a.asistencias.total) * 100
+          ? (Number(a.asistencias.presentes || 0) / Number(a.asistencias.total)) * 100
           : 100;
         let reason =
           prom < 6 && asistenciaPorc < 70
@@ -183,39 +189,45 @@ const ResumenCalificacionesPage = () => {
             : prom < 6
             ? "Notas bajas"
             : "Asistencia baja";
-        return { id: a.alumno.id, nombre: a.alumno.nombreCompleto, reason };
+        return { id: a.alumno?.id, nombre: a.alumno?.nombreCompleto || "Alumno Desconocido", reason };
       });
 
+    const alumnosEnRiesgoCount = alumnosEnRiesgoLista.length;
+
+    // --- Insight ---
     const insight =
       promedioGeneral > 8
         ? "🎉 ¡Excelente rendimiento general del curso!"
         : promedioGeneral < 6
         ? "📉 El promedio general es bajo. Revisar asistencia y métodos de enseñanza."
-        : riesgoLista.length / total > 0.3
+        : alumnosEnRiesgoCount / totalAlumnos > 0.3
         ? "⚠️ Hay varios alumnos en riesgo. Considerar clases de refuerzo o tutorías."
         : "📚 El curso mantiene un desempeño promedio estable.";
 
     return {
       stats: {
         promedioGeneral,
-        aprobados,
-        desaprobados,
-        destacados,
-        total,
-        totalAusencias,
-        mejorAlumno: mejor ? mejor.alumno.nombreCompleto : "N/A",
+        alumnosAprobados,
+        alumnosDesaprobados,
+        alumnosDestacados,
+        totalAlumnos,
+        totalAusenciasCurso,
+        mejorAlumnoNombre: mejorAlumno ? mejorAlumno.alumno?.nombreCompleto || "N/A" : "N/A",
+        mejorAlumnoPromedio: mejorAlumno
+          ? parseFloat(mejorAlumno.calificaciones?.promedio || 0).toFixed(2)
+          : "N/A",
         asistenciaPromedio,
-        riesgoCount: riesgoLista.length,
+        alumnosEnRiesgo: alumnosEnRiesgoCount,
         insight,
         top3,
-        riesgoLista,
+        alumnosEnRiesgoLista,
       },
       chartData: {
         labels: ["Aprobados", "Desaprobados"],
         datasets: [
           {
             label: "# de Alumnos",
-            data: [aprobados, desaprobados],
+            data: [alumnosAprobados, alumnosDesaprobados],
             backgroundColor: ["#4caf50", "#f44336"],
             borderColor: ["#fff", "#fff"],
             borderWidth: 2,
@@ -239,7 +251,9 @@ const ResumenCalificacionesPage = () => {
         <h5>No se encontraron datos de calificaciones.</h5>
         <p>Vuelve al panel e intenta realizar una nueva búsqueda.</p>
         <Link to={"/"}>
-          <Button variant="secondary" className="px-4">Volver</Button>
+          <Button variant="secondary" className="px-4">
+            Volver
+          </Button>
         </Link>
       </div>
     );
@@ -249,7 +263,6 @@ const ResumenCalificacionesPage = () => {
       <BtnVolver />
       <EncabezadoCurso />
       <h2 style={styles.pageTitle}>
-        
         <span className="material-symbols-outlined">bar_chart</span>
         Resumen de Calificaciones y Asistencias
       </h2>
@@ -267,15 +280,15 @@ const ResumenCalificacionesPage = () => {
 
           <div style={styles.statRow}>
             <div style={styles.statSmallBox}>
-              <h4 style={styles.statSmallValue("#4caf50")}>{stats.aprobados}</h4>
+              <h4 style={styles.statSmallValue("#4caf50")}>{stats.alumnosAprobados}</h4>
               <p style={styles.statSmallLabel}>Aprobados (≥ 6)</p>
             </div>
             <div style={styles.statSmallBox}>
-              <h4 style={styles.statSmallValue("#f44336")}>{stats.desaprobados}</h4>
+              <h4 style={styles.statSmallValue("#f44336")}>{stats.alumnosDesaprobados}</h4>
               <p style={styles.statSmallLabel}>Desaprobados (&lt; 6)</p>
             </div>
             <div style={styles.statSmallBox}>
-              <h4 style={styles.statSmallValue()}>{stats.destacados}</h4>
+              <h4 style={styles.statSmallValue()}>{stats.alumnosDestacados}</h4>
               <p style={styles.statSmallLabel}>Destacados (≥ 8)</p>
             </div>
           </div>
@@ -283,7 +296,7 @@ const ResumenCalificacionesPage = () => {
 
           <div style={styles.statRow}>
             <div style={styles.statSmallBox}>
-              <h4 style={styles.statSmallValue("#f44336")}>{stats.riesgoCount}</h4>
+              <h4 style={styles.statSmallValue("#f44336")}>{stats.alumnosEnRiesgo}</h4>
               <p style={styles.statSmallLabel}>Alumnos en Riesgo</p>
             </div>
             <div style={styles.statSmallBox}>
@@ -291,7 +304,7 @@ const ResumenCalificacionesPage = () => {
               <p style={styles.statSmallLabel}>Asistencia Promedio</p>
             </div>
             <div style={styles.statSmallBox}>
-              <h4 style={styles.statSmallValue()}>{stats.totalAusencias}</h4>
+              <h4 style={styles.statSmallValue()}>{stats.totalAusenciasCurso}</h4>
               <p style={styles.statSmallLabel}>Total Ausencias</p>
             </div>
           </div>
@@ -301,23 +314,24 @@ const ResumenCalificacionesPage = () => {
             <h4 style={styles.top3Title}>🏆 Mejores Alumnos</h4>
             <ul style={styles.top3List}>
               {stats.top3.map((a, i) => (
-                <li key={a.alumno.id} style={styles.top3Item}>
+                <li key={a.alumno?.id || i} style={styles.top3Item}>
                   <span>
-                    <strong style={styles.top3Rank}>{i + 1}.</strong> {a.alumno.nombreCompleto}
+                    <strong style={styles.top3Rank}>{i + 1}.</strong>{" "}
+                    {a.alumno?.nombreCompleto || "N/A"}
                   </span>
                   <span style={styles.top3Promedio}>
-                    {parseFloat(a.calificaciones.promedio).toFixed(2)}
+                    {parseFloat(a.calificaciones?.promedio || 0).toFixed(2)}
                   </span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {stats.riesgoLista.length > 0 && (
+          {stats.alumnosEnRiesgoLista.length > 0 && (
             <div style={styles.riesgoContainer}>
               <h4 style={styles.riesgoTitle}>⚠️ Alumnos en Riesgo</h4>
               <ul style={styles.riesgoList}>
-                {stats.riesgoLista.map(a => (
+                {stats.alumnosEnRiesgoLista.map(a => (
                   <li key={a.id} style={styles.riesgoItem}>
                     <span>{a.nombre}</span>
                     <span style={styles.riesgoReason}>({a.reason})</span>
@@ -341,7 +355,10 @@ const ResumenCalificacionesPage = () => {
                     label: context => {
                       const label = context.label || "";
                       const val = context.parsed || 0;
-                      return `${label}: ${val} alumnos (${((val / stats.total) * 100).toFixed(1)}%)`;
+                      return `${label}: ${val} alumnos (${(
+                        (val / stats.totalAlumnos) *
+                        100
+                      ).toFixed(1)}%)`;
                     },
                   },
                 },
