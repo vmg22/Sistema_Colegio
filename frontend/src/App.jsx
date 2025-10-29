@@ -15,6 +15,9 @@ import ConstAluTramite from './pages/alumno/ConstAluTramite.jsx'
 import PerfilAlumno from './pages/alumno/PerfilAlumno.jsx'
 import AsistenciasAlumno from './pages/alumno/AsistenciaAlumno.jsx'
 import EstadoAcademicoPage from './pages/alumno/EstadoAcademicoAlumno.jsx'
+import CursoDashboardPage from './pages/curso/CursoDashboardPage.jsx'
+import ReporteCursoListPage from './components/curso/ReporteCursoListPage.jsx'
+import ResumenCalificacionesPage from './components/curso/ResumenCalificacionesPage.jsx'
 
 
 function App() {
@@ -35,7 +38,12 @@ function App() {
           <Route path="/asistenciasAlumno" element={<AsistenciasAlumno/>} />
           <Route path="/constanciaAlumnoTramite" element={<ConstAluTramite/>} />
           <Route path="/estadoAcademicoAlumno" element={<EstadoAcademicoPage/>} />
+          <Route path="/cursoDashboard" element={<CursoDashboardPage/>} />
+          <Route path="/reporte-curso/listado" element={<ReporteCursoListPage />} />
+          <Route path="/reporte-curso/calificaciones" element={<ResumenCalificacionesPage />} />
+
           <Route path="*" element={<NotFountPage/>} />
+
         </Routes>
       </BrowserRouter>
     </>
