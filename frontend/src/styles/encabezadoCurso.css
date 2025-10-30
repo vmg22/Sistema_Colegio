@@ -1,0 +1,111 @@
+.encabezado-curso-card {
+  background-color: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #3f51b5;
+}
+
+.encabezado-icon-circle {
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  background-color: #c5cae9; 
+  color: #303F9F; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.encabezado-icon {
+  font-size: 36px;
+}
+
+.encabezado-info-container {
+  flex: 1;
+}
+
+.encabezado-title {
+  font-size: 1.875rem; 
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.encabezado-subtitle {
+  font-size: 1.1rem; 
+  font-weight: 500;
+  color: #555;
+  margin: 0;
+}
+
+.encabezado-stats-container {
+  text-align: right;
+}
+
+.encabezado-total-alumnos {
+  font-size: 1.25rem; 
+  font-weight: 600;
+  color: #303F9F;
+  margin: 0;
+}
+
+.encabezado-total-label {
+  font-size: 0.9rem;
+  color: #777;
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .encabezado-curso-card {
+    padding: 20px;
+    gap: 15px;
+  }
+  
+  .encabezado-title {
+    font-size: 1.5rem;
+  }
+  
+  .encabezado-subtitle {
+    font-size: 1rem;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .encabezado-curso-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px 15px;
+    gap: 15px;
+  }
+  
+  .encabezado-info-container {
+    text-align: center;
+  }
+  
+  .encabezado-stats-container {
+    text-align: center;
+  }
+  
+  .encabezado-title {
+    font-size: 1.3rem;
+  }
+  
+  .encabezado-subtitle {
+    font-size: 0.95rem;
+  }
+  
+  .encabezado-icon-circle {
+    height: 50px;
+    width: 50px;
+  }
+  
+  .encabezado-icon {
+    font-size: 28px;
+  }
+}

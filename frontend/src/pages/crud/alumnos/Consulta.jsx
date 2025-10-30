@@ -58,10 +58,12 @@ const Consulta = () => {
   console.log(tutores);
 
   return (
-    <div className="container mt-4 consulta-container">
+    <div className="perfil-alumno-container">
       <BtnVolver rutaVolver={"/"} />
-      <HeaderPages titulo="Informacion Alumno" icono="search"/>
-      <LineaSeparadora/>
+      <div className="curso-dashboard-header">
+         <span className="material-symbols-outlined calificaciones-page-icon">search</span>
+        <h2 className="perfil-alumno-title">Informacion Alumno</h2>
+      </div>
       <DivHeaderInfo/>
       <DivBodyInfo/>
 

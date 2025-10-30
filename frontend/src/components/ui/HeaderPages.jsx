@@ -13,14 +13,14 @@ const HeaderPages = ({ icono, titulo }) => {
           gap: "10px",
         }}
       >
+        <div className="curso-dashboard-header">
         <span
           className="material-symbols-outlined search"
-          style={{ marginRight: "15px" }}
         >
-          {icono}
+          {icono} 
         </span>
-        {/* Aquí usamos la prop "titulo" para el H3 */}
-        <h4 className="tituloHeader">{titulo}</h4>
+        <h2 className="curso-dashboard-title">{titulo}</h2>
+      </div>
         
       </div>
     </>
