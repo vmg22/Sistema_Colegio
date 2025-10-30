@@ -1,0 +1,11 @@
+[33m0fab68b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32msanchez_denise[m[33m)[m HEAD@{0}: commit (merge): cambios agustina
+[33m2cc427b[m[33m ([m[1;31morigin/sanchez_denise[m[33m)[m HEAD@{1}: commit: Comienzo crud docente
+[33med8faf5[m HEAD@{2}: commit (merge): Merge branch 'matias_garnica' of https://github.com/vmg22/Sistema_Colegio into sanchez_denise
+[33m153d393[m HEAD@{3}: commit (merge): cambios matias
+[33m45ae5e6[m HEAD@{4}: commit: cambio de diseño de cards de crud
+[33m3ffa7a9[m HEAD@{5}: commit (merge): mergin cambios matias
+[33mf1c083d[m HEAD@{6}: commit: component tabla crud
+[33me687ce5[m HEAD@{7}: commit (merge): fusion matias
+[33mf75abef[m HEAD@{8}: commit: integro cardNavegacion a LinkCrud
+[33m83e7bd2[m HEAD@{9}: checkout: moving from matias_garnica to sanchez_denise
+[33me952a26[m[33m ([m[1;32mmatias_garnica[m[33m)[m HEAD@{10}: clone: from https://github.com/vmg22/Sistema_Colegio.git
