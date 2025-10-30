@@ -2,24 +2,19 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Spinner, Button } from "react-bootstrap";
 import { useConsultaStore } from "../../store/consultaStore";
-// Corregidas las rutas de importación
 import BtnVolver from "../../components/ui/BtnVolver.jsx";
-import AsistenciaMateriaCard from "../../components/ui/AsistenciaMateriaCard.jsx"; 
-
-// ¡CORREGIDO! Cambiamos 'EncabezadoEstudiande.jsx' por 'EncabezadoEstudiante.jsx'
+import AsistenciaMateriaCard from "../../components/ui/AsistenciaMateriaCard.jsx";
 import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
-import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx"
+import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx";
 
 // Estilos
 const styles = {
-// ... (el resto de los estilos se mantiene igual) ...
   pageContainer: {
     padding: "0 40px 40px 40px",
     backgroundColor: "#f4f7fa",
     minHeight: "calc(100vh - 80px)",
     fontFamily: "'Inter', sans-serif",
   },
-  // Eliminamos 'header', 'studentName', 'studentCourse'
   cardGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
@@ -35,40 +30,65 @@ const styles = {
 };
 
 const AsistenciasPage = () => {
-// ... (toda la lógica de 'reporte', 'loading' y 'materiasConAsistencia' se mantiene igual) ...
   const { reporteAlumno } = useConsultaStore();
   const [reporte, setReporte] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // useEffect seguro: solo actualiza si cambia realmente el contenido
   useEffect(() => {
     let dataToSet = null;
 
-    if (reporteAlumno) {
+    if (reporteAlumno && Object.keys(reporteAlumno).length > 0) {
       dataToSet = reporteAlumno;
     } else {
       const storedData = sessionStorage.getItem("reporteAlumno");
       if (storedData) {
-        dataToSet = JSON.parse(storedData);
+        try {
+          dataToSet = JSON.parse(storedData);
+        } catch (e) {
+          console.error("Error parsing reporteAlumno from sessionStorage:", e);
+          dataToSet = null;
+        }
       }
     }
 
-    setReporte(dataToSet);
+    // Comparamos stringify para evitar actualizar con el mismo objeto repetidamente
+    setReporte((prev) => {
+      const prevStr = prev ? JSON.stringify(prev) : null;
+      const nextStr = dataToSet ? JSON.stringify(dataToSet) : null;
+
+      if (prevStr !== nextStr) {
+        return dataToSet;
+      }
+      return prev;
+    });
+
+    // Aseguramos que loading se actualice apropiadamente
     setLoading(false);
   }, [reporteAlumno]);
-  
 
-  // Procesamos los datos de asistencia usando useMemo
+  // Procesamos los datos de asistencia y eliminamos duplicados por nombre de materia
   const materiasConAsistencia = useMemo(() => {
     if (!reporte || !reporte.materias) return [];
 
-    // Usamos Object.entries para convertir el objeto de materias en un array
-    return Object.entries(reporte.materias).map(([nombreMateria, data]) => {
-      const asistencias = data.asistencias || [];
+    // Convertir a array (en caso de venir como objeto)
+    const materiasArray = Object.entries(reporte.materias).map(([nombre, data]) => ({
+      nombre,
+      data,
+    }));
+
+    // Filtrar duplicados por nombre (mantiene la primera ocurrencia)
+    const materiasUnicas = materiasArray.filter(
+      (m, index, self) => index === self.findIndex((t) => t.nombre === m.nombre)
+    );
+
+    return materiasUnicas.map(({ nombre, data }) => {
+      const asistencias = Array.isArray(data.asistencias) ? data.asistencias : [];
       const totalClases = asistencias.length;
 
       if (totalClases === 0) {
         return {
-          nombre: nombreMateria,
+          nombre,
           stats: {
             porcentaje: 100,
             faltas: 0,
@@ -78,12 +98,12 @@ const AsistenciasPage = () => {
         };
       }
 
-      const faltas = asistencias.filter(a => a.estado === 'ausente').length;
+      const faltas = asistencias.filter((a) => a.estado === "ausente").length;
       const presentes = totalClases - faltas;
       const porcentaje = Math.round((presentes / totalClases) * 100);
 
       return {
-        nombre: nombreMateria,
+        nombre,
         stats: {
           porcentaje,
           faltas,
@@ -95,7 +115,6 @@ const AsistenciasPage = () => {
   }, [reporte]);
 
   if (loading) {
-// ... (el 'return' de 'loading' se mantiene igual) ...
     return (
       <div style={styles.loadingContainer}>
         <Spinner animation="border" variant="primary" />
@@ -105,7 +124,6 @@ const AsistenciasPage = () => {
   }
 
   if (!reporte) {
-// ... (el 'return' de '!reporte' se mantiene igual) ...
     return (
       <div style={styles.loadingContainer}>
         <h5>No se encontraron datos del alumno.</h5>
@@ -123,10 +141,12 @@ const AsistenciasPage = () => {
     <div style={styles.pageContainer}>
       {/* 1. Botón Volver */}
       <BtnVolver />
-      
-      {/* 2. Header con nombre y curso (usando el nuevo componente) */}
+
+      {/* 2. Header con nombre y curso */}
       <DivHeaderInfo reporte={reporte} variant="text" />
-      <br /><br /><br />
+      <br />
+      <br />
+      <br />
 
       {/* 3. Grilla de tarjetas de asistencia */}
       <div style={styles.cardGrid}>
@@ -143,4 +163,3 @@ const AsistenciasPage = () => {
 };
 
 export default AsistenciasPage;
-
