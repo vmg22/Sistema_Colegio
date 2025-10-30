@@ -1,106 +1,50 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Spinner, Button } from "react-bootstrap";
-import { useConsultaStore } from "../../store/consultaStore";
-import BtnVolver from "../../components/ui/BtnVolver.jsx"; 
+import React from "react";
+import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import AccionCard from "../../components/ui/AccionCard.jsx";
-import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
-import "../../styles/cursoDashboard.css"; // Mismo archivo CSS
+import EncabezadoCurso from "../../components/curso/EncabezadoCurso.jsx";
+import "../../styles/cursoDashboard.css"; // Importamos el archivo CSS
 
-const PerfilAlumno = () => {
-  const { reporteAlumno } = useConsultaStore();
-  const [reporte, setReporte] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let dataToSet = null;
-
-    if (reporteAlumno) {
-      dataToSet = reporteAlumno;
-    } else {
-      const storedData = sessionStorage.getItem("reporteAlumno");
-      if (storedData) {
-        dataToSet = JSON.parse(storedData);
-      }
-    }
-
-    setReporte(dataToSet);
-    setLoading(false);
-  }, [reporteAlumno]);
-
-  if (loading) {
-    return (
-      <div className="curso-loading-container">
-        <Spinner animation="border" variant="primary" />
-        <p className="mt-3">Cargando reporte...</p>
-      </div>
-    );
-  }
-
-  if (!reporte) {
-    return (
-      <div className="curso-loading-container">
-        <h5>No se encontraron datos del alumno.</h5>
-        <p>Vuelve al panel e intenta realizar una nueva búsqueda.</p>
-        <Link to={"/"}>
-          <Button variant="secondary" className="px-4">
-            Volver
-          </Button>
-        </Link>
-      </div>
-    );
-  }
-
+const CursoDashboardPage = () => {
   return (
     <div className="curso-dashboard-container">
-      {/* 1. Botón Volver */}
+      {/* 1. Botón Volver y Título */}
       <BtnVolver />
       <div className="curso-dashboard-header">
         <span className="material-symbols-outlined curso-dashboard-icon">
-          badge
+          group
         </span>
-        <h2 className="curso-dashboard-title">Perfil de Alumno</h2>
+        <h2 className="curso-dashboard-title">Perfil del Curso</h2>
       </div>
 
-      {/* 2. Card de Información */}
-      <EncabezadoEstudiante reporte={reporte} variant="card" />
+      {/* 2. Encabezado del Curso */}
+      <EncabezadoCurso />
 
       {/* 3. Acciones Disponibles */}
       <h4 className="curso-actions-title">Acciones Disponibles</h4>
       <div className="curso-card-grid">
         <AccionCard
-          titulo="Info alumno"
-          icono="account_circle"
-          to="/consulta" 
+          titulo="Ver Listado de Alumnos"
+          icono="list_alt"
+          to="/reporte-curso/listado"
         />
         <AccionCard
-          titulo="Ver Asistencias"
+          titulo="Resumen de Calificaciones"
+          icono="bar_chart"
+          to="/reporte-curso/calificaciones"
+        />
+        <AccionCard
+          titulo="Resumen de Asistencias"
           icono="task_alt"
-          to="/asistenciasAlumno"
+          to="/reporte-curso/Asistencias"
         />
         <AccionCard
-          titulo="Estado Academico"
-          icono="trending_up"
-          to="/estadoAcademicoAlumno"
-        />
-        <AccionCard
-          titulo="Historial de Comunicaciones"
-          icono="chat"
-          to="/perfil-alumno/comunicaciones"
-        />
-        <AccionCard
-          titulo="Certificados y actas"
-          icono="description"
-          to="/constanciaAlumnoTramite"
-        />
-        <AccionCard
-          titulo="Generar Mail"
+          titulo="Comunicación Grupal"
           icono="mail"
-          to="/perfil-alumno/generar-mail"
+          to="/reporte-curso/comunicacion"
         />
       </div>
     </div>
   );
 };
 
-export default PerfilAlumno;
+export default CursoDashboardPage;
