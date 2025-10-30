@@ -1,98 +1,32 @@
-/* LinkCrud.css */
-
-/* Estilos para el contenedor principal */
+/* Contenedor principal */
 .link-crud-container {
-  padding: 32px;
-  max-width: 1280px;
-  margin: 0 auto;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    width: 100%;
+    max-width: 1000px; /* Ajusta el ancho máximo según tu diseño */
+    margin: 20px auto; /* Centra el contenedor */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra los hijos (grilla y botón) */
+    gap: 20px; /* Espacio entre la grilla, el <hr> y el botón */
 }
 
-/* Grid container para las tarjetas */
-.grid-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  justify-content: center;
-  padding-top: 80px;
-}
-
-/* Estilos base de las tarjetas */
-.card-base {
-  padding: 24px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease-in-out;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  text-decoration: none;
-  color: #1F2937;
-  flex-basis: 250px;
-  flex-grow: 1;
-  min-width: 220px;
-  max-width: 300px;
-}
-
-/* Efecto hover para las tarjetas */
-.card-hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  transform: translateY(-4px);
-}
-
-/* Contenedor del ícono */
-.card-icon-container {
-  margin-bottom: 16px;
-}
-
-/* Estilo del ícono */
-.card-icon {
-  font-size: 64px;
-}
-
-/* Etiqueta de la tarjeta */
-.card-label {
-  font-size: 20px;
-  font-weight: 600;
+/* Grilla para las cards */
+.card-grid {
+    display: grid;
+    /* Crea columnas responsivas:
+      - auto-fill: llene el espacio con tantas columnas como sea posible.
+      - minmax(180px, 1fr): cada columna tendrá un mínimo de 180px
+        y un máximo de 1 fracción del espacio disponible (se reparten).
+    */
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 25px; /* Espacio entre las cards */
+    width: 100%; /* La grilla ocupa todo el ancho de su padre */
 }
 
 /* Separador */
 .separator {
-  margin-top: 48px;
-  margin-bottom: 48px;
-  border: none;
-  border-top: 1px solid #E5E7EB;
-}
-
-/* Estilos para el botón volver */
-.btn-volver-container {
-  margin-top: 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.btn-volver-link {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 16px;
-  background-color: #E5E7EB;
-  color: #1F2937;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: background-color 0.3s;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-volver-link:hover {
-  background-color: #D1D5DB;
-}
-
-.btn-volver-icon {
-  font-size: 18px;
-  margin-right: 8px;
+    width: 100%;
+    border: none;
+    border-top: 1px solid #e0e0e0; /* Una línea sutil */
+    margin: 20px 0; /* Espacio arriba y abajo */
 }

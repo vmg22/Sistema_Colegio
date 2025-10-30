@@ -30,6 +30,7 @@ import CertificadoEscolar from './pages/alumno/certificadoEscolar.jsx'
 
 
 
+import InscripcionWizard from './components/crud/InscripcionWizard.jsx'
 
 function App() {
   return (
@@ -64,7 +65,7 @@ function App() {
           <Route path="/cursoDashboard" element={<CursoDashboardPage/>} />
           <Route path="/reporte-curso/listado" element={<ReporteCursoListPage />} />
           <Route path="/reporte-curso/calificaciones" element={<ResumenCalificacionesPage />} />
-
+          <Route path="/inscripcion-wizard" element={<InscripcionWizard />} />
           <Route path="*" element={<NotFountPage/>} />
 
         </Routes>
