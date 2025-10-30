@@ -14,6 +14,7 @@ const authRoutes = require("../modules/auth/auth.routes");
 const asistenciaRoutes = require('../modules/asistencia_alumno/asistencia_alumno.routes');
 const reportesAlumnoRoutes = require("../modules/reportesAlumnoDni/reporte.routes");
 const reportesCursoRoutes = require("../modules/reportesCurso/reporteCurso.routes");
+const inscripcionesRoutes = require("../modules/CRUD/inscripcion/inscripcionRoutes.js");
 
 // ✅ NUEVO: Módulo de altas (Docente + Usuario)
 const altasRoutes = require("../modules/altas/alta.routes");
@@ -49,6 +50,8 @@ router.use('/alumno-tutor', alumnoTutorRoutes);
 
 //  Ruta de altas
 router.use("/altas", altasRoutes);
+// RUTAS PARA INCRIPCIONES /CRUD INSCRIPCION
+router.use('/inscripciones', inscripcionesRoutes);
 
 // Ruta principal de la API
 router.get("/", (req, res) => {

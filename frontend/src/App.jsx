@@ -11,9 +11,13 @@ import PlanEquivalencias from './pages/crud/plan/PlanEquivalencias'
 import Docentes from './pages/crud/docentes/Docentes'
 import NotFountPage from './pages/NotFoundPage'
 import Consulta from './pages/crud/alumnos/Consulta'
+import ConstAluTramite from './pages/alumno/ConstAluTramite.jsx'
 import PerfilAlumno from './pages/alumno/PerfilAlumno.jsx'
 import AsistenciasAlumno from './pages/alumno/AsistenciaAlumno.jsx'
 import EstadoAcademicoPage from './pages/alumno/EstadoAcademicoAlumno.jsx'
+import CursoDashboardPage from './pages/curso/CursoDashboardPage.jsx'
+import ReporteCursoListPage from './components/curso/ReporteCursoListPage.jsx'
+import ResumenCalificacionesPage from './components/curso/ResumenCalificacionesPage.jsx'
 import AsistenciaAlumno from './pages/alumno/AsistenciaAlumno'
 import EstadoAcademicoAlumno from './pages/alumno/EstadoAcademicoAlumno'
 import HistorialComunicaciones from './pages/alumno/HistorialComunicaciones'
@@ -58,7 +62,12 @@ function App() {
           
           
 
+          <Route path="/cursoDashboard" element={<CursoDashboardPage/>} />
+          <Route path="/reporte-curso/listado" element={<ReporteCursoListPage />} />
+          <Route path="/reporte-curso/calificaciones" element={<ResumenCalificacionesPage />} />
+
           <Route path="*" element={<NotFountPage/>} />
+
         </Routes>
       </BrowserRouter>
     </>
