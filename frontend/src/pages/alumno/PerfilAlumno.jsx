@@ -7,6 +7,7 @@ import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import AccionCard from "../../components/ui/AccionCard.jsx";
 
 import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
+import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx";
 
 // Estilos actualizados
 const styles = {
@@ -95,7 +96,7 @@ const PerfilAlumno = () => {
   }
 
   return (
-    <div style={styles.pageContainer}>
+    <div style={styles.pageContainer}><DivHeaderInfo/>
       {/* 1. Botón Volver (sin prop 'rutaVolver') */}
       <BtnVolver />
       <div style={styles.header}>
@@ -108,12 +109,14 @@ const PerfilAlumno = () => {
         <h2 style={styles.title}>Perfil de Alumno</h2>
       </div>
 
-      {/* 2. Card de Información (usando el nuevo componente) */}
-      <EncabezadoEstudiante reporte={reporte} variant="card" />
-
+      
+      
+      
       {/* 3. Acciones Disponibles (corregidas las rutas 'to') */}
       <h4 style={styles.actionsTitle}>Acciones Disponibles</h4>
+
       <div style={styles.cardGrid}>
+        
         <AccionCard
           titulo="Info alumno"
           icono="account_circle"
@@ -135,9 +138,9 @@ const PerfilAlumno = () => {
           to="/perfil-alumno/comunicaciones"
         />
         <AccionCard
-          titulo="Certificados y actas"
+          titulo="ceritificados"
           icono="description"
-          to="/constanciaAlumnoTramite"
+          to="/home-certificados"
         />
         <AccionCard
           titulo="Generar Mail"

@@ -4,9 +4,9 @@ import { useConsultaStore } from "../../store/consultaStore";
 import { getReporteAlumno } from "../../services/reportesService";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import "../../styles/constAluTramite.css";
+import "../../styles/constanciaAlumnoRegular.css";
 
-const Constancia = () => {
+const ConstanciaAlumnoRegular = () => {
   const navigate = useNavigate();
   
   // ✅ Obtenemos datos del store de Zustand
@@ -54,22 +54,6 @@ const Constancia = () => {
           console.log("✅ Usando datos del store de Zustand");
         }
 
-        // 🔁 Procesar materias
-        const materiasAdeudadas = data.materias
-          ? Object.entries(data.materias)
-              .filter(([, mat]) => mat.estado_final !== "aprobada")
-              .map(([nombre]) => nombre)
-              .join(", ") || "Ninguna"
-          : "Sin información";
-
-        const idiomaExtranjero = data.materias
-          ? Object.keys(data.materias).find((m) =>
-              m.toLowerCase().includes("inglés") ||
-              m.toLowerCase().includes("idioma") ||
-              m.toLowerCase().includes("english")
-            ) || "Ninguno"
-          : "Ninguno";
-
         // 🔁 Construir datos del formulario
         setDatosFormulario({
           nombreEstudiante: `${data.nombre || ""} ${data.apellido || ""}`.trim(),
@@ -78,8 +62,6 @@ const Constancia = () => {
           division: data.curso?.division || data.curso?.curso_division || "",
           turno: data.curso?.turno || data.curso?.curso_turno || "",
           anioLectivo: data.curso?.anio_lectivo || alumnoAnio || "",
-          materiasAdeudadas,
-          idiomaExtranjero,
           solicitante: "",
           autoridad: "",
           ciudad: "San Miguel de Tucumán",
@@ -166,19 +148,11 @@ const Constancia = () => {
   // 🧾 Render principal
   return (
     <div className="constancia-body">
-      {/* Campos editables ARRIBA A LA IZQUIERDA */}
+      {/* 📝 PANEL DE EDICIÓN - ARRIBA A LA IZQUIERDA */}
       <div className="edit-panel no-print">
-        <h3>Datos Editables</h3>
-        <div className="form-group editable">
-          <label>Solicitante:</label>
-          <input
-            type="text"
-            name="solicitante"
-            placeholder="Ej: Juan Pérez"
-            value={datosFormulario.solicitante}
-            onChange={manejarCambio}
-          />
-        </div>
+        <h3>✏️ Datos Editables</h3>
+        
+        
 
         <div className="form-group editable">
           <label>Autoridad destinataria:</label>
@@ -192,32 +166,15 @@ const Constancia = () => {
         </div>
       </div>
 
+      {/* 📄 CERTIFICADO PRINCIPAL */}
       <div className="certificate-container" ref={refCertificado}>
-        <h1 className="certificate-header">Constancia de Alumno Tramite</h1>
+        <h1 className="certificate-header">Constancia de Alumno Regular</h1>
 
         <p>
-          Se deja constancia de que{" "}
-          <b>{datosFormulario.nombreEstudiante}</b>, DNI{" "}
-          <b>{datosFormulario.numeroDocumento}</b>, cursa el año{" "}
-          <b>{datosFormulario.curso}</b> división{" "}
-          <b>{datosFormulario.division}</b>, turno{" "}
-          <b>{datosFormulario.turno}</b>, correspondiente al ciclo lectivo{" "}
-          <b>{datosFormulario.anioLectivo}</b>.
-        </p>
-
-        <p>
-          Materias adeudadas: <b>{datosFormulario.materiasAdeudadas}</b>
-        </p>
-
-        <p>
-          Idioma extranjero: <b>{datosFormulario.idiomaExtranjero}</b>
-        </p>
-
-        <p>
-          A pedido de{" "}
-          <b>{datosFormulario.solicitante || "..."}</b> se extiende la presente
-          constancia para ser presentada ante las autoridades de{" "}
-          <b>{datosFormulario.autoridad || "..."}</b>.
+          Se hace constar que{" "}
+          <b>{datosFormulario.nombreEstudiante}</b>, es alumno del Instituto Carlos Guido Spano, 
+          cursa el año{" "}
+          <b>{datosFormulario.curso}</b> , en este Establecimiento.
         </p>
 
         <p>
@@ -225,6 +182,13 @@ const Constancia = () => {
           {datosFormulario.dia} días del mes de {datosFormulario.mes} de 20
           {datosFormulario.anioActual}.
         </p>
+
+        <p>
+          Se extiende la presente constancia en San Miguel de Tucumán 
+          para ser presentada ante las autoridades de{" "}
+          <b>{datosFormulario.autoridad || "..."}</b>.
+        </p>
+
         <br />
         <br />
         <br />
@@ -246,7 +210,7 @@ const Constancia = () => {
         </div>
       </div>
 
-      {/* Botones de acción */}
+      {/* 🎯 BOTONES DE ACCIÓN */}
       <div className="actions no-print">
         <button onClick={manejarVolver} className="btn-secondary">
           <span className="material-symbols-outlined">arrow_back</span>
@@ -265,4 +229,5 @@ const Constancia = () => {
   );
 };
 
-export default Constancia;
+export default ConstanciaAlumnoRegular;
+
