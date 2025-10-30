@@ -6,7 +6,7 @@ import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import EncabezadoCurso from "../curso/EncabezadoCurso.jsx";
-import ReporteNotasTable from "./ReporteNotasTable.jsx";
+import ReporteAsistenciasTable from "./ReporteAsistenciasTable.jsx";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -50,7 +50,7 @@ const styles = {
   rightColumnContainer: {
     display: "flex",
     flexDirection: "column",
-    gap: "30px",
+    gap: "30px", 
   },
   chartContainer: {
     backgroundColor: "white",
@@ -62,7 +62,7 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     maxHeight: "400px",
-    // position: "sticky",
+    // position: "sticky", // ✔️ LÍNEA CORREGIDA (descomentada)
     top: "100px",
   },
   // ... (statBox, statValue, statLabel, statRow...)
@@ -97,10 +97,10 @@ const styles = {
     marginBottom: "20px",
     border: "1px solid #bbdefb",
   },
-
-  // ✔️ ESTILO MODIFICADO para 'top3Container'
+  
+  // 
   top3Container: {
-    marginTop: "0", // El 'gap' del contenedor padre maneja el espacio
+    marginTop: "0",
     backgroundColor: "white",
     borderRadius: "15px",
     padding: "25px",
@@ -125,8 +125,8 @@ const styles = {
   top3Promedio: { fontWeight: 600 },
   
   riesgoContainer: {
-    marginTop: "0",
-    backgroundColor: "white",
+    marginTop: "0", 
+    backgroundColor: "white", 
     borderRadius: "15px",
     padding: "25px",
     boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
@@ -147,7 +147,7 @@ const styles = {
   riesgoReason: { fontSize: "0.85rem", color: "#dc3545", fontWeight: 500 },
 };
 
-const ResumenCalificacionesPage = () => {
+const ResumenAsistenciasPage = () => {
   // ... (Toda tu lógica: useStore, useState, useEffect, useMemo)
   // ... (Esta parte no cambia en absoluto)
   const { reporteCurso } = useConsultaStore();
@@ -166,72 +166,57 @@ const ResumenCalificacionesPage = () => {
     const alumnos = reporte.alumnos;
     const totalAlumnos = alumnos.length;
 
-    const alumnosAprobados = alumnos.filter(a => parseFloat(a.calificaciones?.promedio || 0) >= 6).length;
-    const alumnosDesaprobados = totalAlumnos - alumnosAprobados;
-    const alumnosDestacados = alumnos.filter(a => parseFloat(a.calificaciones?.promedio || 0) >= 8).length;
+    const alumnosConAsistencia = alumnos.map(a => {
+      const presentes = Number(a.asistencias?.presentes || 0);
+      const totalClases = Number(a.asistencias?.total || 0);
+      const porcentaje = totalClases > 0 ? (presentes / totalClases) * 100 : 100;
+      return {
+        ...a,
+        asistenciaPorc: porcentaje.toFixed(1),
+      };
+    });
 
-    const promedioGeneral = (
-      alumnos.reduce((acc, a) => acc + parseFloat(a.calificaciones?.promedio || 0), 0) / totalAlumnos
-    ).toFixed(2);
-
-    const top3 = [...alumnos]
-      .sort((a, b) => parseFloat(b.calificaciones?.promedio || 0) - parseFloat(a.calificaciones?.promedio || 0))
-      .slice(0, 3);
-
-    const mejorAlumno = top3[0];
-
-    const alumnosEnRiesgoLista = alumnos
-      .filter(a => parseFloat(a.calificaciones?.promedio || 0) < 6)
-      .map(a => ({
-        id: a.alumno?.id,
-        nombre: a.alumno?.nombreCompleto || "Alumno Desconocido",
-        promedio: parseFloat(a.calificaciones?.promedio || 0).toFixed(2),
-        reason: "Notas bajas",
-      }));
-
-    const alumnosEnRiesgoCount = alumnosEnRiesgoLista.length;
-
-    const asistenciaPromedio = (
-      alumnos.reduce((acc, a) => {
-        if (!a.asistencias?.total) return acc + 100;
-        const presentes = Number(a.asistencias.presentes || 0);
-        const totalClases = Number(a.asistencias.total);
-        return acc + (presentes / totalClases) * 100;
-      }, 0) / totalAlumnos
+    const promedioAsistencia = (
+      alumnosConAsistencia.reduce((acc, a) => acc + parseFloat(a.asistenciaPorc), 0) / totalAlumnos
     ).toFixed(1);
 
+    const alumnosCriticos = alumnosConAsistencia.filter(a => a.asistenciaPorc < 75);
+    const alumnosBuenos = alumnosConAsistencia.filter(a => a.asistenciaPorc >= 75);
+
+    const top3 = [...alumnosConAsistencia]
+      .sort((a, b) => b.asistenciaPorc - a.asistenciaPorc)
+      .slice(0, 3);
+
     const insight =
-      promedioGeneral > 8
-        ? "🎉 ¡Excelente rendimiento general del curso!"
-        : promedioGeneral < 6
-        ? "📉 El promedio general es bajo. Revisar estrategias de aprendizaje."
-        : alumnosEnRiesgoCount / totalAlumnos > 0.3
-        ? "⚠️ Hay varios alumnos en riesgo. Considerar clases de refuerzo."
-        : "📚 El curso mantiene un desempeño promedio estable.";
+      promedioAsistencia > 90
+        ? "🎉 Excelente nivel de asistencia general."
+        : promedioAsistencia < 75
+        ? "📉 La asistencia promedio es baja. Se recomienda revisar la participación."
+        : alumnosCriticos.length / totalAlumnos > 0.3
+        ? "⚠️ Varios alumnos con baja asistencia. Considerar seguimiento personalizado."
+        : "📊 La asistencia del curso es aceptable.";
 
     return {
       stats: {
-        promedioGeneral,
-        alumnosAprobados,
-        alumnosDesaprobados,
-        alumnosDestacados,
+        promedioAsistencia,
         totalAlumnos,
-        mejorAlumnoNombre: mejorAlumno ? mejorAlumno.alumno?.nombreCompleto || "N/A" : "N/A",
-        mejorAlumnoPromedio: mejorAlumno
-          ? parseFloat(mejorAlumno.calificaciones?.promedio || 0).toFixed(2)
-          : "N/A",
-        asistenciaPromedio,
-        alumnosEnRiesgo: alumnosEnRiesgoCount,
-        insight,
+        alumnosBuenos: alumnosBuenos.length,
+        alumnosCriticos: alumnosCriticos.length,
         top3,
-        alumnosEnRiesgoLista,
+        alumnosCriticosLista: alumnosCriticos.map(a => ({
+          id: a.alumno?.id,
+          nombre: a.alumno?.nombreCompleto || "Alumno Desconocido",
+          asistenciaPorc: a.asistenciaPorc,
+          reason: "Asistencia baja",
+        })),
+        insight,
       },
       chartData: {
-        labels: ["Aprobados", "Desaprobados"],
+        labels: ["≥ 75% (Buena)", "< 75% (Crítica)"],
         datasets: [
           {
             label: "# de Alumnos",
-            data: [alumnosAprobados, alumnosDesaprobados],
+            data: [alumnosBuenos.length, alumnosCriticos.length],
             backgroundColor: ["#4caf50", "#f44336"],
             borderColor: ["#fff", "#fff"],
             borderWidth: 2,
@@ -253,7 +238,7 @@ const ResumenCalificacionesPage = () => {
   if (!stats)
     return (
       <div style={styles.loadingContainer}>
-        <h5>No se encontraron datos de calificaciones.</h5>
+        <h5>No se encontraron datos de asistencia.</h5>
         <p>Vuelve al panel e intenta realizar una nueva búsqueda.</p>
         <Link to={"/"}>
           <Button variant="secondary" className="px-4">
@@ -263,14 +248,15 @@ const ResumenCalificacionesPage = () => {
       </div>
     );
 
+
   // ✔️ RENDERIZADO (JSX) MODIFICADO
   return (
     <div style={styles.pageContainer}>
       <BtnVolver />
       <EncabezadoCurso />
       <h2 style={styles.pageTitle}>
-        <span className="material-symbols-outlined">bar_chart</span>
-        Resumen de Calificaciones
+        <span className="material-symbols-outlined">event_available</span>
+        Resumen de Asistencias
       </h2>
 
       <div style={styles.contentGrid}>
@@ -280,40 +266,34 @@ const ResumenCalificacionesPage = () => {
           <div style={styles.insightBox}>{stats.insight}</div>
 
           <div style={styles.statBox}>
-            <h3 style={styles.statValue()}>{stats.promedioGeneral}</h3>
-            <p style={styles.statLabel}>Promedio General del Curso</p>
+            <h3 style={styles.statValue()}>{stats.promedioAsistencia}%</h3>
+            <p style={styles.statLabel}>Promedio General de Asistencia</p>
           </div>
 
           <hr />
 
           <div style={styles.statRow}>
             <div style={styles.statSmallBox}>
-              <h4 style={styles.statSmallValue("#4caf50")}>{stats.alumnosAprobados}</h4>
-              <p style={styles.statSmallLabel}>Aprobados (≥ 6)</p>
+              <h4 style={styles.statSmallValue("#4caf50")}>{stats.alumnosBuenos}</h4>
+              <p style={styles.statSmallLabel}>Buena asistencia (≥ 75%)</p>
             </div>
             <div style={styles.statSmallBox}>
-              <h4 style={styles.statSmallValue("#f44336")}>{stats.alumnosDesaprobados}</h4>
-              <p style={styles.statSmallLabel}>Desaprobados (&lt; 6)</p>
-            </div>
-            <div style={styles.statSmallBox}>
-              <h4 style={styles.statSmallValue("#303F9F")}>{stats.alumnosDestacados}</h4>
-              <p style={styles.statSmallLabel}>Destacados (≥ 8)</p>
+              <h4 style={styles.statSmallValue("#f44336")}>{stats.alumnosCriticos}</h4>
+              <p style={styles.statSmallLabel}>Crítica (&lt; 75%)</p>
             </div>
           </div>
 
           <hr />
 
-          <ReporteNotasTable alumnos={reporte.alumnos} />
+          <ReporteAsistenciasTable alumnos={reporte.alumnos} />
 
-          {/* ❌ Sección Mejores Alumnos MOVIDA DE AQUÍ */}
-          
-          {/* ❌ Sección Alumnos en Riesgo MOVIDA DE AQUÍ */}
+          {/* ❌ "Mejor Asistencia" MOVIDO DE AQUÍ */}
           
         </div>
 
         {/* --- Columna Derecha (Contenedor) --- */}
         <div style={styles.rightColumnContainer}>
-
+          
           {/* 1. Gráfico (como estaba antes) */}
           <div style={styles.chartContainer}>
             <Doughnut
@@ -338,10 +318,10 @@ const ResumenCalificacionesPage = () => {
             />
           </div>
 
-          {/* 2. Mejores Alumnos (MOVIDO AQUÍ) */}
+          {/* 2. Mejor Asistencia (MOVIDO AQUÍ) */}
           {/* ✔️ SECCIÓN MOVIDA */}
           <div style={styles.top3Container}>
-            <h4 style={styles.top3Title}>🏆 Mejores Alumnos</h4>
+            <h4 style={styles.top3Title}>🏆 Mejor Asistencia</h4>
             <ul style={styles.top3List}>
               {stats.top3.map((a, i) => (
                 <li key={a.alumno?.id || i} style={styles.top3Item}>
@@ -349,29 +329,27 @@ const ResumenCalificacionesPage = () => {
                     <strong style={styles.top3Rank}>{i + 1}.</strong>{" "}
                     {a.alumno?.nombreCompleto || "N/A"}
                   </span>
-                  <span style={styles.top3Promedio}>
-                    {parseFloat(a.calificaciones?.promedio || 0).toFixed(2)}
-                  </span>
+                  <span style={styles.top3Promedio}>{a.asistenciaPorc}%</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* 3. Alumnos en Riesgo (como estaba antes) */}
+          {/* 3. Asistencia Crítica (como estaba antes) */}
           {/* ✔️ SECCIÓN MOVIDA */}
           <div style={styles.riesgoContainer}>
-            <h4 style={styles.riesgoTitle}>⚠️ Alumnos en riesgo ({stats.alumnosEnRiesgo})</h4>
+            <h4 style={styles.riesgoTitle}>⚠️ Asistencia Crítica ({stats.alumnosCriticos})</h4>
 
-            {stats.alumnosEnRiesgo === 0 ? (
-              <p>No hay alumnos en riesgo en este curso.</p>
+            {stats.alumnosCriticos === 0 ? (
+              <p>No hay alumnos con asistencia crítica.</p>
             ) : (
               <ul style={styles.riesgoList}>
-                {stats.alumnosEnRiesgoLista.map((a, idx) => (
+                {stats.alumnosCriticosLista.map((a, idx) => (
                   <li key={a.id || idx} style={styles.riesgoItem}>
                     <div>
                       <div style={{ fontWeight: 600 }}>{a.nombre}</div>
                       <div style={styles.riesgoReason}>
-                        {a.reason} — Promedio: {a.promedio}
+                        {a.reason} — {a.asistenciaPorc}%
                       </div>
                     </div>
                   </li>
@@ -386,4 +364,4 @@ const ResumenCalificacionesPage = () => {
   );
 };
 
-export default ResumenCalificacionesPage;
+export default ResumenAsistenciasPage;
