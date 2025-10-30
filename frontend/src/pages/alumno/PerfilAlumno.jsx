@@ -6,6 +6,7 @@ import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import AccionCard from "../../components/ui/AccionCard.jsx";
 import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
 import "../../styles/perfilAlumno.css";
+import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx";
 
 const PerfilAlumno = () => {
   const { reporteAlumno } = useConsultaStore();
@@ -61,7 +62,7 @@ const PerfilAlumno = () => {
       </div>
 
       {/* 2. Card de Información */}
-      <EncabezadoEstudiante reporte={reporte} variant="card" />
+      <DivHeaderInfo/>
 
       {/* 3. Acciones Disponibles */}
       <h4 className="perfil-alumno-actions-title">Acciones Disponibles</h4>

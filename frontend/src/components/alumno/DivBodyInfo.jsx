@@ -93,6 +93,10 @@ const DivBodyInfo = () => {
               <p className="card-info-value">{showData(reporte.lugar_nacimiento)}</p>
             </div>
             <div className="card-info-row">
+              <p className="card-info-label">Dirección</p>
+              <p className="card-info-value">{showData(reporte.direccion)}</p>
+            </div>
+            <div className="card-info-row">
               <p className="card-info-label">Teléfono</p>
               <p className="card-info-value">{showData(reporte.telefono)}</p>
             </div>
