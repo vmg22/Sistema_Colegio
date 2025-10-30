@@ -7,149 +7,11 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import EncabezadoCurso from "../curso/EncabezadoCurso.jsx";
 import ReporteAsistenciasTable from "./ReporteAsistenciasTable.jsx";
+import "../../styles/resumenAsistencia.css";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const styles = {
-  // ... (pageContainer, pageTitle, loadingContainer...)
-  pageContainer: {
-    padding: "0 40px 40px 40px",
-    backgroundColor: "#f4f7fa",
-    minHeight: "calc(100vh - 80px)",
-    fontFamily: "'Inter', sans-serif",
-  },
-  pageTitle: {
-    fontSize: "1.5rem",
-    fontWeight: 600,
-    color: "#303F9F",
-    margin: "20px 0",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-  },
-  loadingContainer: {
-    textAlign: "center",
-    marginTop: "100px",
-    fontFamily: "'Inter', sans-serif",
-  },
-  contentGrid: {
-    display: "grid",
-    gridTemplateColumns: "1.2fr 0.8fr",
-    gap: "30px",
-    alignItems: "start",
-    maxWidth: "1100px",
-    margin: "0 auto",
-  },
-  statsContainer: {
-    backgroundColor: "white",
-    borderRadius: "15px",
-    padding: "25px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-    border: "1px solid #ddd",
-  },
-  rightColumnContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "30px", 
-  },
-  chartContainer: {
-    backgroundColor: "white",
-    borderRadius: "15px",
-    padding: "25px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-    border: "1px solid #ddd",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    maxHeight: "400px",
-    // position: "sticky", // ✔️ LÍNEA CORREGIDA (descomentada)
-    top: "100px",
-  },
-  // ... (statBox, statValue, statLabel, statRow...)
-  statBox: { textAlign: "center", marginBottom: "20px" },
-  statValue: (color = "#303F9F") => ({
-    fontSize: "2.5rem",
-    fontWeight: 700,
-    color,
-    margin: 0,
-  }),
-  statLabel: { fontSize: "1rem", color: "#555", margin: 0 },
-  statRow: {
-    display: "flex",
-    justifyContent: "space-around",
-    margin: "20px 0",
-  },
-  statSmallBox: { textAlign: "center", flex: 1 },
-  statSmallValue: (color = "#333") => ({
-    fontSize: "1.5rem",
-    fontWeight: 600,
-    color,
-    margin: 0,
-  }),
-  statSmallLabel: { fontSize: "0.9rem", color: "#777", margin: 0 },
-  insightBox: {
-    padding: "15px",
-    borderRadius: "8px",
-    backgroundColor: "#e3f2fd",
-    color: "#0d47a1",
-    textAlign: "center",
-    fontWeight: 500,
-    marginBottom: "20px",
-    border: "1px solid #bbdefb",
-  },
-  
-  // 
-  top3Container: {
-    marginTop: "0",
-    backgroundColor: "white",
-    borderRadius: "15px",
-    padding: "25px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-    border: "1px solid #ddd",
-  },
-  top3Title: {
-    fontSize: "1.1rem",
-    fontWeight: 600,
-    color: "#333",
-    marginBottom: "10px",
-  },
-  top3List: { listStyle: "none", padding: 0, margin: 0 },
-  top3Item: {
-    display: "flex",
-    justifyContent: "space-between",
-    padding: "8px 0",
-    borderBottom: "1px solid #eee",
-    fontSize: "0.95rem",
-  },
-  top3Rank: { fontWeight: 600, color: "#303F9F" },
-  top3Promedio: { fontWeight: 600 },
-  
-  riesgoContainer: {
-    marginTop: "0", 
-    backgroundColor: "white", 
-    borderRadius: "15px",
-    padding: "25px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-    border: "1px solid #ddd",
-  },
-  riesgoTitle: {
-    fontSize: "1.1rem",
-    fontWeight: 600,
-    color: "#dc3545",
-    marginBottom: "10px",
-  },
-  riesgoList: { listStyle: "none", padding: 0, margin: 0 },
-  riesgoItem: {
-    padding: "8px 0",
-    borderBottom: "1px solid #eee",
-    fontSize: "0.95rem",
-  },
-  riesgoReason: { fontSize: "0.85rem", color: "#dc3545", fontWeight: 500 },
-};
-
 const ResumenAsistenciasPage = () => {
-  // ... (Toda tu lógica: useStore, useState, useEffect, useMemo)
-  // ... (Esta parte no cambia en absoluto)
   const { reporteCurso } = useConsultaStore();
   const [reporte, setReporte] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -226,10 +88,9 @@ const ResumenAsistenciasPage = () => {
     };
   }, [reporte]);
 
-  // ... (Tu código de 'if (loading)' e 'if (!stats)' no cambia)
   if (loading)
     return (
-      <div style={styles.loadingContainer}>
+      <div className="asistencias-loading-container">
         <Spinner animation="border" variant="primary" />
         <p className="mt-3">Calculando estadísticas...</p>
       </div>
@@ -237,7 +98,7 @@ const ResumenAsistenciasPage = () => {
 
   if (!stats)
     return (
-      <div style={styles.loadingContainer}>
+      <div className="asistencias-loading-container">
         <h5>No se encontraron datos de asistencia.</h5>
         <p>Vuelve al panel e intenta realizar una nueva búsqueda.</p>
         <Link to={"/"}>
@@ -248,54 +109,50 @@ const ResumenAsistenciasPage = () => {
       </div>
     );
 
-
-  // ✔️ RENDERIZADO (JSX) MODIFICADO
   return (
-    <div style={styles.pageContainer}>
+    <div className="asistencias-page-container">
       <BtnVolver />
+      <div className="curso-dashboard-header">
+        <span className="material-symbols-outlined asistencias-page-icon">event_available</span>
+        <h2 className="curso-dashboard-title">Resumen de Asistencias</h2>
+      </div>
       <EncabezadoCurso />
-      <h2 style={styles.pageTitle}>
-        <span className="material-symbols-outlined">event_available</span>
-        Resumen de Asistencias
-      </h2>
 
-      <div style={styles.contentGrid}>
+
+      <div className="asistencias-content-grid">
         
         {/* --- Columna Izquierda --- */}
-        <div style={styles.statsContainer}>
-          <div style={styles.insightBox}>{stats.insight}</div>
+        <div className="asistencias-stats-container">
+          <div className="asistencias-insight-box">{stats.insight}</div>
 
-          <div style={styles.statBox}>
-            <h3 style={styles.statValue()}>{stats.promedioAsistencia}%</h3>
-            <p style={styles.statLabel}>Promedio General de Asistencia</p>
+          <div className="asistencias-stat-box">
+            <h3 className="asistencias-stat-value">{stats.promedioAsistencia}%</h3>
+            <p className="asistencias-stat-label">Promedio General de Asistencia</p>
           </div>
 
           <hr />
 
-          <div style={styles.statRow}>
-            <div style={styles.statSmallBox}>
-              <h4 style={styles.statSmallValue("#4caf50")}>{stats.alumnosBuenos}</h4>
-              <p style={styles.statSmallLabel}>Buena asistencia (≥ 75%)</p>
+          <div className="asistencias-stat-row">
+            <div className="asistencias-stat-small-box">
+              <h4 className="asistencias-stat-small-value asistencias-stat-small-value--green">{stats.alumnosBuenos}</h4>
+              <p className="asistencias-stat-small-label">Buena asistencia (≥ 75%)</p>
             </div>
-            <div style={styles.statSmallBox}>
-              <h4 style={styles.statSmallValue("#f44336")}>{stats.alumnosCriticos}</h4>
-              <p style={styles.statSmallLabel}>Crítica (&lt; 75%)</p>
+            <div className="asistencias-stat-small-box">
+              <h4 className="asistencias-stat-small-value asistencias-stat-small-value--red">{stats.alumnosCriticos}</h4>
+              <p className="asistencias-stat-small-label">Crítica (&lt; 75%)</p>
             </div>
           </div>
 
           <hr />
 
           <ReporteAsistenciasTable alumnos={reporte.alumnos} />
-
-          {/* ❌ "Mejor Asistencia" MOVIDO DE AQUÍ */}
-          
         </div>
 
         {/* --- Columna Derecha (Contenedor) --- */}
-        <div style={styles.rightColumnContainer}>
+        <div className="asistencias-right-column-container">
           
-          {/* 1. Gráfico (como estaba antes) */}
-          <div style={styles.chartContainer}>
+          {/* 1. Gráfico */}
+          <div className="asistencias-chart-container">
             <Doughnut
               data={chartData}
               options={{
@@ -318,37 +175,35 @@ const ResumenAsistenciasPage = () => {
             />
           </div>
 
-          {/* 2. Mejor Asistencia (MOVIDO AQUÍ) */}
-          {/* ✔️ SECCIÓN MOVIDA */}
-          <div style={styles.top3Container}>
-            <h4 style={styles.top3Title}>🏆 Mejor Asistencia</h4>
-            <ul style={styles.top3List}>
+          {/* 2. Mejor Asistencia */}
+          <div className="asistencias-top3-container">
+            <h4 className="asistencias-top3-title">🏆 Mejor Asistencia</h4>
+            <ul className="asistencias-top3-list">
               {stats.top3.map((a, i) => (
-                <li key={a.alumno?.id || i} style={styles.top3Item}>
+                <li key={a.alumno?.id || i} className="asistencias-top3-item">
                   <span>
-                    <strong style={styles.top3Rank}>{i + 1}.</strong>{" "}
+                    <strong className="asistencias-top3-rank">{i + 1}.</strong>{" "}
                     {a.alumno?.nombreCompleto || "N/A"}
                   </span>
-                  <span style={styles.top3Promedio}>{a.asistenciaPorc}%</span>
+                  <span className="asistencias-top3-promedio">{a.asistenciaPorc}%</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* 3. Asistencia Crítica (como estaba antes) */}
-          {/* ✔️ SECCIÓN MOVIDA */}
-          <div style={styles.riesgoContainer}>
-            <h4 style={styles.riesgoTitle}>⚠️ Asistencia Crítica ({stats.alumnosCriticos})</h4>
+          {/* 3. Asistencia Crítica */}
+          <div className="asistencias-riesgo-container">
+            <h4 className="asistencias-riesgo-title">⚠️ Asistencia Crítica ({stats.alumnosCriticos})</h4>
 
             {stats.alumnosCriticos === 0 ? (
               <p>No hay alumnos con asistencia crítica.</p>
             ) : (
-              <ul style={styles.riesgoList}>
+              <ul className="asistencias-riesgo-list">
                 {stats.alumnosCriticosLista.map((a, idx) => (
-                  <li key={a.id || idx} style={styles.riesgoItem}>
+                  <li key={a.id || idx} className="asistencias-riesgo-item">
                     <div>
                       <div style={{ fontWeight: 600 }}>{a.nombre}</div>
-                      <div style={styles.riesgoReason}>
+                      <div className="asistencias-riesgo-reason">
                         {a.reason} — {a.asistenciaPorc}%
                       </div>
                     </div>
@@ -358,8 +213,8 @@ const ResumenAsistenciasPage = () => {
             )}
           </div>
 
-        </div> {/* Fin de rightColumnContainer */}
-      </div> {/* Fin de contentGrid */}
+        </div>
+      </div>
     </div>
   );
 };

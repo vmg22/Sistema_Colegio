@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useConsultaStore } from "../../store/consultaStore";
 import { Spinner, Button } from "react-bootstrap";
-import BtnVolver from "../ui/BtnVolver"
+import BtnVolver from "../ui/BtnVolver";
+import "../../styles/encabezadoCurso.css";
+
 
 const DivHeaderInfo = () => {
   const { reporteAlumno } = useConsultaStore();
@@ -39,15 +41,15 @@ const DivHeaderInfo = () => {
       <div className="text-center mt-5">
         <h5>No se encontraron datos del alumno.</h5>
         <p>Vuelve al panel e intenta realizar una nueva búsqueda.</p>
-        <BtnVolver rutaVolver="/"/>
+        <BtnVolver rutaVolver="/" />
       </div>
     );
   }
 
   const { materias, tutores } = reporte;
-//   console.log("Datos del Alumno:", reporte);
-//   console.log(materias);
-//   console.log(tutores);
+  //   console.log("Datos del Alumno:", reporte);
+  //   console.log(materias);
+  //   console.log(tutores);
   return (
     <>
       <div
@@ -61,29 +63,14 @@ const DivHeaderInfo = () => {
         }}
       >
         <div className="d-flex align-items-center">
-          <div
-            style={{
-              borderRadius: "50%",
-              backgroundColor: "#303F9F",
-              height: "45px",
-              width: "45px",
-              textAlign: "center",
-              marginRight: "15px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <span
-              className="material-symbols-outlined"
-              style={{ color: "white", fontSize: "28px" }}
-            >
+          <div className="encabezado-icon-circle">
+            <span className="material-symbols-outlined encabezado-icon">
               person
             </span>
           </div>
-          <h4 style={{ margin: 0, fontWeight: "600", color: "#333" }}>
-            {reporte.nombre} {reporte.apellido}
-          </h4>
+          <h2 className="encabezado-title" style={{paddingLeft:"8px"}}>
+           {reporte.nombre} {reporte.apellido}
+        </h2>
         </div>
 
         <div className="d-flex align-items-center gap-4">

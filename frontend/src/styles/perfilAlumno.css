@@ -1,0 +1,78 @@
+.perfil-alumno-container {
+  padding: 0 40px 40px 40px;
+  background-color: #f4f7fa;
+  min-height: calc(100vh - 80px);
+  font-family: 'Inter', sans-serif;
+}
+
+.perfil-alumno-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 0;
+  color: #303F9F;
+}
+
+.perfil-alumno-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.perfil-alumno-header-icon {
+  font-size: 28px;
+}
+
+.perfil-alumno-actions-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.perfil-alumno-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.perfil-alumno-loading-container {
+  text-align: center;
+  margin-top: 100px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Responsive design para tablets */
+@media (max-width: 1024px) {
+  .perfil-alumno-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+  }
+}
+
+/* Responsive design para móviles */
+@media (max-width: 768px) {
+  .perfil-alumno-container {
+    padding: 0 20px 20px 20px;
+  }
+  
+  .perfil-alumno-card-grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    gap: 20px;
+  }
+  
+  .perfil-alumno-title {
+    font-size: 1.3rem;
+  }
+  
+  .perfil-alumno-actions-title {
+    font-size: 1.1rem;
+  }
+  
+  .perfil-alumno-header {
+    padding: 15px 0;
+  }
+}

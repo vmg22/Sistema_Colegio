@@ -41,7 +41,7 @@ function App() {
           <Route path="/estadoAcademicoAlumno" element={<EstadoAcademicoPage/>} />
           <Route path="/cursoDashboard" element={<CursoDashboardPage/>} />
           <Route path="/reporte-curso/listado" element={<ReporteCursoListPage />} />
-          <Route path="/reporte-curso/Asistecias" element={<ResumenAsistenciasPage />} />
+          <Route path="/reporte-curso/Asistencias" element={<ResumenAsistenciasPage />} />
           <Route path="/reporte-curso/calificaciones" element={<ResumenCalificacionesPage />} />
 
           <Route path="*" element={<NotFountPage/>} />

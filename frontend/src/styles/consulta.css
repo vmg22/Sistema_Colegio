@@ -2,18 +2,35 @@
 .consulta-container {
   border-radius: 12px;
   min-height: 80vh;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f7fa;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden; /* Previene scroll horizontal */
+}
+
+/* === CONTENEDOR INTERNO PARA CENTRAR CONTENIDO === */
+.consulta-content {
+  max-width: 100%;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 40px 40px 40px;
+  box-sizing: border-box;
 }
 
 /* === TÍTULOS Y ENCABEZADOS === */
 .consulta-container h4 {
   font-weight: 600;
   color: #303F9F;
+  margin: 20px 0;
 }
 
 .consulta-container .card-title {
   font-weight: 600;
   color: #303F9F;
-  
 }
 
 /* === TARJETAS === */
@@ -22,6 +39,10 @@
   border-radius: 12px;
   box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
   background-color: #fff;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .sombra-card .card-body {
@@ -34,6 +55,10 @@
   background-color: #fff;
   border-radius: 10px;
   overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .table thead {
@@ -55,6 +80,7 @@
 .table td, .table th {
   text-align: center;
   vertical-align: middle;
+  padding: 12px 15px;
 }
 
 /* === BOTÓN VOLVER === */
@@ -63,6 +89,8 @@ button.btn-secondary {
   border: none;
   color: #fff;
   transition: all 0.3s ease;
+  padding: 8px 20px;
+  border-radius: 6px;
 }
 
 button.btn-secondary:hover {
@@ -73,19 +101,43 @@ button.btn-secondary:hover {
 /* === SPINNER Y TEXTOS DE CARGA === */
 .text-center p {
   color: #555;
+  margin: 15px 0;
 }
 
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
   .consulta-container {
-    padding: 15px;
+    padding: 0;
+    overflow-x: hidden;
   }
 
-  .card-body {
-    padding: 15px;
+  .consulta-content {
+    padding: 0 20px 20px 20px;
+  }
+
+  .sombra-card .card-body {
+    padding: 20px 15px;
   }
 
   .table th, .table td {
     font-size: 14px;
+    padding: 10px 8px;
+  }
+
+  .consulta-container h4 {
+    font-size: 1.3rem;
+    margin: 15px 0;
+  }
+}
+
+@media (max-width: 1024px) {
+  .consulta-container {
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .consulta-content {
+    padding: 0 30px 30px 30px;
+    max-width: 100%;
   }
 }

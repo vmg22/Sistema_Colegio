@@ -65,27 +65,6 @@ const DivBodyInfo = () => {
     return data || "No disponible";
   };
 
-  const navigationCards = [
-    {
-      to: "/estado-academico",
-      label: "Estado Académico",
-      icon: "stacked_bar_chart",
-      color: "#2563EB",
-    },
-    {
-      to: "/asistencia-alumno",
-      label: "Ver Asistencias",
-      icon: "assignment",
-      color: "#2563EB",
-    },
-    {
-      to: "/historial-comunicaciones",
-      label: "Historial Comunicaciones",
-      icon: "chat_bubble",
-      color: "#2563EB",
-    },
-  ];
-
   return (
     <>
       <div
@@ -171,7 +150,6 @@ const DivBodyInfo = () => {
         </div>
       </div>
 
-      <CardNavegacion cardData={navigationCards} />
     </>
   );
 };

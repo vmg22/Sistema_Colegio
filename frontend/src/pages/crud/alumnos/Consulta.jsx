@@ -63,50 +63,15 @@ const Consulta = () => {
 
   return (
     <div className="container mt-4 consulta-container">
+      <div className="consulta-content">
       <BtnVolver rutaVolver={"/"} />
       <HeaderPages titulo="Informacion Alumno" icono="search"/>
-      <LineaSeparadora/>
       <DivHeaderInfo/>
-      <DivBodyInfo/>
-
-      {/* 📘 Materias y notas (¡Descomentado!) */}
-      {/* <Card className="mb-4 sombra-card">
-        <Card.Body>
-          <Card.Title className="mb-3">Materias y Calificaciones</Card.Title>
-          {materias && materias.length > 0 ? (
-            <Table bordered hover responsive>
-              <thead className="table-primary">
-                <tr>
-                  <th>Materia</th>
-                  <th>1° Cuatrimestre</th>
-                  <th>2° Cuatrimestre</th>
-                  <th>Promedio</th>
-                </tr>
-              </thead>
-              <tbody>
-                {materias.map((m, i) => (
-                  <tr key={i}>
-                    <td>{m.materia}</td>
-                    <td>{m.nota_1 ?? "-"}</td>
-                    <td>{m.nota_2 ?? "-"}</td>
-                    <td>
-                      {m.promedio
-                        ? Number(m.promedio).toFixed(1)
-                        // Pequeña corrección por si una nota es null
-                        : m.nota_1 && m.nota_2
-                        ? ((m.nota_1 + m.nota_2) / 2).toFixed(1)
-                        : "-"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          ) : (
-            <p>No hay materias registradas para este año.</p>
-          )}
-        </Card.Body>
-</Card> */}                                 
+      <DivBodyInfo/>      
+      </div>
+                         
     </div>
+
   );
 };
 

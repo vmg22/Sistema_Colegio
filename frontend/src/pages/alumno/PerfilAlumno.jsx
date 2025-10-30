@@ -2,53 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Spinner, Button } from "react-bootstrap";
 import { useConsultaStore } from "../../store/consultaStore";
-// Corregidas las rutas de importación y el nombre del componente
 import BtnVolver from "../../components/ui/BtnVolver.jsx"; 
 import AccionCard from "../../components/ui/AccionCard.jsx";
-
 import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
-
-// Estilos actualizados
-const styles = {
-  pageContainer: {
-    padding: "0 40px 40px 40px",
-    backgroundColor: "#f4f7fa",
-    minHeight: "calc(100vh - 80px)",
-    fontFamily: "'Inter', sans-serif",
-  },
-  header: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    padding: "20px 0",
-    color: "#303F9F",
-  },
-  title: {
-    fontSize: "1.5rem",
-    fontWeight: 600,
-    margin: 0,
-  },
-  // Eliminamos los estilos 'studentCard', 'studentIconCircle', 'studentIcon', 'studentName'
-  // porque ahora están dentro de StudentHeader.jsx
-  actionsTitle: {
-    fontSize: "1.25rem",
-    fontWeight: 500,
-    color: "#444",
-    marginBottom: "20px",
-  },
-  cardGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    gap: "25px",
-    maxWidth: "1000px",
-    margin: "0 auto",
-  },
-  loadingContainer: {
-    textAlign: "center",
-    marginTop: "100px",
-    fontFamily: "'Inter', sans-serif",
-  },
-};
+import "../../styles/perfilAlumno.css";
 
 const PerfilAlumno = () => {
   const { reporteAlumno } = useConsultaStore();
@@ -73,7 +30,7 @@ const PerfilAlumno = () => {
 
   if (loading) {
     return (
-      <div style={styles.loadingContainer}>
+      <div className="perfil-alumno-loading-container">
         <Spinner animation="border" variant="primary" />
         <p className="mt-3">Cargando reporte...</p>
       </div>
@@ -82,7 +39,7 @@ const PerfilAlumno = () => {
 
   if (!reporte) {
     return (
-      <div style={styles.loadingContainer}>
+      <div className="perfil-alumno-loading-container">
         <h5>No se encontraron datos del alumno.</h5>
         <p>Vuelve al panel e intenta realizar una nueva búsqueda.</p>
         <Link to={"/"}>
@@ -95,37 +52,32 @@ const PerfilAlumno = () => {
   }
 
   return (
-    <div style={styles.pageContainer}>
-      {/* 1. Botón Volver (sin prop 'rutaVolver') */}
+    <div className="perfil-alumno-container">
+      {/* 1. Botón Volver */}
       <BtnVolver />
-      <div style={styles.header}>
-        <span
-          className="material-symbols-outlined"
-          style={{ fontSize: "28px" }}
-        >
-          badge
-        </span>
-        <h2 style={styles.title}>Perfil de Alumno</h2>
+      <div className="curso-dashboard-header">
+         <span className="material-symbols-outlined calificaciones-page-icon">badge</span>
+        <h2 className="perfil-alumno-title">Perfil de Alumno</h2>
       </div>
 
-      {/* 2. Card de Información (usando el nuevo componente) */}
+      {/* 2. Card de Información */}
       <EncabezadoEstudiante reporte={reporte} variant="card" />
 
-      {/* 3. Acciones Disponibles (corregidas las rutas 'to') */}
-      <h4 style={styles.actionsTitle}>Acciones Disponibles</h4>
-      <div style={styles.cardGrid}>
+      {/* 3. Acciones Disponibles */}
+      <h4 className="perfil-alumno-actions-title">Acciones Disponibles</h4>
+      <div className="perfil-alumno-card-grid">
         <AccionCard
-          titulo="Info alumno"
+          titulo="Info Alumno"
           icono="account_circle"
           to="/consulta" 
         />
         <AccionCard
           titulo="Ver Asistencias"
           icono="task_alt"
-          to="/asistenciasAlumno" // Esta es la ruta que creamos
+          to="/asistenciasAlumno"
         />
         <AccionCard
-          titulo="Estado Academico"
+          titulo="Estado Académico"
           icono="trending_up"
           to="/estadoAcademicoAlumno"
         />
@@ -135,7 +87,7 @@ const PerfilAlumno = () => {
           to="/perfil-alumno/comunicaciones"
         />
         <AccionCard
-          titulo="Certificados y actas"
+          titulo="Certificados y Actas"
           icono="description"
           to="/constanciaAlumnoTramite"
         />
@@ -150,4 +102,3 @@ const PerfilAlumno = () => {
 };
 
 export default PerfilAlumno;
-
