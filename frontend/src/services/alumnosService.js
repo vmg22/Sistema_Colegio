@@ -1,4 +1,4 @@
-import API from "../utils/api.js"
+import API from "../api/api"
 import axios from "axios";
 
 const ALUMNOS_URL = `${API}/alumnos`;

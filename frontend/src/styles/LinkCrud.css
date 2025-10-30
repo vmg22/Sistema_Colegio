@@ -10,17 +10,55 @@
     gap: 20px; /* Espacio entre la grilla, el <hr> y el botón */
 }
 
-/* Grilla para las cards */
-.card-grid {
-    display: grid;
-    /* Crea columnas responsivas:
-      - auto-fill: llene el espacio con tantas columnas como sea posible.
-      - minmax(180px, 1fr): cada columna tendrá un mínimo de 180px
-        y un máximo de 1 fracción del espacio disponible (se reparten).
-    */
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 25px; /* Espacio entre las cards */
-    width: 100%; /* La grilla ocupa todo el ancho de su padre */
+/* Grid container para las tarjetas */
+.grid-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+  margin: 20px;
+}
+
+/* Estilos base de las tarjetas */
+.card-base {
+  padding: 24px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+  color: #1F2937;
+  flex-basis: 250px;
+  flex-grow: 1;
+  min-width: 220px;
+  max-width: 300px;
+}
+
+/* Efecto hover para las tarjetas */
+.card-hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-4px);
+}
+
+/* Contenedor del ícono */
+.card-icon-container {
+  margin-bottom: 16px;
+}
+
+/* Estilo del ícono */
+.card-icon {
+  font-size: 64px;
+}
+
+/* Etiqueta de la tarjeta */
+.card-label {
+  font-size: 20px;
+  font-weight: 600;
 }
 
 /* Separador */
