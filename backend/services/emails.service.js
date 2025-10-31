@@ -7,8 +7,10 @@ const {
 const {
   QUERY_ALUMNOS_POR_CURSO,
   QUERY_CURSOS_DISPONIBLES,
-  QUERY_ALUMNOS_POR_CURSOS_MULTIPLES,
-} = require("../modules/mail/mail.queries");
+  // Se asume que estas queries están en mail.queries.js:
+  QUERY_INSERT_COMUNICACION, 
+  QUERY_INSERT_DESTINATARIO,
+} = require("../modules/mail/mail.queries"); // IMPORTACIONES NECESARIAS
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
@@ -20,6 +22,10 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
+
+// ===============================================
+// FUNCIONES BASE
+// ===============================================
 
 const enviarMailTest = async (to) => {
   try {
@@ -172,78 +178,67 @@ const obtenerDatosAlumno = async (dni, anio) => {
   }
 };
 
-const enviarAlertaAsistencia = async (dni, anio, faltasMaximas = 20) => {
-  try {
-    // Obtener datos reales del alumno desde la BD
-    const alumnoData = await obtenerDatosAlumno(dni, anio);
+// ===============================================
+// FUNCIÓN CENTRAL DE REGISTRO EN BASE DE DATOS (NUEVA)
+// ===============================================
 
-    // Calcular asistencias
-    const asistencias = calcularAsistencias(alumnoData.materias);
+/**
+ * Registra la comunicación y sus destinatarios en la base de datos.
+ * @param {object} notificacionData - Contiene asunto, mensaje/motivo.
+ * @param {number} id_usuario - ID del usuario que envía.
+ * @param {string} destinatario_tipo - Tipo de destinatario (curso, alumno, etc.).
+ * @param {Array<object>} resultados - Array de resultados de envíos exitosos.
+ * @returns {number} id_comunicacion insertado.
+ */
+const registrarComunicacion = async (notificacionData, id_usuario, destinatario_tipo, resultados) => {
+    // Si no hay resultados exitosos para registrar, salimos.
+    if (!resultados || resultados.length === 0) return null;
+    
+    // 1. Insertar en la tabla comunicacion
+    const asunto = notificacionData.asunto || notificacionData.motivo || 'Alerta de Asistencia';
+    const contenido = notificacionData.mensaje || notificacionData.motivo || 'Alerta de Asistencia';
+    
+    const [comunicacionResult] = await pool.execute(
+        QUERY_INSERT_COMUNICACION,
+        [asunto, contenido, id_usuario || 0, destinatario_tipo]
+    );
 
-    // Verificar si debe enviar alerta (90% o menos)
-    if (asistencias.porcentaje > 90) {
-      return {
-        alerta_enviada: false,
-        mensaje: `El alumno tiene ${asistencias.porcentaje}% de asistencia, no requiere alerta.`,
-        datos_asistencia: asistencias,
-      };
-    }
+    const id_comunicacion = comunicacionResult.insertId;
 
-    // Verificar si hay tutores
-    if (alumnoData.tutores.length === 0) {
-      throw new Error("El alumno no tiene tutores registrados.");
-    }
+    // 2. Preparar inserciones masivas en comunicacion_destinatario
+    const destinatarioPromises = [];
 
-    // Preparar datos para el email
-    const datosEmail = {
-      nombreAlumno: alumnoData.nombre,
-      apellidoAlumno: alumnoData.apellido,
-      curso: `${alumnoData.curso.nombre} ${alumnoData.curso.division} - ${alumnoData.curso.turno}`,
-      anioLectivo: alumnoData.curso.anio_lectivo,
-      asistenciasPorcentaje: asistencias.porcentaje,
-      faltasActuales: asistencias.totalAusentes,
-      faltasMaximas: faltasMaximas,
-      totalClases: asistencias.totalClases,
-      clasesPresente: asistencias.totalPresentes,
-    };
+    for (const resultado of resultados) {
+        // Enviar a todos los emails/tutores listados en el resultado
+        const emails_enviados = resultado.emails_enviados || [];
+        const id_alumno_db = resultado.alumno?.id || null; 
+        const id_curso_db = resultado.alumno?.curso?.id || null; 
 
-    // Enviar email a todos los tutores
-    const emailsEnviados = [];
-    for (const tutor of alumnoData.tutores) {
-      if (tutor.email) {
-        const info = await transporter.sendMail({
-          from: `Instituto Carlos Guido Spano <${process.env.EMAIL_USER}>`,
-          to: tutor.email,
-          subject: `⚠️ Alerta de Asistencias - ${datosEmail.nombreAlumno} ${datosEmail.apellidoAlumno}`,
-          html: generarHTMLAlertaAsistencia(datosEmail, tutor),
-        });
+        for (const emailInfo of emails_enviados) {
+            if (emailInfo.email) {
+                destinatarioPromises.push(
+                    pool.execute(
+                        QUERY_INSERT_DESTINATARIO,
+                        [
+                            id_comunicacion, 
+                            id_alumno_db, 
+                            id_curso_db,
+                            emailInfo.tutor_id || null, 
+                            emailInfo.email,
+                            1 // 1 si fue procesado para envío
+                        ]
+                    )
+                );
+            }
+        }
+    }
 
-        emailsEnviados.push({
-          tutor: `${tutor.nombre} ${tutor.apellido}`,
-          email: tutor.email,
-          messageId: info.messageId,
-        });
-
-        console.log(`✅ Alerta de asistencia enviada a: ${tutor.email}`);
-      }
-    }
-
-    return {
-      alerta_enviada: true,
-      mensaje: "Alerta de asistencia enviada correctamente",
-      alumno: {
-        dni: alumnoData.dni,
-        nombre: `${alumnoData.nombre} ${alumnoData.apellido}`,
-        curso: datosEmail.curso,
-      },
-      datos_asistencia: asistencias,
-      emails_enviados: emailsEnviados,
-    };
-  } catch (error) {
-    console.error("❌ Error al enviar alerta de asistencia:", error);
-    throw error;
-  }
+    await Promise.all(destinatarioPromises);
+    return id_comunicacion;
 };
+// ===============================================
+// FUNCIONES HTML AUXILIARES (COMPLETAS)
+// ===============================================
 
 // Función auxiliar para generar HTML de alerta de asistencia
 const generarHTMLAlertaAsistencia = (datos, tutor) => {
@@ -354,69 +349,6 @@ const generarHTMLAlertaAsistencia = (datos, tutor) => {
     `;
 };
 
-const enviarNotificacionReunion = async (dni, anio, reunionData) => {
-  try {
-    // Obtener datos reales del alumno desde la BD
-    const alumnoData = await obtenerDatosAlumno(dni, anio);
-
-    // Verificar si hay tutores
-    if (alumnoData.tutores.length === 0) {
-      throw new Error("El alumno no tiene tutores registrados.");
-    }
-
-    const { motivo, fecha, hora, lugar, observaciones } = reunionData;
-
-    // Enviar email a todos los tutores
-    const emailsEnviados = [];
-    for (const tutor of alumnoData.tutores) {
-      if (tutor.email) {
-        const info = await transporter.sendMail({
-          from: `Sistema de Gestión Académica <${process.env.EMAIL_USER}>`,
-          to: tutor.email,
-          subject: `📅 Convocatoria a Reunión - ${motivo}`,
-          html: generarHTMLReunion({
-            nombreTutor: `${tutor.nombre} ${tutor.apellido}`,
-            nombreAlumno: `${alumnoData.nombre} ${alumnoData.apellido}`,
-            curso: `${alumnoData.curso.nombre} ${alumnoData.curso.division} - ${alumnoData.curso.turno}`,
-            motivo,
-            fecha,
-            hora,
-            lugar,
-            observaciones,
-          }),
-        });
-
-        emailsEnviados.push({
-          tutor: `${tutor.nombre} ${tutor.apellido}`,
-          email: tutor.email,
-          messageId: info.messageId,
-        });
-
-        console.log(`✅ Notificación de reunión enviada a: ${tutor.email}`);
-      }
-    }
-
-    return {
-      mensaje: "Notificación de reunión enviada correctamente",
-      alumno: {
-        dni: alumnoData.dni,
-        nombre: `${alumnoData.nombre} ${alumnoData.apellido}`,
-        curso: `${alumnoData.curso.nombre} ${alumnoData.curso.division}`,
-      },
-      reunion: {
-        motivo,
-        fecha,
-        hora,
-        lugar,
-      },
-      emails_enviados: emailsEnviados,
-    };
-  } catch (error) {
-    console.error("❌ Error al enviar notificación de reunión:", error);
-    throw error;
-  }
-};
-
 // Función auxiliar para generar HTML de reunión
 const generarHTMLReunion = (datos) => {
   return `
@@ -494,77 +426,6 @@ const generarHTMLReunion = (datos) => {
     `;
 };
 
-const enviarNotificacionGeneral = async (dni, anio, notificacionData) => {
-  try {
-    // Obtener datos reales del alumno desde la BD
-    const alumnoData = await obtenerDatosAlumno(dni, anio);
-
-    // Verificar si hay tutores
-    if (alumnoData.tutores.length === 0) {
-      throw new Error("El alumno no tiene tutores registrados.");
-    }
-
-    const { asunto, mensaje, tipo = "informacion" } = notificacionData;
-
-    // Definir colores y emojis según el tipo
-    const tiposConfig = {
-      informacion: { color: "#2196F3", emoji: "ℹ️", titulo: "Información" },
-      aviso: { color: "#ff9800", emoji: "⚠️", titulo: "Aviso Importante" },
-      recordatorio: { color: "#4CAF50", emoji: "🔔", titulo: "Recordatorio" },
-      urgente: {
-        color: "#f44336",
-        emoji: "🚨",
-        titulo: "Notificación Urgente",
-      },
-    };
-
-    const config = tiposConfig[tipo] || tiposConfig.informacion;
-
-    // Enviar email a todos los tutores
-    const emailsEnviados = [];
-    for (const tutor of alumnoData.tutores) {
-      if (tutor.email) {
-        const info = await transporter.sendMail({
-          from: `Instituto Carlos Guido Spano <${process.env.EMAIL_USER}>`,
-          to: tutor.email,
-          subject: `${config.emoji} ${asunto}`,
-          html: generarHTMLNotificacionGeneral({
-            nombreTutor: `${tutor.nombre} ${tutor.apellido}`,
-            nombreAlumno: `${alumnoData.nombre} ${alumnoData.apellido}`,
-            curso: `${alumnoData.curso.nombre} ${alumnoData.curso.division} - ${alumnoData.curso.turno}`,
-            asunto,
-            mensaje,
-            config,
-          }),
-        });
-
-        emailsEnviados.push({
-          tutor: `${tutor.nombre} ${tutor.apellido}`,
-          email: tutor.email,
-          messageId: info.messageId,
-        });
-
-        console.log(`✅ Notificación general enviada a: ${tutor.email}`);
-      }
-    }
-
-    return {
-      mensaje: "Notificación enviada correctamente",
-      alumno: {
-        dni: alumnoData.dni,
-        nombre: `${alumnoData.nombre} ${alumnoData.apellido}`,
-        curso: `${alumnoData.curso.nombre} ${alumnoData.curso.division}`,
-      },
-      tipo: tipo,
-      asunto: asunto,
-      emails_enviados: emailsEnviados,
-    };
-  } catch (error) {
-    console.error("❌ Error al enviar notificación general:", error);
-    throw error;
-  }
-};
-
 // Función auxiliar para generar HTML de notificación general
 const generarHTMLNotificacionGeneral = (datos) => {
   return `
@@ -612,161 +473,273 @@ const generarHTMLNotificacionGeneral = (datos) => {
         </html>
     `;
 };
-// Función para enviar alertas masivas de asistencia
-const enviarAlertaAsistenciaMasiva = async (
-  dniArray,
-  anio,
-  faltasMaximas = 20
-) => {
+
+// ===============================================
+// FUNCIONES SINGULARES (MODIFICADAS para registro)
+// ===============================================
+
+const enviarAlertaAsistencia = async (dni, anio, faltasMaximas = 20, id_usuario = 0) => {
+  try {
+    const alumnoData = await obtenerDatosAlumno(dni, anio);
+    const asistencias = calcularAsistencias(alumnoData.materias);
+    
+    // Si no requiere alerta, salimos
+    if (asistencias.porcentaje > 90) {
+      return { alerta_enviada: false, mensaje: `El alumno tiene ${asistencias.porcentaje}% de asistencia, no requiere alerta.`, datos_asistencia: asistencias, };
+    }
+
+    if (alumnoData.tutores.length === 0) {
+      throw new Error("El alumno no tiene tutores registrados.");
+    }
+
+    const datosEmail = {
+      nombreAlumno: alumnoData.nombre, apellidoAlumno: alumnoData.apellido,
+      curso: `${alumnoData.curso.nombre} ${alumnoData.curso.division} - ${alumnoData.curso.turno}`,
+      anioLectivo: alumnoData.curso.anio_lectivo,
+      asistenciasPorcentaje: asistencias.porcentaje, faltasActuales: asistencias.totalAusentes,
+      faltasMaximas: faltasMaximas, totalClases: asistencias.totalClases, clasesPresente: asistencias.totalPresentes
+    };
+
+    const emailsEnviados = [];
+    const resultadosRegistro = { alumno: { dni: alumnoData.dni, id: alumnoData.id, email: alumnoData.email, curso: alumnoData.curso }, emails_enviados: [] };
+    
+    for (const tutor of alumnoData.tutores) {
+      if (tutor.email) {
+        const info = await transporter.sendMail({
+          from: `Instituto Carlos Guido Spano <${process.env.EMAIL_USER}>`,
+          to: tutor.email,
+          subject: `⚠️ Alerta de Asistencias - ${datosEmail.nombreAlumno} ${datosEmail.apellidoAlumno}`,
+          html: generarHTMLAlertaAsistencia(datosEmail, tutor),
+        });
+        
+        emailsEnviados.push({ tutor: `${tutor.nombre} ${tutor.apellido}`, email: tutor.email, messageId: info.messageId, tutor_id: tutor.id });
+        resultadosRegistro.emails_enviados.push({ email: tutor.email, tutor_id: tutor.id });
+        console.log(`✅ Alerta de asistencia enviada a: ${tutor.email}`);
+      }
+    }
+
+    // REGISTRO EN BASE DE DATOS
+    let id_comunicacion = await registrarComunicacion(
+        { asunto: `Alerta de Asistencia (${datosEmail.faltasActuales}/${datosEmail.faltasMaximas})`, motivo: 'Alerta de Asistencia' },
+        id_usuario,
+        'alumno', 
+        [resultadosRegistro]
+    );
+
+    return {
+      alerta_enviada: true,
+      mensaje: "Alerta de asistencia enviada correctamente",
+      alumno: { dni: alumnoData.dni, nombre: `${alumnoData.nombre} ${alumnoData.apellido}`, curso: datosEmail.curso, id: alumnoData.id },
+      datos_asistencia: asistencias,
+      emails_enviados: emailsEnviados,
+      id_comunicacion: id_comunicacion
+    };
+  } catch (error) {
+    console.error("❌ Error al enviar alerta de asistencia:", error);
+    throw error;
+  }
+};
+
+const enviarNotificacionReunion = async (dni, anio, reunionData, id_usuario = 0) => {
+  try {
+    const alumnoData = await obtenerDatosAlumno(dni, anio);
+    if (alumnoData.tutores.length === 0) {
+      throw new Error("El alumno no tiene tutores registrados.");
+    }
+
+    const { motivo, fecha, hora, lugar, observaciones } = reunionData;
+    const emailsEnviados = [];
+    const resultadosRegistro = { alumno: { dni: alumnoData.dni, id: alumnoData.id, email: alumnoData.email, curso: alumnoData.curso }, emails_enviados: [] };
+
+    for (const tutor of alumnoData.tutores) {
+      if (tutor.email) {
+        const info = await transporter.sendMail({
+          from: `Sistema de Gestión Académica <${process.env.EMAIL_USER}>`,
+          to: tutor.email,
+          subject: `📅 Convocatoria a Reunión - ${motivo}`,
+          html: generarHTMLReunion({
+            nombreTutor: `${tutor.nombre} ${tutor.apellido}`, nombreAlumno: `${alumnoData.nombre} ${alumnoData.apellido}`,
+            curso: `${alumnoData.curso.nombre} ${alumnoData.curso.division} - ${alumnoData.curso.turno}`,
+            motivo, fecha, hora, lugar, observaciones,
+          }),
+        });
+        
+        emailsEnviados.push({ tutor: `${tutor.nombre} ${tutor.apellido}`, email: tutor.email, messageId: info.messageId, tutor_id: tutor.id });
+        resultadosRegistro.emails_enviados.push({ email: tutor.email, tutor_id: tutor.id });
+        console.log(`✅ Notificación de reunión enviada a: ${tutor.email}`);
+      }
+    }
+
+    // REGISTRO EN BASE DE DATOS
+    let id_comunicacion = await registrarComunicacion(
+        reunionData,
+        id_usuario,
+        'alumno',
+        [resultadosRegistro]
+    );
+
+    return {
+      mensaje: "Notificación de reunión enviada correctamente",
+      alumno: { dni: alumnoData.dni, nombre: `${alumnoData.nombre} ${alumnoData.apellido}`, curso: `${alumnoData.curso.nombre} ${alumnoData.curso.division}`, id: alumnoData.id },
+      reunion: { motivo, fecha, hora, lugar },
+      emails_enviados: emailsEnviados,
+      id_comunicacion: id_comunicacion
+    };
+
+  } catch (error) {
+    console.error("❌ Error al enviar notificación de reunión:", error);
+    throw error;
+  }
+};
+
+const enviarNotificacionGeneral = async (dni, anio, notificacionData, id_usuario = 0) => {
+  try {
+    const alumnoData = await obtenerDatosAlumno(dni, anio);
+    if (alumnoData.tutores.length === 0) {
+      throw new Error("El alumno no tiene tutores registrados.");
+    }
+
+    const { asunto, mensaje, tipo = "informacion" } = notificacionData;
+    const tiposConfig = {
+      informacion: { color: "#2196F3", emoji: "ℹ️", titulo: "Información" },
+      aviso: { color: "#ff9800", emoji: "⚠️", titulo: "Aviso Importante" },
+      recordatorio: { color: "#4CAF50", emoji: "🔔", titulo: "Recordatorio" },
+      urgente: { color: "#f44336", emoji: "🚨", titulo: "Notificación Urgente", },
+    };
+    const config = tiposConfig[tipo] || tiposConfig.informacion;
+
+    const emailsEnviados = [];
+    const resultadosRegistro = { alumno: { dni: alumnoData.dni, id: alumnoData.id, email: alumnoData.email, curso: alumnoData.curso }, emails_enviados: [] };
+    
+    for (const tutor of alumnoData.tutores) {
+      if (tutor.email) {
+        const info = await transporter.sendMail({
+          from: `Instituto Carlos Guido Spano <${process.env.EMAIL_USER}>`,
+          to: tutor.email,
+          subject: `${config.emoji} ${asunto}`,
+          html: generarHTMLNotificacionGeneral({
+            nombreTutor: `${tutor.nombre} ${tutor.apellido}`, nombreAlumno: `${alumnoData.nombre} ${alumnoData.apellido}`,
+            curso: `${alumnoData.curso.nombre} ${alumnoData.curso.division} - ${alumnoData.curso.turno}`, asunto, mensaje, config,
+          }),
+        });
+        
+        emailsEnviados.push({ tutor: `${tutor.nombre} ${tutor.apellido}`, email: tutor.email, messageId: info.messageId, tutor_id: tutor.id });
+        resultadosRegistro.emails_enviados.push({ email: tutor.email, tutor_id: tutor.id });
+        console.log(`✅ Notificación general enviada a: ${tutor.email}`);
+      }
+    }
+    
+    // REGISTRO EN BASE DE DATOS
+    let id_comunicacion = await registrarComunicacion(
+        notificacionData,
+        id_usuario,
+        'alumno',
+        [resultadosRegistro]
+    );
+
+    return {
+      mensaje: "Notificación enviada correctamente",
+      alumno: { dni: alumnoData.dni, nombre: `${alumnoData.nombre} ${alumnoData.apellido}`, curso: `${alumnoData.curso.nombre} ${alumnoData.curso.division}`, id: alumnoData.id },
+      tipo: tipo, asunto: asunto,
+      emails_enviados: emailsEnviados,
+      id_comunicacion: id_comunicacion
+    };
+
+  } catch (error) {
+    console.error("❌ Error al enviar notificación general:", error);
+    throw error;
+  }
+};
+
+// ===============================================
+// FUNCIONES MASIVAS (Solo buclean y propagan ID de usuario)
+// ===============================================
+
+const enviarAlertaAsistenciaMasiva = async (dniArray, anio, faltasMaximas = 20, id_usuario = 0) => {
   try {
     const resultados = [];
     const errores = [];
-
     console.log(`📧 Iniciando envío masivo a ${dniArray.length} alumnos...`);
 
     for (const dni of dniArray) {
       try {
         console.log(`🔄 Procesando alumno DNI: ${dni}`);
-        const resultado = await enviarAlertaAsistencia(
-          dni,
-          anio,
-          faltasMaximas
-        );
+        // Propaga el id_usuario a la función singular que registra
+        const resultado = await enviarAlertaAsistencia(dni, anio, faltasMaximas, id_usuario);
 
-        resultados.push({
-          dni,
-          success: true,
-          ...resultado,
-        });
-
+        resultados.push({ dni, success: true, ...resultado, });
         console.log(`✅ Email enviado a tutores de alumno DNI: ${dni}`);
       } catch (error) {
         console.error(`❌ Error con alumno DNI ${dni}:`, error.message);
-        errores.push({
-          dni,
-          success: false,
-          error: error.message,
-        });
+        errores.push({ dni, success: false, error: error.message, });
       }
     }
 
-    return {
-      total: dniArray.length,
-      exitosos: resultados.length,
-      fallidos: errores.length,
-      resultados,
-      errores,
-    };
+    return { total: dniArray.length, exitosos: resultados.length, fallidos: errores.length, resultados, errores, };
   } catch (error) {
     console.error("❌ Error en envío masivo:", error);
     throw error;
   }
 };
 
-// Función para enviar notificaciones de reunión masivas
-const enviarNotificacionReunionMasiva = async (dniArray, anio, reunionData) => {
+const enviarNotificacionReunionMasiva = async (dniArray, anio, reunionData, id_usuario = 0) => {
   try {
     const resultados = [];
     const errores = [];
-
-    console.log(
-      `📧 Iniciando envío masivo de reunión a ${dniArray.length} alumnos...`
-    );
+    console.log(`📧 Iniciando envío masivo de reunión a ${dniArray.length} alumnos...`);
 
     for (const dni of dniArray) {
       try {
         console.log(`🔄 Procesando alumno DNI: ${dni}`);
-        const resultado = await enviarNotificacionReunion(
-          dni,
-          anio,
-          reunionData
-        );
+        // Propaga el id_usuario a la función singular que registra
+        const resultado = await enviarNotificacionReunion(dni, anio, reunionData, id_usuario);
 
-        resultados.push({
-          dni,
-          success: true,
-          ...resultado,
-        });
-
+        resultados.push({ dni, success: true, ...resultado, });
         console.log(`✅ Notificación de reunión enviada a: ${dni}`);
       } catch (error) {
         console.error(`❌ Error con alumno DNI ${dni}:`, error.message);
-        errores.push({
-          dni,
-          success: false,
-          error: error.message,
-        });
+        errores.push({ dni, success: false, error: error.message, });
       }
     }
 
-    return {
-      total: dniArray.length,
-      exitosos: resultados.length,
-      fallidos: errores.length,
-      resultados,
-      errores,
-    };
+    return { total: dniArray.length, exitosos: resultados.length, fallidos: errores.length, resultados, errores, };
   } catch (error) {
     console.error("❌ Error en envío masivo:", error);
     throw error;
   }
 };
 
-// Función para enviar notificaciones generales masivas (CORREGIDA)
-const enviarNotificacionGeneralMasiva = async (
-  dniArray,
-  anio_lectivo, // Renombrado a anio_lectivo para mayor claridad
-  notificacionData
-) => {
+const enviarNotificacionGeneralMasiva = async (dniArray, anio_lectivo, notificacionData, id_usuario = 0) => {
   try {
     const resultados = [];
     const errores = [];
-
-    console.log(
-      `📧 Iniciando envío masivo de notificación a ${dniArray.length} alumnos...`
-    );
+    console.log(`📧 Iniciando envío masivo de notificación a ${dniArray.length} alumnos...`);
 
     for (const dni of dniArray) {
       try {
         console.log(`🔄 Procesando alumno DNI: ${dni}`);
-        // CORRECCIÓN: Se pasa el anio_lectivo (que es el 2do parámetro) a enviarNotificacionGeneral
-        const resultado = await enviarNotificacionGeneral(
-          dni,
-          anio_lectivo, // Se usa el parámetro que sí existe
-          notificacionData
-        );
+        // Propaga el id_usuario a la función singular que registra
+        const resultado = await enviarNotificacionGeneral(dni, anio_lectivo, notificacionData, id_usuario);
 
-        resultados.push({
-          dni,
-          success: true,
-          ...resultado,
-        });
-
+        resultados.push({ dni, success: true, ...resultado, });
         console.log(`✅ Email enviado a tutores de alumno DNI: ${dni}`);
       } catch (error) {
         console.error(`❌ Error con alumno DNI ${dni}:`, error.message);
-        errores.push({
-          dni,
-          success: false,
-          error: error.message,
-        });
+        errores.push({ dni, success: false, error: error.message, });
       }
     }
 
-    return {
-      total: dniArray.length,
-      exitosos: resultados.length,
-      fallidos: errores.length,
-      resultados,
-      errores,
-    };
+    return { total: dniArray.length, exitosos: resultados.length, fallidos: errores.length, resultados, errores, };
   } catch (error) {
     console.error("❌ Error en envío masivo:", error);
     throw error;
   }
 };
 
-// Obtener alumnos de un curso
+// ===============================================
+// FUNCIONES DE CURSO (Propagan el id_usuario)
+// ===============================================
+
 const obtenerCursosDisponibles = async (anio) => {
   try {
     const [rows] = await pool.execute(QUERY_CURSOS_DISPONIBLES, [anio]);
@@ -777,15 +750,11 @@ const obtenerCursosDisponibles = async (anio) => {
   }
 };
 
-// Obtener alumnos de un curso (MODIFICADO)
-// Ahora busca por anio de curso, división y año lectivo
 const obtenerAlumnosPorCurso = async (anio_curso, division, anio_lectivo) => {
   try {
-    // En este punto, 'idCurso' en la query se reemplaza por anio_curso y division
-    // Asumiendo que QUERY_ALUMNOS_POR_CURSO se adaptará para usar estos 3 parámetros.
     const [rows] = await pool.execute(
       QUERY_ALUMNOS_POR_CURSO,
-      [anio_curso, division, anio_lectivo] // Nuevos parámetros para la consulta
+      [anio_curso, division, anio_lectivo]
     );
 
     if (rows.length === 0) {
@@ -795,18 +764,8 @@ const obtenerAlumnosPorCurso = async (anio_curso, division, anio_lectivo) => {
     }
 
     return rows.map((row) => ({
-      id: row.id_alumno,
-      dni: row.dni_alumno,
-      nombre: row.nombre_alumno,
-      apellido: row.apellido_alumno,
-      email: row.email,
-      curso: {
-        id: row.id_curso,
-        nombre: row.nombre_curso,
-        division: row.division,
-        turno: row.turno,
-        anio_curso: row.anio_curso,
-      },
+      id: row.id_alumno, dni: row.dni_alumno, nombre: row.nombre_alumno, apellido: row.apellido_alumno, email: row.email,
+      curso: { id: row.id_curso, nombre: row.nombre_curso, division: row.division, turno: row.turno, anio_curso: row.anio_curso, },
     }));
   } catch (error) {
     console.error("❌ Error al obtener alumnos por curso:", error);
@@ -814,59 +773,44 @@ const obtenerAlumnosPorCurso = async (anio_curso, division, anio_lectivo) => {
   }
 };
 
-// Obtener alumnos de múltiples cursos (MODIFICADO - Sin anioLectivo como argumento separado)
 const obtenerAlumnosPorCursosMultiples = async (cursos) => {
     try {
         const params = [];
         const whereClauses = [];
+        
         const baseQuery = `
             SELECT DISTINCT
                 a.id_alumno, a.dni_alumno, a.nombre_alumno, a.apellido_alumno, a.email,
                 c.id_curso, c.nombre AS nombre_curso, c.division, c.turno, c.anio AS anio_curso
-            FROM alumno a  /* <--- CLÁUSULA FROM AÑADIDA O VERIFICADA CORRECTAMENTE */
+            FROM alumno a
             JOIN alumno_curso ac ON a.id_alumno = ac.id_alumno
             JOIN curso c ON ac.id_curso = c.id_curso
             WHERE a.estado = 'activo' AND (
         `;
-        
-        cursos.forEach((curso) => {
-            // Se asume que cada elemento de 'cursos' contiene { anio_curso, division, anio_lectivo }
-            if (curso.anio_curso && curso.division && curso.anio_lectivo) {
-                 whereClauses.push(`(c.anio = ? AND c.division = ? AND ac.anio_lectivo = ?)`);
-                 params.push(curso.anio_curso, curso.division, curso.anio_lectivo);
-            }
-        });
-        
-        if (whereClauses.length === 0) {
-            throw new Error('El array "cursos" no contiene combinaciones válidas (anio_curso, division, anio_lectivo).');
-        }
+        
+        cursos.forEach((curso) => {
+            if (curso.anio_curso && curso.division && curso.anio_lectivo) {
+                 whereClauses.push(`(c.anio = ? AND c.division = ? AND ac.anio_lectivo = ?)`);
+                 params.push(curso.anio_curso, curso.division, curso.anio_lectivo);
+            }
+        });
+        
+        if (whereClauses.length === 0) {
+            throw new Error('El array "cursos" no contiene combinaciones válidas (anio_curso, division, anio_lectivo).');
+        }
 
-        const finalQuery = `${baseQuery} ${whereClauses.join(' OR ')} ) ORDER BY c.anio, c.division, a.apellido_alumno, a.nombre_alumno;`;
-
-        console.log('Generated Multi-Course Query:', finalQuery); 
-        
-        const [rows] = await pool.execute(finalQuery, params);
+        const finalQuery = `${baseQuery} ${whereClauses.join(' OR ')} ) ORDER BY c.anio, c.division, a.apellido_alumno, a.nombre_alumno;`;
         console.log('Generated Multi-Course Query:', finalQuery); 
         
-        
+        const [rows] = await pool.execute(finalQuery, params);
         
         if (rows.length === 0) {
             throw new Error(`No se encontraron alumnos activos en los cursos seleccionados.`);
         }
 
         return rows.map(row => ({
-            id: row.id_alumno,
-            dni: row.dni_alumno,
-            nombre: row.nombre_alumno,
-            apellido: row.apellido_alumno,
-            email: row.email,
-            curso: {
-                id: row.id_curso,
-                nombre: row.nombre_curso,
-                division: row.division,
-                turno: row.turno,
-                anio: row.anio_curso
-            }
+            id: row.id_alumno, dni: row.dni_alumno, nombre: row.nombre_alumno, apellido: row.apellido_alumno, email: row.email,
+            curso: { id: row.id_curso, nombre: row.nombre_curso, division: row.division, turno: row.turno, anio: row.anio_curso }
         }));
     } catch (error) {
         console.error('❌ Error al obtener alumnos por cursos múltiples:', error);
@@ -874,164 +818,91 @@ const obtenerAlumnosPorCursosMultiples = async (cursos) => {
     }
 };
 
-// Enviar alerta de asistencia a todo un curso (MODIFICADO)
-const enviarAlertaAsistenciaPorCurso = async (
-  anio_curso,
-  division,
-  anio_lectivo,
-  faltasMaximas = 20
-) => {
+const enviarAlertaAsistenciaPorCurso = async (anio_curso, division, anio_lectivo, faltasMaximas = 20, id_usuario = 0) => {
   try {
-    console.log(
-      `📧 Iniciando envío masivo al curso ${anio_curso} "${division}" - Año Lectivo ${anio_lectivo}...`
-    );
+    console.log(`📧 Iniciando envío masivo al curso ${anio_curso} "${division}" - Año Lectivo ${anio_lectivo}...`);
 
-    // Obtener alumnos del curso usando los nuevos parámetros
-    const alumnos = await obtenerAlumnosPorCurso(
-      anio_curso,
-      division,
-      anio_lectivo
-    );
+    const alumnos = await obtenerAlumnosPorCurso(anio_curso, division, anio_lectivo);
     const dnis = alumnos.map((alumno) => alumno.dni);
 
     console.log(`👥 Alumnos encontrados: ${alumnos.length}`);
 
-    // Reutilizar la función masiva existente, pasando anio_lectivo como 'anio'
-    const resultado = await enviarAlertaAsistenciaMasiva(
-      dnis,
-      anio_lectivo,
-      faltasMaximas
-    );
+    // Propaga id_usuario a la función masiva
+    const resultado = await enviarAlertaAsistenciaMasiva(dnis, anio_lectivo, faltasMaximas, id_usuario);
 
-    return {
-      curso: alumnos.length > 0 ? alumnos[0].curso : { anio_curso, division },
-      totalAlumnos: alumnos.length,
-      ...resultado,
-    };
+    return { curso: alumnos.length > 0 ? alumnos[0].curso : { anio_curso, division }, totalAlumnos: alumnos.length, ...resultado, };
   } catch (error) {
     console.error("❌ Error al enviar alerta por curso:", error);
     throw error;
   }
 };
 
-// Enviar notificación de reunión a todo un curso (MODIFICADO)
-const enviarNotificacionReunionPorCurso = async (
-  anio_curso,
-  division,
-  anio_lectivo,
-  reunionData
-) => {
+const enviarNotificacionReunionPorCurso = async (anio_curso, division, anio_lectivo, reunionData, id_usuario = 0) => {
   try {
-    console.log(
-      `📧 Iniciando envío de reunión al curso ${anio_curso} "${division}" - Año Lectivo ${anio_lectivo}...`
-    );
+    console.log(`📧 Iniciando envío de reunión al curso ${anio_curso} "${division}" - Año Lectivo ${anio_lectivo}...`);
 
-    const alumnos = await obtenerAlumnosPorCurso(
-      anio_curso,
-      division,
-      anio_lectivo
-    );
+    const alumnos = await obtenerAlumnosPorCurso(anio_curso, division, anio_lectivo);
     const dnis = alumnos.map((alumno) => alumno.dni);
 
     console.log(`👥 Alumnos encontrados: ${alumnos.length}`);
 
-    const resultado = await enviarNotificacionReunionMasiva(
-      dnis,
-      anio_lectivo,
-      reunionData
-    );
+    // Propaga id_usuario a la función masiva
+    const resultado = await enviarNotificacionReunionMasiva(dnis, anio_lectivo, reunionData, id_usuario);
 
-    return {
-      curso: alumnos.length > 0 ? alumnos[0].curso : { anio_curso, division },
-      totalAlumnos: alumnos.length,
-      ...resultado,
-    };
+    return { curso: alumnos.length > 0 ? alumnos[0].curso : { anio_curso, division }, totalAlumnos: alumnos.length, ...resultado, };
   } catch (error) {
     console.error("❌ Error al enviar reunión por curso:", error);
     throw error;
   }
 };
 
-// Enviar notificación general a todo un curso (MODIFICADO)
-const enviarNotificacionGeneralPorCurso = async (
-  anio_curso,
-  division,
-  anio_lectivo,
-  notificacionData
-) => {
+const enviarNotificacionGeneralPorCurso = async (anio_curso, division, anio_lectivo, notificacionData, id_usuario = 0) => {
   try {
-    console.log(
-      `📧 Iniciando envío de notificación al curso ${anio_curso} "${division}" - Año Lectivo ${anio_lectivo}...`
-    );
+    console.log(`📧 Iniciando envío de notificación al curso ${anio_curso} "${division}" - Año Lectivo ${anio_lectivo}...`);
 
-    const alumnos = await obtenerAlumnosPorCurso(
-      anio_curso,
-      division,
-      anio_lectivo
-    );
+    const alumnos = await obtenerAlumnosPorCurso(anio_curso, division, anio_lectivo);
     const dnis = alumnos.map((alumno) => alumno.dni);
 
     console.log(`👥 Alumnos encontrados: ${alumnos.length}`);
 
-    const resultado = await enviarNotificacionGeneralMasiva(
-      dnis,
-      anio_lectivo,
-      notificacionData
-    );
+    // Propaga id_usuario a la función masiva
+    const resultado = await enviarNotificacionGeneralMasiva(dnis, anio_lectivo, notificacionData, id_usuario);
 
-    return {
-      curso: alumnos.length > 0 ? alumnos[0].curso : { anio_curso, division },
-      totalAlumnos: alumnos.length,
-      ...resultado,
-    };
+    return { curso: alumnos.length > 0 ? alumnos[0].curso : { anio_curso, division }, totalAlumnos: alumnos.length, ...resultado, };
   } catch (error) {
     console.error("❌ Error al enviar notificación por curso:", error);
     throw error;
   }
 };
 
-// Enviar a múltiples cursos (MODIFICADO - Opcion 1 aplicada)
-const enviarNotificacionGeneralPorCursosMultiples = async (
-  cursos,
-  notificacionData
-) => {
+const enviarNotificacionGeneralPorCursosMultiples = async (cursos, notificacionData, id_usuario = 0) => {
   try {
-    console.log(`📧 Iniciando envío a ${cursos.length} cursos...`); // Obtener alumnos de múltiples cursos usando la lista de objetos de curso
+    console.log(`📧 Iniciando envío a ${cursos.length} cursos...`); 
     const alumnos = await obtenerAlumnosPorCursosMultiples(cursos);
     const dnis = alumnos.map((alumno) => alumno.dni);
-    console.log(`👥 Alumnos encontrados: ${alumnos.length}`); // Tomamos el año lectivo del primer curso, o 2025 por defecto,
+    console.log(`👥 Alumnos encontrados: ${alumnos.length}`); 
 
-    // ya que la función masiva lo usa como parámetro histórico.
     const anioReferencia = cursos[0]?.anio_lectivo || new Date().getFullYear();
-    const resultado = await enviarNotificacionGeneralMasiva(
-      dnis,
-      anioReferencia,
-      notificacionData
-    ); // Agrupar por curso (para el reporte de respuesta)
+    
+    // Propaga id_usuario a la función masiva
+    const resultado = await enviarNotificacionGeneralMasiva(dnis, anioReferencia, notificacionData, id_usuario); 
+    
     const alumnosPorCurso = alumnos.reduce((acc, alumno) => {
       const cursoKey = `${alumno.curso.anio}/${alumno.curso.division}/${alumno.curso.id}`;
-      if (!acc[cursoKey]) {
-        acc[cursoKey] = {
-          curso: alumno.curso,
-          cantidad: 0,
-        };
-      }
+      if (!acc[cursoKey]) { acc[cursoKey] = { curso: alumno.curso, cantidad: 0, }; }
       acc[cursoKey].cantidad++;
       return acc;
     }, {});
-    return {
-      cursos_enviados: Object.values(alumnosPorCurso),
-      totalAlumnos: alumnos.length,
-      totalCursos: cursos.length,
-      ...resultado,
-    };
+    return { cursos_enviados: Object.values(alumnosPorCurso), totalAlumnos: alumnos.length, totalCursos: cursos.length, ...resultado, };
   } catch (error) {
     console.error("❌ Error al enviar notificación a múltiples cursos:", error);
     throw error;
   }
 };
 
-// ... (resto de las funciones de servicio, incluyendo obtenerAlumnosPorCurso, que ahora usa los 3 parámetros) ...
+// ===============================================
+// EXPORTACIONES FINALES
+// ===============================================
 
 module.exports = {
   // Existentes
@@ -1044,12 +915,12 @@ module.exports = {
   enviarAlertaAsistenciaMasiva,
   enviarNotificacionReunionMasiva,
   enviarNotificacionGeneralMasiva,
-  // Nuevas funciones por curso
+  // Funciones por curso
   obtenerCursosDisponibles,
-  obtenerAlumnosPorCurso, // Modificado
-  obtenerAlumnosPorCursosMultiples, // Modificado
-  enviarAlertaAsistenciaPorCurso, // Modificado
-  enviarNotificacionReunionPorCurso, // Modificado
-  enviarNotificacionGeneralPorCurso, // Modificado
-  enviarNotificacionGeneralPorCursosMultiples, // Modificado
+  obtenerAlumnosPorCurso, 
+  obtenerAlumnosPorCursosMultiples, 
+  enviarAlertaAsistenciaPorCurso, 
+  enviarNotificacionReunionPorCurso, 
+  enviarNotificacionGeneralPorCurso, 
+  enviarNotificacionGeneralPorCursosMultiples, 
 };

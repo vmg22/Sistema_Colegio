@@ -67,3 +67,13 @@ WHERE
 ORDER BY c.nombre, c.division, a.apellido_alumno, a.nombre_alumno;
 `;
 */
+exports.QUERY_INSERT_COMUNICACION = `
+INSERT INTO comunicacion (asunto, contenido, id_usuario, destinatario_tipo)
+VALUES (?, ?, ?, ?);
+`;
+
+// Nuevo: Query para insertar los destinatarios individuales (usado por el Service)
+exports.QUERY_INSERT_DESTINATARIO = `
+INSERT INTO comunicacion_destinatario (id_comunicacion, id_alumno, id_curso, id_tutor, email, asistio)
+VALUES (?, ?, ?, ?, ?, ?);
+`;

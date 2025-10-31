@@ -18,6 +18,17 @@ const {
   enviarNotificacionGeneralPorCursosMultiples
 } = require('../../services/emails.service');
 
+// Función auxiliar para obtener el ID de usuario de forma segura
+const getUserId = (req) => {
+    // Intenta obtenerlo de req.body o usa 1 por defecto.
+    // **NOTA:** En una aplicación real, se usaría req.user.id (desde el middleware de auth).
+    return req.body.id_usuario || 1; 
+};
+
+// ========================================
+// CONTROLLERS INDIVIDUALES (Añadido id_usuario)
+// ========================================
+
 const TestMail = async (req, res) => {
   try {
     const { to } = req.body;
@@ -65,9 +76,12 @@ const EnviarRecuperacion = async (req, res) => {
 const EnviarAlertaAsistencia = async (req, res) => {
   try {
     const { dni, anio, faltasMaximas } = req.body;
+    const id_usuario = getUserId(req); // Obtener ID de usuario
+    
     if (!dni) return res.status(400).json({ success: false, message: 'El campo "dni" es requerido' });
     if (!anio) return res.status(400).json({ success: false, message: 'El campo "anio" es requerido' });
-    const resultado = await enviarAlertaAsistencia(dni, anio, faltasMaximas);
+    
+    const resultado = await enviarAlertaAsistencia(dni, anio, faltasMaximas, id_usuario); // Pasar ID
     return res.status(200).json({ success: true, ...resultado });
   } catch (error) {
     console.error('Error al enviar alerta de asistencia:', error);
@@ -78,6 +92,8 @@ const EnviarAlertaAsistencia = async (req, res) => {
 const EnviarNotificacionReunion = async (req, res) => {
   try {
     const { dni, anio, reunionData } = req.body;
+    const id_usuario = getUserId(req); // Obtener ID de usuario
+
     if (!dni) return res.status(400).json({ success: false, message: 'El campo "dni" es requerido' });
     if (!anio) return res.status(400).json({ success: false, message: 'El campo "anio" es requerido' });
     if (!reunionData) return res.status(400).json({ success: false, message: 'El campo "reunionData" es requerido' });
@@ -87,7 +103,7 @@ const EnviarNotificacionReunion = async (req, res) => {
     if (camposFaltantes.length > 0)
       return res.status(400).json({ success: false, message: `Campos requeridos: ${camposFaltantes.join(', ')}` });
 
-    const resultado = await enviarNotificacionReunion(dni, anio, reunionData);
+    const resultado = await enviarNotificacionReunion(dni, anio, reunionData, id_usuario); // Pasar ID
     return res.status(200).json({ success: true, ...resultado });
   } catch (error) {
     console.error('Error al enviar notificación de reunión:', error);
@@ -98,6 +114,8 @@ const EnviarNotificacionReunion = async (req, res) => {
 const EnviarNotificacionGeneral = async (req, res) => {
   try {
     const { dni, anio, notificacionData } = req.body;
+    const id_usuario = getUserId(req); // Obtener ID de usuario
+
     if (!dni) return res.status(400).json({ success: false, message: 'El campo "dni" es requerido' });
     if (!anio) return res.status(400).json({ success: false, message: 'El campo "anio" es requerido' });
     if (!notificacionData) return res.status(400).json({ success: false, message: 'El campo "notificacionData" es requerido' });
@@ -109,7 +127,7 @@ const EnviarNotificacionGeneral = async (req, res) => {
 
     if (!notificacionData.tipo) notificacionData.tipo = 'informacion';
 
-    const resultado = await enviarNotificacionGeneral(dni, anio, notificacionData);
+    const resultado = await enviarNotificacionGeneral(dni, anio, notificacionData, id_usuario); // Pasar ID
     return res.status(200).json({ success: true, ...resultado });
   } catch (error) {
     console.error('Error al enviar notificación general:', error);
@@ -132,18 +150,20 @@ const ObtenerDatosAlumno = async (req, res) => {
 };
 
 // ========================================
-// CONTROLLERS PARA ENVÍO MASIVO
+// CONTROLLERS PARA ENVÍO MASIVO (Añadido id_usuario)
 // ========================================
 
 const EnviarAlertaAsistenciaMasiva = async (req, res) => {
   try {
     const { dnis, anio, faltasMaximas } = req.body;
+    const id_usuario = getUserId(req); // Obtener ID de usuario
+
     if (!dnis || !Array.isArray(dnis) || dnis.length === 0)
       return res.status(400).json({ success: false, message: 'El campo "dnis" debe ser un array con al menos un DNI' });
     if (!anio)
       return res.status(400).json({ success: false, message: 'El campo "anio" es requerido' });
 
-    const resultado = await enviarAlertaAsistenciaMasiva(dnis, anio, faltasMaximas);
+    const resultado = await enviarAlertaAsistenciaMasiva(dnis, anio, faltasMaximas, id_usuario); // Pasar ID
     return res.status(200).json({ success: true, message: `Envío masivo completado`, ...resultado });
   } catch (error) {
     console.error('❌ Error al enviar alerta masiva:', error);
@@ -154,6 +174,8 @@ const EnviarAlertaAsistenciaMasiva = async (req, res) => {
 const EnviarNotificacionReunionMasiva = async (req, res) => {
   try {
     const { dnis, anio, reunionData } = req.body;
+    const id_usuario = getUserId(req); // Obtener ID de usuario
+
     if (!dnis || !Array.isArray(dnis) || dnis.length === 0)
       return res.status(400).json({ success: false, message: 'El campo "dnis" debe ser un array con al menos un DNI' });
     if (!anio)
@@ -166,7 +188,7 @@ const EnviarNotificacionReunionMasiva = async (req, res) => {
     if (camposFaltantes.length > 0)
       return res.status(400).json({ success: false, message: `Campos requeridos: ${camposFaltantes.join(', ')}` });
 
-    const resultado = await enviarNotificacionReunionMasiva(dnis, anio, reunionData);
+    const resultado = await enviarNotificacionReunionMasiva(dnis, anio, reunionData, id_usuario); // Pasar ID
     return res.status(200).json({ success: true, message: 'Envío masivo completado', ...resultado });
   } catch (error) {
     console.error('❌ Error al enviar notificación masiva:', error);
@@ -177,6 +199,8 @@ const EnviarNotificacionReunionMasiva = async (req, res) => {
 const EnviarNotificacionGeneralMasiva = async (req, res) => {
   try {
     const { dnis, anio, notificacionData } = req.body;
+    const id_usuario = getUserId(req); // Obtener ID de usuario
+
     if (!dnis || !Array.isArray(dnis) || dnis.length === 0)
       return res.status(400).json({ success: false, message: 'El campo "dnis" debe ser un array con al menos un DNI' });
     if (!anio)
@@ -191,7 +215,7 @@ const EnviarNotificacionGeneralMasiva = async (req, res) => {
 
     if (!notificacionData.tipo) notificacionData.tipo = 'informacion';
 
-    const resultado = await enviarNotificacionGeneralMasiva(dnis, anio, notificacionData);
+    const resultado = await enviarNotificacionGeneralMasiva(dnis, anio, notificacionData, id_usuario); // Pasar ID
     return res.status(200).json({ success: true, message: 'Envío masivo completado', ...resultado });
   } catch (error) {
     console.error('❌ Error al enviar notificación masiva:', error);
@@ -227,7 +251,7 @@ const ObtenerCursosDisponibles = async (req, res) => {
     }
 };
 
-// Obtener alumnos de un curso (MODIFICADO)
+// Obtener alumnos de un curso
 const ObtenerAlumnosPorCurso = async (req, res) => {
     try {
         const { anio_curso, division, anio_lectivo } = req.params;
@@ -261,29 +285,21 @@ const ObtenerAlumnosPorCurso = async (req, res) => {
 const EnviarAlertaAsistenciaPorCurso = async (req, res) => {
     try {
         const { anio_curso, division, anio_lectivo, faltasMaximas } = req.body;
-        
+        const id_usuario = getUserId(req); // Obtener ID de usuario
+
         console.log('📥 Request alerta por curso:', { anio_curso, division, anio_lectivo, faltasMaximas });
         
         if (!anio_curso) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'El campo "anio_curso" es requerido' 
-            });
+            return res.status(400).json({ success: false, message: 'El campo "anio_curso" es requerido' });
         }
         if (!division) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'El campo "division" es requerido' 
-            });
+            return res.status(400).json({ success: false, message: 'El campo "division" es requerido' });
         }
         if (!anio_lectivo) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'El campo "anio_lectivo" es requerido' 
-            });
+            return res.status(400).json({ success: false, message: 'El campo "anio_lectivo" es requerido' });
         }
 
-        const resultado = await enviarAlertaAsistenciaPorCurso(anio_curso, division, anio_lectivo, faltasMaximas);
+        const resultado = await enviarAlertaAsistenciaPorCurso(anio_curso, division, anio_lectivo, faltasMaximas, id_usuario); // Pasar ID
         
         return res.status(200).json({
             success: true,
@@ -304,46 +320,32 @@ const EnviarAlertaAsistenciaPorCurso = async (req, res) => {
 const EnviarNotificacionReunionPorCurso = async (req, res) => {
     try {
         const { anio_curso, division, anio_lectivo, reunionData } = req.body;
+        const id_usuario = getUserId(req); // Obtener ID de usuario
         
         console.log('📥 Request reunión por curso:', { anio_curso, division, anio_lectivo });
         
         if (!anio_curso) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'El campo "anio_curso" es requerido' 
-            });
+            return res.status(400).json({ success: false, message: 'El campo "anio_curso" es requerido' });
         }
         if (!division) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'El campo "division" es requerido' 
-            });
+            return res.status(400).json({ success: false, message: 'El campo "division" es requerido' });
         }
         if (!anio_lectivo) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'El campo "anio_lectivo" es requerido' 
-            });
+            return res.status(400).json({ success: false, message: 'El campo "anio_lectivo" es requerido' });
         }
 
         if (!reunionData) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'El campo "reunionData" es requerido' 
-            });
+            return res.status(400).json({ success: false, message: 'El campo "reunionData" es requerido' });
         }
 
         const camposRequeridos = ['motivo', 'fecha', 'hora'];
         const camposFaltantes = camposRequeridos.filter(campo => !reunionData[campo]);
         
         if (camposFaltantes.length > 0) {
-            return res.status(400).json({ 
-                success: false,
-                message: `Campos requeridos en reunionData: ${camposFaltantes.join(', ')}` 
-            });
+            return res.status(400).json({ success: false, message: `Campos requeridos en reunionData: ${camposFaltantes.join(', ')}` });
         }
 
-        const resultado = await enviarNotificacionReunionPorCurso(anio_curso, division, anio_lectivo, reunionData);
+        const resultado = await enviarNotificacionReunionPorCurso(anio_curso, division, anio_lectivo, reunionData, id_usuario); // Pasar ID
         
         return res.status(200).json({
             success: true,
@@ -364,50 +366,36 @@ const EnviarNotificacionReunionPorCurso = async (req, res) => {
 const EnviarNotificacionGeneralPorCurso = async (req, res) => {
     try {
         const { anio_curso, division, anio_lectivo, notificacionData } = req.body;
+        const id_usuario = getUserId(req); // Obtener ID de usuario
         
         console.log('📥 Request notificación por curso:', { anio_curso, division, anio_lectivo });
         
         if (!anio_curso) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'El campo "anio_curso" es requerido' 
-            });
+            return res.status(400).json({ success: false, message: 'El campo "anio_curso" es requerido' });
         }
         if (!division) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'El campo "division" es requerido' 
-            });
+            return res.status(400).json({ success: false, message: 'El campo "division" es requerido' });
         }
         if (!anio_lectivo) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'El campo "anio_lectivo" es requerido' 
-            });
+            return res.status(400).json({ success: false, message: 'El campo "anio_lectivo" es requerido' });
         }
 
         if (!notificacionData) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'El campo "notificacionData" es requerido' 
-            });
+            return res.status(400).json({ success: false, message: 'El campo "notificacionData" es requerido' });
         }
 
         const camposRequeridos = ['asunto', 'mensaje'];
         const camposFaltantes = camposRequeridos.filter(campo => !notificacionData[campo]);
         
         if (camposFaltantes.length > 0) {
-            return res.status(400).json({ 
-                success: false,
-                message: `Campos requeridos en notificacionData: ${camposFaltantes.join(', ')}` 
-            });
+            return res.status(400).json({ success: false, message: `Campos requeridos en notificacionData: ${camposFaltantes.join(', ')}` });
         }
 
         if (!notificacionData.tipo) {
             notificacionData.tipo = 'informacion';
         }
 
-        const resultado = await enviarNotificacionGeneralPorCurso(anio_curso, division, anio_lectivo, notificacionData);
+        const resultado = await enviarNotificacionGeneralPorCurso(anio_curso, division, anio_lectivo, notificacionData, id_usuario); // Pasar ID
         
         return res.status(200).json({
             success: true,
@@ -424,48 +412,34 @@ const EnviarNotificacionGeneralPorCurso = async (req, res) => {
     }
 };
 
-// Enviar notificación a múltiples cursos (MODIFICADO - Opcion 1 aplicada)
+// Enviar notificación a múltiples cursos (MODIFICADO)
 const EnviarNotificacionGeneralPorCursosMultiples = async (req, res) => {
     try {
-        // SOLO se desestructura 'cursos' y 'notificacionData'
-        const { cursos, notificacionData } = req.body; 
+        const { cursos, notificacionData } = req.body;
+        const id_usuario = getUserId(req); // Obtener ID de usuario
         
-        console.log('📥 Request notificación a múltiples cursos:', { 
-            cantidad: cursos?.length, 
-        });
+        console.log('📥 Request notificación a múltiples cursos:', { cantidad: cursos?.length });
         
         if (!cursos || !Array.isArray(cursos) || cursos.length === 0) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'El campo "cursos" debe ser un array con al menos un curso { anio_curso, division, anio_lectivo }' 
-            });
+            return res.status(400).json({ success: false, message: 'El campo "cursos" debe ser un array con al menos un curso { anio_curso, division, anio_lectivo }' });
         }
 
-        // SE ELIMINA LA VALIDACIÓN de anio_lectivo_base
-
         if (!notificacionData) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'El campo "notificacionData" es requerido' 
-            });
+            return res.status(400).json({ success: false, message: 'El campo "notificacionData" es requerido' });
         }
 
         const camposRequeridos = ['asunto', 'mensaje'];
         const camposFaltantes = camposRequeridos.filter(campo => !notificacionData[campo]);
         
         if (camposFaltantes.length > 0) {
-            return res.status(400).json({ 
-                success: false,
-                message: `Campos requeridos en notificacionData: ${camposFaltantes.join(', ')}` 
-            });
+            return res.status(400).json({ success: false, message: `Campos requeridos en notificacionData: ${camposFaltantes.join(', ')}` });
         }
 
         if (!notificacionData.tipo) {
             notificacionData.tipo = 'informacion';
         }
 
-        // Llamada al servicio
-        const resultado = await enviarNotificacionGeneralPorCursosMultiples(cursos, notificacionData);
+        const resultado = await enviarNotificacionGeneralPorCursosMultiples(cursos, notificacionData, id_usuario); // Pasar ID
         
         return res.status(200).json({
             success: true,
