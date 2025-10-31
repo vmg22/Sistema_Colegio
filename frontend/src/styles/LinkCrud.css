@@ -1,11 +1,13 @@
-/* LinkCrud.css */
-
-/* Estilos para el contenedor principal */
+/* Contenedor principal */
 .link-crud-container {
-  padding: 32px;
-  max-width: 1280px;
-  margin: 0 auto;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    width: 100%;
+    max-width: 1000px; /* Ajusta el ancho máximo según tu diseño */
+    margin: 20px auto; /* Centra el contenedor */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra los hijos (grilla y botón) */
+    gap: 20px; /* Espacio entre la grilla, el <hr> y el botón */
 }
 
 /* Grid container para las tarjetas */
@@ -14,7 +16,7 @@
   flex-wrap: wrap;
   gap: 24px;
   justify-content: center;
-  padding-top: 80px;
+  margin: 20px;
 }
 
 /* Estilos base de las tarjetas */
@@ -61,38 +63,8 @@
 
 /* Separador */
 .separator {
-  margin-top: 48px;
-  margin-bottom: 48px;
-  border: none;
-  border-top: 1px solid #E5E7EB;
-}
-
-/* Estilos para el botón volver */
-.btn-volver-container {
-  margin-top: 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.btn-volver-link {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 16px;
-  background-color: #E5E7EB;
-  color: #1F2937;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: background-color 0.3s;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-volver-link:hover {
-  background-color: #D1D5DB;
-}
-
-.btn-volver-icon {
-  font-size: 18px;
-  margin-right: 8px;
+    width: 100%;
+    border: none;
+    border-top: 1px solid #e0e0e0; /* Una línea sutil */
+    margin: 20px 0; /* Espacio arriba y abajo */
 }

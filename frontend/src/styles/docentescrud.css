@@ -1,35 +1,28 @@
-/* src/styles/docentescrud.css */
-
-/* --- Contenedor Principal (ajustado para un padding más amplio) --- */
+/* --- Contenedor Principal --- */
 .gestion-page-container {
-    padding: 30px; /* Un poco más de espacio */
+    padding: 30px;
     background-color: #f4f7fa; /* Fondo gris claro */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente moderna */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
-    color: #333; /* Color de texto principal */
+    color: #333;
 }
 
 /* --- Header --- */
 .gestion-header {
     display: flex;
     align-items: center;
-    margin-bottom: 25px; /* Un poco más de margen */
+    margin-bottom: 25px;
 }
 .back-button {
     background: none;
     border: none;
-    color: #0d6efd; /* Azul que ya usábamos */
+    color: #0d6efd;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    margin-right: 20px; /* Más espacio */
-    padding: 8px 12px;
-    border-radius: 5px;
-    transition: background-color 0.2s ease;
+    margin-right: 20px;
 }
-.back-button:hover {
-    background-color: rgba(13, 110, 253, 0.1);
-}
+
 .gestion-header h2 {
     margin: 0;
     color: #333;
@@ -41,21 +34,21 @@
 .search-add-bar {
     display: flex;
     align-items: center;
-    gap: 15px; /* Espacio entre elementos */
-    margin-bottom: 30px; /* Más margen abajo */
+    gap: 15px;
+    margin-bottom: 30px;
 }
 .search-box {
     display: flex;
     flex-grow: 1;
     align-items: center;
-    border: 1px solid #e0e0e0; /* Borde más suave */
-    border-radius: 8px; /* Bordes más redondeados */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
     background-color: #fff;
-    padding: 0 15px; /* Más padding interno */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+    padding: 0 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 .search-icon {
-    font-size: 18px; /* Icono más pequeño */
+    font-size: 18px;
     color: #888;
     margin-right: 10px;
 }
@@ -63,23 +56,26 @@
     border: none;
     outline: none;
     width: 100%;
-    height: 45px; /* Un poco más alto */
+    height: 45px;
     font-size: 15px;
     color: #444;
 }
+.search-box input::placeholder {
+    color: #aaa;
+}
 
-/* Estilo para los botones generales (Buscar, Agregar) */
+/* --- Botones "Buscar" y "Agregar" --- */
 .search-button, .add-button {
     color: white;
     border: none;
-    border-radius: 8px; /* Bordes redondeados */
-    padding: 0 22px; /* Más padding */
-    height: 45px; /* Mismo alto que el input */
+    border-radius: 8px;
+    padding: 0 22px;
+    height: 45px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para botones */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .search-button {
@@ -87,7 +83,6 @@
 }
 .search-button:hover {
     background-color: #0b5ed7;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .add-button {
@@ -98,138 +93,133 @@
 }
 .add-button:hover {
     background-color: #157347;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
-.add-button::before { /* El icono '+' */
-    content: '👤'; /* Cambiamos a icono de persona si es para alumno/docente */
-    font-size: 20px;
-    line-height: 1; /* Asegura que el icono esté centrado verticalmente */
-    font-weight: normal; /* Para que el icono no sea negrita */
+.add-button .add-icon::before { 
+    content: '+';
+    font-size: 24px;
+    line-height: 1;
+    font-weight: bold;
+    margin-right: 4px;
 }
 
-
-/* --- Contenedor de la Tabla --- */
+/* --- Contenedor de la Tabla (usado por Docentes.jsx) --- */
 .list-container {
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08); /* Sombra más pronunciada */
-    padding: 25px; /* Más padding interno */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    padding: 25px;
     border: 1px solid #e0e0e0;
+    overflow-x: auto; 
 }
 .list-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #f0f0f0; /* Borde más fino */
-    padding-bottom: 18px; /* Más padding */
-    margin-bottom: 20px; /* Más margen */
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 18px;
+    margin-bottom: 20px;
 }
 .list-header h3 {
     margin: 0;
-    color: #444; /* Color de texto más suave */
-    font-size: 22px;
+    color: #0d6efd; /* Título de la lista en azul */
+    font-size: 20px;
     font-weight: 600;
 }
 .list-header span {
-    color: #666;
+    color: #666; /* Total en gris */
     font-size: 14px;
     font-weight: 500;
 }
 
-/* --- Tabla --- */
+/* --- Tabla (usado por TableCrud.jsx) --- */
 .data-table {
     width: 100%;
-    border-collapse: collapse; /* Elimina los espacios entre celdas */
+    border-collapse: collapse;
 }
 .data-table th, .data-table td {
-    padding: 14px 18px; /* Más padding para celdas */
+    padding: 14px 18px;
     text-align: left;
-    border-bottom: 1px solid #f8f8f8; /* Borde muy sutil */
+    border-bottom: 1px solid #f0f0f0; 
     vertical-align: middle;
 }
 .data-table th {
-    color: #666; /* Color más oscuro para encabezados */
+    color: #666; 
     font-weight: 600;
-    background-color: #fcfcfc; /* Fondo ligeramente diferente para el thead */
-    text-transform: uppercase; /* Encabezados en mayúsculas */
+    background-color: #fcfcfc;
     font-size: 13px;
     letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 .data-table td {
     font-size: 15px;
     color: #555;
+    white-space: nowrap; 
 }
 .data-table tbody tr:hover {
-    background-color: #fefefe; /* Un hover muy sutil */
+    background-color: #f9f9f9;
 }
 
 /* --- Badges de Estado --- */
 .status-badge {
     padding: 5px 12px;
-    border-radius: 15px; /* Más redondeado */
-    font-size: 13px; /* Más pequeño */
+    border-radius: 15px;
+    font-size: 13px;
     font-weight: 600;
     color: #fff;
     text-transform: capitalize;
-    display: inline-block; /* Para que padding funcione bien */
-    min-width: 70px; /* Ancho mínimo para consistencia */
+    display: inline-block;
+    min-width: 70px;
     text-align: center;
 }
-.status-badge.activo { background-color: #28a745; } /* Verde vibrante */
-.status-badge.inactivo { background-color: #dc3545; } /* Rojo */
-.status-badge.licencia { background-color: #ffc107; color: #333; } /* Naranja */
-.status-badge.baja-temporal { background-color: #fd7e14; color: #fff; } /* Naranja oscuro, si lo usas */
+.status-badge.activo { background-color: #198754; } 
+.status-badge.inactivo { background-color: #dc3545; }
+.status-badge.licencia { background-color: #ffc107; color: #333; }
+.status-badge.baja-temporal { background-color: #fef0c7; color: #b54708; border: 1px solid #f7d28c; }
 
 
-/* --- Celdas de Acciones (Botones) --- */
+/* --- Botones de Acción (Editar/Eliminar) --- */
 .actions-cell {
     display: flex;
-    gap: 8px; /* Espacio entre botones */
-    justify-content: flex-start; /* Alinear a la izquierda */
+    gap: 8px;
 }
 .action-button {
-    background-color: #f0f4f7; /* Fondo gris claro */
-    border: 1px solid #e0e0e0; /* Borde más suave */
-    border-radius: 5px; /* Bordes suaves */
-    width: 38px; /* Un poco más grandes */
-    height: 38px;
+    background-color: #f0f4f7;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 18px; /* Iconos más grandes */
-    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
-    color: #555; /* Color por defecto */
+    font-size: 18px;
+    transition: all 0.2s ease;
+    color: #555;
 }
 .action-button:hover {
-    transform: translateY(-1px); /* Efecto ligero al pasar el mouse */
+    transform: translateY(-1px);
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
-/* Colores de los iconos específicos, no del fondo */
-.action-button.edit { color: #0d6efd; } /* Azul */
-.action-button.view { color: #6c757d; } /* Gris, para ver (si lo implementas) */
-.action-button.delete { color: #dc3545; } /* Rojo */
-
-/* Efectos hover para los botones de acción específicos */
+.action-button.edit { color: #0d6efd; }
+.action-button.delete { color: #dc3545; }
 .action-button.edit:hover { background-color: #e6f0ff; border-color: #a0c3f7; }
 .action-button.delete:hover { background-color: #ffe6e6; border-color: #f7a0a0; }
-.action-button.view:hover { background-color: #e9ecef; border-color: #bbbfc3; }
 
-
-/* --- Mensajes de Error y Carga --- */
+/* --- Mensajes de Carga y Error --- */
 .error-message {
     color: #dc3545;
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;
     padding: 12px 20px;
     border-radius: 6px;
-    margin-bottom: 20px;
+    margin: 10px 0;
     font-weight: 500;
     text-align: center;
 }
-p {
+/* Estilo para "Cargando..." o "No se encontraron datos" */
+.list-container p { 
   text-align: center;
-  margin: 15px 0;
+  margin: 20px 0;
   font-size: 16px;
   color: #666;
 }

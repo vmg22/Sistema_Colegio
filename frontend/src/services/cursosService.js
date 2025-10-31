@@ -15,3 +15,14 @@ export const getCursos = async () => {
     return []; 
   }
 };
+
+export const getCursosId = async (id) => {
+  try {
+    const response = await axios.get(`${CURSOS_URL}/${id}`);
+    return response.data.datos; 
+
+  } catch (error) {
+    console.error("Error al obtener curso por ID:", error);
+    return null; 
+  }
+};

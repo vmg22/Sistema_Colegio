@@ -17,8 +17,7 @@ const reportesCursoRoutes = require("../modules/reportesCurso/reporteCurso.route
 const inscripcionesRoutes = require("../modules/CRUD/inscripcion/inscripcionRoutes.js");
 
 // ✅ NUEVO: Módulo de altas (Docente + Usuario)
-const altasRoutes = require("../modules/altas/alta.routes");
-
+const altasRoutes = require("../modules/altas/alta.routes.js");
 // Registrar rutas de los módulos
 router.use("/alumnos", alumnoRoutes);
 router.use("/docentes", docenteRoutes);
@@ -37,6 +36,7 @@ router.use("/reportes/curso", reportesCursoRoutes);
 
 //  Ruta de altas
 router.use("/altas", altasRoutes);
+
 // RUTAS PARA INCRIPCIONES /CRUD INSCRIPCION
 router.use('/inscripciones', inscripcionesRoutes);
 
@@ -59,7 +59,7 @@ router.get("/", (req, res) => {
       reportesAlumno: "/api/v1/reportes/alumno?dni_alumno=X&anio_lectivo=Y",
       reportesCurso: "/api/v1/reportes/curso?id_curso=X&id_materia=Y&anio_lectivo=Z&cuatrimestre=N",
       //  NUEVO: Endpoint de altas para crar docentes y usuarios ya que sin usuario no se puede crear docente
-      altas: "/api/v1/altas/docente"
+      altas: "/api/v1/altas/docentes"
     },
   });
 });
