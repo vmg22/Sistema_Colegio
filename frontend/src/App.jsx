@@ -19,6 +19,7 @@ import CursoDashboardPage from './pages/curso/CursoDashboardPage.jsx'
 import ReporteCursoListPage from './components/curso/ReporteCursoListPage.jsx'
 import ResumenCalificacionesPage from './components/curso/ResumenCalificacionesPage.jsx'
 import ResumenAsistenciasPage from './components/curso/ResumenAsistenciasPage.jsx'
+import CargaCalificaciones from './pages/curso/CargaCalificaciones.jsx'
 
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
           <Route path="/reporte-curso/listado" element={<ReporteCursoListPage />} />
           <Route path="/reporte-curso/Asistencias" element={<ResumenAsistenciasPage />} />
           <Route path="/reporte-curso/calificaciones" element={<ResumenCalificacionesPage />} />
+          <Route path="reporte-curso/carga-calificaciones" element={<CargaCalificaciones />} />
 
           <Route path="*" element={<NotFountPage/>} />
 

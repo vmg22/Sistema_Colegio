@@ -38,6 +38,16 @@ const CursoDashboardPage = () => {
           to="/reporte-curso/Asistencias"
         />
         <AccionCard
+          titulo="Carga de Calificaciones"
+          icono="sticky_note_2"
+          to="/reporte-curso/carga-calificaciones"
+        />
+        <AccionCard
+          titulo="Carga de Asistencia"
+          icono="event_available"
+          to="/reporte-curso/carga-calificaciones"
+        />
+        <AccionCard
           titulo="Comunicación Grupal"
           icono="mail"
           to="/reporte-curso/comunicacion"
