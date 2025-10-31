@@ -27,6 +27,7 @@ import ConstAluTramite from './pages/alumno/ConstAluTramite.jsx'
 import ActaVolanteExamen from './pages/alumno/actaVolanteExamen.jsx'
 import ConstanciaAlumnoRegular from './pages/alumno/constanciaAlumnoRegular.jsx'
 import CertificadoEscolar from './pages/alumno/certificadoEscolar.jsx'
+import GenerarMail from './pages/alumno/generarMail.jsx'  
 
 
 
@@ -59,6 +60,7 @@ function App() {
           <Route path="/constanciaAlumnoRegular" element={<ConstanciaAlumnoRegular/>} />
           <Route path="/certificadoEscolar" element={<CertificadoEscolar/>} />
           <Route path="/certificados-cCVac" element={<CertificadoComprobanteDeVacante/>} />
+          <Route path="/generar-mail" element={<GenerarMail/>} />
           
           
 

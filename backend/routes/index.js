@@ -15,6 +15,7 @@ const asistenciaRoutes = require('../modules/asistencia_alumno/asistencia_alumno
 const reportesAlumnoRoutes = require("../modules/reportesAlumnoDni/reporte.routes");
 const reportesCursoRoutes = require("../modules/reportesCurso/reporteCurso.routes");
 const inscripcionesRoutes = require("../modules/CRUD/inscripcion/inscripcionRoutes.js");
+const mailRoutes = require('../modules/mail/mail.routes');
 
 // ✅ NUEVO: Módulo de altas (Docente + Usuario)
 const altasRoutes = require("../modules/altas/alta.routes");
@@ -46,6 +47,7 @@ router.use('/actividades', logActividadRoutes);
 router.use("/reportes/alumno", reportesAlumnoRoutes);
 router.use("/reportes/curso", reportesCursoRoutes);
 router.use('/alumno-tutor', alumnoTutorRoutes);
+router.use('/mail', mailRoutes);
 
 
 //  Ruta de altas
@@ -78,7 +80,9 @@ router.get("/", (req, res) => {
      alumnoTutor: "/api/v1/alumno-tutor",
      alumnoCorrelativa: "/api/v1/materia-correlativa",
      comunicacionDestinario: "/api/v1/destinatarios",
-    logActividad: "/api/v1/actividades"
+    logActividad: "/api/v1/actividades",
+    mail: "/api/v1/mail"
+
     },
   });
 });
