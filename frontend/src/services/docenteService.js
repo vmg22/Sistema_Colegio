@@ -126,3 +126,12 @@ export const createUsuarioParaDocente = async (id_docente, usuarioData) => {
     handleError(err, "Error al crear y vincular usuario");
   }
 };
+
+export const getDocenteEstados = async () => {
+  try {
+    const response = await axios.get(`${ALTAS_URL}/docentes/estados`);
+    return response.data.data; // Devuelve el array ['activo', 'licencia', 'inactivo']
+  } catch (err) {
+    handleError(err, "Error al obtener estados de docente");
+  }
+};

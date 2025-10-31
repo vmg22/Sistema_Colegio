@@ -164,6 +164,9 @@ const altaDocenteUsuario = {
     SET id_usuario = ? 
     WHERE id_docente = ? 
       AND deleted_at IS NULL
+  `,
+  obtenerValoresEnumEstado: `
+    SHOW COLUMNS FROM docente LIKE 'estado'
   `
 };
 

@@ -61,4 +61,6 @@ router.patch('/docentes/:id', altaController.actualizarDocenteParcial);
 router.delete('/docentes/:id', altaController.eliminarDocente);
 router.post('/docentes/:id/restaurar', altaController.restaurarDocente);
 
+router.get('/docentes/estados', altaController.obtenerEstadosDocente);
+
 module.exports = router;

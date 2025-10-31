@@ -209,7 +209,32 @@ async function restaurarDocente(id) {
     connection.release();
   }
 }
+ 
+async function obtenerEstadosDocente() {
+  try {
+    const [rows] = await db.query(consultas.obtenerValoresEnumEstado);
+    
+    if (!rows || rows.length === 0) {
+      throw new Error("No se pudo obtener la definición de la columna 'estado'.");
+    }
 
+    // El resultado es algo como "enum('activo','licencia','inactivo')"
+    const enumString = rows[0].Type; 
+    
+    // Parseamos el string para convertirlo en un array
+    const valores = enumString
+      .replace("enum(", "")  // Quita "enum("
+      .replace(")", "")      // Quita ")"
+      .replaceAll("'", "")   // Quita todas las comillas simples
+      .split(',');          // Separa por comas
+
+    return valores; // Devuelve ['activo', 'licencia', 'inactivo']
+
+  } catch (err) {
+    console.error("Error al parsear ENUM 'estado':", err);
+    throw new Error("Error del servidor al obtener estados.");
+  }
+}
 /**
  * (Tu función original de 1 solo paso - la mantenemos)
  */
@@ -289,4 +314,5 @@ module.exports = {
   eliminarDocente,
   obtenerDocentesEliminados,
   restaurarDocente,
+  obtenerEstadosDocente
 };

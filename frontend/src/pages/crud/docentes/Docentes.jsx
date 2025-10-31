@@ -95,6 +95,7 @@ const Docentes = () => {
           cell: (item) => `${item.nombre} ${item.apellido}`
         },
         { header: 'DNI', accessor: 'dni_docente' },
+        
         { header: 'Email (Login)', accessor: 'email_usuario', cell: (item) => item.email_usuario || 'Sin vincular' },
         { 
           header: 'Estado', 

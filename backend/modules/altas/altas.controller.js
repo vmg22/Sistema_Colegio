@@ -180,6 +180,15 @@ const altaController = {
     } catch (err) {
       error(res, 'Error al restaurar docente', 500, err.message);
     }
+  },
+
+  obtenerEstadosDocente: async (req, res) => {
+    try {
+      const estados = await altaServices.obtenerEstadosDocente();
+      exito(res, 'Estados de docente obtenidos', estados);
+    } catch (err) {
+      error(res, 'Error al obtener estados de docente', 500, err.message);
+    }
   }
 };
 
