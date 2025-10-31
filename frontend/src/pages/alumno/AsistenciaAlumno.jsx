@@ -2,40 +2,13 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Spinner, Button } from "react-bootstrap";
 import { useConsultaStore } from "../../store/consultaStore";
-// Corregidas las rutas de importación
 import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import AsistenciaMateriaCard from "../../components/ui/AsistenciaMateriaCard.jsx"; 
-
-// ¡CORREGIDO! Cambiamos 'EncabezadoEstudiande.jsx' por 'EncabezadoEstudiante.jsx'
 import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
 import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx"
-
-// Estilos
-const styles = {
-// ... (el resto de los estilos se mantiene igual) ...
-  pageContainer: {
-    padding: "0 40px 40px 40px",
-    backgroundColor: "#f4f7fa",
-    minHeight: "calc(100vh - 80px)",
-    fontFamily: "'Inter', sans-serif",
-  },
-  // Eliminamos 'header', 'studentName', 'studentCourse'
-  cardGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-    gap: "25px",
-    maxWidth: "1100px",
-    margin: "0 auto",
-  },
-  loadingContainer: {
-    textAlign: "center",
-    marginTop: "100px",
-    fontFamily: "'Inter', sans-serif",
-  },
-};
+import "../../styles/asistenciaAlumno.css";
 
 const AsistenciasPage = () => {
-// ... (toda la lógica de 'reporte', 'loading' y 'materiasConAsistencia' se mantiene igual) ...
   const { reporteAlumno } = useConsultaStore();
   const [reporte, setReporte] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -95,9 +68,8 @@ const AsistenciasPage = () => {
   }, [reporte]);
 
   if (loading) {
-// ... (el 'return' de 'loading' se mantiene igual) ...
     return (
-      <div style={styles.loadingContainer}>
+      <div className="asistencias-page__loading-container">
         <Spinner animation="border" variant="primary" />
         <p className="mt-3">Cargando asistencias...</p>
       </div>
@@ -105,9 +77,8 @@ const AsistenciasPage = () => {
   }
 
   if (!reporte) {
-// ... (el 'return' de '!reporte' se mantiene igual) ...
     return (
-      <div style={styles.loadingContainer}>
+      <div className="asistencias-page__loading-container">
         <h5>No se encontraron datos del alumno.</h5>
         <p>Vuelve al panel e intenta realizar una nueva búsqueda.</p>
         <Link to={"/"}>
@@ -120,16 +91,21 @@ const AsistenciasPage = () => {
   }
 
   return (
-    <div style={styles.pageContainer}>
+    <div className="asistencias-page">
       {/* 1. Botón Volver */}
       <BtnVolver />
+
+      <div className="curso-dashboard-header">
+         <span className="material-symbols-outlined calificaciones-page-icon">task_alt</span>
+        <h2 className="perfil-alumno-title">Asistencia</h2>
+      </div>
       
       {/* 2. Header con nombre y curso (usando el nuevo componente) */}
       <DivHeaderInfo reporte={reporte} variant="text" />
       <br /><br /><br />
 
       {/* 3. Grilla de tarjetas de asistencia */}
-      <div style={styles.cardGrid}>
+      <div className="asistencias-page__card-grid">
         {materiasConAsistencia.map((materia) => (
           <AsistenciaMateriaCard
             key={materia.nombre}
@@ -143,4 +119,3 @@ const AsistenciasPage = () => {
 };
 
 export default AsistenciasPage;
-
