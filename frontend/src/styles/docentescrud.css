@@ -1,157 +1,225 @@
-/* --- Estilos de la Página y Cabecera (como la imagen) --- */
-.page-container {
-  padding: 24px;
-  background-color: #f4f7fa;
-  border-radius: 8px;
+/* --- Contenedor Principal --- */
+.gestion-page-container {
+    padding: 30px;
+    background-color: #f4f7fa; /* Fondo gris claro */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    color: #333;
 }
 
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+/* --- Header --- */
+.gestion-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+}
+.back-button {
+    background: none;
+    border: none;
+    color: #0d6efd;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 20px;
 }
 
-.search-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #fff;
-  border: 1px solid #dfe1e5;
-  border-radius: 24px;
-  padding: 4px 12px;
+.gestion-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 28px;
+    font-weight: 700;
 }
 
-.search-bar svg {
-  color: #5f6368;
+/* --- Barra de Búsqueda y Botones de Acción --- */
+.search-add-bar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+.search-box {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #fff;
+    padding: 0 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+.search-icon {
+    font-size: 18px;
+    color: #888;
+    margin-right: 10px;
+}
+.search-box input {
+    border: none;
+    outline: none;
+    width: 100%;
+    height: 45px;
+    font-size: 15px;
+    color: #444;
+}
+.search-box input::placeholder {
+    color: #aaa;
 }
 
-.search-bar input {
-  border: none;
-  outline: none;
-  padding: 8px;
-  font-size: 16px;
+/* --- Botones "Buscar" y "Agregar" --- */
+.search-button, .add-button {
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 22px;
+    height: 45px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* --- Botones Genéricos --- */
-.btn {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: background-color 0.2s;
+.search-button {
+    background-color: #0d6efd; /* Azul */
+}
+.search-button:hover {
+    background-color: #0b5ed7;
 }
 
-.btn-primary {
-  background-color: #4a69bd; /* Azul */
-  color: white;
+.add-button {
+    background-color: #198754; /* Verde */
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
-.btn-primary:hover {
-  background-color: #3e58a1;
+.add-button:hover {
+    background-color: #157347;
 }
-
-.btn-success {
-  background-color: #2ecc71; /* Verde */
-  color: white;
-}
-.btn-success:hover {
-  background-color: #27ae60;
-}
-
-.btn-volver {
-  background: none;
-  border: 1px solid #ccc;
-  color: #555;
-  margin-bottom: 15px;
-}
-.btn-volver:hover {
-  background-color: #f0f0f0;
+.add-button .add-icon::before { 
+    content: '+';
+    font-size: 24px;
+    line-height: 1;
+    font-weight: bold;
+    margin-right: 4px;
 }
 
-
-/* --- Estilos de la Tabla (como la imagen) --- */
-.tabla-container {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+/* --- Contenedor de la Tabla (usado por Docentes.jsx) --- */
+.list-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    padding: 25px;
+    border: 1px solid #e0e0e0;
+    overflow-x: auto; 
+}
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 18px;
+    margin-bottom: 20px;
+}
+.list-header h3 {
+    margin: 0;
+    color: #0d6efd; /* Título de la lista en azul */
+    font-size: 20px;
+    font-weight: 600;
+}
+.list-header span {
+    color: #666; /* Total en gris */
+    font-size: 14px;
+    font-weight: 500;
 }
 
-.styled-table {
-  width: 100%;
-  border-collapse: collapse;
+/* --- Tabla (usado por TableCrud.jsx) --- */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.data-table th, .data-table td {
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0; 
+    vertical-align: middle;
+}
+.data-table th {
+    color: #666; 
+    font-weight: 600;
+    background-color: #fcfcfc;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+.data-table td {
+    font-size: 15px;
+    color: #555;
+    white-space: nowrap; 
+}
+.data-table tbody tr:hover {
+    background-color: #f9f9f9;
 }
 
-.styled-table thead tr {
-  background-color: #f8f9fa;
-  color: #667085;
-  font-size: 12px;
-  text-transform: uppercase;
-  text-align: left;
+/* --- Badges de Estado --- */
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    text-transform: capitalize;
+    display: inline-block;
+    min-width: 70px;
+    text-align: center;
 }
+.status-badge.activo { background-color: #198754; } 
+.status-badge.inactivo { background-color: #dc3545; }
+.status-badge.licencia { background-color: #ffc107; color: #333; }
+.status-badge.baja-temporal { background-color: #fef0c7; color: #b54708; border: 1px solid #f7d28c; }
 
-.styled-table th,
-.styled-table td {
-  padding: 16px 20px;
-  border-bottom: 1px solid #eaecf0;
-}
 
-.styled-table tbody tr {
-  font-size: 14px;
-  color: #344054;
-}
-
-.styled-table tbody tr:hover {
-  background-color: #f9fafb;
-}
-
-/* --- Píldora de Estado --- */
-.status-pill {
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.status-active {
-  background-color: #e7f7e7; /* Verde claro */
-  color: #1c7430; /* Verde oscuro */
-}
-
-.status-inactive {
-  background-color: #fdf8e6; /* Naranja claro */
-  color: #e6a800; /* Naranja oscuro */
-}
-
-/* --- Botones de Acciones --- */
-.action-buttons {
-  display: flex;
-  gap: 8px;
-}
+/* --- Botones de Acción (Editar/Eliminar) --- */
 .actions-cell {
-  width: 1%; /* Evita que los botones se rompan */
-  white-space: nowrap;
+    display: flex;
+    gap: 8px;
 }
+.action-button {
+    background-color: #f0f4f7;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s ease;
+    color: #555;
+}
+.action-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.action-button.edit { color: #0d6efd; }
+.action-button.delete { color: #dc3545; }
+.action-button.edit:hover { background-color: #e6f0ff; border-color: #a0c3f7; }
+.action-button.delete:hover { background-color: #ffe6e6; border-color: #f7a0a0; }
 
-.action-btn {
-  background: none;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* --- Mensajes de Carga y Error --- */
+.error-message {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin: 10px 0;
+    font-weight: 500;
+    text-align: center;
 }
-.action-btn:hover {
-  background-color: #f0f0f0;
+/* Estilo para "Cargando..." o "No se encontraron datos" */
+.list-container p { 
+  text-align: center;
+  margin: 20px 0;
+  font-size: 16px;
+  color: #666;
 }
-
-.btn-edit { color: #4a69bd; } /* Azul */
-.btn-view { color: #5f6368; } /* Gris */
-.btn-delete { color: #e74c3c; } /* Rojo */
