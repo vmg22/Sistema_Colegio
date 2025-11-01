@@ -138,12 +138,12 @@ async function obtenerTodosDocentes(buscar) { // <-- Recibe 'buscar'
  * Actualiza la información de un docente
  */
 async function actualizarDocente(id, data) {
-  const { nombre, apellido, email, telefono, especialidad, estado } = data;
+  const { nombre, apellido, email, telefono, especialidad, estado , dni_docente} = data;
 
   await obtenerDocentePorId(id); // Validar que el docente existe
 
   await db.query(consultas.actualizarDocente, [
-    nombre, apellido, email, telefono, especialidad, estado, id,
+    nombre, apellido, email, telefono, especialidad, estado, dni_docente, id,
   ]);
 
   return await obtenerDocentePorId(id);
