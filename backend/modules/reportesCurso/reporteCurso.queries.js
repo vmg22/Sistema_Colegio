@@ -51,4 +51,6 @@ const consultaCurso = {
   `
 };
 
+
+
 module.exports = consultaCurso;

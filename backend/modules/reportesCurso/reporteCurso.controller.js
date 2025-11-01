@@ -115,4 +115,6 @@ const consultaController = {
   }
 };
 
+
+
 module.exports = consultaController;
