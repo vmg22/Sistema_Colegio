@@ -11,7 +11,7 @@ const {
 
   //Por curso
   obtenerCursosDisponibles,
-  obtenerAlumnosPorCurso,
+  obtenerAlumnosPorCurso, // Este servicio ahora recibe idCurso y anio para la ruta GET
   enviarAlertaAsistenciaPorCurso,
   enviarNotificacionReunionPorCurso,
   enviarNotificacionGeneralPorCurso,
@@ -20,9 +20,9 @@ const {
 
 // Función auxiliar para obtener el ID de usuario de forma segura
 const getUserId = (req) => {
-    // Intenta obtenerlo de req.body o usa 1 por defecto.
-    // **NOTA:** En una aplicación real, se usaría req.user.id (desde el middleware de auth).
-    return req.body.id_usuario || 1; 
+    // Intenta obtenerlo de req.body o usa 1 por defecto.
+    // En una aplicación real, se usaría req.user.id (desde el middleware de auth).
+    return req.body.id_usuario || 1; 
 };
 
 // ========================================
@@ -76,11 +76,11 @@ const EnviarRecuperacion = async (req, res) => {
 const EnviarAlertaAsistencia = async (req, res) => {
   try {
     const { dni, anio, faltasMaximas } = req.body;
-    const id_usuario = getUserId(req); // Obtener ID de usuario
-    
+    const id_usuario = getUserId(req); // Obtener ID de usuario
+    
     if (!dni) return res.status(400).json({ success: false, message: 'El campo "dni" es requerido' });
     if (!anio) return res.status(400).json({ success: false, message: 'El campo "anio" es requerido' });
-    
+    
     const resultado = await enviarAlertaAsistencia(dni, anio, faltasMaximas, id_usuario); // Pasar ID
     return res.status(200).json({ success: true, ...resultado });
   } catch (error) {
@@ -92,7 +92,7 @@ const EnviarAlertaAsistencia = async (req, res) => {
 const EnviarNotificacionReunion = async (req, res) => {
   try {
     const { dni, anio, reunionData } = req.body;
-    const id_usuario = getUserId(req); // Obtener ID de usuario
+    const id_usuario = getUserId(req); // Obtener ID de usuario
 
     if (!dni) return res.status(400).json({ success: false, message: 'El campo "dni" es requerido' });
     if (!anio) return res.status(400).json({ success: false, message: 'El campo "anio" es requerido' });
@@ -114,7 +114,7 @@ const EnviarNotificacionReunion = async (req, res) => {
 const EnviarNotificacionGeneral = async (req, res) => {
   try {
     const { dni, anio, notificacionData } = req.body;
-    const id_usuario = getUserId(req); // Obtener ID de usuario
+    const id_usuario = getUserId(req); // Obtener ID de usuario
 
     if (!dni) return res.status(400).json({ success: false, message: 'El campo "dni" es requerido' });
     if (!anio) return res.status(400).json({ success: false, message: 'El campo "anio" es requerido' });
@@ -156,7 +156,7 @@ const ObtenerDatosAlumno = async (req, res) => {
 const EnviarAlertaAsistenciaMasiva = async (req, res) => {
   try {
     const { dnis, anio, faltasMaximas } = req.body;
-    const id_usuario = getUserId(req); // Obtener ID de usuario
+    const id_usuario = getUserId(req); // Obtener ID de usuario
 
     if (!dnis || !Array.isArray(dnis) || dnis.length === 0)
       return res.status(400).json({ success: false, message: 'El campo "dnis" debe ser un array con al menos un DNI' });
@@ -174,7 +174,7 @@ const EnviarAlertaAsistenciaMasiva = async (req, res) => {
 const EnviarNotificacionReunionMasiva = async (req, res) => {
   try {
     const { dnis, anio, reunionData } = req.body;
-    const id_usuario = getUserId(req); // Obtener ID de usuario
+    const id_usuario = getUserId(req); // Obtener ID de usuario
 
     if (!dnis || !Array.isArray(dnis) || dnis.length === 0)
       return res.status(400).json({ success: false, message: 'El campo "dnis" debe ser un array con al menos un DNI' });
@@ -199,7 +199,7 @@ const EnviarNotificacionReunionMasiva = async (req, res) => {
 const EnviarNotificacionGeneralMasiva = async (req, res) => {
   try {
     const { dnis, anio, notificacionData } = req.body;
-    const id_usuario = getUserId(req); // Obtener ID de usuario
+    const id_usuario = getUserId(req); // Obtener ID de usuario
 
     if (!dnis || !Array.isArray(dnis) || dnis.length === 0)
       return res.status(400).json({ success: false, message: 'El campo "dnis" debe ser un array con al menos un DNI' });
@@ -251,19 +251,27 @@ const ObtenerCursosDisponibles = async (req, res) => {
     }
 };
 
-// Obtener alumnos de un curso
-const ObtenerAlumnosPorCurso = async (req, res) => {
+
+
+        // LLAMADA AL SERVICIO: Usa ID del curso y Año Lectivo
+        const ObtenerAlumnosPorCurso = async (req, res) => {
     try {
-        const { anio_curso, division, anio_lectivo } = req.params;
+        // CLAVE: Leer los tres parámetros de la URL
+        const { anio_curso, division, anio_lectivo } = req.params; 
+        
+        // Conversión a numérico, manteniendo 'division' como string
+        const anioCursoNum = parseInt(anio_curso);
+        const anioLectivoNum = parseInt(anio_lectivo);
         
-        if (!anio_curso || !division || !anio_lectivo) {
+        if (!anioCursoNum || !division || !anioLectivoNum) {
             return res.status(400).json({ 
                 success: false,
-                message: 'Los parámetros "anio_curso", "division" y "anio_lectivo" son requeridos' 
+                message: 'Los parámetros "anio_curso", "division" y "anio_lectivo" son requeridos.' 
             });
         }
 
-        const alumnos = await obtenerAlumnosPorCurso(anio_curso, division, anio_lectivo);
+        // LLAMADA AL SERVICIO: Usando los 3 parámetros para identificar el curso
+        const alumnos = await obtenerAlumnosPorCurso(anioCursoNum, division, anioLectivoNum);
         
         return res.status(200).json({
             success: true,
@@ -281,11 +289,12 @@ const ObtenerAlumnosPorCurso = async (req, res) => {
     }
 };
 
+
 // Enviar alerta de asistencia a un curso completo (MODIFICADO)
 const EnviarAlertaAsistenciaPorCurso = async (req, res) => {
     try {
         const { anio_curso, division, anio_lectivo, faltasMaximas } = req.body;
-        const id_usuario = getUserId(req); // Obtener ID de usuario
+        const id_usuario = getUserId(req); // Obtener ID de usuario
 
         console.log('📥 Request alerta por curso:', { anio_curso, division, anio_lectivo, faltasMaximas });
         
@@ -320,7 +329,7 @@ const EnviarAlertaAsistenciaPorCurso = async (req, res) => {
 const EnviarNotificacionReunionPorCurso = async (req, res) => {
     try {
         const { anio_curso, division, anio_lectivo, reunionData } = req.body;
-        const id_usuario = getUserId(req); // Obtener ID de usuario
+        const id_usuario = getUserId(req); // Obtener ID de usuario
         
         console.log('📥 Request reunión por curso:', { anio_curso, division, anio_lectivo });
         
@@ -366,7 +375,7 @@ const EnviarNotificacionReunionPorCurso = async (req, res) => {
 const EnviarNotificacionGeneralPorCurso = async (req, res) => {
     try {
         const { anio_curso, division, anio_lectivo, notificacionData } = req.body;
-        const id_usuario = getUserId(req); // Obtener ID de usuario
+        const id_usuario = getUserId(req); // Obtener ID de usuario
         
         console.log('📥 Request notificación por curso:', { anio_curso, division, anio_lectivo });
         
@@ -416,7 +425,7 @@ const EnviarNotificacionGeneralPorCurso = async (req, res) => {
 const EnviarNotificacionGeneralPorCursosMultiples = async (req, res) => {
     try {
         const { cursos, notificacionData } = req.body;
-        const id_usuario = getUserId(req); // Obtener ID de usuario
+        const id_usuario = getUserId(req); // Obtener ID de usuario
         
         console.log('📥 Request notificación a múltiples cursos:', { cantidad: cursos?.length });
         
@@ -469,7 +478,7 @@ module.exports = {
     EnviarNotificacionGeneralMasiva,
     // Nuevos controllers por curso
     ObtenerCursosDisponibles,
-    ObtenerAlumnosPorCurso,
+    ObtenerAlumnosPorCurso, // CORREGIDO AQUÍ
     EnviarAlertaAsistenciaPorCurso,
     EnviarNotificacionReunionPorCurso,
     EnviarNotificacionGeneralPorCurso,

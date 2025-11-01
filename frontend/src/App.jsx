@@ -60,7 +60,7 @@ function App() {
           <Route path="/constanciaAlumnoRegular" element={<ConstanciaAlumnoRegular/>} />
           <Route path="/certificadoEscolar" element={<CertificadoEscolar/>} />
           <Route path="/certificados-cCVac" element={<CertificadoComprobanteDeVacante/>} />
-          <Route path="/generar-mail" element={<GenerarMail/>} />
+          <Route path="/perfil-alumno/generar-mail" element={<GenerarMail/>} />
           
           
 

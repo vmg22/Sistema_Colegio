@@ -42,6 +42,6 @@ router.get('/alumno/:dni/:anio', ObtenerDatosAlumno);// Ruta para obtener datos 
 
 // Obtener cursos y alumnos
 router.get('/cursos/:anio', ObtenerCursosDisponibles);
-router.get('/cursos/:idCurso/:anio/alumnos', ObtenerAlumnosPorCurso);
+router.get('/cursos/:anio_curso/:division/:anio_lectivo/alumnos', ObtenerAlumnosPorCurso);
 
 module.exports = router;
