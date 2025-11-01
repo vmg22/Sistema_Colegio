@@ -19,6 +19,7 @@ import CursoDashboardPage from './pages/curso/CursoDashboardPage.jsx'
 import ReporteCursoListPage from './components/curso/ReporteCursoListPage.jsx'
 import ResumenCalificacionesPage from './components/curso/ResumenCalificacionesPage.jsx'
 import ResumenAsistenciasPage from './components/curso/ResumenAsistenciasPage.jsx'
+import DocentePerfil from './pages/docentes/DocentePerfil.jsx'
 
 
 function App() {
@@ -43,7 +44,7 @@ function App() {
           <Route path="/reporte-curso/listado" element={<ReporteCursoListPage />} />
           <Route path="/reporte-curso/Asistencias" element={<ResumenAsistenciasPage />} />
           <Route path="/reporte-curso/calificaciones" element={<ResumenCalificacionesPage />} />
-
+          <Route path="/docentes/:id" element={<DocentePerfil />} />
           <Route path="*" element={<NotFountPage/>} />
 
         </Routes>

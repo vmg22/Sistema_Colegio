@@ -223,3 +223,10 @@
   font-size: 16px;
   color: #666;
 }
+.action-button.view { 
+  color: #6c757d; /* Un color gris neutro */
+}
+.action-button.view:hover { 
+  background-color: #e9ecef; 
+  border-color: #bbbfc3; 
+}
