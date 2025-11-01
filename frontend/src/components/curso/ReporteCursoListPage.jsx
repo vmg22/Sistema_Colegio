@@ -5,29 +5,7 @@ import { useConsultaStore } from "../../store/consultaStore.js";
 import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import ReporteCursoTable from "../../components/curso/ReporteCursoTable.jsx";
 import EncabezadoCurso from "../../components/curso/EncabezadoCurso.jsx";
-
-const styles = {
-  pageContainer: {
-    padding: "0 40px 40px 40px",
-    backgroundColor: "#f4f7fa",
-    minHeight: "calc(100vh - 80px)",
-    fontFamily: "'Inter', sans-serif",
-  },
-  pageTitle: {
-    fontSize: "1.5rem",
-    fontWeight: 600,
-    color: "#303F9F",
-    margin: "20px 0",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-  },
-  loadingContainer: {
-    textAlign: "center",
-    marginTop: "100px",
-    fontFamily: "'Inter', sans-serif",
-  },
-};
+import "../../styles/cursoDashboard.css"; 
 
 const ReporteCursoListPage = () => {
   const { reporteCurso } = useConsultaStore();
@@ -67,7 +45,7 @@ const ReporteCursoListPage = () => {
 
   if (loading) {
     return (
-      <div style={styles.loadingContainer}>
+      <div className="curso-loading-container">
         <Spinner animation="border" variant="primary" />
         <p className="mt-3">Cargando reporte de curso...</p>
       </div>
@@ -76,7 +54,7 @@ const ReporteCursoListPage = () => {
 
   if (!reporte || !Array.isArray(alumnos) || alumnos.length === 0) {
     return (
-      <div style={styles.loadingContainer}>
+      <div className="curso-loading-container">
         <h5>No se encontraron datos para este curso.</h5>
         <p>Vuelve al panel e intenta realizar una nueva búsqueda.</p>
         <Link to={"/"}>
@@ -89,13 +67,13 @@ const ReporteCursoListPage = () => {
   }
 
   return (
-    <div style={styles.pageContainer}>
+    <div className="curso-dashboard-container">
       <BtnVolver />
+      <div className="curso-dashboard-header">
+        <span className="material-symbols-outlined curso-dashboard-icon">list_alt</span>
+        <h2 className="curso-dashboard-title">Listado de Alumnos ({totalAlumnos} Alumnos</h2>
+      </div>
       <EncabezadoCurso />
-      <h2 style={styles.pageTitle}>
-        <span className="material-symbols-outlined">list_alt</span>
-        Listado de Alumnos ({totalAlumnos} Alumnos)
-      </h2>
       <ReporteCursoTable alumnos={alumnos} />
     </div>
   );

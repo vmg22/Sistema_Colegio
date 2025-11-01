@@ -1,84 +1,46 @@
 import React from "react";
 import BtnVolver from "../../components/ui/BtnVolver.jsx";
-import AccionCard from "../../components/ui/AccionCard.jsx"; // Reutilizamos AccionCard de alumno ui para evitar mas modulos
-import EncabezadoCurso from "../../components/curso/EncabezadoCurso.jsx"; // Nuevo componente EncabezadoCurso solo para los cursos
-
-
-const styles = {
-  pageContainer: {
-    padding: "0 40px 40px 40px",
-    backgroundColor: "#f4f7fa",
-    minHeight: "calc(100vh - 80px)",
-    fontFamily: "'Inter', sans-serif",
-  },
-  header: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    padding: "20px 0",
-    color: "#303F9F",
-  },
-  title: {
-    fontSize: "1.5rem",
-    fontWeight: 600,
-    margin: 0,
-  },
-  actionsTitle: {
-    fontSize: "1.25rem",
-    fontWeight: 500,
-    color: "#444",
-    marginBottom: "20px",
-    marginTop: "10px",
-  },
-  cardGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)", // 3 columnas
-    gap: "25px",
-    maxWidth: "1000px",
-    margin: "0 auto",
-  },
-};
+import AccionCard from "../../components/ui/AccionCard.jsx";
+import EncabezadoCurso from "../../components/curso/EncabezadoCurso.jsx";
+import "../../styles/cursoDashboard.css"; // Importamos el archivo CSS
 
 const CursoDashboardPage = () => {
   return (
-    <div style={styles.pageContainer}>
+    <div className="curso-dashboard-container">
       {/* 1. Botón Volver y Título */}
       <BtnVolver />
-      <div style={styles.header}>
-        <span
-          className="material-symbols-outlined"
-          style={{ fontSize: "28px" }}
-        >
+      <div className="curso-dashboard-header">
+        <span className="material-symbols-outlined curso-dashboard-icon">
           group
         </span>
-        <h2 style={styles.title}>Perfil del Curso</h2>
+        <h2 className="curso-dashboard-title">Perfil del Curso</h2>
       </div>
 
-      {/* 2. Encabezado del Curso (NUEVO) */}
+      {/* 2. Encabezado del Curso */}
       <EncabezadoCurso />
 
       {/* 3. Acciones Disponibles */}
-      <h4 style={styles.actionsTitle}>Acciones Disponibles</h4>
-      <div style={styles.cardGrid}>
+      <h4 className="curso-actions-title">Acciones Disponibles</h4>
+      <div className="curso-card-grid">
         <AccionCard
           titulo="Ver Listado de Alumnos"
           icono="list_alt"
-          to="/reporte-curso/listado" // Nueva ruta para la tabla
+          to="/reporte-curso/listado"
         />
         <AccionCard
           titulo="Resumen de Calificaciones"
           icono="bar_chart"
-          to="/reporte-curso/calificaciones" // TODO: Crear esta ruta
+          to="/reporte-curso/calificaciones"
         />
         <AccionCard
           titulo="Resumen de Asistencias"
           icono="task_alt"
-          to="/reporte-curso/asistencias" // TODO: Crear esta ruta
+          to="/reporte-curso/Asistencias"
         />
         <AccionCard
           titulo="Comunicación Grupal"
           icono="mail"
-          to="/reporte-curso/comunicacion" // TODO: Crear esta ruta
+          to="/reporte-curso/comunicacion"
         />
       </div>
     </div>
@@ -86,4 +48,3 @@ const CursoDashboardPage = () => {
 };
 
 export default CursoDashboardPage;
-

@@ -65,27 +65,6 @@ const DivBodyInfo = () => {
     return data || "No disponible";
   };
 
-  const navigationCards = [
-    {
-      to: "/estado-academico",
-      label: "Estado Académico",
-      icon: "stacked_bar_chart",
-      color: "#2563EB",
-    },
-    {
-      to: "/asistencia-alumno",
-      label: "Ver Asistencias",
-      icon: "assignment",
-      color: "#2563EB",
-    },
-    {
-      to: "/historial-comunicaciones",
-      label: "Historial Comunicaciones",
-      icon: "chat_bubble",
-      color: "#2563EB",
-    },
-  ];
-
   return (
     <>
       <div
@@ -112,6 +91,10 @@ const DivBodyInfo = () => {
             <div className="card-info-row">
               <p className="card-info-label">Lugar de Nacimiento</p>
               <p className="card-info-value">{showData(reporte.lugar_nacimiento)}</p>
+            </div>
+            <div className="card-info-row">
+              <p className="card-info-label">Dirección</p>
+              <p className="card-info-value">{showData(reporte.direccion)}</p>
             </div>
             <div className="card-info-row">
               <p className="card-info-label">Teléfono</p>
@@ -171,7 +154,6 @@ const DivBodyInfo = () => {
         </div>
       </div>
 
-      <CardNavegacion cardData={navigationCards} />
     </>
   );
 };

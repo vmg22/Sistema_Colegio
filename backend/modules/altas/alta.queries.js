@@ -7,20 +7,12 @@ const altaDocenteUsuario = {
   // CONSULTAS DE USUARIO
   // =============================================
   
-  /**
-   * Crear un nuevo usuario en el sistema
-   * @params: username, password_hash, email_usuario, rol, estado
-   */
   crearUsuario: `
     INSERT INTO usuario 
       (username, password_hash, email_usuario, rol, estado)
     VALUES (?, ?, ?, ?, ?)
   `,
 
-  /**
-   * Verificar si un email de usuario ya existe
-   * @params: email_usuario
-   */
   verificarEmailUsuarioExiste: `
     SELECT id_usuario 
     FROM usuario 
@@ -28,10 +20,13 @@ const altaDocenteUsuario = {
       AND deleted_at IS NULL
   `,
 
-  /**
-   * Obtener usuario por ID
-   * @params: id_usuario
-   */
+  verificarUsernameExiste: `
+    SELECT id_usuario 
+    FROM usuario 
+    WHERE username = ? 
+      AND deleted_at IS NULL
+  `,
+
   obtenerUsuarioPorId: `
     SELECT 
       id_usuario,
@@ -50,20 +45,12 @@ const altaDocenteUsuario = {
   // CONSULTAS DE DOCENTE
   // =============================================
   
-  /**
-   * Crear un nuevo docente
-   * @params: id_usuario, dni_docente, nombre, apellido, email, telefono, especialidad, estado
-   */
   crearDocente: `
     INSERT INTO docente 
       (id_usuario, dni_docente, nombre, apellido, email, telefono, especialidad, estado)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `,
 
-  /**
-   * Verificar si un DNI de docente ya existe
-   * @params: dni_docente
-   */
   verificarDniDocenteExiste: `
     SELECT id_docente 
     FROM docente 
@@ -71,10 +58,6 @@ const altaDocenteUsuario = {
       AND deleted_at IS NULL
   `,
 
-  /**
-   * Obtener docente por ID con información del usuario
-   * @params: id_docente
-   */
   obtenerDocentePorId: `
     SELECT 
       d.id_docente,
@@ -100,7 +83,6 @@ const altaDocenteUsuario = {
 
   /**
    * Obtener todos los docentes con información del usuario
-   * @params: ninguno
    */
   obtenerTodosDocentes: `
     SELECT 
@@ -122,12 +104,8 @@ const altaDocenteUsuario = {
     LEFT JOIN usuario u ON d.id_usuario = u.id_usuario
     WHERE d.deleted_at IS NULL
     ORDER BY d.id_docente ASC
-  `,
+  `, // <-- ¡CAMBIO REALIZADO AQUÍ!
 
-  /**
-   * Actualizar docente
-   * @params: nombre, apellido, email, telefono, especialidad, estado, id_docente
-   */
   actualizarDocente: `
     UPDATE docente 
     SET 
@@ -136,35 +114,24 @@ const altaDocenteUsuario = {
       email = ?,
       telefono = ?,
       especialidad = ?,
-      estado = ?
+      estado = ?,
+      dni_docente = ?
     WHERE id_docente = ? 
       AND deleted_at IS NULL
   `,
 
-  /**
-   * Eliminar docente (soft delete)
-   * @params: id_docente
-   */
   eliminarDocente: `
     UPDATE docente 
     SET deleted_at = CURRENT_TIMESTAMP 
     WHERE id_docente = ?
   `,
 
-  /**
-   * Eliminar usuario (soft delete)
-   * @params: id_usuario
-   */
   eliminarUsuario: `
     UPDATE usuario 
     SET deleted_at = CURRENT_TIMESTAMP 
     WHERE id_usuario = ?
   `,
 
-  /**
-   * Obtener docentes eliminados
-   * @params: ninguno
-   */
   obtenerDocentesEliminados: `
     SELECT 
       d.id_docente,
@@ -180,24 +147,27 @@ const altaDocenteUsuario = {
     ORDER BY d.deleted_at DESC
   `,
 
-  /**
-   * Restaurar docente
-   * @params: id_docente
-   */
   restaurarDocente: `
     UPDATE docente 
     SET deleted_at = NULL 
     WHERE id_docente = ?
   `,
 
-  /**
-   * Restaurar usuario
-   * @params: id_usuario
-   */
   restaurarUsuario: `
     UPDATE usuario 
     SET deleted_at = NULL 
     WHERE id_usuario = ?
+  `,
+
+  // Esta consulta faltaba en tu primer 'queries.js'
+  vincularUsuarioADocente: `
+    UPDATE docente 
+    SET id_usuario = ? 
+    WHERE id_docente = ? 
+      AND deleted_at IS NULL
+  `,
+  obtenerValoresEnumEstado: `
+    SHOW COLUMNS FROM docente LIKE 'estado'
   `
 };
 

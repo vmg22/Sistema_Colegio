@@ -1,5 +1,5 @@
-import axios from "axios";      
-import API from "../api/api"; 
+import axios from "axios";
+import API from "../api/api"; // Tu string de URL base
 const ALTAS_URL = `${API}/altas`;
 
 /**
@@ -9,7 +9,8 @@ const handleError = (error, defaultMessage) => {
   console.error(defaultMessage, error);
   // Extraemos el 'message' de la respuesta de tu backend
   const message = error.response?.data?.message || error.response?.data?.error || defaultMessage;
-  throw new Error(message); // Lanzamos el error para que el componente lo atrape
+  // ¡LANZAMOS el error para que el componente lo atrape!
+  throw new Error(message); 
 };
 
 /**
@@ -17,25 +18,11 @@ const handleError = (error, defaultMessage) => {
  */
 export const getDocentes = async (params = {}) => {
   try {
-    // 4. Usamos 'axios.get' y la URL completa
     const response = await axios.get(`${ALTAS_URL}/docentes`, { params });
-    // Tu backend devuelve { data: { total, docentes } }
+    // Corregido: Tu backend usa 'data', no 'datos'.
     return response.data.data.docentes || []; 
   } catch (err) {
     handleError(err, "Error al obtener docentes");
-  }
-};
-
-/**
- * @route POST /api/v1/altas/docente
- */
-export const createDocente = async (docenteData) => {
-  try {
-    const response = await axios.post(`${ALTAS_URL}/docente`, docenteData);
-    // Tu backend devuelve { data: { docenteCreado } }
-    return response.data.data; 
-  } catch (err) {
-    handleError(err, "Error al crear docente");
   }
 };
 
@@ -108,5 +95,43 @@ export const getDocenteById = async (id) => {
     return response.data.data; 
   } catch (err) {
     handleError(err, "Error al obtener docente");
+  }
+};
+
+
+// --- ¡AQUÍ ESTÁN LAS FUNCIONES QUE FALTABAN! ---
+
+/**
+ * @route POST /api/v1/altas/docente/perfil
+ * (Paso 1 del Wizard)
+ */
+export const createDocentePerfil = async (perfilData) => {
+  try {
+    const response = await axios.post(`${ALTAS_URL}/docente/perfil`, perfilData);
+    return response.data.data; // Devuelve el docente creado (sin usuario)
+  } catch (err) {
+    handleError(err, "Error al crear perfil de docente");
+  }
+};
+
+/**
+ * @route POST /api/v1/altas/docente/:id/usuario
+ * (Paso 2 del Wizard)
+ */
+export const createUsuarioParaDocente = async (id_docente, usuarioData) => {
+  try {
+    const response = await axios.post(`${ALTAS_URL}/docente/${id_docente}/usuario`, usuarioData);
+    return response.data.data; // Devuelve el docente actualizado (con usuario)
+  } catch (err) {
+    handleError(err, "Error al crear y vincular usuario");
+  }
+};
+
+export const getDocenteEstados = async () => {
+  try {
+    const response = await axios.get(`${ALTAS_URL}/docentes/estados`);
+    return response.data.data; // Devuelve el array ['activo', 'licencia', 'inactivo']
+  } catch (err) {
+    handleError(err, "Error al obtener estados de docente");
   }
 };

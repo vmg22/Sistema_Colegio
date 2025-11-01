@@ -16,16 +16,13 @@ const reportesAlumnoRoutes = require("../modules/reportesAlumnoDni/reporte.route
 const reportesCursoRoutes = require("../modules/reportesCurso/reporteCurso.routes");
 const inscripcionesRoutes = require("../modules/CRUD/inscripcion/inscripcionRoutes.js");
 const mailRoutes = require('../modules/mail/mail.routes');
+const materiaCorrelativaRoutes = require("../modules/materia_correlativa/materia_correlativa.routes");
+const destinatarioRoutes = require("../modules/comunicacion_destinatario/comunicacion_destinatario.routes");
+const logActividadRoutes = require("../modules/log_actividad/log_actividad.routes");
+const alumnoTutorRoutes = require("../modules/alumno_tutor/alumno_tutor.routes"); 
 
 // ✅ NUEVO: Módulo de altas (Docente + Usuario)
-const altasRoutes = require("../modules/altas/alta.routes");
-const alumnoTutorRoutes = require('../modules/alumno_tutor/alumno_tutor.routes');
-const materiaCorrelativaRoutes = require('../modules/materia_correlativa/materia_correlativa.routes');
-const destinatarioRoutes = require('../modules/comunicacion_destinatario/comunicacion_destinatario.routes');
-const logActividadRoutes = require('../modules/log_actividad/log_actividad.routes');
-
-
-
+const altasRoutes = require("../modules/altas/alta.routes.js");
 // Registrar rutas de los módulos
 router.use("/alumnos", alumnoRoutes);
 router.use("/docentes", docenteRoutes);
@@ -52,6 +49,7 @@ router.use('/mail', mailRoutes);
 
 //  Ruta de altas
 router.use("/altas", altasRoutes);
+
 // RUTAS PARA INCRIPCIONES /CRUD INSCRIPCION
 router.use('/inscripciones', inscripcionesRoutes);
 
@@ -74,15 +72,7 @@ router.get("/", (req, res) => {
       reportesAlumno: "/api/v1/reportes/alumno?dni_alumno=X&anio_lectivo=Y",
       reportesCurso: "/api/v1/reportes/curso?id_curso=X&id_materia=Y&anio_lectivo=Z&cuatrimestre=N",
       //  NUEVO: Endpoint de altas para crar docentes y usuarios ya que sin usuario no se puede crear docente
-      altas: "/api/v1/altas/docente",
-      reportesCurso: "/api/v1/reportes/curso?id_curso=X&id_materia=Y&anio_lectivo=Z&cuatrimestre=N",
-      asistencia: "/api/v1/asistencia",
-     alumnoTutor: "/api/v1/alumno-tutor",
-     alumnoCorrelativa: "/api/v1/materia-correlativa",
-     comunicacionDestinario: "/api/v1/destinatarios",
-    logActividad: "/api/v1/actividades",
-    mail: "/api/v1/mail"
-
+      altas: "/api/v1/altas/docentes"
     },
   });
 });

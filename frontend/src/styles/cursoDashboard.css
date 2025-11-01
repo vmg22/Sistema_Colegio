@@ -1,0 +1,99 @@
+.curso-dashboard-container {
+  padding: 0 40px 40px 40px;
+  background-color: #f4f7fa;
+  min-height: calc(100vh - 80px);
+  font-family: 'Inter', sans-serif;
+}
+
+.curso-dashboard-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 0 15px 0;
+  color: #303F9F;
+}
+
+.curso-dashboard-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #303F9F;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.curso-dashboard-icon {
+  font-size: 28px;
+}
+
+
+
+.curso-actions-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+
+.curso-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Responsive design para tablets */
+@media (max-width: 1024px) {
+  .curso-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+  }
+}
+
+/* Responsive design para móviles */
+@media (max-width: 768px) {
+  .curso-dashboard-container {
+    padding: 0 20px 20px 20px;
+  }
+  
+  .curso-card-grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    gap: 20px;
+  }
+  
+  .curso-dashboard-title {
+    font-size: 1.3rem;
+  }
+  
+  .curso-actions-title {
+    font-size: 1.1rem;
+  }
+}
+
+
+/* Responsive design para móviles */
+@media (max-width: 768px) {
+  .curso-dashboard-container {
+    padding: 0 20px 20px 20px;
+  }
+  
+  .curso-card-grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    gap: 20px;
+  }
+  
+  .curso-dashboard-title {
+    font-size: 1.3rem;
+  }
+  
+  .curso-actions-title {
+    font-size: 1.1rem;
+  }
+}
+

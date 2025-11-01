@@ -47,11 +47,7 @@ const Consulta = () => {
       <div className="text-center mt-5">
         <h5>No se encontraron datos del alumno.</h5>
         <p>Vuelve al panel e intenta realizar una nueva búsqueda.</p>
-        <Link to={"/"}>
-          <Button variant="secondary" className="px-4">
-            Volver
-          </Button>
-        </Link>
+        <BtnVolver rutaVolver={"/"}/>
       </div>
     );
   }
@@ -62,10 +58,12 @@ const Consulta = () => {
   console.log(tutores);
 
   return (
-    <div className="container mt-4 consulta-container">
+    <div className="perfil-alumno-container">
       <BtnVolver rutaVolver={"/"} />
-      <HeaderPages titulo="Informacion Alumno" icono="search"/>
-      <LineaSeparadora/>
+      <div className="curso-dashboard-header">
+         <span className="material-symbols-outlined calificaciones-page-icon">search</span>
+        <h2 className="perfil-alumno-title">Informacion Alumno</h2>
+      </div>
       <DivHeaderInfo/>
       <DivBodyInfo/>
 
