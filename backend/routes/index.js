@@ -20,6 +20,7 @@ const materiaCorrelativaRoutes = require("../modules/materia_correlativa/materia
 const destinatarioRoutes = require("../modules/comunicacion_destinatario/comunicacion_destinatario.routes");
 const logActividadRoutes = require("../modules/log_actividad/log_actividad.routes");
 const alumnoTutorRoutes = require("../modules/alumno_tutor/alumno_tutor.routes"); 
+const asignacionRoutes = require("../modules/CRUD/asignaciones/asignacion.routes");
 
 // ✅ NUEVO: Módulo de altas (Docente + Usuario)
 const altasRoutes = require("../modules/altas/alta.routes.js");
@@ -52,6 +53,10 @@ router.use("/altas", altasRoutes);
 
 // RUTAS PARA INCRIPCIONES /CRUD INSCRIPCION
 router.use('/inscripciones', inscripcionesRoutes);
+
+// CRUD ASIGNAR MATERIA A DOCENTE 
+
+router.use("/asignaciones", asignacionRoutes);
 
 // Ruta principal de la API
 router.get("/", (req, res) => {
