@@ -6,7 +6,7 @@ import { useConsultaStore } from "../../store/consultaStore";
 import { Button, Spinner } from "react-bootstrap";
 import "../../styles/LinkCrud.css";
 import "../../styles/cardNavegacion.css"; 
-import CardNavegacion from "../ui/CardNavegacion";
+
 
 const DivBodyInfo = () => {
   const { reporteAlumno } = useConsultaStore();

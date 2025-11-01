@@ -1,8 +1,10 @@
+/* ======== ESTILOS GENERALES ======== */
 .nombre_vista {
   max-width: 100%;
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
+  background-color: #f5f7fb;
 }
 
 h4 {
@@ -11,12 +13,13 @@ h4 {
   font-weight: bolder !important;
 }
 
-.search{
-    color: #303F9F;
+.search {
+  color: #303F9F;
   font-size: 30px;
   font-weight: bolder;
 }
 
+/* ======== BOTONES DE DASHBOARD ======== */
 .contenedor-botones-dash {
   display: flex;
   justify-content: center;
@@ -40,6 +43,7 @@ h4 {
   font-size: 14px;
   font-weight: 500;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
 }
 
 .btn-tipo:hover {
@@ -63,8 +67,7 @@ h4 {
   width: 90px;
 }
 
-
-.person{
+.person {
   font-size: 60px;
   color: #1e40af;
 }
@@ -82,16 +85,7 @@ h4 {
 
 .group {
   font-size: 60px;
-    color: #F50057;
-
-}
-
-.linea-separadora{
-  border: none;
-  height: 1px;
-  width: 100%;
-  background-color: #6b7280;
-  margin: 20px 0;
+  color: #F50057;
 }
 
 .btn-texto {
@@ -102,42 +96,133 @@ h4 {
   padding-top: 12px;
 }
 
-.contenedor-busqueda{
+/* ======== FORMULARIO DE BÚSQUEDA ======== */
+.contenedor-busqueda {
   display: flex;
   justify-content: center;
   flex-direction: column;
   background-color: white;
   width: 80%;
   margin: 30px auto;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  padding: 20px 30px;
 }
 
-.formLabel{
+.tituloForm {
   color: #303F9F;
-  font-weight: 550;
-}
-
-.tituloForm{
-    color: #303F9F;
   font-weight: 550;
   margin-left: 15px;
   margin-top: 15px;
 }
 
-.btnBuscar{
-  background-color:#1e40af;
+.formLabel {
+  color: #303F9F;
+  font-weight: 550;
 }
-.btnBuscar:hover{
-  background-color: rgb(16, 45, 141)
+
+.btnBuscar {
+  background-color: #1e40af;
+  border: none;
 }
-/* Responsive */
+
+.btnBuscar:hover {
+  background-color: rgb(16, 45, 141);
+}
+
+/* ======== TARJETAS DE INFORMACIÓN ======== */
+.info-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb; /* borde sutil */
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin: 20px 0;
+  transition: box-shadow 0.3s ease;
+}
+
+.info-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.info-card h5 {
+  color: #1e3a8a;
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 8px;
+}
+
+/* Filas */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.info-value {
+  color: #111827;
+  display: flex;
+  align-items: center;
+}
+
+/* Icono copiar */
+.copy-icon {
+  margin-left: 6px;
+  cursor: pointer;
+  color: #4b5563;
+  transition: color 0.2s;
+}
+
+.copy-icon:hover {
+  color: #2563eb;
+}
+
+/* ======== DIVISOR ======== */
+.linea-separadora {
+  border: none;
+  height: 1px;
+  width: 100%;
+  background-color: #6b7280;
+  margin: 20px 0;
+}
+
+/* ======== RESPONSIVE ======== */
 @media (max-width: 768px) {
   .contenedor-botones-dash {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .btn-tipo {
     width: 100%;
     max-width: 280px;
+  }
+
+  .contenedor-busqueda {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .info-value {
+    margin-top: 4px;
   }
 }

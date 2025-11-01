@@ -1,61 +1,18 @@
 import React from "react";
+import "../../styles/reporteCursoTable.css";
 
 const ReporteCursoTable = ({ alumnos = [] }) => {
-  const styles = {
-    container: {
-      overflowX: "auto",
-      borderRadius: "12px",
-      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-      backgroundColor: "#fff",
-      marginTop: "15px",
-    },
-    table: {
-      width: "100%",
-      borderCollapse: "collapse",
-      textAlign: "center",
-      borderRadius: "12px",
-      overflow: "hidden",
-    },
-    th: {
-      backgroundColor: "#004b9b",
-      color: "white",
-      padding: "12px 8px",
-      fontWeight: "600",
-      fontSize: "14px",
-      borderBottom: "2px solid #003b7d",
-    },
-    td: {
-      padding: "10px 8px",
-      borderBottom: "1px solid #e0e0e0",
-      fontSize: "14px",
-      color: "#333",
-      transition: "background-color 0.2s ease-in-out",
-    },
-    trEven: {
-      backgroundColor: "#f9f9f9",
-    },
-    trHover: {
-      backgroundColor: "#e6f0ff",
-    },
-    notaPromedio: {
-      fontWeight: "bold",
-    },
-    asistencia: {
-      fontWeight: "bold",
-    },
+  const getNotaClass = (nota) => {
+    if (nota >= 7) return "reporte-curso-nota-excelente";
+    if (nota >= 4) return "reporte-curso-nota-regular";
+    return "reporte-curso-nota-insuficiente";
   };
 
-  const getNotaStyle = (nota) => {
-    if (nota >= 7) return { color: "#2e8b57" };
-    if (nota >= 4) return { color: "#ff9800" };
-    return { color: "#d32f2f" };
-  };
-
-  const getAsistenciaStyle = (asistencia) => {
+  const getAsistenciaClass = (asistencia) => {
     const porcentaje = asistencia?.porcentaje ?? 0;
-    if (porcentaje >= 85) return { color: "#2e8b57" };
-    if (porcentaje >= 70) return { color: "#ff9800" };
-    return { color: "#d32f2f" };
+    if (porcentaje >= 85) return "reporte-curso-asistencia-excelente";
+    if (porcentaje >= 70) return "reporte-curso-asistencia-regular";
+    return "reporte-curso-asistencia-insuficiente";
   };
 
   const formatNota = (nota) => {
@@ -63,20 +20,31 @@ const ReporteCursoTable = ({ alumnos = [] }) => {
     return Number(nota).toFixed(1);
   };
 
+  const handleMouseEnter = (e, index) => {
+    e.currentTarget.classList.add("reporte-curso-tr-hover");
+  };
+
+  const handleMouseLeave = (e, index) => {
+    e.currentTarget.classList.remove("reporte-curso-tr-hover");
+    if (index % 2 === 0) {
+      e.currentTarget.classList.add("reporte-curso-tr-even");
+    }
+  };
+
   return (
-    <div style={styles.container}>
-      <table style={styles.table}>
+    <div className="reporte-curso-container">
+      <table className="reporte-curso-table">
         <thead>
           <tr>
-            <th style={styles.th}>DNI</th>
-            <th style={styles.th}>Nombre</th>
-            <th style={styles.th}>Apellido</th>
-            <th style={styles.th}>Nota 1</th>
-            <th style={styles.th}>Nota 2</th>
-            <th style={styles.th}>Nota 3</th>
-            <th style={styles.th}>Promedio</th>
-            <th style={styles.th}>Asistencia (%)</th>
-            <th style={styles.th}>Faltas</th>
+            <th className="reporte-curso-th">DNI</th>
+            <th className="reporte-curso-th">Nombre</th>
+            <th className="reporte-curso-th">Apellido</th>
+            <th className="reporte-curso-th">Nota 1</th>
+            <th className="reporte-curso-th">Nota 2</th>
+            <th className="reporte-curso-th">Nota 3</th>
+            <th className="reporte-curso-th">Promedio</th>
+            <th className="reporte-curso-th">Asistencia (%)</th>
+            <th className="reporte-curso-th">Faltas</th>
           </tr>
         </thead>
         <tbody>
@@ -85,62 +53,43 @@ const ReporteCursoTable = ({ alumnos = [] }) => {
               const { alumno = {}, calificaciones, asistencias } = item || {};
               const safeCalificaciones = calificaciones ?? {};
               const safeAsistencias = asistencias ?? {};
-              const asistenciaInfo = getAsistenciaStyle(safeAsistencias);
+              const asistenciaClass = getAsistenciaClass(safeAsistencias);
               const faltas = Number(safeAsistencias.ausentes ?? 0);
+
+              const rowClass = index % 2 === 0 ? "reporte-curso-tr-even" : "";
 
               return (
                 <tr
                   key={index}
-                  style={
-                    index % 2 === 0
-                      ? styles.trEven
-                      : {}
-                  }
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = styles.trHover.backgroundColor)
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor =
-                      index % 2 === 0 ? styles.trEven.backgroundColor : "#fff")
-                  }
+                  className={rowClass}
+                  onMouseEnter={(e) => handleMouseEnter(e, index)}
+                  onMouseLeave={(e) => handleMouseLeave(e, index)}
                 >
-                  <td style={styles.td}>{alumno.dni ?? "-"}</td>
-                  <td style={styles.td}>{alumno.nombre ?? "-"}</td>
-                  <td style={styles.td}>{alumno.apellido ?? "-"}</td>
-                  <td style={{ ...styles.td, ...getNotaStyle(safeCalificaciones.nota1) }}>
+                  <td className="reporte-curso-td">{alumno.dni ?? "-"}</td>
+                  <td className="reporte-curso-td">{alumno.nombre ?? "-"}</td>
+                  <td className="reporte-curso-td">{alumno.apellido ?? "-"}</td>
+                  <td className={`reporte-curso-td ${getNotaClass(safeCalificaciones.nota1)}`}>
                     {formatNota(safeCalificaciones.nota1)}
                   </td>
-                  <td style={{ ...styles.td, ...getNotaStyle(safeCalificaciones.nota2) }}>
+                  <td className={`reporte-curso-td ${getNotaClass(safeCalificaciones.nota2)}`}>
                     {formatNota(safeCalificaciones.nota2)}
                   </td>
-                  <td style={{ ...styles.td, ...getNotaStyle(safeCalificaciones.nota3) }}>
+                  <td className={`reporte-curso-td ${getNotaClass(safeCalificaciones.nota3)}`}>
                     {formatNota(safeCalificaciones.nota3)}
                   </td>
-                  <td
-                    style={{
-                      ...styles.td,
-                      ...getNotaStyle(safeCalificaciones.promedio),
-                      ...styles.notaPromedio,
-                    }}
-                  >
+                  <td className={`reporte-curso-td reporte-curso-nota-promedio ${getNotaClass(safeCalificaciones.promedio)}`}>
                     {formatNota(safeCalificaciones.promedio)}
                   </td>
-                  <td
-                    style={{
-                      ...styles.td,
-                      ...asistenciaInfo,
-                      ...styles.asistencia,
-                    }}
-                  >
+                  <td className={`reporte-curso-td reporte-curso-asistencia ${asistenciaClass}`}>
                     {safeAsistencias.porcentaje ?? 0}%
                   </td>
-                  <td style={styles.td}>{faltas}</td>
+                  <td className="reporte-curso-td">{faltas}</td>
                 </tr>
               );
             })
           ) : (
             <tr>
-              <td colSpan="9" style={styles.td}>
+              <td colSpan="9" className="reporte-curso-td">
                 No hay registros disponibles
               </td>
             </tr>

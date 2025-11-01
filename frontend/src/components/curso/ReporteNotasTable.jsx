@@ -1,131 +1,79 @@
 import React from "react";
-
+import "../../styles/reporteNotasTable.css";
 
 const ReporteNotasTable = ({ alumnos = [] }) => {
-  const styles = {
-    container: {
-      overflowX: "auto",
-      borderRadius: "12px",
-      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-      backgroundColor: "#fff",
-      marginTop: "15px",
-    },
-    table: {
-      width: "100%",
-      borderCollapse: "collapse",
-      textAlign: "center",
-      borderRadius: "12px",
-      overflow: "hidden",
-    },
-    th: {
-      backgroundColor: "#004b9b",
-      color: "white",
-      padding: "12px 8px",
-      fontWeight: "600",
-      fontSize: "14px",
-      borderBottom: "2px solid #003b7d",
-    },
-    td: {
-      padding: "10px 8px",
-      borderBottom: "1px solid #e0e0e0",
-      fontSize: "14px",
-      color: "#333",
-      transition: "background-color 0.2s ease-in-out",
-    },
-    trEven: {
-      backgroundColor: "#f9f9f9",
-    },
-    trHover: {
-      backgroundColor: "#e6f0ff",
-    },
-    notaPromedio: {
-      fontWeight: "bold",
-    },
-    
+  const getNotaClass = (nota) => {
+    if (nota >= 7) return "reporte-notas-nota-excelente";
+    if (nota >= 4) return "reporte-notas-nota-regular";
+    return "reporte-notas-nota-insuficiente";
   };
-
-  const getNotaStyle = (nota) => {
-    if (nota >= 7) return { color: "#2e8b57" };
-    if (nota >= 4) return { color: "#ff9800" };
-    return { color: "#d32f2f" };
-  };
-
-  
 
   const formatNota = (nota) => {
     if (nota === undefined || nota === null || isNaN(nota)) return "-";
     return Number(nota).toFixed(1);
   };
 
+  const handleMouseEnter = (e, index) => {
+    e.currentTarget.classList.add("reporte-notas-tr-hover");
+  };
+
+  const handleMouseLeave = (e, index) => {
+    e.currentTarget.classList.remove("reporte-notas-tr-hover");
+    if (index % 2 === 0) {
+      e.currentTarget.classList.add("reporte-notas-tr-even");
+    }
+  };
+
   return (
-    <div style={styles.container}>
-      <table style={styles.table}>
+    <div className="reporte-notas-container">
+      <table className="reporte-notas-table">
         <thead>
           <tr>
-            <th style={styles.th}>DNI</th>
-            <th style={styles.th}>Nombre</th>
-            <th style={styles.th}>Apellido</th>
-            <th style={styles.th}>Nota 1</th>
-            <th style={styles.th}>Nota 2</th>
-            <th style={styles.th}>Nota 3</th>
-            <th style={styles.th}>Promedio</th>
-            
+            <th className="reporte-notas-th">DNI</th>
+            <th className="reporte-notas-th">Nombre</th>
+            <th className="reporte-notas-th">Apellido</th>
+            <th className="reporte-notas-th">Nota 1</th>
+            <th className="reporte-notas-th">Nota 2</th>
+            <th className="reporte-notas-th">Nota 3</th>
+            <th className="reporte-notas-th">Promedio</th>
           </tr>
         </thead>
         <tbody>
           {alumnos.length > 0 ? (
             alumnos.map((item, index) => {
-              // Ajustamos la desestructuración, aunque 'asistencias' no se use
               const { alumno = {}, calificaciones } = item || {};
               const safeCalificaciones = calificaciones ?? {};
-
               
+              const rowClass = index % 2 === 0 ? "reporte-notas-tr-even" : "";
 
               return (
                 <tr
                   key={index}
-                  style={
-                    index % 2 === 0
-                      ? styles.trEven
-                      : {}
-                  }
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = styles.trHover.backgroundColor)
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor =
-                      index % 2 === 0 ? styles.trEven.backgroundColor : "#fff")
-                  }
+                  className={rowClass}
+                  onMouseEnter={(e) => handleMouseEnter(e, index)}
+                  onMouseLeave={(e) => handleMouseLeave(e, index)}
                 >
-                  <td style={styles.td}>{alumno.dni ?? "-"}</td>
-                  <td style={styles.td}>{alumno.nombre ?? "-"}</td>
-                  <td style={styles.td}>{alumno.apellido ?? "-"}</td>
-                  <td style={{ ...styles.td, ...getNotaStyle(safeCalificaciones.nota1) }}>
+                  <td className="reporte-notas-td">{alumno.dni ?? "-"}</td>
+                  <td className="reporte-notas-td">{alumno.nombre ?? "-"}</td>
+                  <td className="reporte-notas-td">{alumno.apellido ?? "-"}</td>
+                  <td className={`reporte-notas-td ${getNotaClass(safeCalificaciones.nota1)}`}>
                     {formatNota(safeCalificaciones.nota1)}
                   </td>
-                  <td style={{ ...styles.td, ...getNotaStyle(safeCalificaciones.nota2) }}>
+                  <td className={`reporte-notas-td ${getNotaClass(safeCalificaciones.nota2)}`}>
                     {formatNota(safeCalificaciones.nota2)}
                   </td>
-                  <td style={{ ...styles.td, ...getNotaStyle(safeCalificaciones.nota3) }}>
+                  <td className={`reporte-notas-td ${getNotaClass(safeCalificaciones.nota3)}`}>
                     {formatNota(safeCalificaciones.nota3)}
                   </td>
-                  <td
-                    style={{
-                      ...styles.td,
-                      ...getNotaStyle(safeCalificaciones.promedio),
-                      ...styles.notaPromedio,
-                    }}
-                  >
+                  <td className={`reporte-notas-td reporte-notas-nota-promedio ${getNotaClass(safeCalificaciones.promedio)}`}>
                     {formatNota(safeCalificaciones.promedio)}
                   </td>
-                 
                 </tr>
               );
             })
           ) : (
             <tr>
-              
-              <td colSpan="7" style={styles.td}>
+              <td colSpan="7" className="reporte-notas-td">
                 No hay registros disponibles
               </td>
             </tr>

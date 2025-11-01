@@ -4,38 +4,8 @@ import { Spinner, Button } from "react-bootstrap";
 import { useConsultaStore } from "../../store/consultaStore";
 import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx";
-import EstadoAcademicoCard from "../../components/ui/EstadoAcademicoCard.jsx"; // Nuevo componente
-
-// Estilos
-const styles = {
-  pageContainer: {
-    padding: "0 40px 40px 40px",
-    backgroundColor: "#f4f7fa",
-    minHeight: "calc(100vh - 80px)",
-    fontFamily: "'Inter', sans-serif",
-  },
-  pageTitle: {
-    fontSize: "1.5rem", // 24px
-    fontWeight: 600,
-    color: "#303F9F", // Primary Dark
-    margin: "20px 0",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-  },
-  cardGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-    gap: "25px",
-    maxWidth: "1200px",
-    margin: "0 auto",
-  },
-  loadingContainer: {
-    textAlign: "center",
-    marginTop: "100px",
-    fontFamily: "'Inter', sans-serif",
-  },
-};
+import EstadoAcademicoCard from "../../components/ui/EstadoAcademicoCard.jsx";
+import "../../styles/estadoAcademicoAlumno.css";
 
 const EstadoAcademicoPage = () => {
   const { reporteAlumno } = useConsultaStore();
@@ -65,7 +35,7 @@ const EstadoAcademicoPage = () => {
 
   if (loading) {
     return (
-      <div style={styles.loadingContainer}>
+      <div className="estado-academico-page__loading-container">
         <Spinner animation="border" variant="primary" />
         <p className="mt-3">Cargando estado académico...</p>
       </div>
@@ -74,7 +44,7 @@ const EstadoAcademicoPage = () => {
 
   if (!reporte) {
     return (
-      <div style={styles.loadingContainer}>
+      <div className="estado-academico-page__loading-container">
         <h5>No se encontraron datos del alumno.</h5>
         <p>Vuelve al panel e intenta realizar una nueva búsqueda.</p>
         <Link to={"/"}>
@@ -87,21 +57,19 @@ const EstadoAcademicoPage = () => {
   }
 
   return (
-    <div style={styles.pageContainer}>
+    <div className="estado-academico-page">
       {/* 1. Botón Volver */}
       <BtnVolver />
+      <div className="curso-dashboard-header">
+         <span className="material-symbols-outlined calificaciones-page-icon">trending_up</span>
+        <h2 className="perfil-alumno-title">Estado Académico</h2>
+      </div>
 
       {/* 2. Header con nombre y curso */}
       <DivHeaderInfo reporte={reporte} variant="text" />
 
-      {/* 3. Título de la página */}
-      <h2 style={styles.pageTitle}>
-        <span className="material-symbols-outlined">trending_up</span>
-        Estado Académico
-      </h2>
-
       {/* 4. Grilla de tarjetas de estado */}
-      <div style={styles.cardGrid}>
+      <div className="estado-academico-page__card-grid">
         {materias.map(([nombre, data]) => (
           <EstadoAcademicoCard
             key={nombre}
