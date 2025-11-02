@@ -13,7 +13,10 @@ const asignacionController = require('./asignacion.controller');
  * @query   ?id_docente=X  (Filtra por docente)
  * @query   ?id_curso=Y    (Filtra por curso)
  * @query   ?anio_lectivo=Z (Filtra por año)
+ * 
  */
+
+router.get('/estados', asignacionController.obtenerEstadosAsignacion);
 router.get('/', asignacionController.obtenerAsignaciones);
 
 /**

@@ -1,5 +1,6 @@
 const asignacionServices = require('./asignacion.services');
 
+// --- (Copia tus funciones 'exito' y 'error' de alta.controller.js) ---
 const exito = (res, mensaje, datos = null, statusCode = 200) => {
   res.status(statusCode).json({
     success: true,
@@ -21,9 +22,6 @@ const error = (res, mensaje, statusCode = 500, detalles = null) => {
 
 const asignacionController = {
 
-  /**
-   * @route GET /api/v1/asignaciones
-   */
   obtenerAsignaciones: async (req, res) => {
     try {
       const asignaciones = await asignacionServices.obtenerAsignaciones(req.query);
@@ -33,9 +31,6 @@ const asignacionController = {
     }
   },
 
-  /**
-   * @route GET /api/v1/asignaciones/:id
-   */
   obtenerAsignacionPorId: async (req, res) => {
     try {
       const { id } = req.params;
@@ -49,9 +44,6 @@ const asignacionController = {
     }
   },
 
-  /**
-   * @route POST /api/v1/asignaciones
-   */
   crearAsignacion: async (req, res) => {
     try {
       const nuevaAsignacion = await asignacionServices.crearAsignacion(req.body);
@@ -60,27 +52,24 @@ const asignacionController = {
       if (err.message.includes('obligatorios')) {
         return error(res, err.message, 400); // Bad Request
       }
-      if (err.message.includes('ya existe')) {
+      // --- ¡LÓGICA DE ERROR CORREGIDA! ---
+      // Captura ambos errores: "ya existe" (duplicado) Y "Conflicto: Esta materia..."
+      if (err.message.includes('ya existe') || err.message.includes('Conflicto')) {
         return error(res, err.message, 409); // Conflict
       }
+      // --- FIN DE LA CORRECCIÓN ---
       error(res, 'Error al crear la asignación', 500, err.message);
     }
   },
 
-  /**
-   * @route PATCH /api/v1/asignaciones/:id
-   */
   actualizarAsignacion: async (req, res) => {
     try {
       const { id } = req.params;
       const datos = req.body;
-
       if (Object.keys(datos).length === 0) {
         return error(res, 'No se enviaron datos para actualizar', 400);
       }
-
       const asignacionActualizada = await asignacionServices.actualizarAsignacion(id, datos);
-      
       exito(res, 'Asignación actualizada correctamente', asignacionActualizada);
     } catch (err) {
       if (err.message === 'Asignación no encontrada') {
@@ -93,9 +82,6 @@ const asignacionController = {
     }
   },
 
-  /**
-   * @route DELETE /api/v1/asignaciones/:id
-   */
   eliminarAsignacion: async (req, res) => {
     try {
       const { id } = req.params;
@@ -106,6 +92,16 @@ const asignacionController = {
         return error(res, err.message, 404);
       }
       error(res, 'Error al eliminar la asignación', 500, err.message);
+    }
+  },
+
+  // (Función del ENUM que hicimos antes)
+  obtenerEstadosAsignacion: async (req, res) => {
+    try {
+      const estados = await asignacionServices.obtenerEstadosAsignacion();
+      exito(res, 'Estados de asignación obtenidos', estados);
+    } catch (err) {
+      error(res, 'Error al obtener estados de asignación', 500, err.message);
     }
   },
 

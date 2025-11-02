@@ -1,0 +1,155 @@
+
+
+/* --- Banner Superior --- */
+.perfil-banner {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 20px 25px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+}
+
+.avatar-icon {
+    font-size: 32px;
+    color: #ffffff;
+    background-color: #3f51b5; /* Azul oscuro */
+    border-radius: 60%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.docente-info h3 {
+    margin: 0;
+    color: #333;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.docente-info .docente-username {
+    color: #666;
+    font-size: 16px;
+    margin-top: 4px;
+}
+
+/* --- Grid de Contenido Principal --- */
+.perfil-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* 66% para info, 33% para materias */
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+/* Cajas de Información y Cursos */
+.perfil-info-box,
+.perfil-cursos-box {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 25px;
+    border: 1px solid #e0e0e0;
+    height: fit-content; /* Para que se ajuste al contenido */
+}
+
+.perfil-info-box h4,
+.perfil-cursos-box h4 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #0d6efd; /* Azul de tu tema */
+    font-size: 20px;
+    font-weight: 600;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 15px;
+}
+
+/* --- Estilo de Lista de Definición (Información Docente) --- */
+.perfil-info-box dl {
+    margin: 0;
+}
+.perfil-info-box dt {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    margin-top: 15px;
+}
+.perfil-info-box dd {
+    font-size: 16px;
+    color: #333;
+    margin-left: 0;
+    margin-bottom: 5px;
+}
+/* Reutiliza el status-badge de tu docentescrud.css */
+.perfil-info-box dd .status-badge {
+    font-size: 12px;
+    padding: 4px 10px;
+}
+
+
+/* --- Lista de Materias Asignadas --- */
+.materias-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.materias-list li {
+    font-size: 16px;
+    color: #333;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.materias-list li:last-child {
+    border-bottom: none;
+}
+
+/* --- Sección Inferior de Formularios --- */
+.perfil-forms-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.form-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+}
+
+.form-card-button {
+    background-color: #ff9800; /* Naranja */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+}
+.form-card-button:hover {
+    background-color: #f57c00;
+}
+.form-card-button .icon {
+    font-size: 20px;
+}
+
+/* --- Responsividad --- */
+@media (max-width: 992px) {
+    .perfil-grid {
+        grid-template-columns: 1fr; /* Apila las columnas */
+    }
+}
