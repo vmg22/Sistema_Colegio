@@ -1,14 +1,10 @@
-const express = require('express');
-const router = express.Router();
-const authController = require('./auth.controller');
+const { Router } = require('express');
+const router = Router();
+const { solicitarReset, validarToken, cambiarPassword } = require('../controllers/auth.controller');
 
-router.get('/', authController.getAllUsuarios);
-router.get('/eliminados/listar', authController.getUsuariosEliminados);
-router.get('/:id', authController.getUsuarioById);
-router.post('/', authController.createUsuario);
-router.post('/:id/restaurar', authController.restaurarUsuario);
-router.put('/:id', authController.updateUsuario);
-router.delete('/:id', authController.deleteUsuario);
 
+router.post('/solicitar-reset', solicitarReset);// Ruta para solicitar reseteo de contraseña (envía email)
+router.get('/validar-token/:token', validarToken);// Ruta para validar el token (cuando el usuario hace clic en el link del email)
+router.post('/cambiar-password', cambiarPassword);// Ruta para cambiar la contraseña
 
 module.exports = router;

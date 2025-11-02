@@ -1,93 +1,87 @@
-const servicioUsuarios = require('./auth.services');
-const { exito, error } = require('../../utils/responses');
+const jwt = require('jsonwebtoken');
+const { enviarRecuperacionPassword } = require('../../services/emails.service');
+const { connection } = require('../../config/db');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const controladorUsuarios = {
-  // GET /api/auth
-  getAllUsuarios: async (solicitud, respuesta) => {
-    try {
-      const usuarios = await servicioUsuarios.obtenerTodosUsuarios();
-      exito(respuesta, 'Usuarios obtenidos correctamente', usuarios);
-    } catch (err) {
-      error(respuesta, 'Error al obtener usuarios', 500, err.message);
-    }
-  },
+// Solicitar reset de contraseña (envía email)
+const solicitarReset = (req, res) => {
+    const { email } = req.body;
+    const query = 'SELECT * FROM Usuarios WHERE mail = ?';
+    
+    connection.query(query, [email], async (error, results) => {
+        if (error) {
+            return res.status(500).json({ message: "Error en el servidor" });
+        }
 
-  // GET /api/auth/:id
-  getUsuarioById: async (solicitud, respuesta) => {
-    try {
-      const { id } = solicitud.params;
-      const usuario = await servicioUsuarios.obtenerUsuarioPorId(id);
-      
-      if (!usuario) {
-        return error(respuesta, 'Usuario no encontrado', 404);
-      }
-      
-      exito(respuesta, 'Usuario obtenido correctamente', usuario);
-    } catch (err) {
-      error(respuesta, 'Error al obtener usuario', 500, err.message);
-    }
-  },
+        if (results.length === 0) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
 
-  // POST /api/auth
-  createUsuario: async (solicitud, respuesta) => {
-    try {
-      const datosUsuario = solicitud.body;
-      
-      if (!datosUsuario.username || !datosUsuario.password_hash || !datosUsuario.email_usuario) {
-        return error(respuesta, 'Username, password y email son obligatorios', 400);
-      }
-      
-      const usuarioCreado = await servicioUsuarios.crearUsuario(datosUsuario);
-      exito(respuesta, 'Usuario creado exitosamente', usuarioCreado, 201);
-    } catch (err) {
-      error(respuesta, 'Error al crear usuario', 400, err.message);
-    }
-  },
-
-  // PUT /api/auth/:id
-  updateUsuario: async (solicitud, respuesta) => {
-    try {
-      const { id } = solicitud.params;
-      const datosActualizados = solicitud.body;
-      
-      const usuarioActualizado = await servicioUsuarios.actualizarUsuario(id, datosActualizados);
-      exito(respuesta, 'Usuario actualizado correctamente', usuarioActualizado);
-    } catch (err) {
-      error(respuesta, 'Error al actualizar usuario', 400, err.message);
-    }
-  },
-
-  // DELETE /api/auth/:id
-  deleteUsuario: async (solicitud, respuesta) => {
-    try {
-      const { id } = solicitud.params;
-      const resultado = await servicioUsuarios.eliminarUsuario(id);
-      exito(respuesta, resultado.mensaje);
-    } catch (err) {
-      error(respuesta, 'Error al eliminar usuario', 400, err.message);
-    }
-  },
-
-  // GET /api/auth/eliminados/listar
-  getUsuariosEliminados: async (solicitud, respuesta) => {
-    try {
-      const usuariosEliminados = await servicioUsuarios.obtenerUsuariosEliminados();
-      exito(respuesta, 'Usuarios eliminados obtenidos', usuariosEliminados);
-    } catch (err) {
-      error(respuesta, 'Error al obtener usuarios eliminados', 500, err.message);
-    }
-  },
-
-  // POST /api/auth/:id/restaurar
-  restaurarUsuario: async (solicitud, respuesta) => {
-    try {
-      const { id } = solicitud.params;
-      const usuarioRestaurado = await servicioUsuarios.restaurarUsuario(id);
-      exito(respuesta, 'Usuario restaurado correctamente', usuarioRestaurado);
-    } catch (err) {
-      error(respuesta, 'Error al restaurar usuario', 400, err.message);
-    }
-  }
+        const user = results[0];
+        const token = jwt.sign(
+            { id: user.id, mail: user.mail }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '15m' }
+        );
+        
+        const link = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+        
+        await enviarRecuperacionPassword(user.mail, link);
+        
+        return res.status(200).json({ message: "Email de recuperación enviado" });
+    });
 };
 
-module.exports = controladorUsuarios;
+// Validar token (cuando usuario hace clic en el link)
+const validarToken = (req, res) => {
+    const { token } = req.params;
+    
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        return res.status(200).json({ 
+            valid: true, 
+            message: "Token válido",
+            email: decoded.mail 
+        });
+    } catch (error) {
+        return res.status(401).json({ 
+            valid: false, 
+            message: "Token inválido o expirado" 
+        });
+    }
+};
+
+// Cambiar contraseña
+const cambiarPassword = (req, res) => {
+    const { token, newPassword } = req.body;
+    
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const bcrypt = require('bcrypt');
+        const saltRounds = 10;
+        
+        bcrypt.hash(newPassword, saltRounds, (err, hash) => {
+            if (err) {
+                return res.status(500).json({ message: "Error al encriptar contraseña" });
+            }
+            
+            const query = 'UPDATE Usuarios SET password = ? WHERE mail = ?';
+            connection.query(query, [hash, decoded.mail], (error, results) => {
+                if (error) {
+                    return res.status(500).json({ message: "Error al actualizar contraseña" });
+                }
+                
+                return res.status(200).json({ message: "Contraseña actualizada exitosamente" });
+            });
+        });
+    } catch (error) {
+        return res.status(401).json({ message: "Token inválido o expirado" });
+    }
+};
+
+module.exports = { 
+    solicitarReset, 
+    validarToken, 
+    cambiarPassword 
+};
