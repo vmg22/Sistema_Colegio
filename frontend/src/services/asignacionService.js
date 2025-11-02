@@ -1,8 +1,8 @@
 import axios from "axios";
-import API from "../api/api"; // Tu string de URL base
+import API from "../api/api"; 
 const ASIGNACIONES_URL = `${API}/asignaciones`;
 
-// Reutiliza tu manejador de errores de docenteService.js
+
 const handleError = (error, defaultMessage) => {
   console.error(defaultMessage, error);
   const message = error.response?.data?.message || error.response?.data?.error || defaultMessage;

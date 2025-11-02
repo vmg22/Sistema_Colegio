@@ -25,7 +25,7 @@
 
 .gestion-header h2 {
     margin: 0;
-    color: #333;
+    color: #303F9F;
     font-size: 28px;
     font-weight: 700;
 }
@@ -83,10 +83,10 @@
 }
 
 .search-button {
-    background-color: #0d6efd; /* Azul */
+    background-color: #303F9F; /* Azul */
 }
 .search-button:hover {
-    background-color: #0b5ed7;
+    background-color: #1c2564;
 }
 
 .add-button {
@@ -125,7 +125,7 @@
 }
 .list-header h3 {
     margin: 0;
-    color: #0d6efd; /* Título de la lista en azul */
+    color: #303F9F; /* Título de la lista en azul */
     font-size: 20px;
     font-weight: 600;
 }

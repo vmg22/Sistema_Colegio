@@ -102,9 +102,9 @@ const DocenteWizardModal = ({ onClose, onSave }) => {
           {/* --- PASO 1: PERFIL DEL DOCENTE --- */}
           {step === 1 && (
             <form onSubmit={handleStep1Submit}>
-              <h3>Alta de Docente (Paso 1 de 2: Perfil)</h3>
+              <h3 data-step="Paso 1 de 2">Alta de Docente: Perfil</h3>
               <fieldset>
-                <legend>Datos Personales (Perfil)</legend>
+                <legend>Datos Personales del Docente</legend>
                 <div className="form-group">
                   <label htmlFor="dni_docente">DNI:</label>
                   <input
@@ -159,7 +159,7 @@ const DocenteWizardModal = ({ onClose, onSave }) => {
                     onChange={handleChange}
                   />
                 </div>
-                {/* --- ¡SECCIÓN MODIFICADA! --- */}
+              
                 <div className="form-group">
                   <label htmlFor="estado">Estado:</label>
                   <select

@@ -79,7 +79,7 @@ const Docentes = () => {
         loadDocentes();
     };
 
-    // --- Definiciones de Tabla (Ajustadas a tu query) ---
+    
     const columns = [
         { header: 'ID', accessor: 'id_docente' },
         { 
@@ -103,7 +103,7 @@ const Docentes = () => {
 
     const renderActions = (docente) => (
       <>
-        <button // Llama a 'navigate' con la ruta dinámica
+        <button 
           onClick={() => navigate(`/docentes/${docente.id_docente}`)}
           className="action-button view" 
           title="Ver Perfil"
@@ -136,13 +136,13 @@ const Docentes = () => {
 
     return (
         <div className="gestion-page-container">
-            {/* ... Header ... */}
+       
             <div className="gestion-header">
                 <button onClick={() => navigate(-1)} className="back-button">← VOLVER</button>
                 <h2>Gestión de Docentes</h2>
             </div>
             
-            {/* ... Barra de Búsqueda ... */}
+          
             <div className="search-add-bar">
                 <div className="search-box">
                     <span className="search-icon material-symbols-outlined">search</span>
@@ -161,7 +161,7 @@ const Docentes = () => {
                 </button>
             </div>
 
-            {/* Contenedor de la Tabla */}
+       
             <div className="list-container">
                 <div className="list-header">
                     <h3>Listado de Docentes</h3>
@@ -178,9 +178,6 @@ const Docentes = () => {
                 />
             </div>
 
-            {/* --- Renderizado de Modales --- */}
-            
-            {/* Modal de 2 pasos para AGREGAR */}
             {showWizardModal && (
                 <DocenteWizardModal 
                     onClose={handleCloseModal}
@@ -188,7 +185,7 @@ const Docentes = () => {
                 />
             )}
             
-            {/* Modal simple para EDITAR */}
+           
             {showEditModal && (
                 <DocenteEditModal 
                     docenteToEdit={currentDocente}
