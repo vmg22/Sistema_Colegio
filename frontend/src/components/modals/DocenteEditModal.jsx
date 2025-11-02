@@ -3,7 +3,17 @@ import { updateDocenteParcial } from '../../services/docenteService';
 import '../../styles/docentesmodal.css'; // Reutilizamos un CSS de modal
 
 const DocenteEditModal = ({ docenteToEdit, onClose, onSave }) => {
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState({
+    nombre: '',
+    apellido: '',
+    email: '',
+    telefono: '',
+    especialidad: '',
+    estado: 'activo', // <-- Dale un valor por defecto
+    username: '',
+    email_usuario: '',
+    dni_docente: ''
+  });
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState(null);
 

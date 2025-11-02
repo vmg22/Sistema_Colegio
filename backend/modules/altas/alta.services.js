@@ -177,12 +177,17 @@ async function eliminarDocente(id) {
   }
 }
 
+/**
+ * Obtiene los docentes eliminados
+ */
 async function obtenerDocentesEliminados() {
   const [docentes] = await db.query(consultas.obtenerDocentesEliminados);
   return docentes;
 }
 
-
+/**
+ * Restaura un docente eliminado
+ */
 async function restaurarDocente(id) {
   const connection = await db.getConnection();
   try {
@@ -206,20 +211,18 @@ async function restaurarDocente(id) {
   }
 }
 
-
+/**
+ * (Función del ENUM)
+ */
 async function obtenerEstadosDocente() {
   try {
     const [rows] = await db.query(consultas.obtenerValoresEnumEstado);
-    
     if (!rows || rows.length === 0) {
       throw new Error("No se pudo obtener la definición de la columna 'estado'.");
     }
     const enumString = rows[0].Type; 
     const valores = enumString
-      .replace("enum(", "")
-      .replace(")", "")
-      .replaceAll("'", "")
-      .split(',');
+      .replace("enum(", "").replace(")", "").replaceAll("'", "").split(',');
     return valores;
   } catch (err) {
     console.error("Error al parsear ENUM 'estado':", err);
@@ -227,13 +230,14 @@ async function obtenerEstadosDocente() {
   }
 }
 
-
+/**
+ * (Tu función original de 1 solo paso - la mantenemos)
+ */
 async function altaDocenteUsuario(data) {
     const {
       username, email, password, dni_docente, nombre, apellido,
       telefono, especialidad, estado,
     } = data;
-
     if (
       !username || !email || !password || !dni_docente || !nombre || !apellido
     ) {
@@ -241,7 +245,6 @@ async function altaDocenteUsuario(data) {
         'Username, Email, Contraseña, DNI, Nombre y Apellido son obligatorios'
       );
     }
-
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
@@ -293,7 +296,7 @@ async function altaDocenteUsuario(data) {
     }
 }
 
-
+// 4. Exportamos todo junto al final
 module.exports = {
   altaDocenteUsuario,
   crearDocentePerfil,
@@ -304,5 +307,5 @@ module.exports = {
   eliminarDocente,
   obtenerDocentesEliminados,
   restaurarDocente,
-  obtenerEstadosDocente 
+  obtenerEstadosDocente
 };

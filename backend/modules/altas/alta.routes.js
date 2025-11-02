@@ -8,59 +8,38 @@ const altaController = require('./altas.controller');
  */
 
 // =============================================
-// RUTAS DE CONSULTA (Sin cambios)
+// RUTAS DE CONSULTA
 // =============================================
-
 router.get('/docentes', altaController.obtenerTodosDocentes);
+
+// --- ¡RUTA CORREGIDA! ---
+// Debe ir ANTES de /docentes/:id para que 'estados' no sea tratado como un ID
+router.get('/docentes/estados', altaController.obtenerEstadosDocente);
+
 router.get('/docentes/eliminados/listar', altaController.obtenerDocentesEliminados);
 router.get('/docentes/:id', altaController.obtenerDocentePorId);
 
 // =============================================
-// RUTAS DE CREACIÓN (Modificadas)
+// RUTAS DE CREACIÓN
 // =============================================
-
-/**
- * @route   POST /api/v1/altas/docente
- * @desc    (Ruta Antigua) Crea un docente y usuario en 1 paso
- * @access  Private
- */
+// (Ruta Antigua - 1 paso)
 router.post('/docente', altaController.crearDocente);
 
-/**
- * --- ¡CÓDIGO AÑADIDO PARA EL WIZARD! ---
- */
-
-/**
- * @route   POST /api/v1/altas/docente/perfil
- * @desc    (Wizard Paso 1) Crea SOLO el perfil del docente
- * @access  Private
- */
+// (Wizard Paso 1)
 router.post('/docente/perfil', altaController.crearDocentePerfil);
 
-/**
- * @route   POST /api/v1/altas/docente/:id/usuario
- * @desc    (Wizard Paso 2) Crea el usuario y lo vincula al docente
- * @access  Private
- */
+// (Wizard Paso 2)
 router.post('/docente/:id/usuario', altaController.crearUsuarioParaDocente);
 
-// --- FIN DEL CÓDIGO AÑADIDO ---
-
-
 // =============================================
-// RUTAS DE ACTUALIZACIÓN (Sin cambios)
+// RUTAS DE ACTUALIZACIÓN Y OTRAS
 // =============================================
-
 router.put('/docentes/:id', altaController.actualizarDocente);
 router.patch('/docentes/:id', altaController.actualizarDocenteParcial);
-
-// =============================================
-// RUTAS DE ELIMINACIÓN Y RESTAURACIÓN (Sin cambios)
-// =============================================
-
 router.delete('/docentes/:id', altaController.eliminarDocente);
 router.post('/docentes/:id/restaurar', altaController.restaurarDocente);
 
-router.get('/docentes/estados', altaController.obtenerEstadosDocente);
+// (Ruta de reseteo de pass que hicimos antes)
+// router.post('/docente/:id/reset-password', altaController.restablecerPasswordDocente);
 
 module.exports = router;

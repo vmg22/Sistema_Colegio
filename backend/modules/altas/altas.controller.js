@@ -41,7 +41,7 @@ const altaController = {
     }
   },
 
-  // --- (Funciones del Wizard - sin cambios) ---
+  // --- (Funciones del Wizard - AÑADIDAS) ---
   crearDocentePerfil: async (req, res) => {
     try {
       const datosDocente = req.body;
@@ -77,7 +77,17 @@ const altaController = {
     }
   },
 
-  // --- (Resto de funciones - completadas) ---
+  // --- (Función del ENUM - AÑADIDA) ---
+  obtenerEstadosDocente: async (req, res) => {
+    try {
+      const estados = await altaServices.obtenerEstadosDocente();
+      exito(res, 'Estados de docente obtenidos', estados);
+    } catch (err) {
+      error(res, 'Error al obtener estados de docente', 500, err.message);
+    }
+  },
+
+  // --- (Resto de funciones - con 'buscar' añadido) ---
   obtenerTodosDocentes: async (req, res) => {
     try {
       const { buscar } = req.query; // Lee el query param
@@ -130,7 +140,6 @@ const altaController = {
         return error(res, 'ID de docente inválido', 400);
       }
       // NOTA: Tu service llama a 'actualizarDocente' (actualización completa)
-      // Deberías implementar una lógica de PATCH real si es necesario.
       const docenteActualizado = await altaServices.actualizarDocente(id, datosActualizacion);
       exito(res, 'Docente actualizado exitosamente', docenteActualizado);
     } catch (err) {
@@ -179,15 +188,6 @@ const altaController = {
       exito(res, 'Docente restaurado exitosamente', docenteRestaurado);
     } catch (err) {
       error(res, 'Error al restaurar docente', 500, err.message);
-    }
-  },
-
-  obtenerEstadosDocente: async (req, res) => {
-    try {
-      const estados = await altaServices.obtenerEstadosDocente();
-      exito(res, 'Estados de docente obtenidos', estados);
-    } catch (err) {
-      error(res, 'Error al obtener estados de docente', 500, err.message);
     }
   }
 };
