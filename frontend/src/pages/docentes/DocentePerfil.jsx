@@ -121,14 +121,18 @@ const DocentePerfil = () => {
                 className="action-button edit"
                 title="Editar Año/Estado"
             >
-                ✏️
+            <span className="material-symbols-outlined">
+                edit
+            </span>
             </button>
             <button 
                 onClick={() => handleDeleteAsignacion(asignacion.id_asignacion)} 
                 className="action-button delete"
                 title="Eliminar Asignación"
             >
-                🗑️
+            <span className="material-symbols-outlined">
+                delete
+            </span>
             </button>
         </>
     );

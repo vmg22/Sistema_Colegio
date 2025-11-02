@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// 1. Importa el NUEVO servicio
 import * as docenteService from '../../../services/docenteService'; 
-
-// 2. Importa AMBOS modales
 import DocenteWizardModal from '../../../components/modals/DocenteWizardModal'; // Para AGREGAR
 import DocenteEditModal from '../../../components/modals/DocenteEditModal'; // Para EDITAR
 
-// 3. Importa tu tabla y tu CSS
 import TableCrud from '../../../components/crud/TableCrud';
 import '../../../styles/docentescrud.css'; 
 
@@ -19,19 +15,16 @@ const Docentes = () => {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     
-    // --- Estados del Modal (separados) ---
     const [showWizardModal, setShowWizardModal] = useState(false); // Para el alta
     const [showEditModal, setShowEditModal] = useState(false);     // Para editar
     const [currentDocente, setCurrentDocente] = useState(null); // Para editar
 
-    // --- (loadDocentes, handleSearch, handleDelete - sin cambios) ---
     const loadDocentes = async () => {
         setIsLoading(true);
         setError(null);
         try {
             const params = {};
             if (searchTerm.trim() !== '') {
-                // TODO: Implementar búsqueda en backend
                 params.buscar = searchTerm.trim();
             }
             const data = await docenteService.getDocentes(params);
@@ -61,17 +54,17 @@ const Docentes = () => {
         }
     };
 
-    // --- Manejadores de Modales (Separados) ---
     const handleOpenAddModal = () => {
         setCurrentDocente(null);
         setShowEditModal(false);
-        setShowWizardModal(true); // <-- Muestra el wizard
+        setShowWizardModal(true); 
     };
     
     const handleOpenEditModal = (docente) => {
         setCurrentDocente(docente);
         setShowWizardModal(false);
-        setShowEditModal(true); // <-- Muestra el modal de edición
+        setShowEditModal(true); 
+
     };
 
     const handleCloseModal = () => {
@@ -112,10 +105,12 @@ const Docentes = () => {
       <>
         <button // Llama a 'navigate' con la ruta dinámica
           onClick={() => navigate(`/docentes/${docente.id_docente}`)}
-          className="action-button view" // Clase para el icono (ver CSS)
+          className="action-button view" 
           title="Ver Perfil"
         >
-         👁️ 
+        <span className="material-symbols-outlined">
+                visibility
+            </span>
         </button>
 
         <button
@@ -123,14 +118,18 @@ const Docentes = () => {
           className="action-button edit"
           title="Editar"
         >
-          ✏️
+        <span className="material-symbols-outlined">
+                edit
+            </span>
         </button>
         <button
           onClick={() => handleDelete(docente.id_docente)}
           className="action-button delete"
           title="Eliminar"
         >
-          🗑️
+        <span className="material-symbols-outlined">
+                delete
+            </span>
         </button>
       </>
     );
@@ -146,7 +145,7 @@ const Docentes = () => {
             {/* ... Barra de Búsqueda ... */}
             <div className="search-add-bar">
                 <div className="search-box">
-                    <span className="search-icon">👤</span>
+                    <span className="search-icon material-symbols-outlined">search</span>
                     <input 
                         type="text" 
                         placeholder="Buscar docente..."
