@@ -1,0 +1,12 @@
+.carga-asistencia-table {
+  width: 50%;
+  border-collapse: collapse;
+  text-align: center;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tablaCargaAsistencia{
+    display: flex;
+    justify-content: center;
+}

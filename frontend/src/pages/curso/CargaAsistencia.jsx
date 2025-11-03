@@ -1,49 +1,63 @@
 import React from "react";
-import { useState , useEffect} from "react";
+import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale, setDefaultLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
 registerLocale("es", es);
 setDefaultLocale("es");
-import BtnVolver from "../../components/ui/BtnVolver.jsx"
-import EncabezadoCurso from "../../components/curso/EncabezadoCurso.jsx"
+import BtnVolver from "../../components/ui/BtnVolver.jsx";
+import EncabezadoCurso from "../../components/curso/EncabezadoCurso.jsx";
 import { useConsultaStore } from "../../store/consultaStore.js";
-// Función helper para formatear la fecha a YYYY-MM-DD
-const formatToYYYYMMDD = (date) => {
-  return date.toISOString().split("T")[0];
-};
+import { obtenerListaClase } from "../../services/asistenciaService.js";
+import { useEffect } from "react";
+import "../../styles/cargaAsistencia.css"
+
 const CargaAsistencia = () => {
   // Aquí guardamos la fecha como un objeto Date,
   // la librería se encarga de formatearlo.
   const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date());
-  const [searchTerm, setSearchTerm] = useState("");
-  const { reporteCurso, cargando, error, setReporteCurso } = useConsultaStore();
+  const [alumnos, setAlumnos] = useState([]);
+  const { reporteCurso } = useConsultaStore();
+  console.log(reporteCurso);
+  //reporteCurso.filtros
+  //   anioLectivo: 2025
+  // cuatrimestre: 1
+  // curso: 1
+  // materia: 1
+  //  id_materia, fecha_clase, id_curso, anio_lectivo
 
-  // 3. useEffect llama a la ACCIÓN DEL STORE
-  useEffect(() => {
-    if (!id_curso || !id_materia || !fechaSeleccionada) {
-      return;
+  // Función helper para formatear la fecha a YYYY-MM-DD HH:mm:ss
+  const formatToMySQLDateTime = (date) => {
+    if (!date) return null;
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
+  const getAsistencia = async () => {
+    try {
+      const filtros = {
+        id_materia: reporteCurso.filtros.materia,
+        fecha_clase: formatToMySQLDateTime(fechaSeleccionada),
+        id_curso: reporteCurso.filtros.curso,
+        anio_lectivo: reporteCurso.filtros.anioLectivo,
+      };
+      console.log(filtros);
+      const data = await obtenerListaClase(filtros);
+      setAlumnos(data);
+    } catch (error) {
+      console.error(error);
     }
+  };
 
-    // Preparamos los filtros que espera la acción del store
-    // (Uso los nombres de tu objeto 'filtros': materia, curso, anioLectivo)
-    const filtros = {
-      materia: id_materia,
-      curso: id_curso,
-      anioLectivo: fechaSeleccionada.getFullYear(),
-      // IMPORTANTE: Tu backend 'obtenerListaClase' también pedía 'fecha_clase'.
-      // Asegúrate de que tu store 'cargarReporteCurso' también la envíe.
-      fecha_clase: formatToYYYYMMDD(fechaSeleccionada),
-      // 'cuatrimestre: 1' (de tu log) parece ser un valor fijo.
-      // Si necesitas pasarlo, agrégalo aquí.
-      cuatrimestre: 1, 
-    };
+  useEffect(() => {
+    getAsistencia();
+  }, [fechaSeleccionada]);
 
-    // Llamamos a la acción del store para que haga el fetch
-    setReporteCurso(filtros);
-
-  }, [fechaSeleccionada, setReporteCurso]); // Dependencias
   // Creamos el botón personalizado
   // Esto es lo que pide react-datepicker para funcionar con un botón
   const BotonCalendario = React.forwardRef(({ value, onClick }, ref) => (
@@ -53,18 +67,7 @@ const CargaAsistencia = () => {
     </button>
   ));
 
-  // 4. Obtenemos la lista de alumnos del reporte (con optional chaining '?')
-  const listaAlumnos = reporteCurso?.alumnos || [];
-
-  // 5. Ajustamos el filtro a la nueva estructura anidada
-  const alumnosFiltrados = listaAlumnos.filter((item) =>
-    item.alumno.apellido_alumno.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.alumno.nombre_alumno.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  
-
-return (
+  return (
     <div className="curso-dashboard-container">
       <BtnVolver />
       <div className="curso-dashboard-header">
@@ -75,70 +78,53 @@ return (
       </div>
 
       <EncabezadoCurso />
-      
-      {/* --- Controles de Búsqueda y Fecha --- */}
-      <div className="d-flex justify-content-center">
-        <input
-          type="text"
-          className="reporte-curso-search-input"
-          placeholder="Buscar alumno por Apellido o Nombre"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+
       <div className="d-flex align-items-center fecha-carga">
         <h5>
           Fecha:{" "}
           <DatePicker
             selected={fechaSeleccionada}
             onChange={(date) => setFechaSeleccionada(date)}
+            // 3. Aquí le decimos que use nuestro botón
             customInput={<BotonCalendario />}
+            // Opcional: Formato de fecha
             dateFormat="dd/MM/yyyy"
           />
         </h5>
       </div>
 
-      {/* 6. Renderizado de la lista (ajustado) */}
-      <div className="lista-asistencia-container">
-        {cargando && <p>Cargando lista...</p>}
-        {error && <p className="text-danger">Error: {error.message || error}</p>}
-        
-        {!cargando && !error && alumnosFiltrados.length > 0 && (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Apellido</th>
-                <th>Nombre</th>
-                <th>Estado</th> {/* O controles para marcar asistencia */}
-              </tr>
-            </thead>
-            <tbody>
-              {/* 7. Ajustamos el .map() a la estructura anidada */}
-              {alumnosFiltrados.map((item) => (
-                <tr key={item.alumno.id_alumno}> {/* La key ahora está anidada */}
-                  <td>{item.alumno.apellido_alumno}</td>
-                  <td>{item.alumno.nombre_alumno}</td>
-                  <td>
-                    {/* Tu SQL 'listaClasePorDia' devolvía 'estado' (presente, ausente).
-                      Tu nuevo objeto tiene 'asistencias: {}'
-                      Adivino que el estado ahora está en 'item.asistencias.estado'
-                      ¡Ajusta esto según tu estructura real!
-                    */}
-                    {item.asistencias?.estado || "Sin cargar"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+<div className="tablaCargaAsistencia">
+      <table className="carga-asistencia-table">
+        <thead>
+          <tr>
+            <th className="reporte-curso-th">Alumno</th>
+            <th className="reporte-curso-th">Asistencia</th>
+          </tr>
+        </thead>
+        <tbody>
+          {alumnos.map((item) => (
+            <tr>
+              <td className="reporte-curso-td">
+                {item.apellido_alumno} {item.nombre_alumno}
+              </td>
+              <td className="reporte-curso-td">
+                <div >
+                  <button className="btn btn-success mx-3">P</button>
+                  <button className="btn btn-danger">A</button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+</div>
 
-        {!cargando && !error && listaAlumnos.length === 0 && (
-          <p>No se encontraron alumnos para este curso y fecha.</p>
-        )}
+      <div className="d-flex justify-content-end mt-3">
+      <button className="btn btn-primary">Guardar Asistencia</button>
+
       </div>
     </div>
   );
-
 };
 
 export default CargaAsistencia;
