@@ -71,7 +71,7 @@ const ReporteCursoListPage = () => {
       <BtnVolver />
       <div className="curso-dashboard-header">
         <span className="material-symbols-outlined curso-dashboard-icon">list_alt</span>
-        <h2 className="curso-dashboard-title">Listado de Alumnos ({totalAlumnos} Alumnos</h2>
+        <h2 className="curso-dashboard-title">Listado de Alumnos </h2>
       </div>
       <EncabezadoCurso />
       <ReporteCursoTable alumnos={alumnos} />

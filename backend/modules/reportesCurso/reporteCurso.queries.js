@@ -18,6 +18,10 @@ const consultaCurso = {
       cal.nota_3,
       cal.promedio_cuatrimestre,
       cal.id_calificacion,
+      cal.periodo_complementario,    -- <-- NUEVO
+      cal.calificacion_definitiva, -- <-- NUEVO
+      cal.estado AS estado_calificacion,
+      
       (SELECT COUNT(*) 
        FROM asistencia_alumno aa 
        WHERE aa.id_alumno = a.id_alumno 
@@ -44,6 +48,7 @@ const consultaCurso = {
       AND cal.id_materia = ? 
       AND cal.anio_lectivo = ? 
       AND cal.cuatrimestre = ?
+      AND cal.deleted_at IS NULL
     WHERE ac.id_curso = ? 
       AND ac.anio_lectivo = ? 
       AND a.estado = 'activo'

@@ -1,0 +1,166 @@
+/* ModalEditarCalificacion.css */
+.modal-calificaciones-form {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+}
+
+.modal-calificaciones-form .form-label {
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 0.5rem;
+}
+
+.modal-calificaciones-form .form-control,
+.modal-calificaciones-form .form-select {
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+  background-color: #fff;
+}
+
+.modal-calificaciones-form .form-control:focus,
+.modal-calificaciones-form .form-select:focus {
+  border-color: #004b9b;
+  box-shadow: 0 0 0 0.2rem rgba(0, 75, 155, 0.25);
+  background-color: #f9f9f9;
+}
+
+.modal-calificaciones-form .form-control:disabled,
+.modal-calificaciones-form .form-select:disabled {
+  background-color: #f9f9f9;
+  opacity: 0.7;
+  color: #666;
+}
+
+/* Header del modal - combina con los th de la tabla */
+.modal-header {
+  background: linear-gradient(135deg, #004b9b 0%, #003b7d 100%);
+  color: white;
+  border-bottom: 2px solid #003b7d;
+  padding: 1rem 1.5rem;
+  border-radius: 12px 12px 0 0;
+}
+
+.modal-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+}
+
+.modal-header .btn-close {
+  filter: invert(1);
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.modal-header .btn-close:hover {
+  opacity: 1;
+}
+
+/* Body del modal */
+.modal-body {
+  padding: 0;
+  background-color: #f9f9f9;
+}
+
+/* Footer del modal */
+.modal-footer {
+  border-top: 1px solid #e0e0e0;
+  padding: 1rem 1.5rem;
+  background-color: #fff;
+  border-radius: 0 0 12px 12px;
+}
+
+/* Botones - estilo consistente */
+.modal-footer .btn {
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 20px;
+  transition: all 0.2s ease-in-out;
+  border: 2px solid transparent;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #004b9b 0%, #003b7d 100%);
+  border-color: #003b7d;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #003b7d 0%, #002a5a 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 75, 155, 0.3);
+}
+
+.btn-secondary {
+  background-color: #f8f9fa;
+  border-color: #e0e0e0;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background-color: #e9ecef;
+  border-color: #d0d0d0;
+  transform: translateY(-1px);
+}
+
+/* Estados de los inputs basados en las notas */
+.modal-calificaciones-form .form-control[value="10"],
+.modal-calificaciones-form .form-control[value="9"],
+.modal-calificaciones-form .form-control[value="8"] {
+  border-color: #2e8b57;
+}
+
+.modal-calificaciones-form .form-control[value="7"],
+.modal-calificaciones-form .form-control[value="6"] {
+  border-color: #ff9800;
+}
+
+.modal-calificaciones-form .form-control[value="5"],
+.modal-calificaciones-form .form-control[value="4"],
+.modal-calificaciones-form .form-control[value="3"],
+.modal-calificaciones-form .form-control[value="2"],
+.modal-calificaciones-form .form-control[value="1"],
+.modal-calificaciones-form .form-control[value="0"] {
+  border-color: #d32f2f;
+}
+
+.modalCalificacion{
+  padding: 0 60px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-calificaciones-form {
+    padding: 1rem;
+  }
+  
+  .modal-calificaciones-form .col-md-6 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+  
+  .modal-footer .btn {
+    padding: 6px 16px;
+    font-size: 13px;
+  }
+}
+
+/* Animación de entrada */
+.modal.fade .modal-dialog {
+  transform: translateY(-20px) scale(0.95);
+  transition: all 0.3s ease-out;
+}
+
+.modal.show .modal-dialog {
+  transform: translateY(0) scale(1);
+}

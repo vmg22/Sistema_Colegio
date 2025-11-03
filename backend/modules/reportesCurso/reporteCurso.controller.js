@@ -77,7 +77,10 @@ const consultaController = {
           nota1: alumno.nota_1,
           nota2: alumno.nota_2,
           nota3: alumno.nota_3,
-          promedio: alumno.promedio_cuatrimestre
+          promedio: alumno.promedio_cuatrimestre,
+          periodoComplementario: alumno.periodo_complementario, // <-- NUEVO
+          definitiva: alumno.calificacion_definitiva,       // <-- NUEVO
+          estado: alumno.estado_calificacion
         } : null,
         asistencias: {
           presentes: parseInt(alumno.presentes) || 0,
