@@ -20,6 +20,7 @@ const destinatarioRoutes = require("../modules/comunicacion_destinatario/comunic
 const logActividadRoutes = require("../modules/log_actividad/log_actividad.routes");
 const alumnoTutorRoutes = require("../modules/alumno_tutor/alumno_tutor.routes"); 
 const usuarioRoutes = require("../modules/usuario/usuario.routes.js");
+const authRoutes = require('../modules/usuario/auth.routes.js');
 
 
 // ✅ NUEVO: Módulo de altas (Docente + Usuario)
@@ -35,6 +36,7 @@ router.use("/tutores", tutorRoutes);
 router.use("/comunicaciones", comunicacionRoutes);
 router.use('/asistencias', asistenciaRoutes);
 router.use('/usuarios', usuarioRoutes);
+router.use('/auth', authRoutes);
 
 // Rutas de reportes
 router.use("/reportes/alumnos", reportesAlumnoRoutes);
@@ -75,6 +77,7 @@ router.get("/", (req, res) => {
       //  NUEVO: Endpoint de altas para crar docentes y usuarios ya que sin usuario no se puede crear docente
       altas: "/api/v1/altas/docentes",
       usuarios: "/api/v1/usuarios",
+      auth: "/api/v1/auth",
     },
   });
 });

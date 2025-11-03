@@ -13,7 +13,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // --- MIDDLEWARES ---
-app.use(cors());
+// CONFIGURACIÓN CORS CORREGIDA - Permite frontend en puerto 5173
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Frontend Vite
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+}));
+
 app.use(express.json());
 app.use(logger);
 
@@ -25,6 +32,7 @@ app.get('/', (req, res) => {
       <h1 style="color: #333;"> Backend del Sistema Escolar SGGS</h1>
       <p style="color: #555; font-size: 1.2em;">¡El servidor está funcionando correctamente!</p>
       <p style="color: #777;">La API principal se encuentra en la ruta: <a href="/api/v1" style="color: #007bff; text-decoration: none;">/api/v1</a></p>
+      <p style="color: #777;">Frontend React: <a href="http://localhost:5173" style="color: #007bff; text-decoration: none;">http://localhost:5173</a></p>
     </div>
   `);
 });
@@ -32,12 +40,22 @@ app.get('/', (req, res) => {
 // Usamos un prefijo para todas las rutas de la API, es una buena práctica.
 app.use('/api/v1', apiRoutes);
 
+// --- REDIRECCIÓN PARA RUTAS DEL FRONTEND ---
+// Esto evita que el backend capture rutas del frontend
+app.get(['/reset-password', '/login', '/solicitar-reset'], (req, res) => {
+  const frontendUrl = `http://localhost:5173${req.originalUrl}`;
+  console.log(`🔄 Redirigiendo al frontend: ${frontendUrl}`);
+  res.redirect(frontendUrl);
+});
+
 // --- MANEJO DE ERRORES (el orden es crucial) ---
 // 1. Middleware para rutas no encontradas (404)
 app.use((req, res, next) => {
+  console.log(`❌ Ruta no manejada: ${req.method} ${req.originalUrl}`);
   res.status(404).json({
     error: 'Ruta no encontrada',
-    mensaje: `El recurso ${req.method} ${req.originalUrl} no fue encontrado en el servidor.`
+    mensaje: `El recurso ${req.method} ${req.originalUrl} no fue encontrado en el servidor.`,
+    nota: 'Las rutas del frontend están en: http://localhost:5173'
   });
 });
 
@@ -63,6 +81,7 @@ async function iniciarSistema() {
       console.log('   ✅ SISTEMA INICIADO CORRECTAMENTE');
       console.log(`    Servidor escuchando en: http://localhost:${PORT}`);
       console.log(`    API disponible en: http://localhost:${PORT}/api/v1`);
+      console.log(`    Frontend disponible en: http://localhost:5173`);
       console.log('='.repeat(50));
     });
     
@@ -88,7 +107,6 @@ const cerrarSistema = async () => {
 
 process.on('SIGINT', cerrarSistema);
 process.on('SIGTERM', cerrarSistema);
-
 
 // --- ARRANQUE DEL SISTEMA ---
 iniciarSistema();

@@ -1,177 +1,197 @@
 const db = require("../../config/db");
-const bcrypt = require("bcrypt"); // Importar la librería para hashing
 
 // Campos comunes para SELECT (excluye el sensible 'password_hash')
 const CAMPOS_SELECT = `
-id_usuario, 
-username, 
-email_usuario, 
-rol, 
-estado, 
-ultimo_login, 
-created_at, 
-updated_at
+  id_usuario, 
+  username, 
+  email_usuario, 
+  rol, 
+  estado, 
+  ultimo_login, 
+  created_at, 
+  updated_at
 `;
 
-// --- READ (Lectura) ---
+// --- QUERIES DE LECTURA ---
 
 /**
- * Obtiene todos los usuarios que no han sido eliminados lógicamente.
+ * Obtiene todos los usuarios activos (no eliminados)
  */
 exports.obtenerTodosUsuarios = async () => {
   const [rows] = await db.query(`
-      SELECT ${CAMPOS_SELECT}
-      FROM usuario
-      WHERE deleted_at IS NULL
- `);
+    SELECT ${CAMPOS_SELECT}
+    FROM usuario
+    WHERE deleted_at IS NULL
+  `);
   return rows;
 };
 
 /**
- * Obtiene un usuario activo por su ID.
- * @param {number} id - ID del usuario.
- * @returns {object|undefined} Usuario encontrado o undefined.
+ * Obtiene un usuario por su ID (solo activos)
  */
 exports.obtenerUsuarioPorId = async (id) => {
   const [rows] = await db.query(
     `SELECT ${CAMPOS_SELECT}
-    FROM usuario 
-    WHERE id_usuario = ? AND deleted_at IS NULL`,
+     FROM usuario 
+     WHERE id_usuario = ? AND deleted_at IS NULL`,
     [id]
   );
   return rows[0];
 };
 
 /**
- * Obtiene todos los usuarios que han sido eliminados lógicamente.
+ * Obtiene todos los usuarios eliminados lógicamente
  */
 exports.obtenerUsuariosEliminados = async () => {
   const [rows] = await db.query(`
-        SELECT ${CAMPOS_SELECT}, deleted_at
-        FROM usuario
-        WHERE deleted_at IS NOT NULL
-        ORDER BY deleted_at DESC
-   `);
+    SELECT ${CAMPOS_SELECT}, deleted_at
+    FROM usuario
+    WHERE deleted_at IS NOT NULL
+    ORDER BY deleted_at DESC
+  `);
   return rows;
 };
 
-// --- CREATE (Creación) ---
+/**
+ * Busca un usuario por username (incluye password_hash para autenticación)
+ */
+exports.obtenerUsuarioPorUsername = async (username) => {
+  const [rows] = await db.query(
+    `SELECT id_usuario, username, password_hash, email_usuario, rol, estado
+     FROM usuario 
+     WHERE username = ? AND deleted_at IS NULL`,
+    [username]
+  );
+  return rows[0];
+};
 
 /**
- * Crea un nuevo usuario en la base de datos. Hashea la contraseña antes de guardar.
- * @param {object} data - Datos del nuevo usuario (username, password, email_usuario, rol, etc.).
- * @returns {object|null} El objeto del usuario creado (sin hash de password) o null si falla la inserción.
+ * Busca un usuario por email (sin password_hash)
  */
-exports.crearUsuario = async (data) => {
-  // El controlador ya validó los campos esenciales y el formato.
-  const {
-    username,
-    password, // Recibimos la contraseña en texto plano
-    email_usuario,
-    rol,
-    estado = "activo",
-    ultimo_login = null,
-  } = data; // 1. Generar el hash de la contraseña
+exports.obtenerUsuarioPorEmail = async (email) => {
+  const [rows] = await db.query(
+    `SELECT ${CAMPOS_SELECT}
+     FROM usuario 
+     WHERE email_usuario = ? AND deleted_at IS NULL`,
+    [email]
+  );
+  return rows[0];
+};
 
-  const salt = await bcrypt.genSalt(10);
-  const password_hash = await bcrypt.hash(password, salt);
+/**
+ * Busca un usuario por email (incluye password_hash para autenticación)
+ */
+exports.obtenerUsuarioPorEmailConPassword = async (email) => {
+  const [rows] = await db.query(
+    `SELECT id_usuario, username, password_hash, email_usuario, rol, estado
+     FROM usuario 
+     WHERE email_usuario = ? AND deleted_at IS NULL`,
+    [email]
+  );
+  return rows[0];
+};
 
+// --- QUERIES DE ESCRITURA ---
+
+/**
+ * Inserta un nuevo usuario en la base de datos
+ */
+exports.insertarUsuario = async (username, password_hash, email_usuario, rol, estado, ultimo_login) => {
   const [result] = await db.query(
     `INSERT INTO usuario 
-        (username, password_hash, email_usuario, rol, estado, ultimo_login)
-        VALUES (?, ?, ?, ?, ?, ?)`,
-    [username, password_hash, email_usuario, rol, estado, ultimo_login] // Insertamos el hash
+     (username, password_hash, email_usuario, rol, estado, ultimo_login)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [username, password_hash, email_usuario, rol, estado, ultimo_login]
   );
-
-  return exports.obtenerUsuarioPorId(result.insertId);
+  return result.insertId;
 };
 
-// --- UPDATE (Actualización) ---
-
 /**
- * Actualiza dinámicamente los campos de un usuario.
- * @param {number} id - ID del usuario a actualizar.
- * @param {object} data - Objeto con los campos a actualizar.
- * @returns {object|null} El objeto del usuario actualizado o null si no se encuentra/actualiza.
+ * Actualiza campos de un usuario (UPDATE dinámico) - Usado por PUT
  */
-exports.actualizarUsuario = async (id, data) => {
-  const fields = [];
-  const values = []; // Construir la consulta dinámicamente con los campos presentes en 'data'
-
-  for (const key in data) {
-    // Excluimos campos no actualizables o que se manejan aparte
-    if (key !== "id_usuario" && key !== "created_at" && key !== "deleted_at") {
-      if (key === "password") {
-        // 1. Si el campo es 'password', hashearlo antes de guardarlo
-        const salt = await bcrypt.genSalt(10);
-        const new_hash = await bcrypt.hash(data[key], salt);
-
-        fields.push(`password_hash = ?`); // Cambiamos el nombre de la columna a actualizar
-        values.push(new_hash);
-      } else {
-        // 2. Otros campos se pasan directamente
-        fields.push(`${key} = ?`);
-        values.push(data[key]);
-      }
-    }
-  }
-
-  if (fields.length === 0) {
-    return null; // No hay campos válidos para actualizar
-  } // Añadir la marca de tiempo de actualización y el ID para el WHERE
-
-  fields.push("updated_at = CURRENT_TIMESTAMP");
-  values.push(id);
-
+exports.actualizarUsuario = async (id, fields, values) => {
   const setClause = fields.join(", ");
-
   const [result] = await db.query(
     `UPDATE usuario
-      SET ${setClause}
-      WHERE id_usuario = ? AND deleted_at IS NULL`,
-    values
+     SET ${setClause}
+     WHERE id_usuario = ? AND deleted_at IS NULL`,
+    [...values, id]
   );
-
-  if (result.affectedRows === 0) {
-    return null; // El usuario no fue encontrado (ID incorrecto o ya eliminado)
-  } // Retorna el objeto actualizado para que el controller pueda usarlo en la respuesta
-
-  return exports.obtenerUsuarioPorId(id);
+  return result.affectedRows;
 };
 
 /**
- * Restaura un usuario eliminado lógicamente.
- * @param {number} id - ID del usuario a restaurar.
- * @returns {object|null} El objeto del usuario restaurado o null si no se encuentra/restaura.
+ * Actualiza parcialmente un usuario (UPDATE dinámico) - Usado por PATCH
  */
-exports.restaurarUsuario = async (id) => {
+exports.actualizarUsuarioParcial = async (id, fields, values) => {
+  const setClause = fields.join(", ");
   const [result] = await db.query(
-    `UPDATE usuario 
-    SET deleted_at = NULL 
-    WHERE id_usuario = ? AND deleted_at IS NOT NULL`,
-    [id]
+    `UPDATE usuario
+     SET ${setClause}
+     WHERE id_usuario = ? AND deleted_at IS NULL`,
+    [...values, id]
   );
-  if (result.affectedRows === 0) {
-    return null; // Usuario no encontrado o no estaba eliminado
-  } // Retorna el objeto usuario restaurado
-
-  return exports.obtenerUsuarioPorId(id);
+  return result.affectedRows;
 };
-
-// --- DELETE (Eliminación) ---
 
 /**
- * Elimina lógicamente un usuario (soft delete).
- * @param {number} id - ID del usuario a eliminar.
- * @returns {boolean} True si se afectó una fila, False si no.
+ * Marca un usuario como eliminado (soft delete)
  */
-exports.eliminarUsuario = async (id) => {
+exports.marcarComoEliminado = async (id) => {
   const [result] = await db.query(
     `UPDATE usuario 
-      SET deleted_at = CURRENT_TIMESTAMP 
-      WHERE id_usuario = ? AND deleted_at IS NULL`,
+     SET deleted_at = CURRENT_TIMESTAMP, estado = 'inactivo'
+     WHERE id_usuario = ? AND deleted_at IS NULL`,
     [id]
   );
-
-  return result.affectedRows > 0;
+  return result.affectedRows;
 };
+
+/**
+ * Restaura un usuario eliminado
+ */
+exports.restaurarUsuarioEliminado = async (id) => {
+  const [result] = await db.query(
+    `UPDATE usuario 
+     SET deleted_at = NULL, estado = 'activo'
+     WHERE id_usuario = ? AND deleted_at IS NOT NULL`,
+    [id]
+  );
+  return result.affectedRows;
+};
+
+/**
+ * Actualiza la fecha del último login
+ */
+exports.actualizarUltimoLogin = async (id) => {
+  const [result] = await db.query(
+    `UPDATE usuario 
+     SET ultimo_login = CURRENT_TIMESTAMP
+     WHERE id_usuario = ?`,
+    [id]
+  );
+  return result.affectedRows;
+};
+/**
+ * Obtener usuario por email
+ */
+// const obtenerPorEmail = async (email) => {
+//   try {
+//     const query = `
+//       SELECT id, username, email_usuario, password_hash, rol, estado
+//       FROM usuarios
+//       WHERE email_usuario = ? AND activo = true
+//       LIMIT 1
+//     `;
+//     const [rows] = await pool.query(query, [email]);
+//     return rows[0] || null;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
+// module.exports = {
+//   // ... otros métodos
+//   obtenerPorEmail,
+// };
+module.exports.CAMPOS_SELECT = CAMPOS_SELECT;

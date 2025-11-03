@@ -153,7 +153,7 @@ const controladorUsuarios = {
         err.message
       );
     }
-  }, // DELETE /api/auth/:id (Eliminación Lógica)
+  }, 
 
   eliminarUsuario: async (solicitud, respuesta) => {
     try {
@@ -173,11 +173,11 @@ const controladorUsuarios = {
         );
       }
 
-      exito(respuesta, "Usuario eliminado correctamente", null, 204);
+      exito(respuesta, "Usuario eliminado correctamente", null, 200);
     } catch (err) {
       error(respuesta, "Error al eliminar usuario", 400, err.message);
     }
-  }, // GET /api/auth/eliminados/listar
+  }, // GET /api/usuarios/eliminados/listar
 
   obtenerUsuariosEliminados: async (solicitud, respuesta) => {
     try {
@@ -193,7 +193,7 @@ const controladorUsuarios = {
         err.message
       );
     }
-  }, // POST /api/auth/:id/restaurar
+  }, 
 
   restaurarUsuario: async (solicitud, respuesta) => {
     try {
@@ -218,6 +218,80 @@ const controladorUsuarios = {
       error(respuesta, "Error al restaurar usuario", 400, err.message);
     }
   },
+
+
+// PATCH /api/usuarios/:id
+ 
+  actualizarUsuarioParcial: async (solicitud, respuesta) => {
+    try {
+      const { id } = solicitud.params;
+      const datosActualizados = solicitud.body;
+
+      if (!esIdValido(id)) {
+        return error(respuesta, "El ID proporcionado no es válido", 400);
+      }
+
+      // 1. Verificar que se envió al menos un campo
+      if (Object.keys(datosActualizados).length === 0) {
+        return error(
+          respuesta,
+          "No se proporcionaron datos para actualizar",
+          400
+        );
+      }
+
+      // 2. Validación de formato de email si está presente
+      if (datosActualizados.email_usuario && !esEmailValido(datosActualizados.email_usuario)) {
+        return error(respuesta, "El formato del email no es válido", 400);
+      }
+
+      // 3. Validación de rol si está presente
+      if (datosActualizados.rol && !ROLES_VALIDOS.includes(datosActualizados.rol.toLowerCase())) {
+        return error(
+          respuesta,
+          `El rol no es válido. Roles permitidos: ${ROLES_VALIDOS.join(", ")}`,
+          400
+        );
+      }
+
+      const usuarioActualizado = await servicioUsuarios.actualizarUsuarioParcial(
+        id,
+        datosActualizados
+      );
+
+      if (!usuarioActualizado) {
+        return error(respuesta, "Usuario no encontrado o ya eliminado", 404);
+      }
+
+      exito(respuesta, "Usuario actualizado parcialmente", usuarioActualizado);
+    } catch (err) {
+      const statusCode = err.message.includes("ya está en uso") ? 409 : 400;
+      error(respuesta, err.message, statusCode);
+    }
+  },
+
+obtenerPorEmail: async (solicitud, respuesta) => {
+    try {
+      const { email } = solicitud.params;
+
+      if (!email) {
+        return error(respuesta, "Email es obligatorio", 400);
+      }
+
+      const usuario = await servicioUsuarios.obtenerUsuarioPorEmail(email);
+
+      if (!usuario) {
+        return error(respuesta, "Usuario no encontrado", 404);
+      }
+
+      // No enviar información sensible
+      const { password_hash, ...usuarioSinPassword } = usuario;
+
+      exito(respuesta, "Usuario encontrado", usuarioSinPassword);
+    } catch (err) {
+      error(respuesta, "Error al obtener usuario por email", 500, err.message);
+    }
+  }, // 
 };
 
 module.exports = controladorUsuarios;

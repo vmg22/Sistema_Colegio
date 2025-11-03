@@ -1,99 +1,126 @@
-const db = require("../../config/db");
-const bcrypt = require("bcrypt"); // 1. Importar bcrypt
+const bcrypt = require("bcrypt");
+const queries = require("./usuario.queries");
 
-// Campos comunes para SELECT (para evitar seleccionar password_hash innecesariamente)
-const CAMPOS_SELECT = `
-    id_usuario, 
-    username, 
-    email_usuario, 
-    rol, 
-    estado, 
-    ultimo_login, 
-    created_at, 
-    updated_at
-`;
+// --- SERVICIOS DE LECTURA ---
 
-// --- READ ---
-
-// Obtener todos los usuarios activos
+/**
+ * Obtiene todos los usuarios activos
+ */
 exports.obtenerTodosUsuarios = async () => {
-  const [rows] = await db.query(`
-    SELECT ${CAMPOS_SELECT}
-    FROM usuario
-    WHERE deleted_at IS NULL
-  `);
-  return rows;
+  return await queries.obtenerTodosUsuarios();
 };
 
-// Obtener un usuario por su ID
+/**
+ * Obtiene un usuario por ID
+ */
 exports.obtenerUsuarioPorId = async (id) => {
-  const [rows] = await db.query(
-    `SELECT ${CAMPOS_SELECT}
-        FROM usuario 
-        WHERE id_usuario = ? AND deleted_at IS NULL`,
-    [id]
-  );
-  return rows[0]; // Devuelve el objeto usuario o undefined
+  return await queries.obtenerUsuarioPorId(id);
 };
 
-// Obtener usuarios eliminados
+/**
+ * Obtiene usuarios eliminados
+ */
 exports.obtenerUsuariosEliminados = async () => {
-  const [rows] = await db.query(`
-    SELECT ${CAMPOS_SELECT}, deleted_at
-    FROM usuario
-    WHERE deleted_at IS NOT NULL
-    ORDER BY deleted_at DESC
-  `);
-  return rows;
+  return await queries.obtenerUsuariosEliminados();
 };
 
-// --- CREATE ---
+// --- SERVICIOS DE CREACIÓN ---
 
-// Crear un nuevo usuario
+/**
+ * Crea un nuevo usuario
+ * - Hashea la contraseña
+ * - Valida que no exista username/email duplicado
+ * - Inserta en la base de datos
+ */
 exports.crearUsuario = async (data) => {
-  // El controller ya garantizó que los campos esenciales están presentes y validados.
   const {
     username,
-    password, // El controller ahora envía 'password' en texto plano
+    password,
     email_usuario,
     rol,
-    estado = "activo", // Usamos un valor por defecto si no se pasa
+    estado = "activo",
     ultimo_login = null,
-  } = data; // 2. Generar el hash de la contraseña antes de guardarla
+  } = data;
 
+  // Verificar si el username ya existe
+  const usuarioExistente = await queries.obtenerUsuarioPorUsername(username);
+  if (usuarioExistente) {
+    throw new Error("El username ya está en uso");
+  }
+
+  // Verificar si el email ya existe
+  const emailExistente = await queries.obtenerUsuarioPorEmail(email_usuario);
+  if (emailExistente) {
+    throw new Error("El email ya está en uso");
+  }
+
+  // Generar hash de la contraseña
   const salt = await bcrypt.genSalt(10);
   const password_hash = await bcrypt.hash(password, salt);
 
-  const [result] = await db.query(
-    `INSERT INTO usuario 
-        (username, password_hash, email_usuario, rol, estado, ultimo_login)
-        VALUES (?, ?, ?, ?, ?, ?)`,
-    [username, password_hash, email_usuario, rol, estado, ultimo_login]
-  ); // 3. Devolvemos el usuario creado (sin la password_hash, idealmente)
+  // Insertar usuario
+  const insertId = await queries.insertarUsuario(
+    username,
+    password_hash,
+    email_usuario,
+    rol,
+    estado,
+    ultimo_login
+  );
 
-  const usuarioCreado = await exports.obtenerUsuarioPorId(result.insertId);
-  return usuarioCreado;
+  // Retornar el usuario creado
+  return await queries.obtenerUsuarioPorId(insertId);
 };
 
-// --- UPDATE ---
+// --- SERVICIOS DE ACTUALIZACIÓN ---
 
-// Actualizar un usuario
+/**
+ * Actualiza un usuario
+ * - Construye la query dinámicamente
+ * - Hashea la contraseña si se está actualizando
+ * - Valida que no haya duplicados de username/email
+ */
 exports.actualizarUsuario = async (id, data) => {
-  // 1. Construir la query SET dinámicamente
   const fields = [];
-  const values = []; // Iterar sobre los campos que se desean actualizar en 'data'
+  const values = [];
+
+  // Verificar que el usuario existe
+  const usuarioExistente = await queries.obtenerUsuarioPorId(id);
+  if (!usuarioExistente) {
+    return null;
+  }
 
   for (const key in data) {
-    // Excluimos campos que no deben actualizarse o que se manejan aparte
-    if (key !== "id_usuario" && key !== "created_at") {
-      // 1a. Si el campo a actualizar es 'password', lo hasheamos
+    // Excluir campos no actualizables
+    if (key !== "id_usuario" && key !== "created_at" && key !== "deleted_at") {
+      
       if (key === "password") {
+        // Hashear la nueva contraseña
         const salt = await bcrypt.genSalt(10);
         const password_hash = await bcrypt.hash(data[key], salt);
-        fields.push(`password_hash = ?`); // Guardamos como password_hash
+        fields.push("password_hash = ?");
         values.push(password_hash);
-      } else {
-        // 1b. Otros campos se pasan directamente
+      } 
+      else if (key === "username") {
+        // Verificar que el nuevo username no esté en uso por otro usuario
+        const usuarioConUsername = await queries.obtenerUsuarioPorUsername(data[key]);
+        if (usuarioConUsername && usuarioConUsername.id_usuario !== parseInt(id)) {
+          throw new Error("El username ya está en uso por otro usuario");
+        }
+        fields.push("username = ?");
+        values.push(data[key]);
+      }
+      else if (key === "email_usuario") {
+        // Verificar que el nuevo email no esté en uso por otro usuario
+        const usuarioConEmail = await queries.obtenerUsuarioPorEmail(data[key]);
+        if (usuarioConEmail && usuarioConEmail.id_usuario !== parseInt(id)) {
+          throw new Error("El email ya está en uso por otro usuario");
+        }
+        fields.push("email_usuario = ?");
+        values.push(data[key]);
+      }
+      else {
+        // Otros campos
         fields.push(`${key} = ?`);
         values.push(data[key]);
       }
@@ -101,62 +128,181 @@ exports.actualizarUsuario = async (id, data) => {
   }
 
   if (fields.length === 0) {
-    // Si no hay campos válidos, devolvemos null para indicar que no se hizo nada
     return null;
-  } // 2. Añadir la actualización de la marca de tiempo y el ID
+  }
 
+  // Agregar updated_at
   fields.push("updated_at = CURRENT_TIMESTAMP");
-  values.push(id); // El ID es el último valor para la cláusula WHERE
 
-  const setClause = fields.join(", ");
+  // Ejecutar actualización
+  const affectedRows = await queries.actualizarUsuario(id, fields, values);
 
-  const [result] = await db.query(
-    `UPDATE usuario
-      SET ${setClause}
-      WHERE id_usuario = ? AND deleted_at IS NULL`,
-      values
-  ); // 3. Devolver el usuario actualizado o null
-
-  if (result.affectedRows === 0) {
-    // El usuario no fue encontrado (o ya estaba eliminado)
+  if (affectedRows === 0) {
     return null;
-  } // Retorna el objeto actualizado para que el controller pueda usarlo en la respuesta
+  }
 
-  return exports.obtenerUsuarioPorId(id);
+  return await queries.obtenerUsuarioPorId(id);
 };
 
-// --- DELETE / RESTORE ---
+/**
+ * Actualiza parcialmente un usuario (PATCH)
+ * - Solo actualiza los campos enviados
+ * - No requiere todos los campos del usuario
+ * - Hashea la contraseña si se está actualizando
+ * - Valida que no haya duplicados de username/email
+ */
+exports.actualizarUsuarioParcial = async (id, data) => {
+  const fields = [];
+  const values = [];
 
-// Eliminar (lógicamente) un usuario
+  // Verificar que el usuario existe
+  const usuarioExistente = await queries.obtenerUsuarioPorId(id);
+  if (!usuarioExistente) {
+    return null;
+  }
+
+  // Si no hay campos para actualizar
+  if (Object.keys(data).length === 0) {
+    throw new Error("No se proporcionaron campos para actualizar");
+  }
+
+  for (const key in data) {
+    // Excluir campos no actualizables
+    if (key !== "id_usuario" && key !== "created_at" && key !== "deleted_at") {
+      
+      if (key === "password") {
+        // Hashear la nueva contraseña
+        const salt = await bcrypt.genSalt(10);
+        const password_hash = await bcrypt.hash(data[key], salt);
+        fields.push("password_hash = ?");
+        values.push(password_hash);
+      } 
+      else if (key === "username") {
+        // Verificar que el nuevo username no esté en uso por otro usuario
+        const usuarioConUsername = await queries.obtenerUsuarioPorUsername(data[key]);
+        if (usuarioConUsername && usuarioConUsername.id_usuario !== parseInt(id)) {
+          throw new Error("El username ya está en uso por otro usuario");
+        }
+        fields.push("username = ?");
+        values.push(data[key]);
+      }
+      else if (key === "email_usuario") {
+        // Verificar que el nuevo email no esté en uso por otro usuario
+        const usuarioConEmail = await queries.obtenerUsuarioPorEmail(data[key]);
+        if (usuarioConEmail && usuarioConEmail.id_usuario !== parseInt(id)) {
+          throw new Error("El email ya está en uso por otro usuario");
+        }
+        fields.push("email_usuario = ?");
+        values.push(data[key]);
+      }
+      else {
+        // Otros campos
+        fields.push(`${key} = ?`);
+        values.push(data[key]);
+      }
+    }
+  }
+
+  if (fields.length === 0) {
+    return null;
+  }
+
+  // Agregar updated_at
+  fields.push("updated_at = CURRENT_TIMESTAMP");
+
+  // Ejecutar actualización parcial
+  const affectedRows = await queries.actualizarUsuarioParcial(id, fields, values);
+
+  if (affectedRows === 0) {
+    return null;
+  }
+
+  return await queries.obtenerUsuarioPorId(id);
+};
+
+// --- SERVICIOS DE ELIMINACIÓN Y RESTAURACIÓN ---
+
+/**
+ * Elimina lógicamente un usuario
+ * - Marca deleted_at con timestamp actual
+ * - Cambia el estado a 'inactivo'
+ */
 exports.eliminarUsuario = async (id) => {
-  const [result] = await db.query(
-    `UPDATE usuario 
- SET deleted_at = CURRENT_TIMESTAMP 
- WHERE id_usuario = ? AND deleted_at IS NULL`,
-    [id]
-  ); // Devolvemos simplemente si se afectaron filas o no
-
-  return result.affectedRows > 0;
+  const affectedRows = await queries.marcarComoEliminado(id);
+  return affectedRows > 0;
 };
 
-// Restaurar un usuario eliminado
+/**
+ * Restaura un usuario eliminado
+ * - Limpia deleted_at (NULL)
+ * - Cambia el estado a 'activo'
+ */
 exports.restaurarUsuario = async (id) => {
-  const [result] = await db.query(
-    `UPDATE usuario 
-        SET deleted_at = NULL 
-        WHERE id_usuario = ? AND deleted_at IS NOT NULL`,
-    [id]
-  );
-  if (result.affectedRows === 0) {
-    return null; // Devolvemos null para que el controller sepa que falló la operación
-  } // Retorna el objeto usuario restaurado
+  const affectedRows = await queries.restaurarUsuarioEliminado(id);
+  
+  if (affectedRows === 0) {
+    return null;
+  }
 
-  const [usuario] = await db.query(
-    `SELECT ${CAMPOS_SELECT}
-        FROM usuario 
-        WHERE id_usuario = ?`,
-    [id]
-  );
+  return await queries.obtenerUsuarioPorId(id);
+};
 
-  return usuario[0];
+/**
+ * Valida las credenciales de un usuario por email
+ * - Busca el usuario por email
+ * - Compara la contraseña con bcrypt
+ * - Actualiza ultimo_login si es exitoso
+ */
+exports.validarCredencialesPorEmail = async (email, password) => {
+  const usuario = await queries.obtenerUsuarioPorEmail(email);
+  
+  if (!usuario) {
+    return null;
+  }
+
+  // Verificar que el usuario esté activo
+  if (usuario.estado !== "activo") {
+    throw new Error("Usuario inactivo");
+  }
+
+  // Obtener password_hash (necesitamos una query especial)
+  const usuarioConPassword = await queries.obtenerUsuarioPorUsername(usuario.username);
+
+  // Comparar contraseñas
+  const passwordValida = await bcrypt.compare(password, usuarioConPassword.password_hash);
+  
+  if (!passwordValida) {
+    return null;
+  }
+
+  // Actualizar último login
+  await queries.actualizarUltimoLogin(usuario.id_usuario);
+
+  // Retornar usuario sin el password_hash
+  return await queries.obtenerUsuarioPorId(usuario.id_usuario);
+};
+
+/**
+ * Obtiene un usuario por email (sin password_hash)
+ */
+exports.obtenerUsuarioPorEmail = async (email) => {
+  try {
+    // Usa 'queries' que ya está importado, no 'usuarioQueries'
+    const usuario = await queries.obtenerUsuarioPorEmail(email);
+    return usuario;
+  } catch (error) {
+    console.error('Error en obtenerUsuarioPorEmail:', error);
+    throw error;
+  }
+};
+
+/**
+ * Obtiene un usuario con su password_hash (solo para validaciones internas)
+ * NUNCA exponer este método en el controller directamente
+ */
+exports.obtenerUsuarioConPassword = async (id) => {
+  const usuario = await queries.obtenerUsuarioPorUsername(
+    (await queries.obtenerUsuarioPorId(id)).username
+  );
+  return usuario;
 };
