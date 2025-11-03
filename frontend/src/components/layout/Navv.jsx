@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
@@ -6,6 +8,48 @@ import logo from "../../assets/logoguidospano.png";
 import "../../styles/nav.css";
 
 const Navv = () => {
+    const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  const handleLogout = async () => {
+    setLoading(true);
+
+    try {
+      // Obtener el token
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        // Llamar al endpoint de logout (opcional)
+        try {
+          await fetch("http://localhost:3000/api/v1/auth/logout", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+            },
+          });
+        } catch (error) {
+          console.error("Error al cerrar sesión en el servidor:", error);
+          // Continuar con el logout local aunque falle el servidor
+        }
+      }
+
+      // Limpiar localStorage
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+
+      // Redirigir al login
+      navigate("/login");
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+      // Aún así limpiar y redirigir
+      localStorage.clear();
+      navigate("/login");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <Navbar expand="lg" className="nav">
@@ -48,7 +92,7 @@ const Navv = () => {
             </Nav>
           </div>
 
-          <button className="btn btn-outline-secondary">Cerrar Sesión</button>
+          <button className="btn btn-outline-secondary"onClick={handleLogout} disabled={loading}>Cerrar Sesión</button>
         </Container>
       </Navbar>
     </div>

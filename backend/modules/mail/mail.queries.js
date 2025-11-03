@@ -77,3 +77,4 @@ exports.QUERY_INSERT_DESTINATARIO = `
 INSERT INTO comunicacion_destinatario (id_comunicacion, id_alumno, id_curso, id_tutor, email, asistio)
 VALUES (?, ?, ?, ?, ?, ?);
 `;
+

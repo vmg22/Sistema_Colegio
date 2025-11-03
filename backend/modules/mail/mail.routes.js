@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
+
+// IMPORTANTE: Importar desde el CONTROLLER, NO desde el SERVICE
 const {
   TestMail,
-  EnviarRecuperacion,
   EnviarAlertaAsistencia,
   EnviarNotificacionReunion,
   EnviarNotificacionGeneral,
@@ -11,37 +12,61 @@ const {
   EnviarNotificacionReunionMasiva,
   EnviarNotificacionGeneralMasiva,
   ObtenerCursosDisponibles,
-    ObtenerAlumnosPorCurso,
-    EnviarAlertaAsistenciaPorCurso,
-    EnviarNotificacionReunionPorCurso,
-    EnviarNotificacionGeneralPorCurso,
-    EnviarNotificacionGeneralPorCursosMultiples
-} = require('../mail/mail.controller');
+  ObtenerAlumnosPorCurso,
+  EnviarAlertaAsistenciaPorCurso,
+  EnviarNotificacionReunionPorCurso,
+  EnviarNotificacionGeneralPorCurso,
+  EnviarNotificacionGeneralPorCursosMultiples,
+} = require('./mail.controller'); // ← Debe ser mail.controller, NO emails.service
 
+// ==================== RUTAS DE PRUEBA ====================
 
+// POST /api/mail/test - Enviar email de prueba
 router.post('/test', TestMail);
-router.post('/recuperacion', EnviarRecuperacion);
+
+// ==================== RUTAS INDIVIDUALES ====================
+
+// POST /api/mail/alerta-asistencia - Enviar alerta de asistencia a un alumno
 router.post('/alerta-asistencia', EnviarAlertaAsistencia);
+
+// POST /api/mail/notificacion-reunion - Enviar notificación de reunión a un alumno
 router.post('/notificacion-reunion', EnviarNotificacionReunion);
+
+// POST /api/mail/notificacion-general - Enviar notificación general a un alumno
 router.post('/notificacion-general', EnviarNotificacionGeneral);
-router.get('/datos-alumno', ObtenerDatosAlumno);
-router.post('/alerta-asistencia/masiva', EnviarAlertaAsistenciaMasiva);
-router.post('/notificacion-reunion/masiva', EnviarNotificacionReunionMasiva);
-router.post('/notificacion-general/masiva', EnviarNotificacionGeneralMasiva);
 
+// GET /api/mail/alumno/:dni/:anio - Obtener datos de un alumno
+router.get('/alumno/:dni/:anio', ObtenerDatosAlumno);
 
-// Envío por curso único
-router.post('/alerta-asistencia/curso', EnviarAlertaAsistenciaPorCurso);
-router.post('/notificacion-reunion/curso', EnviarNotificacionReunionPorCurso);
-router.post('/notificacion-general/curso', EnviarNotificacionGeneralPorCurso);
+// ==================== RUTAS MASIVAS ====================
 
-// Envío a múltiples cursos
-router.post('/notificacion-general/cursos-multiples', EnviarNotificacionGeneralPorCursosMultiples);
+// POST /api/mail/alerta-asistencia-masiva - Enviar alerta a múltiples alumnos
+router.post('/alerta-asistencia-masiva', EnviarAlertaAsistenciaMasiva);
 
-router.get('/alumno/:dni/:anio', ObtenerDatosAlumno);// Ruta para obtener datos del alumno para testing
+// POST /api/mail/notificacion-reunion-masiva - Enviar notificación de reunión masiva
+router.post('/notificacion-reunion-masiva', EnviarNotificacionReunionMasiva);
 
-// Obtener cursos y alumnos
+// POST /api/mail/notificacion-general-masiva - Enviar notificación general masiva
+router.post('/notificacion-general-masiva', EnviarNotificacionGeneralMasiva);
+
+// ==================== RUTAS POR CURSO ====================
+
+// GET /api/mail/cursos/:anio - Obtener cursos disponibles
 router.get('/cursos/:anio', ObtenerCursosDisponibles);
-router.get('/cursos/:anio_curso/:division/:anio_lectivo/alumnos', ObtenerAlumnosPorCurso);
+
+// GET /api/mail/curso/:anio_curso/:division/:anio_lectivo/alumnos - Obtener alumnos de un curso
+router.get('/curso/:anio_curso/:division/:anio_lectivo/alumnos', ObtenerAlumnosPorCurso);
+
+// POST /api/mail/curso/alerta-asistencia - Enviar alerta a un curso completo
+router.post('/curso/alerta-asistencia', EnviarAlertaAsistenciaPorCurso);
+
+// POST /api/mail/curso/notificacion-reunion - Enviar notificación de reunión a un curso
+router.post('/curso/notificacion-reunion', EnviarNotificacionReunionPorCurso);
+
+// POST /api/mail/curso/notificacion-general - Enviar notificación general a un curso
+router.post('/curso/notificacion-general', EnviarNotificacionGeneralPorCurso);
+
+// POST /api/mail/cursos/notificacion-general - Enviar notificación a múltiples cursos
+router.post('/cursos/notificacion-general', EnviarNotificacionGeneralPorCursosMultiples);
 
 module.exports = router;
