@@ -32,8 +32,12 @@ import ConstAluTramite from './pages/alumno/ConstAluTramite.jsx'
 import ActaVolanteExamen from './pages/alumno/actaVolanteExamen.jsx'
 import ConstanciaAlumnoRegular from './pages/alumno/constanciaAlumnoRegular.jsx'
 import CertificadoEscolar from './pages/alumno/certificadoEscolar.jsx'
-import GenerarMail from './pages/alumno/generarMail.jsx'  
+import GenerarMail from "./pages/alumno/generarmail.jsx";
 import CursoComunicacion from './pages/curso/CursoComunicacion.jsx'
+import EnviarAlertaTutoresPage from './pages/curso/EnviarAlertaTutoresPage.jsx'
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 
@@ -42,6 +46,7 @@ import InscripcionWizard from './components/crud/InscripcionWizard.jsx'
 function App() {
   return (
     <>
+    <ToastContainer />
       <Header />
       
         <Routes>
@@ -76,6 +81,7 @@ function App() {
           <Route path="/reporte-curso/calificaciones" element={<ResumenCalificacionesPage />} />
           <Route path="reporte-curso/carga-calificaciones" element={<CargaCalificaciones />} />
           <Route path="reporte-curso/comunicacion" element={<CursoComunicacion />} />
+          <Route path="/reporte-curso/alertaTutoresPage" element={<EnviarAlertaTutoresPage />} />
         
 
           <Route path="/docentes/:id" element={<DocentePerfil />} />
