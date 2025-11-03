@@ -25,7 +25,7 @@
 
 .gestion-header h2 {
     margin: 0;
-    color: #333;
+    color: #303F9F;
     font-size: 28px;
     font-weight: 700;
 }
@@ -48,9 +48,13 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 .search-icon {
-    font-size: 18px;
-    color: #888;
-    margin-right: 10px;
+    font-size: 24px;  /* Tamaño del icono */
+    color: #888;       /* Color del icono */
+    margin-right: 10px; /* Espacio entre el icono y el input */
+    
+    /* Importante para alinear verticalmente */
+    display: flex;
+    align-items: center;
 }
 .search-box input {
     border: none;
@@ -79,10 +83,10 @@
 }
 
 .search-button {
-    background-color: #0d6efd; /* Azul */
+    background-color: #303F9F; /* Azul */
 }
 .search-button:hover {
-    background-color: #0b5ed7;
+    background-color: #1c2564;
 }
 
 .add-button {
@@ -121,7 +125,7 @@
 }
 .list-header h3 {
     margin: 0;
-    color: #0d6efd; /* Título de la lista en azul */
+    color: #303F9F; /* Título de la lista en azul */
     font-size: 20px;
     font-weight: 600;
 }
@@ -178,32 +182,60 @@
 
 
 /* --- Botones de Acción (Editar/Eliminar) --- */
+/* --- Estilos para la Célula de Acciones --- */
 .actions-cell {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 6px; /* Espacio entre los botones */
 }
+
+/* --- Estilo Base del Botón --- */
 .action-button {
-    background-color: #f0f4f7;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-    width: 36px;
-    height: 36px;
-    display: flex;
+    display: inline-flex; /* Permite centrar el icono */
     align-items: center;
     justify-content: center;
+    width: 36px;  /* Ancho del botón */
+    height: 36px; /* Alto del botón */
+    border: 1px solid; /* El color del borde se define abajo */
+    border-radius: 6px; /* Bordes redondeados */
     cursor: pointer;
-    font-size: 18px;
-    transition: all 0.2s ease;
-    color: #555;
+    font-size: 20px; /* Tamaño del icono */
+    transition: all 0.2s ease; /* Transición suave */
 }
-.action-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+/* --- Estilo Específico: Botones de Contorno (Editar y Ver) --- */
+.action-button.edit,
+.action-button.view {
+    background-color: #ffffff; /* Fondo blanco */
+    border-color: #0d6efd;   /* Borde azul (puedes cambiar este color) */
+    color: #0d6efd;           /* Color del icono azul */
 }
-.action-button.edit { color: #0d6efd; }
-.action-button.delete { color: #dc3545; }
-.action-button.edit:hover { background-color: #e6f0ff; border-color: #a0c3f7; }
-.action-button.delete:hover { background-color: #ffe6e6; border-color: #f7a0a0; }
+
+/* --- Estilo Específico: Botón de Relleno (Eliminar) --- */
+.action-button.delete {
+    background-color: #dc3545; /* Fondo rojo */
+    border-color: #dc3545;   /* Borde rojo */
+    color: #ffffff;           /* Icono blanco */
+}
+
+/* --- Efectos Hover (al pasar el mouse) --- */
+
+.action-button.edit:hover,
+.action-button.view:hover {
+    background-color: #8eb8f8; /* Fondo azul muy claro */
+    border-color: #0b5ed7;   /* Borde azul más oscuro */
+}
+
+.action-button.delete:hover {
+    background-color: #bb2d3b; /* Rojo más oscuro */
+    border-color: #bb2d3b;
+}
+
+/* --- Para los Iconos (si usas Google Icons) --- */
+.action-button .material-symbols-outlined {
+    font-size: 20px; /* Asegura que el icono se ajuste */
+    font-weight: 500;
+}
 
 /* --- Mensajes de Carga y Error --- */
 .error-message {

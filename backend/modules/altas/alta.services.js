@@ -1,6 +1,6 @@
 const db = require('../../config/db');
 const consultas = require('./alta.queries');
-const bcrypt = require('bcrypt'); // <-- Asegúrate de tenerlo instalado (npm install bcrypt)
+const bcrypt = require('bcrypt'); // Asegúrate de tenerlo instalado (npm install bcrypt)
 
 /**
  * --- Estructura Corregida ---
@@ -119,8 +119,7 @@ async function obtenerTodosDocentes(buscar) { // <-- Recibe 'buscar'
 
   if (buscar) {
     // Añade lógica de búsqueda
-    // Reemplazamos el ORDER BY para insertarlo al final
-    query = query.replace("ORDER BY d.id_docente ASC", ""); 
+    query = query.replace("ORDER BY d.id_docente ASC", ""); // Quita el ORDER BY temporalmente
     query += ` AND (d.nombre LIKE ? OR d.apellido LIKE ? OR d.dni_docente LIKE ?)
                ORDER BY d.id_docente ASC`;
     
@@ -138,12 +137,14 @@ async function obtenerTodosDocentes(buscar) { // <-- Recibe 'buscar'
  * Actualiza la información de un docente
  */
 async function actualizarDocente(id, data) {
-  const { nombre, apellido, email, telefono, especialidad, estado , dni_docente} = data;
+  const { nombre, apellido, email, telefono, especialidad, estado, dni_docente } = data;
 
   await obtenerDocentePorId(id); // Validar que el docente existe
 
   await db.query(consultas.actualizarDocente, [
-    nombre, apellido, email, telefono, especialidad, estado, dni_docente, id,
+    nombre, apellido, email, telefono, especialidad, estado, 
+    dni_docente, // El DNI que faltaba
+    id,
   ]);
 
   return await obtenerDocentePorId(id);
@@ -209,32 +210,26 @@ async function restaurarDocente(id) {
     connection.release();
   }
 }
- 
+
+/**
+ * (Función del ENUM)
+ */
 async function obtenerEstadosDocente() {
   try {
     const [rows] = await db.query(consultas.obtenerValoresEnumEstado);
-    
     if (!rows || rows.length === 0) {
       throw new Error("No se pudo obtener la definición de la columna 'estado'.");
     }
-
-    // El resultado es algo como "enum('activo','licencia','inactivo')"
     const enumString = rows[0].Type; 
-    
-    // Parseamos el string para convertirlo en un array
     const valores = enumString
-      .replace("enum(", "")  // Quita "enum("
-      .replace(")", "")      // Quita ")"
-      .replaceAll("'", "")   // Quita todas las comillas simples
-      .split(',');          // Separa por comas
-
-    return valores; // Devuelve ['activo', 'licencia', 'inactivo']
-
+      .replace("enum(", "").replace(")", "").replaceAll("'", "").split(',');
+    return valores;
   } catch (err) {
     console.error("Error al parsear ENUM 'estado':", err);
     throw new Error("Error del servidor al obtener estados.");
   }
 }
+
 /**
  * (Tu función original de 1 solo paso - la mantenemos)
  */
@@ -243,7 +238,6 @@ async function altaDocenteUsuario(data) {
       username, email, password, dni_docente, nombre, apellido,
       telefono, especialidad, estado,
     } = data;
-
     if (
       !username || !email || !password || !dni_docente || !nombre || !apellido
     ) {
@@ -251,7 +245,6 @@ async function altaDocenteUsuario(data) {
         'Username, Email, Contraseña, DNI, Nombre y Apellido son obligatorios'
       );
     }
-
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
