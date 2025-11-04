@@ -54,7 +54,6 @@ const CertificadoComprobanteDeVacante = () => {
           console.log("✅ Usando datos del store de Zustand");
         }
 
-
         // 🔁 Construir datos del formulario
         setDatosFormulario({
           nombreEstudiante: `${data.nombre || ""} ${data.apellido || ""}`.trim(),
@@ -154,7 +153,7 @@ const CertificadoComprobanteDeVacante = () => {
         <h3>✏️ Datos Editables</h3>
         
         <div className="form-group editable">
-          <label>alumno:</label>
+          <label>Alumno:</label>
           <input
             type="text"
             name="alumno"
@@ -165,11 +164,11 @@ const CertificadoComprobanteDeVacante = () => {
         </div>
 
         <div className="form-group editable">
-          <label>grado:</label>
+          <label>Grado:</label>
           <input
             type="text"
             name="grado"
-            placeholder="Ej: Ministerio de Educación"
+            placeholder="Ej: 1° A"
             value={datosFormulario.grado}
             onChange={manejarCambio}
           />
@@ -178,7 +177,7 @@ const CertificadoComprobanteDeVacante = () => {
 
       {/* 📄 CERTIFICADO PRINCIPAL */}
       <div className="certificate-container" ref={refCertificado}>
-        <h1 className="certificate-header">Comprobante de vacante </h1>
+        <h1 className="certificate-header">COMPROBANTE DE VACANTE</h1>
 
         <p>
           {datosFormulario.ciudad}, a los{" "}
@@ -187,22 +186,18 @@ const CertificadoComprobanteDeVacante = () => {
         </p>
         
         <p>
-          La dirección de la escuela Instituto Carlos Guido Spano{" "}
+          La dirección de la escuela Instituto Carlos Guido Spano
         </p>
         
         <p>
-          Deja constancia que puede ser inscripto el o la alumno(a) {" "}
+          Deja constancia que puede ser inscripto el o la alumno(a){" "}
           <b>{datosFormulario.alumno || "..."}</b>
         </p>
         
         <p>
-          Por existir vacante en el grado <b>{datosFormulario.grado || "..."}</b> 
+          Por existir vacante en el grado <b>{datosFormulario.grado || "..."}</b>
         </p>
 
-        <br />
-        <br />
-        <br />
-        <br />
         <br />
         <br />
         <br />
@@ -210,8 +205,8 @@ const CertificadoComprobanteDeVacante = () => {
         <br />
 
         <div className="signature-space">
-          <div className="signature-box">Firma del Secretario / Prosecretario</div>
-          <div className="signature-box">Firma del Rector</div>
+          <div className="signature-box">Sello</div>
+          <div className="signature-box">Firma del Director o Vice</div>
         </div>
 
         <div className="seal-space">
