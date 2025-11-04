@@ -22,7 +22,9 @@ const alumnoTutorRoutes = require("../modules/alumno_tutor/alumno_tutor.routes")
 const usuarioRoutes = require("../modules/usuario/usuario.routes.js");
 const authRoutes = require('../modules/usuario/auth.routes.js');
 
+=========
 const asignacionRoutes = require("../modules/CRUD/asignaciones/asignacion.routes");
+>>>>>>>>> Temporary merge branch 2
 
 // ✅ NUEVO: Módulo de altas (Docente + Usuario)
 const altasRoutes = require("../modules/altas/alta.routes.js");

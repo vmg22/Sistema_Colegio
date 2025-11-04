@@ -49,7 +49,8 @@ app.get(['/reset-password', '/login', '/solicitar-reset'], (req, res) => {
 });
 
 
-
+// 2. Middleware de manejo de errores global (siempre al final)
+app.use(manejadorErrores);
 
 // --- FUNCIÓN DE INICIO DEL SISTEMA ---
 async function iniciarSistema() {
