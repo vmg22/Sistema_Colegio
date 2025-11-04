@@ -9,3 +9,8 @@ export const getAlumnoDni =async(dni) =>{
         return response.data;
 
 }
+
+export const getAllAlumnos = async() =>{
+        const response = await axios.get(ALUMNOS_URL);
+        return response.data;
+}

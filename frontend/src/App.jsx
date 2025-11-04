@@ -106,6 +106,7 @@ function App() {
         <Route path="/reporte-curso/Asistencias" element={<ProtectedRoute><ResumenAsistenciasPage /></ProtectedRoute>} />
         <Route path="/reporte-curso/calificaciones" element={<ProtectedRoute><ResumenCalificacionesPage /></ProtectedRoute>} />
         <Route path="reporte-curso/carga-calificaciones" element={<ProtectedRoute><CargaCalificaciones /></ProtectedRoute>} />
+        <Route path="reporte-curso/carga-asistencias" element={<ProtectedRoute><CargaAsistencia /></ProtectedRoute>} />
         <Route path="reporte-curso/comunicacion" element={<ProtectedRoute><CursoComunicacion /></ProtectedRoute>} />
         <Route path="/inscripcion-wizard" element={<ProtectedRoute><InscripcionWizard /></ProtectedRoute>} />
       
