@@ -236,8 +236,8 @@ const CertificadoAbonoEscolar = () => {
         <br />
 
         <div className="signature-space">
-          <div className="signature-box">Firma del Secretario / Prosecretario</div>
-          <div className="signature-box">Firma del Rector</div>
+          <div className="signature-box">Sello</div>
+          <div className="signature-box">Firma Autorizada</div>
         </div>
 
         <div className="seal-space">

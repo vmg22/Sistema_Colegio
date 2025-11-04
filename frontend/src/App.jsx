@@ -34,18 +34,15 @@ import ConstanciaAlumnoRegular from './pages/alumno/constanciaAlumnoRegular.jsx'
 import CertificadoEscolar from './pages/alumno/certificadoEscolar.jsx'
 import GenerarMail from "./pages/alumno/generarmail.jsx";
 import CursoComunicacion from './pages/curso/CursoComunicacion.jsx'
-<<<<<<< HEAD
 import EnviarAlertaTutoresPage from './pages/curso/EnviarAlertaTutoresPage.jsx'
 
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 
-=======
+
+
 import Login from './pages/alumno/login.jsx'
 import OlvideContrasena from './pages/alumno/olvideContraseña.jsx'
 import SolicitarRecuperacion from './pages/alumno/solicitarRecuperacion.jsx'
->>>>>>> 85bc75fffbb437a8789101577596033a1a2da662
 
 import InscripcionWizard from './components/crud/InscripcionWizard.jsx'
 
@@ -69,44 +66,6 @@ function App() {
 
   return (
     <>
-<<<<<<< HEAD
-    <ToastContainer />
-      <Header />
-      
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/crud" element={<MainCrud />} />
-          <Route path="/alumnos" element={<Alumnos />} />
-          <Route path="/docentes" element={<Docentes />} />
-          <Route path="/materias" element={<Materias/>} />
-          <Route path="/plan-de-equivalencias" element={<PlanEquivalencias/>} />
-          <Route path="/botones" element={<ButtonShowcase />} />
-          <Route path="/consulta" element={<Consulta/>} />
-          <Route path="/constanciaAlumnoTramite" element={<ConstAluTramite/>} />
-          <Route path="/perfilAlumno" element={<PerfilAlumno/>} />
-          <Route path="/asistenciasAlumno" element={<AsistenciasAlumno/>} />
-          <Route path="/estadoAcademicoAlumno" element={<EstadoAcademicoPage/>} />
-          <Route path="/asistencia-alumno" element={<AsistenciaAlumno/>} />
-          <Route path="/estado-academico" element={<EstadoAcademicoAlumno/>} />
-          <Route path="/historial-comunicaciones" element={<HistorialComunicaciones/>} />
-          <Route path="/home-certificados" element={<HomeCertificados/>} />
-          <Route path="/certificados-AbnEsc" element={<CertificadoAbonoEscolar/>} />
-          <Route path="/certificados-ActVolEx" element={<ActaVolanteExamen/>} />
-          <Route path="/constanciaAlumnoRegular" element={<ConstanciaAlumnoRegular/>} />
-          <Route path="/certificadoEscolar" element={<CertificadoEscolar/>} />
-          <Route path="/certificados-cCVac" element={<CertificadoComprobanteDeVacante/>} />
-          <Route path="/perfil-alumno/generar-mail" element={<GenerarMail/>} />
-          
-          
-
-          <Route path="/cursoDashboard" element={<CursoDashboardPage/>} />
-          <Route path="/reporte-curso/listado" element={<ReporteCursoListPage />} />
-          <Route path="/reporte-curso/Asistencias" element={<ResumenAsistenciasPage />} />
-          <Route path="/reporte-curso/calificaciones" element={<ResumenCalificacionesPage />} />
-          <Route path="reporte-curso/carga-calificaciones" element={<CargaCalificaciones />} />
-          <Route path="reporte-curso/comunicacion" element={<CursoComunicacion />} />
-          <Route path="/reporte-curso/alertaTutoresPage" element={<EnviarAlertaTutoresPage />} />
-=======
       {mostrarHeader && <Header />}
       
       <Routes>
@@ -115,7 +74,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password" element={<OlvideContrasena />} />
         <Route path="/solicitar-reset" element={<SolicitarRecuperacion />} />
->>>>>>> 85bc75fffbb437a8789101577596033a1a2da662
         
         {/* Rutas protegidas (requieren autenticación) */}
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -140,6 +98,7 @@ function App() {
         <Route path="/certificadoEscolar" element={<ProtectedRoute><CertificadoEscolar/></ProtectedRoute>} />
         <Route path="/certificados-cCVac" element={<ProtectedRoute><CertificadoComprobanteDeVacante/></ProtectedRoute>} />
         <Route path="/perfil-alumno/generar-mail" element={<ProtectedRoute><GenerarMail/></ProtectedRoute>} />
+        <Route path="/enviar-alerta-tutores" element={<ProtectedRoute><EnviarAlertaTutoresPage/></ProtectedRoute>} />
         
         <Route path="/cursoDashboard" element={<ProtectedRoute><CursoDashboardPage/></ProtectedRoute>} />
         <Route path="/reporte-curso/listado" element={<ProtectedRoute><ReporteCursoListPage /></ProtectedRoute>} />
