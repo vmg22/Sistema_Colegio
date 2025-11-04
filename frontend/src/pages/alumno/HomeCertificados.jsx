@@ -94,6 +94,7 @@ const styles = {
           titulo="Acta Volante Examen"
           icono="mail"
           to="/certificados-ActVolEx"
+       
         />
       </div>
       

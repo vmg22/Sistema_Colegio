@@ -40,6 +40,7 @@ import EnviarAlertaTutoresPage from './pages/curso/EnviarAlertaTutoresPage.jsx'
 
 
 
+
 import Login from './pages/alumno/login.jsx'
 import OlvideContrasena from './pages/alumno/olvideContraseña.jsx'
 import SolicitarRecuperacion from './pages/alumno/solicitarRecuperacion.jsx'
@@ -99,6 +100,7 @@ function App() {
         <Route path="/certificados-cCVac" element={<ProtectedRoute><CertificadoComprobanteDeVacante/></ProtectedRoute>} />
         <Route path="/perfil-alumno/generar-mail" element={<ProtectedRoute><GenerarMail/></ProtectedRoute>} />
         <Route path="/enviar-alerta-tutores" element={<ProtectedRoute><EnviarAlertaTutoresPage/></ProtectedRoute>} />
+      
         
         <Route path="/cursoDashboard" element={<ProtectedRoute><CursoDashboardPage/></ProtectedRoute>} />
         <Route path="/reporte-curso/listado" element={<ProtectedRoute><ReporteCursoListPage /></ProtectedRoute>} />
