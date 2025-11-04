@@ -3,9 +3,11 @@
  * Captura todos los errores pasados por next(error) y envía una respuesta HTTP estandarizada.
  */
 const manejadorErrores = (err, req, res, next) => {
-  console.error('🔥 ERROR CAPTURADO:', err);
+  if (res.headersSent) {
+    return next(err); // Si ya respondió, no hagas nada
+  }
 
-  // Usamos el statusCode del error si existe, si no, es un 500
+  console.error('🔥 ERROR CAPTURADO:', err);
   const statusCode = err.statusCode || 500;
 
   // --- MANEJO DE ERRORES ESPECÍFICOS DE MYSQL ---
