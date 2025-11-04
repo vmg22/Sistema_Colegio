@@ -192,8 +192,15 @@ const CursoComunicacion = () => {
 
   // --- RENDERIZADO COMPLETO ---
   return (
-    <div>
+    <div className='curso-dashboard-container'>
       <BtnVolver />
+      
+      <div className="curso-dashboard-header">
+        <span className="material-symbols-outlined curso-dashboard-icon">
+          mail
+        </span>
+        <h2 className="curso-dashboard-title">Comunicación Grupal</h2>
+      </div>
       <EncabezadoCurso curso={reporte.curso} />
       <hr className="my-4" />
 
@@ -202,36 +209,13 @@ const CursoComunicacion = () => {
       </h4>
       <p>Alumnos que presentan notas bajas o ausentismo.</p>
 
-      {/* --- SECCIÓN DE ACCIONES MASIVAS --- */}
-      <div className="card shadow-sm p-3 mb-3">
-        <div className="d-flex flex-wrap gap-2 align-items-center">
-          <Button
-            variant="warning"
-            onClick={handleSendAsistenciaMasiva}
-            disabled={isSendingMasivo || selectedIds.size === 0}
-          >
-            {isSendingMasivo ? (
-              <Spinner as="span" animation="border" size="sm" />
-            ) : (
-              '📧 Enviar Alerta Asistencia (Seleccionados)'
-            )}
-          </Button>
-          <span className="text-muted">
-            {selectedIds.size} de {alumnosEnRiesgo.length} seleccionados
-          </span>
-        </div>
-        {feedbackMasivo.msg && (
-          <Alert variant={feedbackMasivo.type} className="mt-3 mb-0">
-            {feedbackMasivo.msg}
-          </Alert>
-        )}
-      </div>
+
 
       {/* --- LISTA DE ALUMNOS EN RIESGO --- */}
-      <div className="card shadow-sm mt-3" style={{ border: 'none' }}>
+      <div className="card shadow-sm mt-3 justify-content-center" style={{ border: 'none' }}>
         {/* Encabezado Azul */}
         <div
-          className="d-none d-md-flex row mx-0 align-items-center"
+          className="d-none d-md-flex row mx-0 align-items-center justify-content-center"
           style={{
             backgroundColor: '#004a99',
             color: 'white',
@@ -240,18 +224,6 @@ const CursoComunicacion = () => {
             borderTopRightRadius: '8px',
           }}
         >
-          <div className="col-md-1 text-center">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              title="Seleccionar Todos"
-              checked={
-                alumnosEnRiesgo.length > 0 &&
-                selectedIds.size === alumnosEnRiesgo.length
-              }
-              onChange={handleToggleSelectAll}
-            />
-          </div>
           <div className="col-md-2 fw-bold">Alumno</div>
           <div className="col-md-2 fw-bold">Tutor</div>
           <div className="col-md-3 fw-bold">Email Tutor</div>
@@ -259,7 +231,7 @@ const CursoComunicacion = () => {
           <div className="col-md-1 fw-bold">Acción</div>
         </div>
 
-        <div className="list-group list-group-flush">
+        <div className="list-group list-group-flush ">
           {alumnosEnRiesgo.length > 0 ? (
             alumnosEnRiesgo.map((alumno) => (
               <div
@@ -271,15 +243,7 @@ const CursoComunicacion = () => {
                   }`,
                 }}
               >
-                <div className="row align-items-center gy-2">
-                  <div className="col-md-1 text-center">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      checked={selectedIds.has(alumno.id)}
-                      onChange={() => handleToggleSelect(alumno.id)}
-                    />
-                  </div>
+                <div className="row align-items-center justify-content-center gy-2">
                   <div className="col-md-2">
                     <strong className="d-md-none">Alumno: </strong>
                     {alumno.nombre}
@@ -336,7 +300,7 @@ const CursoComunicacion = () => {
                       </span>
                     ))}
                   </div>
-                  <div className="col-md-1 text-center">
+                  <div className="col-md-1 ">
                     <Button
                       variant="outline-primary"
                       size="sm"

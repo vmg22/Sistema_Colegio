@@ -19,6 +19,7 @@ import ReporteCursoListPage from './components/curso/ReporteCursoListPage.jsx'
 import ResumenCalificacionesPage from './components/curso/ResumenCalificacionesPage.jsx'
 import ResumenAsistenciasPage from './components/curso/ResumenAsistenciasPage.jsx'
 import CargaCalificaciones from './pages/curso/CargaCalificaciones.jsx'
+import CargaAsistencia from './pages/curso/CargaAsistencia.jsx'
 
 import DocentePerfil from './pages/docentes/DocentePerfil.jsx'
 
@@ -109,7 +110,8 @@ function App() {
         <Route path="reporte-curso/carga-calificaciones" element={<ProtectedRoute><CargaCalificaciones /></ProtectedRoute>} />
         <Route path="reporte-curso/comunicacion" element={<ProtectedRoute><CursoComunicacion /></ProtectedRoute>} />
         <Route path="/inscripcion-wizard" element={<ProtectedRoute><InscripcionWizard /></ProtectedRoute>} />
-      
+        <Route path="reporte-curso/carga-asistencias" element={<CargaAsistencia />} />
+        
         <Route path="/docentes/:id" element={<ProtectedRoute><DocentePerfil /></ProtectedRoute>} />
         <Route path="*" element={<NotFountPage/>} />
       </Routes>

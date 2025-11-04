@@ -30,6 +30,10 @@ const consultaCurso = {
         cal.nota_3,
         cal.promedio_cuatrimestre,
         cal.id_calificacion,
+      cal.periodo_complementario,    -- <-- NUEVO
+      cal.calificacion_definitiva, -- <-- NUEVO
+      cal.estado AS estado_calificacion,
+      
         
         -- 3. Unimos los conteos pre-calculados.
         COALESCE(acounts.presentes, 0) AS presentes,
@@ -68,6 +72,7 @@ const consultaCurso = {
         tutor t ON at.id_tutor = t.id_tutor
     -- === FIN DE LA MODIFICACIÓN ===
         
+      AND cal.deleted_at IS NULL
     WHERE 
         ac.id_curso = ?      -- <--- Param 6: id_curso
         AND ac.anio_lectivo = ?  -- <--- Param 7: anio_lectivo

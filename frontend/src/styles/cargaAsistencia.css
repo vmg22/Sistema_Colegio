@@ -1,0 +1,141 @@
+.tablaCargaAsistencia {
+    display: flex;
+    justify-content: center;
+}
+
+/* Alternativa 2 - Sombra con borde sutil */
+.carga-asistencia-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 123, 255, 0.12);
+}
+
+
+/* Botones de asistencia */
+.carga-asistencia-table .btn {
+  min-width: 50px;
+  padding: 8px 12px;
+  font-weight: 600;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+/* Botón Presente */
+.carga-asistencia-table .btn-success,
+.carga-asistencia-table .btn-outline-success {
+  background-color:  #28a745;
+  color: white;
+  border-color: #28a745;
+}
+
+.carga-asistencia-table .btn-outline-success {
+  background: transparent;
+  color: #28a745;
+}
+
+.carga-asistencia-table .btn-outline-success:hover {
+  background-color:  #28a745 ;
+  color: white;
+  transform: scale(1.05);
+}
+
+.carga-asistencia-table .btn-success:hover {
+  background-color:  #218838;
+  transform: scale(1.05);
+}
+
+/* Botón Ausente */
+.carga-asistencia-table .btn-danger,
+.carga-asistencia-table .btn-outline-danger {
+  background-color: #dc3545 ;
+  color: white;
+  border-color: #dc3545;
+}
+
+.carga-asistencia-table .btn-outline-danger {
+  background: transparent;
+  color: #dc3545;
+}
+
+.carga-asistencia-table .btn-outline-danger:hover {
+  background-color:  #dc3545;
+  color: white;
+  transform: scale(1.05);
+}
+
+.carga-asistencia-table .btn-danger:hover {
+  background-color:  #c82333 ;
+  transform: scale(1.05);
+}
+
+/* Botón guardar */
+.btn-primary {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Sección de fecha */
+.fecha-carga {
+  margin-bottom: 25px;
+  padding: 15px;
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid #3f51b5;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.1);
+}
+
+.fecha-carga h5 {
+  margin: 0;
+  color: #2c3e50;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Botón personalizado del calendario */
+.mi-boton-calendario {
+  background: linear-gradient(135deg, #0168d6 0%, #3f51b5 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.mi-boton-calendario:hover {
+  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+}
+
+.mi-boton-calendario:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}

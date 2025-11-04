@@ -72,15 +72,16 @@ const consultaController = {
           apellido: alumno.apellido_alumno,
           nombreCompleto: `${alumno.apellido_alumno}, ${alumno.nombre_alumno}`,
         },
-        calificaciones: alumno.id_calificacion
-          ? {
-              id: alumno.id_calificacion,
-              nota1: alumno.nota_1,
-              nota2: alumno.nota_2,
-              nota3: alumno.nota_3,
-              promedio: alumno.promedio_cuatrimestre,
-            }
-          : null,
+        calificaciones: alumno.id_calificacion ? {
+          id: alumno.id_calificacion,
+          nota1: alumno.nota_1,
+          nota2: alumno.nota_2,
+          nota3: alumno.nota_3,
+          promedio: alumno.promedio_cuatrimestre,
+          periodoComplementario: alumno.periodo_complementario, // <-- NUEVO
+          definitiva: alumno.calificacion_definitiva,       // <-- NUEVO
+          estado: alumno.estado_calificacion
+        } : null,
         asistencias: {
           // Usamos parseInt por si mysql2 devuelve strings,
           // pero ya no necesitamos '|| 0' gracias a COALESCE
