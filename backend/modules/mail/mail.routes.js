@@ -41,7 +41,7 @@ router.get('/alumno/:dni/:anio', ObtenerDatosAlumno);
 // ==================== RUTAS MASIVAS ====================
 
 // POST /api/mail/alerta-asistencia-masiva - Enviar alerta a múltiples alumnos
-router.post('/alerta-asistencia-masiva', EnviarAlertaAsistenciaMasiva);
+router.post('/alerta-asistencia/masiva', EnviarAlertaAsistenciaMasiva);
 
 // POST /api/mail/notificacion-reunion-masiva - Enviar notificación de reunión masiva
 router.post('/notificacion-reunion-masiva', EnviarNotificacionReunionMasiva);
