@@ -133,7 +133,7 @@ const CargaCalificaciones = () => {
         <button className="reporte-curso-search-btn">Buscar alumno</button>
       </div>
 
-      <table className="reporte-curso-table mt-4">
+      <table className="carga-asistencia-table mt-4">
         <thead>
           <tr>
             <th className="reporte-curso-th">DNI</th>
@@ -200,8 +200,6 @@ const CargaCalificaciones = () => {
         </tbody>
       </table>
 
-      {/* Ya no hay un bloque gigante de JSX aquí.
-          Solo llamamos al componente y le pasamos los props */}
       <ModalEditarCalificacion
         show={show}
         handleClose={handleClose}

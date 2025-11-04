@@ -17,5 +17,12 @@ export const obtenerListaClase = async (filtros) => {
   return response.data.datos; 
 };
 
-// La función getAsistenciaCurso que tenías estaba incompleta, 
-// la reemplazamos por la de arriba que sí acepta los filtros.
+/**
+ * Guarda (Crea o Actualiza) las asistencias de una clase completa.
+ * @param {object} payload - Objeto con { id_materia, id_curso, id_docente, anio_lectivo, fecha_clase, alumnos }
+ */
+export const guardarAsistenciasClase = async (payload) => {
+  // Esta ruta es POST /clase según tu router
+  const response = await axios.post(`${ASISTENCIA_URL}/clase`, payload);
+  return response.data; // Devuelve la respuesta del backend (ej: "Asistencias guardadas")
+};
