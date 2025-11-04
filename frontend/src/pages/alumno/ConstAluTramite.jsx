@@ -166,8 +166,34 @@ const Constancia = () => {
   // 🧾 Render principal
   return (
     <div className="constancia-body">
+      {/* Campos editables ARRIBA A LA IZQUIERDA */}
+      <div className="edit-panel no-print">
+        <h3>Datos Editables</h3>
+        <div className="form-group editable">
+          <label>Solicitante:</label>
+          <input
+            type="text"
+            name="solicitante"
+            placeholder="Ej: Juan Pérez"
+            value={datosFormulario.solicitante}
+            onChange={manejarCambio}
+          />
+        </div>
+
+        <div className="form-group editable">
+          <label>Autoridad destinataria:</label>
+          <input
+            type="text"
+            name="autoridad"
+            placeholder="Ej: Ministerio de Educación"
+            value={datosFormulario.autoridad}
+            onChange={manejarCambio}
+          />
+        </div>
+      </div>
+
       <div className="certificate-container" ref={refCertificado}>
-        <h1 className="certificate-header">Constancia de Alumno Regular</h1>
+        <h1 className="certificate-header">Constancia de Alumno Tramite</h1>
 
         <p>
           Se deja constancia de que{" "}
@@ -206,12 +232,8 @@ const Constancia = () => {
         <br />
         <br />
         <br />
-        <br /><br />
-        
-
-
-        
-        
+        <br />
+        <br />
 
         <div className="signature-space">
           <div className="signature-box">Firma del Secretario / Prosecretario</div>
@@ -239,30 +261,8 @@ const Constancia = () => {
           Imprimir
         </button>
       </div>
-      <div className="form-group editable">
-          <label>Solicitante:</label>
-          <input
-            type="text"
-            name="solicitante"
-            placeholder="Ej: Juan Pérez"
-            value={datosFormulario.solicitante}
-            onChange={manejarCambio}
-          />
-        </div>
-
-        <div className="form-group editable">
-          <label>Autoridad destinataria:</label>
-          <input
-            type="text"
-            name="autoridad"
-            placeholder="Ej: Ministerio de Educación"
-            value={datosFormulario.autoridad}
-            onChange={manejarCambio}
-          />
-        </div>
     </div>
   );
-  
 };
 
 export default Constancia;

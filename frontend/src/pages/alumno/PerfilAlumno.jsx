@@ -90,7 +90,7 @@ const PerfilAlumno = () => {
         <AccionCard
           titulo="Certificados y Actas"
           icono="description"
-          to="/constanciaAlumnoTramite"
+          to="/home-certificados"
         />
         <AccionCard
           titulo="Generar Mail"

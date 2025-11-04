@@ -114,7 +114,8 @@ const altaDocenteUsuario = {
       email = ?,
       telefono = ?,
       especialidad = ?,
-      estado = ?
+      estado = ?,
+      dni_docente = ?
     WHERE id_docente = ? 
       AND deleted_at IS NULL
   `,

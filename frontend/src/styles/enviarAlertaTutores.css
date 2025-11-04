@@ -1,0 +1,375 @@
+/* enviarAlertaTutores.css */
+
+/* Contenedor principal */
+.alertas-page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Loading container */
+.alertas-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.alertas-no-data {
+  text-align: center;
+  max-width: 600px;
+}
+
+.alertas-no-data-icon {
+  font-size: 64px;
+  color: #6c757d;
+}
+
+/* Header */
+.alertas-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.alertas-header-icon {
+  font-size: 40px;
+  color: #dc3545;
+}
+
+.alertas-header-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+.alertas-header-subtitle {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+/* Resultado */
+.alertas-resultado {
+  margin-bottom: 2rem;
+  border-radius: 8px;
+}
+
+.alertas-resultado-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.alertas-resultado-content .material-symbols-outlined {
+  font-size: 24px;
+  margin-top: 2px;
+}
+
+/* Grid principal */
+.alertas-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 2rem;
+}
+
+@media (max-width: 1200px) {
+  .alertas-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Lista de alumnos */
+.alertas-lista-container {
+  min-height: 600px;
+}
+
+.alertas-lista-header {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  padding: 1rem;
+}
+
+.alertas-lista-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alertas-lista-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+.alertas-lista-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.alertas-lista-body {
+  padding: 0;
+  max-height: 650px;
+  overflow-y: auto;
+}
+
+/* Item de alumno */
+.alertas-alumno-item {
+  padding: 1rem;
+  cursor: pointer;
+  background-color: white;
+  transition: background-color 0.2s ease;
+}
+
+.alertas-alumno-item:hover {
+  background-color: #f8f9fa;
+}
+
+.alertas-alumno-item.selected {
+  background-color: #e7f3ff;
+}
+
+.alertas-alumno-item.selected:hover {
+  background-color: #d0e9ff;
+}
+
+.alertas-alumno-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.alertas-alumno-checkbox {
+  margin-top: 0.25rem;
+}
+
+.alertas-alumno-info {
+  flex: 1;
+}
+
+.alertas-alumno-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.alertas-alumno-nombre {
+  font-size: 1.05em;
+  color: #212529;
+}
+
+.alertas-alumno-dni {
+  font-size: 0.9em;
+  color: #6c757d;
+  margin-top: 0.25rem;
+}
+
+.alertas-tutor-info {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  font-size: 0.9em;
+  border-left: 3px solid #0d6efd;
+}
+
+.alertas-tutor-info strong {
+  color: #495057;
+}
+
+/* Configuración */
+.alertas-config-container {
+  position: sticky;
+  top: 2rem;
+  align-self: flex-start;
+}
+
+.alertas-config-header {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  padding: 1rem;
+}
+
+.alertas-config-header h5 {
+  margin: 0;
+  font-weight: 600;
+  color: #212529;
+}
+
+/* Preview box */
+.alertas-preview-box {
+  padding: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9em;
+}
+
+.alertas-preview-box strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #856404;
+}
+
+.alertas-preview-box ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.alertas-preview-box li {
+  margin-bottom: 0.25rem;
+  color: #856404;
+}
+
+/* Botón de envío */
+.alertas-send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.alertas-send-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.alertas-send-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.alertas-send-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.alertas-no-selection {
+  font-size: 0.9em;
+}
+
+/* Info card */
+.alertas-info-card {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.alertas-info-header {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  color: #0dcaf0;
+}
+
+.alertas-info-header .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.alertas-info-list {
+  margin: 0;
+  padding-left: 1.5rem;
+  font-size: 0.9em;
+  color: #495057;
+}
+
+.alertas-info-list li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+/* Scrollbar personalizado */
+.alertas-lista-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.alertas-lista-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.alertas-lista-body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.alertas-lista-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Badges */
+.badge {
+  font-size: 0.85em;
+  padding: 0.4em 0.8em;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alertas-resultado {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .alertas-page-container {
+    padding: 1rem;
+  }
+
+  .alertas-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .alertas-header-icon {
+    font-size: 32px;
+  }
+
+  .alertas-header-title {
+    font-size: 1.5rem;
+  }
+
+  .alertas-lista-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .alertas-lista-actions {
+    width: 100%;
+  }
+
+  .alertas-lista-actions button {
+    flex: 1;
+  }
+
+  .alertas-alumno-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .alertas-config-container {
+    position: static;
+  }
+}

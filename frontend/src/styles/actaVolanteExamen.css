@@ -1,0 +1,720 @@
+/* ========================================
+   ACTA VOLANTE DE EXAMEN - DOCUMENTO OFICIAL
+   Diseño formal para registro de exámenes
+   TODAS las clases tienen prefijo "acta-" para evitar conflictos
+   ======================================== */
+
+/* ========================================
+   CONTENEDOR PRINCIPAL
+   ======================================== */
+.acta-body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  font-family: 'Arial', 'Helvetica', sans-serif;
+}
+
+/* ========================================
+   CONTENEDOR DEL ACTA
+   ======================================== */
+.acta-body .acta-container {
+  max-width: 21cm; /* Tamaño A4 */
+  min-height: 29.7cm;
+  margin: 0 auto;
+  background: #f5f5f0;
+  padding: 1.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  position: relative;
+  border: 2px solid #333;
+}
+
+/* ========================================
+   ENCABEZADO DEL ACTA
+   ======================================== */
+.acta-body .acta-header {
+  margin-bottom: 1.5rem;
+}
+
+.acta-body .acta-header h1 {
+  text-align: right;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #000;
+  margin: 0 0 1rem 0;
+  letter-spacing: 1px;
+}
+
+.acta-body .header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.acta-body .info-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.acta-body .label {
+  font-size: 0.9rem;
+  color: #333;
+  white-space: nowrap;
+}
+
+.acta-body .input-underline {
+  border: none;
+  border-bottom: 1px dotted #666;
+  background: transparent;
+  padding: 2px 5px;
+  font-size: 0.9rem;
+  color: #000;
+  font-family: inherit;
+  outline: none;
+}
+
+.acta-body .input-underline:focus {
+  border-bottom: 1px solid #3498db;
+  background: rgba(52, 152, 219, 0.05);
+}
+
+/* Caja de fecha en el header */
+.acta-body .date-box {
+  display: flex;
+  gap: 0.5rem;
+  border: 1px solid #333;
+  padding: 0.3rem 0.5rem;
+}
+
+.acta-body .date-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.acta-body .date-field label {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.acta-body .input-box {
+  width: 60px;
+  border: 1px solid #999;
+  background: white;
+  padding: 2px 4px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+/* Línea de asignatura */
+.acta-body .asignatura-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.acta-body .asignatura-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.acta-body .flex-grow {
+  flex: 1;
+  min-width: 200px;
+}
+
+.acta-body .curso-info {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.acta-body .input-small {
+  width: 50px;
+  border: none;
+  border-bottom: 1px dotted #666;
+  background: transparent;
+  padding: 2px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+/* ========================================
+   TABLA DE ALUMNOS
+   ======================================== */
+.acta-body .tabla-alumnos {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  background: white;
+  font-size: 0.75rem;
+}
+
+.acta-body .tabla-alumnos th,
+.acta-body .tabla-alumnos td {
+  border: 1px solid #333;
+  padding: 3px 5px;
+  text-align: center;
+}
+
+.acta-body .tabla-alumnos th {
+  background: #e8e8e8;
+  font-weight: bold;
+  color: #000;
+  font-size: 0.7rem;
+}
+
+.acta-body .tabla-alumnos thead tr:first-child th {
+  padding: 5px 3px;
+}
+
+.acta-body .numero-orden {
+  font-weight: bold;
+  background: #f5f5f5;
+  font-size: 0.7rem;
+}
+
+/* Inputs dentro de la tabla */
+.acta-body .input-tabla {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 2px;
+  text-align: center;
+  font-size: 0.7rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.acta-body .input-tabla:focus {
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.acta-body .input-tabla.apellido-input {
+  text-align: left;
+  padding-left: 5px;
+}
+
+.acta-body .input-tabla.small {
+  width: 30px;
+}
+
+/* Fila de firma */
+.acta-body .firma-row {
+  background: #f0f0f0;
+}
+
+.acta-body .firma-nota {
+  text-align: center;
+  font-size: 0.7rem;
+  font-style: italic;
+  color: #666;
+  padding: 5px !important;
+}
+
+/* ========================================
+   PIE DEL ACTA
+   ======================================== */
+.acta-body .footer-section {
+  margin-top: 1rem;
+}
+
+.acta-body .vocales-section {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.acta-body .vocal-field {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.acta-body .estadisticas-section {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  padding-right: 2rem;
+}
+
+.acta-body .stat-field {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.acta-body .input-underline.short {
+  width: 60px;
+}
+
+.acta-body .fecha-footer {
+  text-align: right;
+  padding-right: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.acta-body .input-underline.tiny {
+  width: 30px;
+}
+
+/* ========================================
+   PIE DE PÁGINA CON LOGO
+   ======================================== */
+.acta-body .pie-pagina {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #999;
+}
+
+.acta-body .logo-pie {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.acta-body .info-contacto {
+  font-size: 0.7rem;
+  color: #333;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ========================================
+   BOTONES DE ACCIÓN
+   ======================================== */
+.acta-body .actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.acta-body .actions button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.acta-body .actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.acta-body .actions button:active {
+  transform: translateY(0);
+}
+
+/* Botón primario */
+.acta-body .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.acta-body .btn-primary:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+}
+
+/* Botón secundario */
+.acta-body .btn-secondary {
+  background: white;
+  color: #2c3e50;
+  border: 2px solid #2c3e50 !important;
+}
+
+.acta-body .btn-secondary:hover {
+  background: #2c3e50;
+  color: white;
+}
+
+/* Iconos de Material Symbols */
+.acta-body .actions .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+/* ========================================
+   ESTADOS DE CARGA Y ERROR
+   ======================================== */
+.acta-body .loading-container,
+.acta-body .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Spinner de carga */
+.acta-body .spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(103, 126, 234, 0.2);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: acta-spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes acta-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.acta-body .loading-container p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+/* Contenedor de error */
+.acta-body .error-container {
+  color: #e74c3c;
+}
+
+.acta-body .error-icon {
+  font-size: 4rem;
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.acta-body .error-container h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #c0392b;
+}
+
+.acta-body .error-container p {
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+}
+
+.acta-body .btn-back {
+  padding: 0.75rem 1.5rem;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.acta-body .btn-back:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   ESTILOS PARA IMPRESIÓN
+   ======================================== */
+@media print {
+  .acta-body {
+    background: white;
+    padding: 0;
+  }
+
+  .acta-body .acta-container {
+    max-width: 100%;
+    min-height: auto;
+    box-shadow: none;
+    border-radius: 0;
+    border: 1px solid #333;
+    page-break-after: always;
+    padding: 1cm;
+  }
+
+  .acta-body .actions,
+  .acta-body .no-print {
+    display: none !important;
+  }
+
+  .acta-body .tabla-alumnos {
+    page-break-inside: avoid;
+  }
+
+  .acta-body .input-underline,
+  .acta-body .input-box,
+  .acta-body .input-small,
+  .acta-body .input-tabla {
+    border: none !important;
+    background: transparent !important;
+    font-weight: 500;
+  }
+
+  /* Forzar que los inputs muestren su contenido */
+  .acta-body input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+
+  /* Asegurar que la tabla se vea bien en impresión */
+  .acta-body .tabla-alumnos th,
+  .acta-body .tabla-alumnos td {
+    border-color: #000 !important;
+  }
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .acta-body {
+    padding: 0.5rem;
+  }
+
+  .acta-body .acta-container {
+    padding: 1rem;
+    min-height: auto;
+  }
+
+  .acta-body .acta-header h1 {
+    font-size: 1rem;
+  }
+
+  .acta-body .header-info {
+    flex-direction: column;
+  }
+
+  .acta-body .asignatura-line {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .acta-body .tabla-alumnos {
+    font-size: 0.65rem;
+  }
+
+  .acta-body .vocales-section {
+    flex-direction: column;
+  }
+
+  .acta-body .estadisticas-section {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .acta-body .actions {
+    flex-direction: column;
+  }
+
+  .acta-body .actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Responsive para tablets */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .acta-body .acta-container {
+    padding: 1.25rem;
+  }
+
+  .acta-body .tabla-alumnos {
+    font-size: 0.7rem;
+  }
+}
+
+/* ========================================
+   MEJORAS DE ACCESIBILIDAD
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  .acta-body * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Mejora de contraste para texto */
+@media (prefers-contrast: high) {
+  .acta-body .tabla-alumnos th,
+  .acta-body .tabla-alumnos td {
+    border-color: #000;
+  }
+
+  .acta-body .label {
+    color: #000;
+  }
+
+  .acta-body .input-underline {
+    border-bottom-color: #000;
+  }
+}
+
+/* ========================================
+   HOVER EN EL DOCUMENTO
+   ======================================== */
+.acta-body .acta-container:hover {
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35);
+  transition: box-shadow 0.3s ease;
+}
+
+/* Efecto hover en celdas editables */
+.acta-body .tabla-alumnos td:hover {
+  background: rgba(52, 152, 219, 0.05);
+  transition: background 0.2s ease;
+}
+
+/* ========================================
+   OPTIMIZACIONES ADICIONALES
+   ======================================== */
+
+/* Mejorar la legibilidad de los inputs */
+.acta-body input::placeholder {
+  color: #999;
+  opacity: 0.6;
+}
+
+.acta-body input::-webkit-input-placeholder {
+  color: #999;
+  opacity: 0.6;
+}
+
+.acta-body input::-moz-placeholder {
+  color: #999;
+  opacity: 0.6;
+}
+
+/* Scroll suave para la tabla en dispositivos pequeños */
+@media (max-width: 768px) {
+  .acta-body .tabla-alumnos {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+/* Asegurar que los números de orden se vean bien */
+.acta-body .numero-orden {
+  user-select: none;
+  cursor: default;
+}
+
+/* Estilo para cuando se selecciona texto */
+.acta-body ::selection {
+  background-color: rgba(103, 126, 234, 0.3);
+  color: #000;
+}
+
+.acta-body ::-moz-selection {
+  background-color: rgba(103, 126, 234, 0.3);
+  color: #000;
+}
+
+/* ========================================
+   ANIMACIONES SUTILES
+   ======================================== */
+
+/* Animación de entrada para el contenedor */
+.acta-body .acta-container {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación para los botones */
+.acta-body .actions button {
+  position: relative;
+  overflow: hidden;
+}
+
+.acta-body .actions button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.acta-body .actions button:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* ========================================
+   ESTADOS FOCUS MEJORADOS
+   ======================================== */
+
+/* Mejorar el focus visible para accesibilidad de teclado */
+.acta-body input:focus-visible {
+  outline: 2px solid #3498db;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.acta-body button:focus-visible {
+  outline: 3px solid #3498db;
+  outline-offset: 3px;
+}
+
+/* ========================================
+   UTILIDADES ADICIONALES
+   ======================================== */
+
+/* Ocultar elementos en impresión */
+.acta-body .no-print {
+ display: none !important; /* Ya está definido arriba en @media print */
+}
+
+/* Clase para forzar salto de página */
+.acta-body .page-break {
+  page-break-before: always;
+}
+
+/* Prevenir saltos de página dentro de elementos importantes */
+.acta-body .no-break {
+  page-break-inside: avoid;
+}
+
+/* ========================================
+   FIN DE ESTILOS
+   ======================================== */

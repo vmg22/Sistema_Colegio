@@ -109,22 +109,30 @@ const Docentes = () => {
     ];
 
     const renderActions = (docente) => (
-        <>
-            <button 
-                onClick={() => handleOpenEditModal(docente)}
-                className="action-button edit"
-                title="Editar"
-            >
-                ✏️
-            </button>
-            <button 
-                onClick={() => handleDelete(docente.id_docente)} 
-                className="action-button delete"
-                title="Eliminar"
-            >
-                🗑️
-            </button>
-        </>
+      <>
+        <button // Llama a 'navigate' con la ruta dinámica
+          onClick={() => navigate(`/docentes/${docente.id_docente}`)}
+          className="action-button view" // Clase para el icono (ver CSS)
+          title="Ver Perfil"
+        >
+         👁️ 
+        </button>
+
+        <button
+          onClick={() => handleOpenEditModal(docente)}
+          className="action-button edit"
+          title="Editar"
+        >
+          ✏️
+        </button>
+        <button
+          onClick={() => handleDelete(docente.id_docente)}
+          className="action-button delete"
+          title="Eliminar"
+        >
+          🗑️
+        </button>
+      </>
     );
 
     return (

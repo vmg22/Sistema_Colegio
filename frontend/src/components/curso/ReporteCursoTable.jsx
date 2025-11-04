@@ -43,6 +43,7 @@ const ReporteCursoTable = ({ alumnos = [] }) => {
             <th className="reporte-curso-th">Nota 2</th>
             <th className="reporte-curso-th">Nota 3</th>
             <th className="reporte-curso-th">Promedio</th>
+            <th className="reporte-curso-th">Nota Final</th>
             <th className="reporte-curso-th">Asistencia (%)</th>
             <th className="reporte-curso-th">Faltas</th>
           </tr>
@@ -79,6 +80,9 @@ const ReporteCursoTable = ({ alumnos = [] }) => {
                   </td>
                   <td className={`reporte-curso-td reporte-curso-nota-promedio ${getNotaClass(safeCalificaciones.promedio)}`}>
                     {formatNota(safeCalificaciones.promedio)}
+                  </td>
+                  <td className={`reporte-curso-td reporte-curso-nota-promedio ${getNotaClass(safeCalificaciones.promedio)}`}>
+                    {formatNota(safeCalificaciones.definitiva)}
                   </td>
                   <td className={`reporte-curso-td reporte-curso-asistencia ${asistenciaClass}`}>
                     {safeAsistencias.porcentaje ?? 0}%

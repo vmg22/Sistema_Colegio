@@ -10,11 +10,18 @@ const calificacionRoutes = require("../modules/calificaciones/calificacion.route
 const anioLectivoRoutes = require("../modules/anios-lectivos/anio.routes");
 const tutorRoutes = require("../modules/tutores/tutor.routes");
 const comunicacionRoutes = require("../modules/comunicaciones/comunicacion.routes");
-const authRoutes = require("../modules/auth/auth.routes");
 const asistenciaRoutes = require('../modules/asistencia_alumno/asistencia_alumno.routes');
 const reportesAlumnoRoutes = require("../modules/reportesAlumnoDni/reporte.routes");
 const reportesCursoRoutes = require("../modules/reportesCurso/reporteCurso.routes");
 const inscripcionesRoutes = require("../modules/CRUD/inscripcion/inscripcionRoutes.js");
+const mailRoutes = require('../modules/mail/mail.routes');
+const materiaCorrelativaRoutes = require("../modules/materia_correlativa/materia_correlativa.routes");
+const destinatarioRoutes = require("../modules/comunicacion_destinatario/comunicacion_destinatario.routes");
+const logActividadRoutes = require("../modules/log_actividad/log_actividad.routes");
+const alumnoTutorRoutes = require("../modules/alumno_tutor/alumno_tutor.routes"); 
+const usuarioRoutes = require("../modules/usuario/usuario.routes.js");
+const authRoutes = require('../modules/usuario/auth.routes.js');
+
 
 // ✅ NUEVO: Módulo de altas (Docente + Usuario)
 const altasRoutes = require("../modules/altas/alta.routes.js");
@@ -27,12 +34,21 @@ router.use("/calificaciones", calificacionRoutes);
 router.use("/anios-lectivos", anioLectivoRoutes);
 router.use("/tutores", tutorRoutes);
 router.use("/comunicaciones", comunicacionRoutes);
-router.use("/auth", authRoutes);
 router.use('/asistencias', asistenciaRoutes);
+router.use('/usuarios', usuarioRoutes);
+router.use('/auth', authRoutes);
 
 // Rutas de reportes
 router.use("/reportes/alumnos", reportesAlumnoRoutes);
+router.use('/materia-correlativa', materiaCorrelativaRoutes);
+router.use('/destinatarios', destinatarioRoutes);
+router.use('/actividades', logActividadRoutes);
+//rutas de reportes
+router.use("/reportes/alumno", reportesAlumnoRoutes);
 router.use("/reportes/curso", reportesCursoRoutes);
+router.use('/alumno-tutor', alumnoTutorRoutes);
+router.use('/mail', mailRoutes);
+
 
 //  Ruta de altas
 router.use("/altas", altasRoutes);
@@ -59,9 +75,21 @@ router.get("/", (req, res) => {
       reportesAlumno: "/api/v1/reportes/alumno?dni_alumno=X&anio_lectivo=Y",
       reportesCurso: "/api/v1/reportes/curso?id_curso=X&id_materia=Y&anio_lectivo=Z&cuatrimestre=N",
       //  NUEVO: Endpoint de altas para crar docentes y usuarios ya que sin usuario no se puede crear docente
-      altas: "/api/v1/altas/docentes"
+      altas: "/api/v1/altas/docentes",
+      usuarios: "/api/v1/usuarios",
+      auth: "/api/v1/auth",
     },
   });
 });
+
+
+
+
+// ... etc.
+
+// No olvides tus rutas de diagnóstico
+// const { healthRouter, diagnosticoRouter } = require('./system.routes'); // Idea: Moverlas a su propio archivo
+// router.use('/health', healthRouter);
+// router.use('/diagnostico', diagnosticoRouter);
 
 module.exports = router;
