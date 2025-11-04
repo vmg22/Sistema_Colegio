@@ -73,3 +73,4 @@ const consultasCorrelativas = {
 };
 
 module.exports = consultasCorrelativas;
+

@@ -45,7 +45,7 @@ const CursoDashboardPage = () => {
         <AccionCard
           titulo="Carga de Asistencia"
           icono="event_available"
-          to="/reporte-curso/carga-calificaciones"
+          to="/reporte-curso/carga-asistencias"
         />
         <AccionCard
           titulo="Comunicación Grupal"

@@ -21,6 +21,7 @@ const ReporteAsistenciasTable = ({ alumnos = [] }) => {
             <th>Alumno</th>
             <th>Presentes</th>
             <th>Ausentes</th>
+            <th>Tardes</th>
             <th>Total Clases</th>
             <th>Asistencia</th>
           </tr>
@@ -28,26 +29,64 @@ const ReporteAsistenciasTable = ({ alumnos = [] }) => {
         <tbody>
           {alumnos.map((a, index) => {
             const presentes = Number(a.asistencias?.presentes || 0);
+            const ausentes = Number(a.asistencias?.ausentes || 0);
+            const tardes = Number(a.asistencias?.tardes || 0);
             const total = Number(a.asistencias?.total || 0);
-            const ausentes = total - presentes;
-            const porc = total > 0 ? ((presentes / total) * 100).toFixed(1) : 100;
+            
+            // Cálculo del porcentaje de asistencia
+            const porc = total > 0 
+              ? ((presentes / total) * 100).toFixed(1) 
+              : "0.0";
 
-            const isCritico = porc < 75;
-            const rowClass = `reporte-table-row ${isCritico ? 'reporte-table-row--critical' : 'reporte-table-row--good'}`;
+            const isCritico = parseFloat(porc) < 75;
+            const isExcelente = parseFloat(porc) >= 95;
+            const isBueno = parseFloat(porc) >= 85;
+            
+            const rowClass = `reporte-table-row ${
+              isCritico 
+                ? 'reporte-table-row--critical' 
+                : 'reporte-table-row--good'
+            }`;
 
             return (
-              <tr
-                key={index}
+              <tr 
+                key={a.alumno?.id || index} 
                 className={rowClass}
               >
                 <td>{index + 1}</td>
-                <td>{a.alumno?.nombreCompleto || "—"}</td>
-                <td>{presentes}</td>
-                <td>{ausentes}</td>
-                <td>{total}</td>
-                <td>
-                  {porc}%{" "}
-                  {isCritico ? "⚠️" : porc >= 95 ? "🌟" : porc >= 85 ? "✅" : ""}
+                <td className="reporte-table-alumno">
+                  {a.alumno?.nombreCompleto || "—"}
+                </td>
+                <td className="reporte-table-presentes">
+                  <span className="badge bg-success">{presentes}</span>
+                </td>
+                <td className="reporte-table-ausentes">
+                  <span className="badge bg-danger">{ausentes}</span>
+                </td>
+                <td className="reporte-table-tardes">
+                  <span className="badge bg-warning text-dark">{tardes}</span>
+                </td>
+                <td className="reporte-table-total">{total}</td>
+                <td className="reporte-table-porcentaje">
+                  <span className={`badge ${
+                    isCritico 
+                      ? 'bg-danger' 
+                      : isExcelente 
+                      ? 'bg-success' 
+                      : isBueno 
+                      ? 'bg-primary' 
+                      : 'bg-warning text-dark'
+                  }`}>
+                    {porc}%
+                  </span>
+                  {" "}
+                  {isCritico 
+                    ? "⚠️" 
+                    : isExcelente 
+                    ? "🌟" 
+                    : isBueno 
+                    ? "✅" 
+                    : ""}
                 </td>
               </tr>
             );

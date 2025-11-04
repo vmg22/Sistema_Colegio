@@ -1,6 +1,6 @@
 import './styles/index.css'
 import './App.css'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import ButtonShowcase from './components/ui/Botones'
 import Dashboard from './pages/dashboard/Dashboard'
 import Header from './components/layout/Header'
@@ -19,6 +19,7 @@ import ReporteCursoListPage from './components/curso/ReporteCursoListPage.jsx'
 import ResumenCalificacionesPage from './components/curso/ResumenCalificacionesPage.jsx'
 import ResumenAsistenciasPage from './components/curso/ResumenAsistenciasPage.jsx'
 import CargaCalificaciones from './pages/curso/CargaCalificaciones.jsx'
+import CargaAsistencia from './pages/curso/CargaAsistencia.jsx'
 
 import DocentePerfil from './pages/docentes/DocentePerfil.jsx'
 
@@ -32,57 +33,64 @@ import ConstAluTramite from './pages/alumno/ConstAluTramite.jsx'
 import ActaVolanteExamen from './pages/alumno/actaVolanteExamen.jsx'
 import ConstanciaAlumnoRegular from './pages/alumno/constanciaAlumnoRegular.jsx'
 import CertificadoEscolar from './pages/alumno/certificadoEscolar.jsx'
-import GenerarMail from './pages/alumno/generarMail.jsx'  
+import GenerarMail from "./pages/alumno/generarmail.jsx";
 import CursoComunicacion from './pages/curso/CursoComunicacion.jsx'
-
-
+import Login from './pages/alumno/login.jsx'
+import OlvideContrasena from './pages/alumno/olvideContraseña.jsx'
+import SolicitarRecuperacion from './pages/alumno/solicitarRecuperacion.jsx'
 
 import InscripcionWizard from './components/crud/InscripcionWizard.jsx'
 
 function App() {
+  const location = useLocation()
+  
+  // Rutas donde NO queremos mostrar el Header
+  const rutasSinHeader = ['/', '/login', '/reset-password', '/solicitar-reset']
+  const mostrarHeader = !rutasSinHeader.includes(location.pathname)
+
   return (
     <>
-      <Header />
+      {mostrarHeader && <Header />}
       
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/crud" element={<MainCrud />} />
-          <Route path="/alumnos" element={<Alumnos />} />
-          <Route path="/docentes" element={<Docentes />} />
-          <Route path="/materias" element={<Materias/>} />
-          <Route path="/plan-de-equivalencias" element={<PlanEquivalencias/>} />
-          <Route path="/botones" element={<ButtonShowcase />} />
-          <Route path="/consulta" element={<Consulta/>} />
-          <Route path="/constanciaAlumnoTramite" element={<ConstAluTramite/>} />
-          <Route path="/perfilAlumno" element={<PerfilAlumno/>} />
-          <Route path="/asistenciasAlumno" element={<AsistenciasAlumno/>} />
-          <Route path="/estadoAcademicoAlumno" element={<EstadoAcademicoPage/>} />
-          <Route path="/asistencia-alumno" element={<AsistenciaAlumno/>} />
-          <Route path="/estado-academico" element={<EstadoAcademicoAlumno/>} />
-          <Route path="/historial-comunicaciones" element={<HistorialComunicaciones/>} />
-          <Route path="/home-certificados" element={<HomeCertificados/>} />
-          <Route path="/certificados-AbnEsc" element={<CertificadoAbonoEscolar/>} />
-          <Route path="/certificados-ActVolEx" element={<ActaVolanteExamen/>} />
-          <Route path="/constanciaAlumnoRegular" element={<ConstanciaAlumnoRegular/>} />
-          <Route path="/certificadoEscolar" element={<CertificadoEscolar/>} />
-          <Route path="/certificados-cCVac" element={<CertificadoComprobanteDeVacante/>} />
-          <Route path="/perfil-alumno/generar-mail" element={<GenerarMail/>} />
-          
-          
-
-          <Route path="/cursoDashboard" element={<CursoDashboardPage/>} />
-          <Route path="/reporte-curso/listado" element={<ReporteCursoListPage />} />
-          <Route path="/reporte-curso/Asistencias" element={<ResumenAsistenciasPage />} />
-          <Route path="/reporte-curso/calificaciones" element={<ResumenCalificacionesPage />} />
-          <Route path="reporte-curso/carga-calificaciones" element={<CargaCalificaciones />} />
-          <Route path="reporte-curso/comunicacion" element={<CursoComunicacion />} />
+      <Routes>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/crud" element={<MainCrud />} />
+        <Route path="/alumnos" element={<Alumnos />} />
+        <Route path="/docentes" element={<Docentes />} />
+        <Route path="/materias" element={<Materias/>} />
+        <Route path="/plan-de-equivalencias" element={<PlanEquivalencias/>} />
+        <Route path="/botones" element={<ButtonShowcase />} />
+        <Route path="/consulta" element={<Consulta/>} />
+        <Route path="/constanciaAlumnoTramite" element={<ConstAluTramite/>} />
+        <Route path="/perfilAlumno" element={<PerfilAlumno/>} />
+        <Route path="/asistenciasAlumno" element={<AsistenciasAlumno/>} />
+        <Route path="/estadoAcademicoAlumno" element={<EstadoAcademicoPage/>} />
+        <Route path="/asistencia-alumno" element={<AsistenciaAlumno/>} />
+        <Route path="/estado-academico" element={<EstadoAcademicoAlumno/>} />
+        <Route path="/historial-comunicaciones" element={<HistorialComunicaciones/>} />
+        <Route path="/home-certificados" element={<HomeCertificados/>} />
+        <Route path="/certificados-AbnEsc" element={<CertificadoAbonoEscolar/>} />
+        <Route path="/certificados-ActVolEx" element={<ActaVolanteExamen/>} />
+        <Route path="/constanciaAlumnoRegular" element={<ConstanciaAlumnoRegular/>} />
+        <Route path="/certificadoEscolar" element={<CertificadoEscolar/>} />
+        <Route path="/certificados-cCVac" element={<CertificadoComprobanteDeVacante/>} />
+        <Route path="/perfil-alumno/generar-mail" element={<GenerarMail/>} />
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/reset-password" element={<OlvideContrasena />} />
+        <Route path="/solicitar-reset" element={<SolicitarRecuperacion />} />
         
+        <Route path="/cursoDashboard" element={<CursoDashboardPage/>} />
+        <Route path="/reporte-curso/listado" element={<ReporteCursoListPage />} />
+        <Route path="/reporte-curso/Asistencias" element={<ResumenAsistenciasPage />} />
+        <Route path="/reporte-curso/calificaciones" element={<ResumenCalificacionesPage />} />
+        <Route path="reporte-curso/carga-calificaciones" element={<CargaCalificaciones />} />
+        <Route path="reporte-curso/comunicacion" element={<CursoComunicacion />} />
+        <Route path="reporte-curso/carga-asistencias" element={<CargaAsistencia />} />
 
-          <Route path="/docentes/:id" element={<DocentePerfil />} />
-          <Route path="*" element={<NotFountPage/>} />
-
-        </Routes>
-      
+        <Route path="/docentes/:id" element={<DocentePerfil />} />
+        <Route path="*" element={<NotFountPage/>} />
+      </Routes>
     </>
   )
 }

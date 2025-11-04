@@ -1,86 +1,212 @@
-// 1. Importa 'useMemo' desde React
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import BtnVolver from "../../components/ui/BtnVolver";
 import EncabezadoCurso from "../../components/curso/EncabezadoCurso";
 import { useConsultaStore } from "../../store/consultaStore";
-import Table from "react-bootstrap/Table";
-// ... tus imports de CSS y Spinner (asumo que Spinner está importado)
+import { getReporteCurso } from "../../services/reportesService";
+import { Spinner } from "react-bootstrap";
+import "../../styles/cargaCalificaciones.css";
+import ModalEditarCalificacion from "../../components/curso/ModalEditarCalificacion";
 
 const CargaCalificaciones = () => {
+  const [alumnoSeleccionado, setAlumnoSeleccionado] = useState(null);
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => {
+    setShow(false);
+    setAlumnoSeleccionado(null);
+  };
+  const handleShow = () => setShow(true);
+
   const {
     reporteCurso,
     selectedCursoNombre,
     selectedMateriaNombre,
-    selectedPeriodoNombre,
-    selectedAnioNombre,
+    setReporteCurso, //  OBTENER LA FUNCIÓN PARA ACTUALIZAR EL STORE
   } = useConsultaStore();
 
-  // Dejamos tu Spinner (con la mejora que te sugerí antes)
-  if (!selectedCursoNombre || !selectedMateriaNombre || !reporteCurso) {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Extraemos los filtros para usarlos como dependencia
+  const filtros = reporteCurso?.filtros; // OBTENER LOS FILTROS
+
+  // useEffect SE ENCARGARÁ DE BUSCAR LOS DATOS
+  useEffect(() => {
+    const traerAlumnos = async () => {
+      if (
+        !filtros ||
+        !filtros.curso ||
+        !filtros.materia ||
+        !filtros.anioLectivo ||
+        !filtros.cuatrimestre
+      ) {
+        return;
+      }
+      try {
+        const data = await getReporteCurso(
+          filtros.curso,
+          filtros.materia,
+          filtros.anioLectivo,
+          filtros.cuatrimestre
+        );
+        setReporteCurso(data);
+      } catch (error) {
+        console.error("Error al traer los alumnos:", error);
+      }
+    };
+    traerAlumnos();
+  }, [filtros, setReporteCurso]); //  EJECUTA CUANDO CAMBIEN LOS FILTROS
+
+  if (
+    !selectedCursoNombre ||
+    !selectedMateriaNombre ||
+    !reporteCurso ||
+    !reporteCurso.alumnos
+  ) {
     return (
       <div className="encabezado-curso-card">
-        {/* <Spinner animation="border" variant="primary" /> */}
+        <Spinner animation="border" variant="primary" />
         <p>Cargando...</p>
       </div>
     );
   }
 
-  // 2. CREAMOS LA LISTA ORDENADA CON useMemo
-  const alumnosOrdenados = useMemo(() => {
+  // useMemo se re-ejecutará cuando 'reporteCurso.alumnos' cambie
+  const alumnosParaMostrar = useMemo(() => {
     if (!reporteCurso.alumnos) {
       return [];
     }
-
-    return [...reporteCurso.alumnos].sort((a, b) => {
+    const alumnosOrdenados = [...reporteCurso.alumnos].sort((a, b) => {
       return a.alumno.nombreCompleto.localeCompare(b.alumno.nombreCompleto);
     });
-  }, [reporteCurso.alumnos]); // Solo se ejecuta si cambia el array.
+    if (!searchTerm) {
+      return alumnosOrdenados;
+    }
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return alumnosOrdenados.filter((item) => {
+      const dniString = String(item.alumno.dni ?? "");
+      return dniString.toLowerCase().includes(lowerCaseSearchTerm);
+    });
+  }, [reporteCurso.alumnos, searchTerm]);
 
-  const totalAlumnos = reporteCurso?.totalAlumnos || 0;
-  console.log(reporteCurso);
+  const handleAbrirModal = (item) => {
+    setAlumnoSeleccionado(item);
+    handleShow();
+  };
+
+  // Esta función se la pasaremos al modal para que la llame
+  // cuando termine de guardar exitosamente.
+  const handleSaveSuccess = async () => {
+    try {
+      // Recargar los datos
+      const data = await getReporteCurso(
+        filtros.curso,
+        filtros.materia,
+        filtros.anioLectivo,
+        filtros.cuatrimestre
+      );
+      setReporteCurso(data);
+      console.log("Datos recargados exitosamente después de guardar.");
+    } catch (error) {
+      console.error("Error al recargar los datos:", error);
+      alert(`Error al recargar: ${error.message}`);
+    }
+  };
 
   return (
     <div className="curso-dashboard-container">
       <BtnVolver />
-
-      {/* Encabezado */}
+      <div className="curso-dashboard-header">
+        <span className="material-symbols-outlined curso-dashboard-icon">
+          sticky_note_2
+        </span>
+        <h2 className="curso-dashboard-title">Carga de Calificaciones</h2>
+      </div>
       <EncabezadoCurso />
 
-      <div>
-        <input type="text" />
-        <button>Buscar alumno</button>
+      <div className="d-flex justify-content-center">
+        <input
+          type="text"
+          className="reporte-curso-search-input"
+          placeholder="Buscar alumno por DNI"
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <button className="reporte-curso-search-btn">Buscar alumno</button>
       </div>
 
-      <Table striped bordered hover>
+      <table className="carga-asistencia-table mt-4">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Alumno</th>
-            <th>Nota 1</th>
-            <th>Nota 2</th>
-            <th>Nota 3</th>
-            <th>Promedio</th>
-            <th>Accion</th>
+            <th className="reporte-curso-th">DNI</th>
+            <th className="reporte-curso-th">Alumno</th>
+            <th className="reporte-curso-th">Nota 1</th>
+            <th className="reporte-curso-th">Nota 2</th>
+            <th className="reporte-curso-th">Nota 3</th>
+            <th className="reporte-curso-th">Periodo Complementario</th>
+            <th className="reporte-curso-th">Promedio</th>
+            <th className="reporte-curso-th">Nota Final</th>
+            <th className="reporte-curso-th">Estado</th>
+            <th className="reporte-curso-th">Acción</th>
           </tr>
         </thead>
         <tbody>
-          {alumnosOrdenados.map((item) => (
+          {alumnosParaMostrar.map((item) => (
             <tr key={item.alumno.id}>
-              <td>{item.alumno.id}</td>
-              <td>{item.alumno.nombreCompleto}</td>
-              <td>{item.calificaciones?.nota1 ?? "-"}</td>
-              <td>{item.calificaciones?.nota2 ?? "-"}</td>
-              <td>{item.calificaciones?.nota3 ?? "-"}</td>
-              <td>{item.calificaciones?.promedio ?? "-"}</td>
-              <td>
-                <button className="btn btn-warning">
+              <td className="reporte-curso-td">{item.alumno.dni ?? "-"}</td>
+              <td className="reporte-curso-td">{item.alumno.nombreCompleto}</td>
+              <td className="reporte-curso-td">
+                {item.calificaciones?.nota1 ?? "-"}
+              </td>
+              <td className="reporte-curso-td">
+                {item.calificaciones?.nota2 ?? "-"}
+              </td>
+              <td className="reporte-curso-td">
+                {item.calificaciones?.nota3 ?? "-"}
+              </td>
+              <td className="reporte-curso-td">
+                {item.calificaciones?.periodoComplementario ?? "-"}
+              </td>
+              <td className="reporte-curso-td">
+                {item.calificaciones?.promedio ?? "-"}
+              </td>
+              <td className="reporte-curso-td">
+                {item.calificaciones?.definitiva ?? "-"}
+              </td>
+              {item.calificaciones?.estado ? (
+                <td
+                  className={`reporte-curso-td reporte-curso-estado-${item.calificaciones.estado}`}
+                >
+                  {item.calificaciones.estado === "aprobada" && "Aprobado"}
+                  {item.calificaciones.estado === "desaprobada" &&
+                    "Desaprobado"}
+                  {item.calificaciones.estado === "cursando" && "Cursando"}
+                  {item.calificaciones.estado === "libre" && "Libre"}
+                </td>
+              ) : (
+                <td className="reporte-curso-td">-</td>
+              )}
+
+              <td className="reporte-curso-td">
+                <button
+                  className="btn btn-warning"
+                  onClick={() => {
+                    handleAbrirModal(item);
+                  }}
+                >
                   <span className="material-symbols-outlined">edit</span>
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
-      </Table>
+      </table>
+
+      <ModalEditarCalificacion
+        show={show}
+        handleClose={handleClose}
+        alumno={alumnoSeleccionado}
+        filtros={filtros} // Pasamos los filtros
+        onSaveSuccess={handleSaveSuccess} // Pasamos la función de recarga
+      />
     </div>
   );
 };

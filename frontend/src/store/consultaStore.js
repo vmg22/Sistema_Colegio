@@ -1,5 +1,5 @@
 import { create } from "zustand";
-// 1. Importamos las herramientas de persistencia
+
 import { persist, createJSONStorage } from "zustand/middleware";
 
 // 2. Envolvemos el (set) => ({...}) dentro de persist( ... )
@@ -18,6 +18,9 @@ export const useConsultaStore = create(
       selectedMateriaNombre: "",
       selectedPeriodoNombre: "",
       selectedAnioNombre: "",
+   
+
+
 
       // (SETTERS)
       setAlumnoDni: (dni) => set({ alumnoDni: dni }),
@@ -32,6 +35,8 @@ export const useConsultaStore = create(
       setSelectedPeriodoNombre: (nombre) => set({ selectedPeriodoNombre: nombre }),
       setSelectedAnioNombre: (nombre) => set({ selectedAnioNombre: nombre }),
 
+      
+
       // Limpiamos todos los estados de la store consulta de alumno dni y consulta de curso
       resetConsulta: () =>
         set({
@@ -43,6 +48,7 @@ export const useConsultaStore = create(
           selectedMateriaNombre: "",
           selectedPeriodoNombre: "",
           selectedAnioNombre: "",
+          
         }),
     }),
     {
