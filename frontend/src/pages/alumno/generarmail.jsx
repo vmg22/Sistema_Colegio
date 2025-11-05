@@ -111,16 +111,16 @@ const GenerarMail = () => {
   const ENDPOINTS = useMemo(
     () => ({
       notificacion: {
-        alumno: "/notificacion-general/masiva",
+        alumno: "/notificacion-general-masiva",
         curso: "/notificacion-general/cursos-multiples",
       },
       reunion: {
-        alumno: "/notificacion-reunion/masiva",
-        curso: "/notificacion-reunion/curso",
+        alumno: "/notificacion-reunion-masiva",
+        curso: "/curso/notificacion-reunion",
       },
       alerta: {
-        alumno: "/alerta-asistencia/masiva",
-        curso: "/alerta-asistencia/curso",
+        alumno: "/alerta-asistencia-masiva",
+        curso: "/curso/alerta-asistencia",
       },
     }),
     []
@@ -197,7 +197,7 @@ const GenerarMail = () => {
 
       setIsLoadingData(true);
       try {
-        const url = `${API_BASE_URL}/cursos/${anio_curso}/${division}/${anioLectivoActual}/alumnos`;
+        const url = `${API_BASE_URL}/curso/${anio_curso}/${division}/${anioLectivoActual}/alumnos`;
         const { data } = await axios.get(url);
         setAlumnosFiltrados(data.data);
         setSelectedAlumnosDNI({});
@@ -207,7 +207,7 @@ const GenerarMail = () => {
         setAlumnosFiltrados([]);
         const errorMsg =
           error.response?.data?.message ||
-          `No se encontraron alumnos para el curso ID ${cursoId}.`;
+          `No se encontraron alumnos para el curso ${anio_curso}° división ${division}.`;
         setResponseMessage({ variant: "info", text: errorMsg });
       } finally {
         setIsLoadingData(false);
@@ -355,7 +355,12 @@ const GenerarMail = () => {
       const requestBody = construirRequestBody();
       const fullUrl = API_BASE_URL + endpoint;
 
-      console.log("AXIOS POST:", fullUrl, requestBody);
+      console.log("=== DEBUG INFO ===");
+      console.log("Tipo de envío:", tipoEnvio);
+      console.log("Tipo de destino:", tipoDestino);
+      console.log("Endpoint:", endpoint);
+      console.log("URL completa:", fullUrl);
+      console.log("Request Body:", JSON.stringify(requestBody, null, 2));
 
       const { data } = await axios.post(fullUrl, requestBody);
 
@@ -371,9 +376,18 @@ const GenerarMail = () => {
         horaReunion: "",
       });
     } catch (error) {
+      console.error("=== ERROR DETAILS ===");
       console.error("Error al enviar mail masivo:", error);
-      const errorMsg =
-        error.response?.data?.message || "Error de conexión con el servidor.";
+      console.error("Response data:", error.response?.data);
+      console.error("Error message:", error.message);
+      
+      let errorMsg = "Error de conexión con el servidor.";
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.response?.status) {
+        errorMsg = `Error ${error.response.status}: ${error.response.statusText}`;
+      }
+      
       setResponseMessage({
         variant: "danger",
         text: `Fallo el envío masivo: ${errorMsg}`,
