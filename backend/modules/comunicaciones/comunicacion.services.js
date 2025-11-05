@@ -145,3 +145,8 @@ exports.restaurarComunicacion = async (id) => {
   const [comunicacion] = await db.query(consultas.obtenerPorId, [id]);
   return comunicacion[0];
 };
+
+exports.obtenerComunicacionesPorAlumno = async (idAlumno) => {
+  const [rows] = await db.query(consultas.obtenerPorAlumno, [idAlumno]);
+  return rows;
+};

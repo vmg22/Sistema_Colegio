@@ -85,7 +85,7 @@ const PerfilAlumno = () => {
         <AccionCard
           titulo="Historial de Comunicaciones"
           icono="chat"
-          to="/perfil-alumno/comunicaciones"
+          to="/perfil-alumno/historial-comunicacion"
         />
         <AccionCard
           titulo="Certificados y Actas"

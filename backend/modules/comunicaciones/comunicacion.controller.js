@@ -120,7 +120,24 @@ const controladorComunicaciones = {
       }
       error(respuesta, 'Error al restaurar comunicación', 500, err.message);
     }
-  }
+  },
+    obtenerComunicacionesPorAlumno: async (solicitud, respuesta) => {
+    try {
+      const { idAlumno } = solicitud.params;
+      
+      if (!idAlumno) {
+        return error(respuesta, 'El ID del alumno es requerido', 400);
+      }
+
+      const comunicaciones = await servicioComunicaciones.obtenerComunicacionesPorAlumno(idAlumno);
+      
+      exito(respuesta, 'Comunicaciones del alumno obtenidas correctamente', comunicaciones);
+    } catch (err) {
+      error(respuesta, 'Error al obtener comunicaciones del alumno', 500, err.message);
+    }
+  },
+
 };
+
 
 module.exports = controladorComunicaciones;

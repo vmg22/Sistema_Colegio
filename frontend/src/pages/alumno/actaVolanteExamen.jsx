@@ -1,11 +1,4 @@
-// corregir los de la impresion para que solo se imprima la hoja del certificado y no el nav
-// tomar los datos de array de edad y calcular en el front con usememo con el datatime actual y domicilio
-//volante del examen queda pero va en curso.
-
-
-
-
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useConsultaStore } from "../../store/consultaStore";
 import { getReporteAlumno } from "../../services/reportesService";
@@ -16,7 +9,6 @@ import "../../styles/actaVolanteExamen.css";
 const ActaVolanteExamen = () => {
   const navigate = useNavigate();
   
-  // ✅ Obtenemos datos del store de Zustand
   const { alumnoDni, alumnoAnio, reporteAlumno, setReporteAlumno } = useConsultaStore();
 
   const [cargando, setCargando] = useState(true);
@@ -50,21 +42,21 @@ const ActaVolanteExamen = () => {
     aplazados: "",
     ausentes: ""
   });
+  
   const refActa = useRef();
 
-  // 🗓️ Función auxiliar para obtener el mes actual
-  const obtenerMesActual = () => {
+  // Memoizar función auxiliar
+  const obtenerMesActual = useMemo(() => {
     const meses = [
       "enero", "febrero", "marzo", "abril", "mayo", "junio",
       "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
     ];
     return meses[new Date().getMonth()];
-  };
+  }, []);
 
-  // 🔄 Cargar datos del alumno
-  React.useEffect(() => {
+  // Cargar datos del alumno
+  useEffect(() => {
     const cargarDatos = async () => {
-      // Validar que tengamos DNI
       if (!alumnoDni) {
         setError("No se encontró el DNI del alumno. Por favor, vuelve a realizar la consulta.");
         setCargando(false);
@@ -75,21 +67,12 @@ const ActaVolanteExamen = () => {
         setCargando(true);
         let data = reporteAlumno;
 
-        // Si no hay datos en el store, hacer la petición
         if (!data || data.dni !== alumnoDni) {
-          console.log("📡 Cargando datos del alumno desde el backend...");
           const response = await getReporteAlumno(alumnoDni, alumnoAnio);
-          
-          // El backend devuelve { success: true, data: {...} }
           data = response.data || response;
-          
-          // Guardar en el store para futuras consultas
           setReporteAlumno(data);
-        } else {
-          console.log("✅ Usando datos del store de Zustand");
         }
 
-        // 🔁 Pre-llenar datos del formulario
         const alumnoCompleto = `${data.apellido || ""}, ${data.nombre || ""}`.trim();
         const alumnos = Array(31).fill(null).map((_, index) => ({
           numero: index + 1,
@@ -111,7 +94,7 @@ const ActaVolanteExamen = () => {
           division: data.curso?.division || data.curso?.curso_division || "",
           turno: data.curso?.turno || data.curso?.curso_turno || "",
           dia: new Date().getDate().toString(),
-          mes: obtenerMesActual(),
+          mes: obtenerMesActual,
           anioActual: new Date().getFullYear().toString(),
           alumnos,
           presidente: "",
@@ -137,15 +120,15 @@ const ActaVolanteExamen = () => {
     };
 
     cargarDatos();
-  }, [alumnoDni, alumnoAnio, reporteAlumno, setReporteAlumno]);
+  }, [alumnoDni, alumnoAnio, reporteAlumno, setReporteAlumno, obtenerMesActual]);
 
-  // ✏️ Manejadores
-  const manejarCambio = (e) => {
+  // Manejadores memoizados
+  const manejarCambio = useCallback((e) => {
     const { name, value } = e.target;
     setDatosFormulario((prev) => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
-  const manejarCambioAlumno = (index, campo, valor) => {
+  const manejarCambioAlumno = useCallback((index, campo, valor) => {
     setDatosFormulario((prev) => {
       const nuevosAlumnos = [...prev.alumnos];
       nuevosAlumnos[index] = {
@@ -154,31 +137,120 @@ const ActaVolanteExamen = () => {
       };
       return { ...prev, alumnos: nuevosAlumnos };
     });
-  };
+  }, []);
 
-  const manejarImprimir = () => window.print();
+  const manejarImprimir = useCallback(() => {
+    window.print();
+  }, []);
 
-  const manejarDescargarPDF = async () => {
+  const manejarDescargarPDF = useCallback(async () => {
     try {
       const element = refActa.current;
-      const canvas = await html2canvas(element, { scale: 2 });
-      const imgData = canvas.toDataURL("image/png");
+      
+      // Configuración ultra-mejorada para máximo contraste
+      const canvas = await html2canvas(element, { 
+        scale: 4, // Máxima calidad
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.querySelector('.acta-container');
+          if (clonedElement) {
+            // Forzar máximo contraste en todo
+            clonedElement.style.backgroundColor = '#ffffff';
+            clonedElement.style.color = '#000000';
+            
+            // Aplicar estilos ultra-oscuros a todos los elementos
+            const allElements = clonedElement.querySelectorAll('*');
+            allElements.forEach(el => {
+              el.style.color = '#000000';
+              
+              // Inputs y labels más oscuros
+              if (el.tagName === 'INPUT' || el.classList.contains('label')) {
+                el.style.color = '#000000';
+                el.style.fontWeight = '700';
+              }
+              
+              // Bordes de tabla ultra-oscuros
+              if (el.tagName === 'TH' || el.tagName === 'TD') {
+                el.style.borderColor = '#000000';
+                el.style.borderWidth = '1.5px';
+                el.style.color = '#000000';
+                el.style.fontWeight = '700';
+              }
+              
+              // Headers de tabla con fondo
+              if (el.tagName === 'TH') {
+                el.style.backgroundColor = '#cccccc';
+              }
+            });
+            
+            // Forzar líneas divisorias
+            clonedElement.querySelectorAll('.input-underline, .input-box').forEach(el => {
+              el.style.borderBottom = '2px solid #000000';
+            });
+            
+            clonedElement.querySelectorAll('.date-box').forEach(el => {
+              el.style.border = '2px solid #000000';
+            });
+          }
+        }
+      });
+      
+      // Aumentar contraste del canvas
+      const ctx = canvas.getContext('2d');
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      
+      // Aplicar filtro de contraste
+      const contrast = 1.5; // Factor de contraste
+      const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+      
+      for (let i = 0; i < data.length; i += 4) {
+        data[i] = factor * (data[i] - 128) + 128;     // Red
+        data[i + 1] = factor * (data[i + 1] - 128) + 128; // Green
+        data[i + 2] = factor * (data[i + 2] - 128) + 128; // Blue
+      }
+      
+      ctx.putImageData(imageData, 0, 0);
+      
+      const imgData = canvas.toDataURL("image/jpeg", 1.0);
       const pdf = new jsPDF("p", "mm", "a4");
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`ActaVolante_${datosFormulario.asignatura}_${datosFormulario.dia}${datosFormulario.mes}.pdf`);
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      // Primera página
+      pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight, undefined, 'FAST');
+      heightLeft -= pdfHeight;
+
+      // Páginas adicionales si necesario
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight, undefined, 'FAST');
+        heightLeft -= pdfHeight;
+      }
+
+      pdf.save(`ActaVolante_${datosFormulario.asignatura || 'examen'}_${datosFormulario.dia}${datosFormulario.mes}.pdf`);
     } catch (err) {
       console.error("Error al generar PDF:", err);
       alert("Error al generar el PDF. Por favor, intenta de nuevo.");
     }
-  };
+  }, [datosFormulario.asignatura, datosFormulario.dia, datosFormulario.mes]);
 
-  const manejarVolver = () => navigate(-1);
+  const manejarVolver = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
 
-  // 🧩 Estados visuales
+  // Estados visuales
   if (cargando) {
     return (
       <div className="acta-body">
@@ -209,7 +281,7 @@ const ActaVolanteExamen = () => {
     );
   }
 
-  // 🧾 Render principal
+  // Render principal
   return (
     <div className="acta-body">
       <div className="acta-container" ref={refActa}>
@@ -507,7 +579,7 @@ const ActaVolanteExamen = () => {
         </div>
       </div>
 
-      {/* Botones de acción */}
+      {/* Botones de acción - fuera del contenedor para que no se impriman */}
       <div className="actions no-print">
         <button onClick={manejarVolver} className="btn-secondary">
           <span className="material-symbols-outlined">arrow_back</span>
@@ -525,6 +597,5 @@ const ActaVolanteExamen = () => {
     </div>
   );
 };
-
 
 export default ActaVolanteExamen;

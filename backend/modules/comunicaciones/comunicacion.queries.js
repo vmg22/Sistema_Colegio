@@ -87,6 +87,25 @@ const consultasComunicaciones = {
     SET deleted_at = NULL 
     WHERE id_comunicacion = ? AND deleted_at IS NOT NULL
   `
+  ,
+  obtenerPorAlumno: `
+    SELECT 
+      c.id_comunicacion,
+      c.asunto,
+      c.contenido,
+      c.fecha_envio,
+      cd.email,
+      CONCAT(t.nombre, ' ', t.apellido) as nombre_tutor
+    FROM comunicacion c
+    INNER JOIN comunicacion_destinatario cd ON c.id_comunicacion = cd.id_comunicacion
+    LEFT JOIN tutor t ON cd.id_tutor = t.id_tutor
+    WHERE cd.id_alumno = ?
+      AND c.deleted_at IS NULL
+      AND cd.deleted_at IS NULL
+    ORDER BY c.fecha_envio DESC
+  `,
 };
+
+
 
 module.exports = consultasComunicaciones;

@@ -25,7 +25,7 @@ import DocentePerfil from './pages/docentes/DocentePerfil.jsx'
 
 import AsistenciaAlumno from './pages/alumno/AsistenciaAlumno'
 import EstadoAcademicoAlumno from './pages/alumno/EstadoAcademicoAlumno'
-import HistorialComunicaciones from './pages/alumno/HistorialComunicaciones'
+import HistorialComunicacion from './pages/alumno/historialComunicacion.jsx'
 import HomeCertificados from './pages/alumno/HomeCertificados.jsx'
 import CertificadoAbonoEscolar from './pages/alumno/certificadoAbonoEscolar.jsx'
 import CertificadoComprobanteDeVacante from './pages/alumno/certificadoComprobanteDeVacante.jsx'
@@ -92,7 +92,7 @@ function App() {
         <Route path="/estadoAcademicoAlumno" element={<ProtectedRoute><EstadoAcademicoPage/></ProtectedRoute>} />
         <Route path="/asistencia-alumno" element={<ProtectedRoute><AsistenciaAlumno/></ProtectedRoute>} />
         <Route path="/estado-academico" element={<ProtectedRoute><EstadoAcademicoAlumno/></ProtectedRoute>} />
-        <Route path="/historial-comunicaciones" element={<ProtectedRoute><HistorialComunicaciones/></ProtectedRoute>} />
+        <Route path="perfil-alumno/historial-comunicacion" element={<ProtectedRoute><HistorialComunicacion/></ProtectedRoute>} />
         <Route path="/home-certificados" element={<ProtectedRoute><HomeCertificados/></ProtectedRoute>} />
         <Route path="/certificados-AbnEsc" element={<ProtectedRoute><CertificadoAbonoEscolar/></ProtectedRoute>} />
         <Route path="/certificados-ActVolEx" element={<ProtectedRoute><ActaVolanteExamen/></ProtectedRoute>} />
