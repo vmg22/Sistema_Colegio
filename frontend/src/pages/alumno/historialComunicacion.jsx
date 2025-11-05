@@ -4,6 +4,8 @@ const HistorialComunicaciones = () => {
   const [reporte, setReporte] = useState(null);
   const [comunicaciones, setComunicaciones] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [comunicacionesPorPagina] = useState(10);
 
   // Configuración de la API
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -135,6 +137,18 @@ const HistorialComunicaciones = () => {
   const handleVolver = useCallback(() => {
     window.history.back();
   }, []);
+
+  // Cálculos de paginación
+  const indexUltimaComunicacion = paginaActual * comunicacionesPorPagina;
+  const indexPrimeraComunicacion = indexUltimaComunicacion - comunicacionesPorPagina;
+  const comunicacionesActuales = comunicaciones.slice(indexPrimeraComunicacion, indexUltimaComunicacion);
+  const totalPaginas = Math.ceil(comunicaciones.length / comunicacionesPorPagina);
+
+  // Función para cambiar de página
+  const cambiarPagina = (numeroPagina) => {
+    setPaginaActual(numeroPagina);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // LOADING STATE
   if (loading) {
@@ -345,10 +359,10 @@ const HistorialComunicaciones = () => {
               color: "#155724",
               fontWeight: "500"
             }}>
-              ✅ Se encontraron {comunicaciones.length} comunicación(es)
+              ✅ Se encontraron {comunicaciones.length} comunicación(es) | Página {paginaActual} de {totalPaginas}
             </div>
 
-            {comunicaciones.map((comunicacion, index) => {
+            {comunicacionesActuales.map((comunicacion, index) => {
               console.log("🎨 Renderizando comunicación", index, ":", comunicacion);
               return (
                 <div
@@ -483,6 +497,143 @@ const HistorialComunicaciones = () => {
                 </div>
               );
             })}
+
+            {/* Controles de Paginación */}
+            {totalPaginas > 1 && (
+              <div style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "10px",
+                marginTop: "30px",
+                padding: "20px",
+                backgroundColor: "#fff",
+                borderRadius: "12px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              }}>
+                {/* Botón Anterior */}
+                <button
+                  onClick={() => cambiarPagina(paginaActual - 1)}
+                  disabled={paginaActual === 1}
+                  style={{
+                    padding: "10px 20px",
+                    backgroundColor: paginaActual === 1 ? "#e0e0e0" : "#1976d2",
+                    color: paginaActual === 1 ? "#999" : "#fff",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: paginaActual === 1 ? "not-allowed" : "pointer",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                    transition: "background-color 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (paginaActual !== 1) {
+                      e.currentTarget.style.backgroundColor = "#1565c0";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (paginaActual !== 1) {
+                      e.currentTarget.style.backgroundColor = "#1976d2";
+                    }
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>
+                    chevron_left
+                  </span>
+                  Anterior
+                </button>
+
+                {/* Números de página */}
+                <div style={{
+                  display: "flex",
+                  gap: "8px",
+                  alignItems: "center",
+                }}>
+                  {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((numero) => (
+                    <button
+                      key={numero}
+                      onClick={() => cambiarPagina(numero)}
+                      style={{
+                        padding: "10px 16px",
+                        backgroundColor: paginaActual === numero ? "#1976d2" : "#fff",
+                        color: paginaActual === numero ? "#fff" : "#1976d2",
+                        border: `2px solid ${paginaActual === numero ? "#1976d2" : "#e0e0e0"}`,
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        fontWeight: paginaActual === numero ? "600" : "500",
+                        minWidth: "45px",
+                        transition: "all 0.2s",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (paginaActual !== numero) {
+                          e.currentTarget.style.backgroundColor = "#e3f2fd";
+                          e.currentTarget.style.borderColor = "#1976d2";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (paginaActual !== numero) {
+                          e.currentTarget.style.backgroundColor = "#fff";
+                          e.currentTarget.style.borderColor = "#e0e0e0";
+                        }
+                      }}
+                    >
+                      {numero}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Botón Siguiente */}
+                <button
+                  onClick={() => cambiarPagina(paginaActual + 1)}
+                  disabled={paginaActual === totalPaginas}
+                  style={{
+                    padding: "10px 20px",
+                    backgroundColor: paginaActual === totalPaginas ? "#e0e0e0" : "#1976d2",
+                    color: paginaActual === totalPaginas ? "#999" : "#fff",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: paginaActual === totalPaginas ? "not-allowed" : "pointer",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                    transition: "background-color 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (paginaActual !== totalPaginas) {
+                      e.currentTarget.style.backgroundColor = "#1565c0";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (paginaActual !== totalPaginas) {
+                      e.currentTarget.style.backgroundColor = "#1976d2";
+                    }
+                  }}
+                >
+                  Siguiente
+                  <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>
+                    chevron_right
+                  </span>
+                </button>
+              </div>
+            )}
+
+            {/* Información de paginación */}
+            {comunicaciones.length > 0 && (
+              <div style={{
+                textAlign: "center",
+                marginTop: "15px",
+                color: "#6c757d",
+                fontSize: "14px",
+              }}>
+                Mostrando {indexPrimeraComunicacion + 1} - {Math.min(indexUltimaComunicacion, comunicaciones.length)} de {comunicaciones.length} comunicaciones
+              </div>
+            )}
           </div>
         )}
       </div>
