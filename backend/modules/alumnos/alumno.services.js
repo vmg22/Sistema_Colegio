@@ -6,6 +6,117 @@ const consultasAlumnoTutor = require('../alumno_tutor/alumno_tutor.query');
 const consultasUsuario = require('../usuario/usuario.queries'); 
 const bcrypt = require('bcrypt');
 
+// ============================================
+// HELPERS PRIVADOS PARA crearConTutor
+// ============================================
+
+async function _verificarDniAlumnoExistente(connection, dni) {
+  const [rows] = await connection.query(consultas.verificarDniExistente, [dni]);
+  if (rows.length > 0) {
+    throw Object.assign(
+      new Error('Ya existe un alumno con este DNI.'), 
+      { statusCode: 409 }
+    );
+  }
+}
+
+async function _verificarEmailAlumnoExistente(connection, email) {
+  if (!email) return;
+  const [rows] = await connection.query(consultas.verificarEmailExistente, [email]);
+  if (rows.length > 0) {
+    throw Object.assign(
+      new Error('Ya existe un alumno con este email.'), 
+      { statusCode: 409 }
+    );
+  }
+}
+
+async function _verificarDniTutorExistente(connection, dni) {
+  const [rows] = await connection.query(consultas.verificarDniTutorExistente, [dni]);
+  if (rows.length > 0) {
+    throw Object.assign(
+      new Error('Ya existe un tutor con este DNI.'), 
+      { statusCode: 409 }
+    );
+  }
+}
+
+async function _verificarUsernameExistente(connection, username) {
+  const [rows] = await connection.query(consultas.verificarUsernameExistente, [username]);
+  if (rows.length > 0) {
+    throw Object.assign(
+      new Error('El username ya está en uso.'), 
+      { statusCode: 409 }
+    );
+  }
+}
+
+async function _verificarEmailUsuarioExistente(connection, email) {
+  const [rows] = await connection.query(consultas.verificarEmailUsuarioExistente, [email]);
+  if (rows.length > 0) {
+    throw Object.assign(
+      new Error('El email de usuario ya está en uso.'), 
+      { statusCode: 409 }
+    );
+  }
+}
+
+async function _crearUsuarioParaTutor(connection, datosUsuario) {
+  const password_hash = await bcrypt.hash(datosUsuario.password || '123456', 10);
+  const [result] = await connection.query(consultas.crearUsuario, [
+    datosUsuario.username, 
+    password_hash, 
+    datosUsuario.email_usuario
+  ]);
+  return result.insertId;
+}
+
+async function _crearTutor(connection, datosTutor, id_usuario = null) {
+  const [result] = await connection.query(consultasTutores.crear, [
+    id_usuario,
+    datosTutor.dni_tutor,
+    datosTutor.nombre,
+    datosTutor.apellido,
+    datosTutor.email || null,
+    datosTutor.telefono || null,
+    datosTutor.direccion || null,
+    datosTutor.parentesco,
+    'activo'
+  ]);
+  return result.insertId;
+}
+
+async function _crearAlumno(connection, datosAlumno) {
+  const params = [
+    datosAlumno.dni_alumno,
+    datosAlumno.nombre_alumno,
+    datosAlumno.apellido_alumno,
+    _formatDate(datosAlumno.fecha_nacimiento),
+    datosAlumno.lugar_nacimiento || null,
+    datosAlumno.direccion || null,
+    datosAlumno.telefono || null,
+    datosAlumno.email || null,
+    _formatDate(datosAlumno.fecha_inscripcion) || _formatDate(new Date()),
+    datosAlumno.estado?.toUpperCase() || 'ACTIVO'
+  ];
+
+  const [result] = await connection.query(consultas.crear, params);
+  return result.insertId;
+}
+
+async function _vincularAlumnoTutor(connection, id_alumno, id_tutor, es_principal = 1) {
+  await connection.query(consultasAlumnoTutor.crear, [
+    id_alumno,
+    id_tutor,
+    es_principal
+  ]);
+}
+
+async function _obtenerAlumnoCompleto(connection, id_alumno) {
+  const [rows] = await connection.query(consultas.obtenerAlumnoCompleto, [id_alumno]);
+  return rows[0];
+}
+
 // Helper para obtener y verificar la existencia de un alumno
 async function _obtenerAlumnoPorId(id) {
   const [rows] = await pool.query(consultas.obtenerPorId, [id]);
@@ -30,161 +141,55 @@ const servicioAlumnos = {
   },
 
   crearConTutor: async (datos) => {
-  const connection = await pool.getConnection();
-  
-  try {
-    await connection.beginTransaction();
+    const connection = await pool.getConnection();
+    
+    try {
+      await connection.beginTransaction();
 
-    // 1. VALIDACIONES PREVIAS - Alumno
-    const [dniExistente] = await connection.query(
-      consultas.verificarDniExistente, 
-      [datos.alumno.dni_alumno]
-    );
-    if (dniExistente.length > 0) {
-      throw Object.assign(
-        new Error('Ya existe un alumno con este DNI.'), 
-        { statusCode: 409 }
-      );
-    }
+      // 1. Validaciones de alumno
+      await _verificarDniAlumnoExistente(connection, datos.alumno.dni_alumno);
+      await _verificarEmailAlumnoExistente(connection, datos.alumno.email);
 
-    if (datos.alumno.email) {
-      const [emailExistente] = await connection.query(
-        consultas.verificarEmailExistente, 
-        [datos.alumno.email]
-      );
-      if (emailExistente.length > 0) {
-        throw Object.assign(
-          new Error('Ya existe un alumno con este email.'), 
-          { statusCode: 409 }
-        );
-      }
-    }
+      // 2. Validaciones de tutor
+      await _verificarDniTutorExistente(connection, datos.tutor.dni_tutor);
 
-    // 2. VALIDACIONES PREVIAS - Tutor
-    const [dniTutorExistente] = await connection.query(
-      `SELECT id_tutor FROM tutor WHERE dni_tutor = ? AND deleted_at IS NULL`,
-      [datos.tutor.dni_tutor]
-    );
-    if (dniTutorExistente.length > 0) {
-      throw Object.assign(
-        new Error('Ya existe un tutor con este DNI.'), 
-        { statusCode: 409 }
-      );
-    }
-
-    // 3. CREAR USUARIO (si se solicita)
-    let id_usuario = null;
-    if (datos.tutor.crear_usuario && datos.tutor.username && datos.tutor.email_usuario) {
-      // Verificar que no exista el username
-      const [usernameExistente] = await connection.query(
-        `SELECT id_usuario FROM usuario WHERE username = ? AND deleted_at IS NULL`,
-        [datos.tutor.username]
-      );
-      if (usernameExistente.length > 0) {
-        throw Object.assign(
-          new Error('El username ya está en uso.'), 
-          { statusCode: 409 }
-        );
+      // 3. Crear usuario si se solicita
+      let id_usuario = null;
+      if (datos.tutor.crear_usuario && datos.tutor.username && datos.tutor.email_usuario) {
+        await _verificarUsernameExistente(connection, datos.tutor.username);
+        await _verificarEmailUsuarioExistente(connection, datos.tutor.email_usuario);
+        id_usuario = await _crearUsuarioParaTutor(connection, datos.tutor);
       }
 
-      // Verificar que no exista el email
-      const [emailUsuarioExistente] = await connection.query(
-        `SELECT id_usuario FROM usuario WHERE email_usuario = ? AND deleted_at IS NULL`,
-        [datos.tutor.email_usuario]
-      );
-      if (emailUsuarioExistente.length > 0) {
-        throw Object.assign(
-          new Error('El email de usuario ya está en uso.'), 
-          { statusCode: 409 }
-        );
-      }
+      // 4. Crear tutor
+      const id_tutor = await _crearTutor(connection, datos.tutor, id_usuario);
 
-      const password_hash = await bcrypt.hash(
-        datos.tutor.password || '123456', 
-        10
-      );
-      
-      const [resultUsuario] = await connection.query(
-        `INSERT INTO usuario (username, password_hash, email_usuario, rol, estado)
-         VALUES (?, ?, ?, 'tutor', 'activo')`,
-        [datos.tutor.username, password_hash, datos.tutor.email_usuario]
-      );
-      id_usuario = resultUsuario.insertId;
+      // 5. Crear alumno
+      const id_alumno = await _crearAlumno(connection, datos.alumno);
+
+      // 6. Vincular alumno con tutor
+      await _vincularAlumnoTutor(connection, id_alumno, id_tutor);
+
+      // 7. Commit de la transacción
+      await connection.commit();
+
+      // 8. Obtener y retornar alumno completo
+      const alumnoCompleto = await _obtenerAlumnoCompleto(connection, id_alumno);
+
+      return {
+        alumno: alumnoCompleto,
+        id_tutor,
+        id_usuario,
+        mensaje: 'Alumno y tutor creados exitosamente'
+      };
+
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
     }
-
-    // 4. CREAR TUTOR
-    const [resultTutor] = await connection.query(consultasTutores.crear, [
-      id_usuario,
-      datos.tutor.dni_tutor,
-      datos.tutor.nombre,
-      datos.tutor.apellido,
-      datos.tutor.email || null,
-      datos.tutor.telefono || null,
-      datos.tutor.direccion || null,
-      datos.tutor.parentesco,
-      'activo'
-    ]);
-    const id_tutor = resultTutor.insertId;
-
-    // 5. CREAR ALUMNO
-    const paramsAlumno = [
-      datos.alumno.dni_alumno,
-      datos.alumno.nombre_alumno,
-      datos.alumno.apellido_alumno,
-      _formatDate(datos.alumno.fecha_nacimiento),
-      datos.alumno.lugar_nacimiento || null,
-      datos.alumno.direccion || null,
-      datos.alumno.telefono || null,
-      datos.alumno.email || null,
-      _formatDate(datos.alumno.fecha_inscripcion) || _formatDate(new Date()),
-      datos.alumno.estado?.toUpperCase() || 'ACTIVO'
-    ];
-
-    const [resultAlumno] = await connection.query(consultas.crear, paramsAlumno);
-    const id_alumno = resultAlumno.insertId;
-
-    // 6. CREAR RELACIÓN ALUMNO-TUTOR
-    await connection.query(consultasAlumnoTutor.crear, [
-      id_alumno,
-      id_tutor,
-      1 // es_principal = true
-    ]);
-
-    // 7. COMMIT DE LA TRANSACCIÓN
-    await connection.commit();
-
-    // 8. OBTENER Y RETORNAR EL ALUMNO COMPLETO CON RELACIONES
-    const [alumnoCompleto] = await connection.query(
-      `SELECT 
-        a.*,
-        t.id_tutor,
-        t.nombre as tutor_nombre,
-        t.apellido as tutor_apellido,
-        t.dni_tutor,
-        t.parentesco,
-        t.telefono as tutor_telefono,
-        t.email as tutor_email
-      FROM alumno a
-      LEFT JOIN alumno_tutor at ON a.id_alumno = at.id_alumno AND at.deleted_at IS NULL
-      LEFT JOIN tutor t ON at.id_tutor = t.id_tutor AND t.deleted_at IS NULL
-      WHERE a.id_alumno = ?`,
-      [id_alumno]
-    );
-
-    return {
-      alumno: alumnoCompleto[0],
-      id_tutor,
-      id_usuario,
-      mensaje: 'Alumno y tutor creados exitosamente'
-    };
-
-  } catch (error) {
-    await connection.rollback();
-    throw error;
-  } finally {
-    connection.release();
-  }
-},
+  },
 
   
 
