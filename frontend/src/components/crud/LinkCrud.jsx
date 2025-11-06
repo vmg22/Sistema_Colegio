@@ -29,6 +29,12 @@ const cardData = [
     icon: "description", // Ícono de Google para Plan de Equivalencias
     color: "#2563EB", // rojo-600
     },
+    {
+    to: "/cursoscrud",
+    label: "Cursos",
+    icon: "description", // Ícono de Google para Plan de Equivalencias
+    color: "#2563EB", // rojo-600        
+    }
 ];
 
 
