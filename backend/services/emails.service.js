@@ -3,6 +3,8 @@ const dotenv = require("dotenv");
 const pool = require("../config/db");
 const {
  QUERY_REPORTE_ALUMNO,
+ QUERY_ALUMNO_BASICO,      // ← AGREGAR
+  QUERY_TUTORES_ALUMNO      // ← AGREGAR,
 } = require("../modules/reportesAlumnoDni/reporte.queries");
 const {
  QUERY_ALUMNOS_POR_CURSO,

@@ -112,7 +112,7 @@ const GenerarMail = () => {
     () => ({
       notificacion: {
         alumno: "/notificacion-general-masiva",
-        curso: "/notificacion-general/cursos-multiples",
+        curso: "/cursos/notificacion-general",
       },
       reunion: {
         alumno: "/notificacion-reunion-masiva",

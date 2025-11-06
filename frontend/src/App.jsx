@@ -21,6 +21,7 @@ import ResumenAsistenciasPage from './components/curso/ResumenAsistenciasPage.js
 import CargaCalificaciones from './pages/curso/CargaCalificaciones.jsx'
 import CargaAsistencia from './pages/curso/CargaAsistencia.jsx'
 
+
 import DocentePerfil from './pages/docentes/DocentePerfil.jsx'
 
 import AsistenciaAlumno from './pages/alumno/AsistenciaAlumno'
@@ -36,6 +37,7 @@ import CertificadoEscolar from './pages/alumno/certificadoEscolar.jsx'
 import GenerarMail from "./pages/alumno/generarmail.jsx";
 import CursoComunicacion from './pages/curso/CursoComunicacion.jsx'
 import EnviarAlertaTutoresPage from './pages/curso/EnviarAlertaTutoresPage.jsx'
+// import AdminPrincipal from './pages/alumno/adminPrincipal.jsx'  
 
 
 
@@ -101,6 +103,7 @@ function App() {
         <Route path="/certificados-cCVac" element={<ProtectedRoute><CertificadoComprobanteDeVacante/></ProtectedRoute>} />
         <Route path="/perfil-alumno/generar-mail" element={<ProtectedRoute><GenerarMail/></ProtectedRoute>} />
         <Route path="/enviar-alerta-tutores" element={<ProtectedRoute><EnviarAlertaTutoresPage/></ProtectedRoute>} />
+        {/* <Route path="/admin-principal" element={<ProtectedRoute><AdminPrincipal/></ProtectedRoute>} /> */}
       
         
         <Route path="/cursoDashboard" element={<ProtectedRoute><CursoDashboardPage/></ProtectedRoute>} />
