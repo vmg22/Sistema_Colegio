@@ -49,6 +49,7 @@ import OlvideContrasena from './pages/alumno/olvideContraseña.jsx'
 import SolicitarRecuperacion from './pages/alumno/solicitarRecuperacion.jsx'
 
 import InscripcionWizard from './components/crud/InscripcionWizard.jsx'
+import AlumnosPerfil from './pages/crud/alumnos/AlumnosPerfil.jsx'
 
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
@@ -111,11 +112,11 @@ function App() {
         <Route path="/reporte-curso/Asistencias" element={<ProtectedRoute><ResumenAsistenciasPage /></ProtectedRoute>} />
         <Route path="/reporte-curso/calificaciones" element={<ProtectedRoute><ResumenCalificacionesPage /></ProtectedRoute>} />
         <Route path="reporte-curso/carga-calificaciones" element={<ProtectedRoute><CargaCalificaciones /></ProtectedRoute>} />
+        <Route path="reporte-curso/carga-asistencias" element={<ProtectedRoute><CargaAsistencia /></ProtectedRoute>} />
         <Route path="reporte-curso/comunicacion" element={<ProtectedRoute><CursoComunicacion /></ProtectedRoute>} />
         <Route path="/inscripcion-wizard" element={<ProtectedRoute><InscripcionWizard /></ProtectedRoute>} />
-        <Route path="reporte-curso/carga-asistencias" element={<CargaAsistencia />} />
-        
         <Route path="/docentes/:id" element={<ProtectedRoute><DocentePerfil /></ProtectedRoute>} />
+        <Route path="/alumnos/:id" element={<ProtectedRoute><AlumnosPerfil /></ProtectedRoute>} />
         <Route path="*" element={<NotFountPage/>} />
       </Routes>
     </>

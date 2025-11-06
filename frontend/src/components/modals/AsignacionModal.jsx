@@ -27,6 +27,7 @@ const AsignacionModal = ({
 
   const isEditMode = Boolean(asignacionToEdit);
 
+
 useEffect(() => {
     // 1. Lógica para llenar el formulario (que ya tenías)
     if (isEditMode) {
@@ -96,60 +97,82 @@ useEffect(() => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <form onSubmit={handleSubmit}>
-          <h3>{isEditMode ? 'Editar Asignación' : 'Nueva Asignación'}</h3>
-          <p>Docente: <strong>{docente.nombre} {docente.apellido}</strong></p>
-          
+          <h3>{isEditMode ? "Editar Asignación" : "Nueva Asignación"}</h3>
+          <p>
+            Docente:{" "}
+            <strong>
+              {docente.nombre} {docente.apellido}
+            </strong>
+          </p>
+
           <fieldset>
             <legend>Datos de la Asignación</legend>
             <div className="form-group">
               <label htmlFor="id_materia">Materia:</label>
-              <select 
-                id="id_materia" name="id_materia" 
-                value={formData.id_materia} onChange={handleChange} 
-                required 
-                disabled={isEditMode} // No se puede cambiar la materia de una asignación
+              <select
+                id="id_materia"
+                name="id_materia"
+                value={formData.id_materia}
+                onChange={handleChange}
+                required
+                disabled={isEditMode}
               >
                 <option value="">Seleccione una materia...</option>
-                {materiasList.map(m => (
-                  <option key={m.id_materia} value={m.id_materia}>{m.nombre}</option>
-                ))}
+                {Array.isArray(materiasList) && materiasList.length > 0 ? (
+                  materiasList.map((m) => (
+                    <option key={m.id_materia} value={m.id_materia}>
+                      {m.nombre}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Cargando materias...</option>
+                )}
               </select>
             </div>
 
             <div className="form-group">
               <label htmlFor="id_curso">Curso:</label>
-              <select 
-                id="id_curso" name="id_curso" 
-                value={formData.id_curso} onChange={handleChange} 
+              <select
+                id="id_curso"
+                name="id_curso"
+                value={formData.id_curso}
+                onChange={handleChange}
                 required
-                disabled={isEditMode} // No se puede cambiar el curso de una asignación
+                disabled={isEditMode}
               >
                 <option value="">Seleccione un curso...</option>
-                {cursosList.map(c => (
-                  <option key={c.id_curso} value={c.id_curso}>
-                    {c.nombre} ({c.anio}° {c.division})
-                  </option> 
-                ))}
+                {Array.isArray(cursosList) && cursosList.length > 0 ? (
+                  cursosList.map((c) => (
+                    <option key={c.id_curso} value={c.id_curso}>
+                      {c.nombre} ({c.anio}° {c.division})
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Cargando cursos...</option>
+                )}
               </select>
             </div>
 
             <div className="form-group">
               <label htmlFor="anio_lectivo">Año Lectivo:</label>
-              <input 
-                type="number" id="anio_lectivo" name="anio_lectivo" 
-                value={formData.anio_lectivo} onChange={handleChange} 
-                required 
+              <input
+                type="number"
+                id="anio_lectivo"
+                name="anio_lectivo"
+                value={formData.anio_lectivo}
+                onChange={handleChange}
+                required
               />
             </div>
-            
+
             {/* Solo mostramos el 'estado' al editar */}
-{isEditMode && (
+            {isEditMode && (
               <div className="form-group">
                 <label htmlFor="estado">Estado:</label>
-                <select 
-                  id="estado" 
-                  name="estado" 
-                  value={formData.estado} 
+                <select
+                  id="estado"
+                  name="estado"
+                  value={formData.estado}
                   onChange={handleChange}
                   disabled={loadingEstados} // Deshabilitado mientras carga
                 >
@@ -157,7 +180,7 @@ useEffect(() => {
                     <option value={formData.estado}>Cargando...</option>
                   ) : (
                     // Mapeamos los estados traídos de la API
-                    listaEstados.map(estado => (
+                    listaEstados.map((estado) => (
                       <option key={estado} value={estado}>
                         {estado.charAt(0).toUpperCase() + estado.slice(1)}
                       </option>
@@ -171,9 +194,16 @@ useEffect(() => {
           {error && <p className="error-message">{error}</p>}
 
           <div className="modal-actions">
-            <button type="button" onClick={onClose} className="btn-cancel" disabled={isSaving}>Cancelar</button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn-cancel"
+              disabled={isSaving}
+            >
+              Cancelar
+            </button>
             <button type="submit" className="btn-save" disabled={isSaving}>
-              {isSaving ? 'Guardando...' : 'Guardar'}
+              {isSaving ? "Guardando..." : "Guardar"}
             </button>
           </div>
         </form>

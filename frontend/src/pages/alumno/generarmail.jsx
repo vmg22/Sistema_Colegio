@@ -80,7 +80,6 @@ const styles = {
 const GenerarMail = () => {
   // Store
   const { reporteAlumno } = useConsultaStore();
-
   // Estado - Datos
   const [_reporte, setReporte] = useState(null);
   const [anioLectivo, setAnioLectivo] = useState(new Date().getFullYear());
@@ -250,7 +249,9 @@ const GenerarMail = () => {
         });
         return false;
       }
+       console.log(alumnosSeleccionados)
     }
+   
 
     if (tipoDestino === "cursos") {
       const cursosSeleccionados = Object.keys(selectedCursosIds).filter(
