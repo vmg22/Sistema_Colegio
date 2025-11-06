@@ -1,7 +1,7 @@
 import API from "../api/api";
 import axios from "axios";
 
-const MATERIAS_URL = `${API}/materias`;
+const MATERIAS_URL = `${API}/altasmaterias`;
 
 const handleError = (error, defaultMessage) => {
   console.error(defaultMessage, error);

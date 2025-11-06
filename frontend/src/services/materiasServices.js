@@ -18,6 +18,7 @@ export const getMateriasId = async (id) => {
   try {
     const response = await axios.get(`${MATERIAS_URL}/${id}`);
     return response.data.datos;
+
   } catch (error) {
     console.error("Error al obtener materia por ID:", error);
     return null;

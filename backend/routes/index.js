@@ -25,6 +25,8 @@ const asignacionRoutes = require("../modules/CRUD/asignaciones/asignacion.routes
 
 // ✅ NUEVO: Módulo de altas (Docente + Usuario)
 const altasRoutes = require("../modules/altas/alta.routes.js");
+
+const altasmateriasRoutes = require("../modules/altasmaterias/altasmaterias.routes.js")
 // Registrar rutas de los módulos
 router.use("/alumnos", alumnoRoutes);
 router.use("/docentes", docenteRoutes);
@@ -52,6 +54,7 @@ router.use('/mail', mailRoutes);
 
 //  Ruta de altas
 router.use("/altas", altasRoutes);
+router.use("/altasmaterias", altasmateriasRoutes);
 
 // RUTAS PARA INCRIPCIONES /CRUD INSCRIPCION
 router.use('/inscripciones', inscripcionesRoutes);
@@ -82,6 +85,7 @@ router.get("/", (req, res) => {
       altas: "/api/v1/altas/docentes",
       usuarios: "/api/v1/usuarios",
       auth: "/api/v1/auth",
+      altasmateriasRoutes : "/api/v1/altasmaterias",
     },
   });
 });
