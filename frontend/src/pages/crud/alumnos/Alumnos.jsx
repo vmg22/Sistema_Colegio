@@ -1,82 +1,121 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import LinkCrud from "../../../components/crud/LinkCrud";
-import HeaderCrud from "../../../components/crud/HeaderCrud";
-import InputBusqueda from "../../../components/crud/InputBusqueda";
 import BtnVolver from "../../../components/ui/BtnVolver";
 import TableCrud from "../../../components/crud/TableCrud";
-import { getAllAlumnos, getAlumnoId } from "../../../services/alumnosService";
-import DocenteEditModal from "../../../components/modals/DocenteEditModal";
+import { getAllAlumnos, deleteAlumno } from "../../../services/alumnosService";
+import AlumnoEditModal from "../../../components/modals/AlumnoEditModal";
+import AlumnoWizardModal from "../../../components/modals/AlumnoWizardModal";
 
 const Alumnos = () => {
-  // Estado para manejar los datos
+  // Estados
   const [alumnos, setAlumnos] = useState([]);
+  const [alumnosFiltrados, setAlumnosFiltrados] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showWizardModal, setShowWizardModal] = useState(false); // Para el alta
-  const [showEditModal, setShowEditModal] = useState(false); // Para editar
-  const [currentAlumno, setCurrentAlumno] = useState(null); // Para editar
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showWizardModal, setShowWizardModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [currentAlumno, setCurrentAlumno] = useState(null);
+  
   const navigate = useNavigate();
+
+  // Cargar todos los alumnos
+  const loadAlumnos = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await getAllAlumnos();
+      setAlumnos(data);
+      setAlumnosFiltrados(data); // Inicialmente muestra todos
+    } catch (err) {
+      console.error("Error al cargar alumnos:", err);
+      setError(err.message || 'Error al cargar alumnos.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Cargar datos al montar el componente
   useEffect(() => {
-    const getAlumnos = async () => {
-      try {
-        setIsLoading(true);
-        const data = await getAllAlumnos();
-        console.log(data);
-        setAlumnos(data);
-        setError(null);
-      } catch (err) {
-        console.error("Error al cargar alumnos:", err);
-        setError("Error al cargar los alumnos");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    getAlumnos();
+    loadAlumnos();
   }, []);
 
-  const loadAlumnos = async () => {
-          setIsLoading(true);
-          setError(null);
-          try {
-              const params = {};
-              if (searchTerm.trim() !== '') {
-                  params.buscar = searchTerm.trim();
-              }
-              const data = await getAlumnoId(params);
-              setDocentes(data); 
-  
-              if (data.length === 0 && searchTerm.trim() !== '') {
-                   setError("No se encontraron docentes.");
-              }
-          } catch (err) {
-              setError(err.message || 'Error al cargar docentes.');
-          } finally {
-              setIsLoading(false);
-          }
-      };
-  
-      useEffect(() => { loadDocentes(); }, []); 
-      const handleSearch = () => { loadDocentes(); };
-  
-      const handleDelete = async (id_docente) => {
-          if (window.confirm('¿Estás seguro de que quieres eliminar este docente?')) {
-              try {
-                  await docenteService.deleteDocente(id_docente);
-                  loadDocentes(); 
-              } catch (err) {
-                  setError(err.message || 'No se pudo eliminar el docente.');
-              }
-          }
-      };
+  // Filtrar alumnos en tiempo real cuando cambia el término de búsqueda
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      // Si no hay búsqueda, mostrar todos
+      setAlumnosFiltrados(alumnos);
+      setError(null);
+    } else {
+      // Filtrar por término de búsqueda
+      const term = searchTerm.toLowerCase();
+      const filtered = alumnos.filter(alumno => 
+        alumno.nombre_alumno?.toLowerCase().includes(term) ||
+        alumno.apellido_alumno?.toLowerCase().includes(term) ||
+        alumno.dni_alumno?.includes(term) ||
+        alumno.email?.toLowerCase().includes(term)
+      );
+      
+      setAlumnosFiltrados(filtered);
+      
+      // Mostrar mensaje si no hay resultados
+      if (filtered.length === 0) {
+        setError("No se encontraron alumnos que coincidan con la búsqueda.");
+      } else {
+        setError(null);
+      }
+    }
+  }, [searchTerm, alumnos]); // Se ejecuta cada vez que cambia searchTerm o alumnos
+
+  // Limpiar búsqueda
+  const handleClearSearch = () => {
+    setSearchTerm("");
+  };
+
+  // Eliminar alumno
+  const handleDelete = async (id_alumno) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este alumno?')) {
+      try {
+        await deleteAlumno(id_alumno);
+        loadAlumnos(); // Recargar la lista completa
+      } catch (err) {
+        setError(err.message || 'No se pudo eliminar el alumno.');
+      }
+    }
+  };
+
+  // Abrir modal de edición
+  const handleOpenEditModal = (alumno) => {
+    setCurrentAlumno(alumno);
+    setShowWizardModal(false);
+    setShowEditModal(true);
+  };
+
+  // Abrir modal de alta
+  const handleOpenWizardModal = () => {
+    setCurrentAlumno(null);
+    setShowEditModal(false);
+    setShowWizardModal(true);
+  };
+
+  // Cerrar modales
+  const handleCloseModal = () => {
+    setShowWizardModal(false);
+    setShowEditModal(false);
+    setCurrentAlumno(null);
+  };
+
+  // Al guardar exitosamente
+  const handleSaveSuccess = () => {
+    handleCloseModal();
+    setSearchTerm(""); // Limpiar búsqueda
+    loadAlumnos(); // Recargar lista
+  };
 
   // Definiciones de columnas
   const columns = [
     { header: "ID", accessor: "id_alumno" },
     { header: "DNI", accessor: "dni_alumno" },
-
     {
       header: "Nombre y Apellido",
       accessor: "nombre",
@@ -100,27 +139,9 @@ const Alumnos = () => {
     },
   ];
 
-  const handleOpenEditModal = (alumno) => {
-    setCurrentAlumno(alumno);
-    setShowWizardModal(false);
-    setShowEditModal(true);
-  };
-  const handleCloseModal = () => {
-    setShowWizardModal(false);
-    setShowEditModal(false);
-    setCurrentAlumno(null);
-  };
-
-  const handleSaveSuccess = () => {
-    handleCloseModal();
-    setSearchTerm("");
-    loadDocentes();
-  };
-
-  // Renderizar acciones (editar, eliminar, etc.)
+  // Renderizar acciones
   const renderActions = (alumno) => (
     <div className="table-actions">
-      {console.log(alumno)}
       <button
         onClick={() => navigate(`/alumnos/${alumno.id_alumno}`)}
         className="action-button view"
@@ -135,7 +156,11 @@ const Alumnos = () => {
       >
         <span className="material-symbols-outlined">edit</span>
       </button>
-      <button className="action-button delete" title="Eliminar">
+      <button
+        onClick={() => handleDelete(alumno.id_alumno)}
+        className="action-button delete"
+        title="Eliminar"
+      >
         <span className="material-symbols-outlined">delete</span>
       </button>
     </div>
@@ -152,10 +177,23 @@ const Alumnos = () => {
       <div className="search-add-bar">
         <div className="search-box">
           <span className="search-icon">👤</span>
-          <input type="text" placeholder="Buscar alumno..." />
+          <input
+            type="text"
+            placeholder="Buscar por nombre, apellido, DNI o email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <button
+              onClick={handleClearSearch}
+              className="clear-search"
+              title="Limpiar búsqueda"
+            >
+              ✕
+            </button>
+          )}
         </div>
-        <button className="search-button">Buscar</button>
-        <button className="add-button">
+        <button className="add-button" onClick={handleOpenWizardModal}>
           <span className="add-icon"></span>
           Agregar alumno
         </button>
@@ -165,12 +203,19 @@ const Alumnos = () => {
       <div className="list-container">
         <div className="list-header">
           <h3>Listado de Alumnos</h3>
-          {!isLoading && !error && <span>Total: {alumnos.length}</span>}
+          {!isLoading && (
+            <span>
+              {searchTerm 
+                ? `${alumnosFiltrados.length} de ${alumnos.length} alumnos`
+                : `Total: ${alumnos.length}`
+              }
+            </span>
+          )}
         </div>
 
         <TableCrud
           columns={columns}
-          data={alumnos}
+          data={alumnosFiltrados}
           isLoading={isLoading}
           error={error}
           renderActions={renderActions}
@@ -178,12 +223,20 @@ const Alumnos = () => {
         />
       </div>
 
+      {/* Modal de Edición */}
       {showEditModal && (
-        <DocenteEditModal
-          docenteToEdit={currentAlumno}
+        <AlumnoEditModal
+          alumnoToEdit={currentAlumno}
           onClose={handleCloseModal}
           onSave={handleSaveSuccess}
         />
+      )}
+
+      {showWizardModal && (
+  <AlumnoWizardModal
+    onClose={handleCloseModal}
+    onSave={handleSaveSuccess}
+  />
       )}
     </div>
   );

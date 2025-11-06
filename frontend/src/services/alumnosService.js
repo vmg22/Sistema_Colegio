@@ -26,6 +26,12 @@ export const deleteAlumno = async(id)=>{
         return response.data;
 }
 
-export const editAlumno = async ()=>{
-        
+export const editAlumno = async (id, data)=>{
+        const response = await axios.put(`${ALUMNOS_URL}/${id}`, data);
+        return response.data;
+}
+
+export const createAlumnoConTutor = async (data) => {
+  const response = await axios.post(`${ALUMNOS_URL}/con-tutor`, data);
+  return response.data;
 }

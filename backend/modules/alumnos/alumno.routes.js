@@ -15,6 +15,7 @@ router.get('/dni/:dni', controladorAlumnos.obtenerPorDni);
 // --- CRUD PRINCIPAL (Las rutas con /:id van después de las específicas) ---
 router.get('/', controladorAlumnos.obtenerTodos);
 router.post('/', controladorAlumnos.crear);
+router.post('/con-tutor', controladorAlumnos.crearConTutor);
 router.get('/:id', controladorAlumnos.obtenerPorId); // <-- Ahora sí funciona correctamente
 router.put('/:id', controladorAlumnos.actualizarCompleto);
 router.patch('/:id', controladorAlumnos.actualizarParcial);
