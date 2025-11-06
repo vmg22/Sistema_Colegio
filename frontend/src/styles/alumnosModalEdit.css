@@ -1,0 +1,209 @@
+/* --- Base del Modal (Reutilizado) --- */
+.wizard-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.wizard-content {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 550px;
+    max-height: 95vh;
+    animation: wizardFadeIn 0.3s ease-out;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes wizardFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- ESTILOS DEL WIZARD --- */
+
+/* Encabezado del Modal */
+.wizard-header {
+    margin: 0;
+    padding: 20px 25px;
+    background-color: #f7f9fc;
+    border-bottom: 1px solid #e0e0e0;
+    color: #333;
+    font-size: 22px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+/* Subtítulo (Paso 1 de 2) */
+.wizard-step {
+    float: right;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+}
+
+/* Contenido del Formulario - Área desplazable */
+.wizard-form {
+    padding: 25px;
+    overflow-y: auto;
+    flex-grow: 1;
+    max-height: calc(95vh - 140px);
+}
+
+/* Mensaje de "Creando cuenta para Alumno..." */
+.wizard-message {
+    font-size: 16px;
+    color: #555;
+    background-color: #f7f9fc;
+    border: 1px solid #e0e0e0;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Estilo para los <fieldset> */
+.wizard-fieldset {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.wizard-legend {
+    font-size: 18px;
+    font-weight: 600;
+    color: #303F9F;
+    padding: 0 10px;
+    margin-left: 10px;
+}
+
+/* --- Campos del Formulario --- */
+.wizard-form-group {
+    margin-bottom: 18px;
+}
+
+.wizard-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+    font-size: 15px;
+}
+
+.wizard-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.wizard-input:focus,
+.wizard-select:focus {
+    border-color: #0d6efd;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+}
+
+.wizard-select[disabled] {
+    background-color: #f0f0f0;
+    color: #999;
+}
+
+/* --- Mensaje de Error --- */
+.wizard-error {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin: 10px 0 20px 0;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* --- Botones --- */
+.wizard-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    padding: 20px 25px;
+    border-top: 1px solid #f0f0f0;
+    background-color: #fff;
+    flex-shrink: 0;
+}
+
+.wizard-btn {
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.wizard-btn:hover {
+    transform: translateY(-2px);
+}
+
+.wizard-btn-cancel {
+    background-color: #6c757d;
+    color: white;
+}
+
+.wizard-btn-cancel:hover {
+    background-color: #5a6268;
+}
+
+.wizard-btn-save {
+    background-color: #303F9F;
+    color: white;
+}
+
+.wizard-btn-save:hover {
+    background-color: #303F9F;
+}
+
+.wizard-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+
+/* --- Responsive para pantallas muy pequeñas --- */
+@media (max-height: 600px) {
+    .wizard-overlay {
+        padding: 10px;
+        align-items: flex-start;
+    }
+    
+    .wizard-content {
+        max-height: 98vh;
+    }
+    
+    .wizard-form {
+        padding: 15px;
+        max-height: calc(98vh - 120px);
+    }
+    
+    .wizard-actions {
+        padding: 15px 20px;
+    }
+}

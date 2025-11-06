@@ -46,6 +46,7 @@ import OlvideContrasena from './pages/alumno/olvideContraseña.jsx'
 import SolicitarRecuperacion from './pages/alumno/solicitarRecuperacion.jsx'
 
 import InscripcionWizard from './components/crud/InscripcionWizard.jsx'
+import AlumnosPerfil from './pages/crud/alumnos/AlumnosPerfil.jsx'
 
 import Cursos from './pages/crud/cursos/Curso.jsx'
 
@@ -111,9 +112,7 @@ function App() {
         <Route path="reporte-curso/carga-asistencias" element={<ProtectedRoute><CargaAsistencia /></ProtectedRoute>} />
         <Route path="reporte-curso/comunicacion" element={<ProtectedRoute><CursoComunicacion /></ProtectedRoute>} />
         <Route path="/inscripcion-wizard" element={<ProtectedRoute><InscripcionWizard /></ProtectedRoute>} />
-      
         <Route path="/docentes/:id" element={<ProtectedRoute><DocentePerfil /></ProtectedRoute>} />
-        <Route path="/cursoscrud" element={ <Cursos /> } />
         <Route path="*" element={<NotFountPage/>} />
       </Routes>
     </>
