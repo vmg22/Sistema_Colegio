@@ -1,147 +1,123 @@
-const materiaServices = require('./materia.services');
-const { exito, error } = require('../../utils/responses'); // Asumo que tienes esto en utils
+const servicioMaterias = require('./materia.services');
+const { exito, error } = require('../../utils/responses');
 
-const materiaController = {
-  
-  obtenerTodasMaterias: async (req, res) => {
+const controladorMaterias = {
+ 
+  obtenerTodasMaterias: async (solicitud, respuesta) => {
     try {
-      // --- CORRECCIÓN ---
-      const { buscar } = req.query; // Lee el query param
-      const materias = await materiaServices.obtenerTodasMaterias(buscar); // Pasa 'buscar'
-      
-      exito(res, 'Materias obtenidas correctamente', { total: materias.length, materias });
+      const materias = await servicioMaterias.obtenerTodasMaterias();
+      exito(respuesta, 'Materias obtenidas correctamente', materias);
     } catch (err) {
-      error(res, 'Error al obtener materias', 500, err.message);
+      error(respuesta, 'Error al obtener materias', 500, err.message);
     }
   },
 
-  obtenerMateriaPorId: async (req, res) => {
+  
+  obtenerMateriaPorId: async (solicitud, respuesta) => {
     try {
-      const { id } = req.params;
-      const materia = await materiaServices.obtenerMateriaPorId(id);
+      const { id } = solicitud.params;
+      const materia = await servicioMaterias.obtenerMateriaPorId(id);
       
-      // La validación de "no encontrado" ya la hace el servicio
-      exito(res, 'Materia obtenida correctamente', materia);
+      if (!materia) {
+        return error(respuesta, 'Materia no encontrada', 404);
+      }
+      
+      exito(respuesta, 'Materia obtenida correctamente', materia);
+    } catch (err) {
+      error(respuesta, 'Error al obtener materia', 500, err.message);
+    }
+  },
+
+
+  crearMateria: async (solicitud, respuesta) => {
+    try {
+      const datosMateria = solicitud.body;
+      
+      if (!datosMateria.nombre || !datosMateria.nivel) {
+        return error(respuesta, 'Nombre y nivel son obligatorios', 400);
+      }
+      
+      const materiaCreada = await servicioMaterias.crearMateria(datosMateria);
+      
+      exito(respuesta, 'Materia creada exitosamente', materiaCreada, 201);
+    } catch (err) {
+      if (err.message.includes('obligatorios')) {
+        return error(respuesta, err.message, 400);
+      }
+      error(respuesta, 'Error al crear materia', 500, err.message);
+    }
+  },
+
+
+  actualizarMateria: async (solicitud, respuesta) => {
+    try {
+      const { id } = solicitud.params;
+      const datosActualizados = solicitud.body;
+      
+      const materiaActualizada = await servicioMaterias.actualizarMateria(id, datosActualizados);
+      
+      exito(respuesta, 'Materia actualizada correctamente', materiaActualizada);
     } catch (err) {
       if (err.message === 'Materia no encontrada') {
-        return error(res, err.message, 404);
+        return error(respuesta, 'Materia no encontrada', 404);
       }
-      error(res, 'Error al obtener materia', 500, err.message);
+      error(respuesta, 'Error al actualizar materia', 500, err.message);
     }
   },
 
-crearMateria: async (req, res, next) => {
+actualizarMateriaParcial: async (solicitud, respuesta) => {
   try {
-    const materiaCreada = await materiaServices.crearMateria(req.body);
-    exito(res, 'Materia creada exitosamente', materiaCreada, 201);
-} catch (err) {
-  const mensaje = err.message?.toLowerCase() || '';
-
-  if (mensaje.includes('obligatorio')) {
-    return error(res, err.message, 400);
+    const { id } = solicitud.params;
+    const datosActualizados = solicitud.body;
+    
+    const materiaActualizada = await servicioMaterias.actualizarMateriaParcial(id, datosActualizados);
+    exito(respuesta, 'Materia actualizada correctamente', materiaActualizada);
+  } catch (err) {
+    if (err.message === 'Materia no encontrada') {
+      return error(respuesta, 'Materia no encontrada', 404);
+    }
+    error(respuesta, 'Error al actualizar materia', 500, err.message);
   }
-  if (mensaje.includes('ya existe')) {
-    return error(res, err.message, 409); // 💥 ahora sí siempre matchea
-  }
-
-  // Si no entra en los casos anteriores, logueamos el error real
-  console.error('❌ Error inesperado en crearMateria:', err);
-  error(res, 'Error al crear la materia', 500, err.message);
-}
 },
 
-
-  actualizarMateria: async (req, res) => {
+  eliminarMateria: async (solicitud, respuesta) => {
     try {
-      const { id } = req.params;
-      const datosActualizados = req.body;
-      const materiaActualizada = await materiaServices.actualizarMateria(id, datosActualizados);
-      exito(res, 'Materia actualizada correctamente', materiaActualizada);
+      const { id } = solicitud.params;
+      const resultado = await servicioMaterias.eliminarMateria(id);
+      
+      exito(respuesta, resultado.mensaje, { id_materia: resultado.id_materia });
     } catch (err) {
       if (err.message === 'Materia no encontrada') {
-        return error(res, err.message, 404);
+        return error(respuesta, 'Materia no encontrada', 404);
       }
-      // --- CORRECCIÓN ---
-      if (err.message.includes('ya existe')) {
-        return error(res, err.message, 409);
-      }
-      error(res, 'Error al actualizar la materia', 500, err.message);
+      error(respuesta, 'Error al eliminar materia', 500, err.message);
     }
   },
 
-  actualizarMateriaParcial: async (req, res) => {
+
+  obtenerMateriasEliminadas: async (solicitud, respuesta) => {
     try {
-      const { id } = req.params;
-      const datosActualizados = req.body;
-      // Llama al servicio de PATCH
-      const materiaActualizada = await materiaServices.actualizarMateriaParcial(id, datosActualizados);
-      exito(res, 'Materia actualizada correctamente', materiaActualizada);
+      const materiasEliminadas = await servicioMaterias.obtenerMateriasEliminadas();
+      exito(respuesta, 'Materias eliminadas obtenidas', materiasEliminadas);
     } catch (err) {
-      if (err.message === 'Materia no encontrada') {
-        return error(res, err.message, 404);
-      }
-      // --- CORRECCIÓN ---
-      if (err.message.includes('ya existe')) {
-        return error(res, err.message, 409);
-      }
-      error(res, 'Error al actualizar la materia', 500, err.message);
+      error(respuesta, 'Error al obtener materias eliminadas', 500, err.message);
     }
   },
 
-  eliminarMateria: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const resultado = await materiaServices.eliminarMateria(id);
-      exito(res, resultado.mensaje, { id_materia: resultado.id_materia });
-    } catch (err) {
-      if (err.message === 'Materia no encontrada') {
-        return error(res, err.message, 404);
-      }
-      error(res, 'Error al eliminar la materia', 500, err.message);
-    }
-  },
-  
-  obtenerMateriasEliminadas: async (req, res) => {
-    try {
-      const materiasEliminadas = await materiaServices.obtenerMateriasEliminadas();
-      exito(res, 'Materias eliminadas obtenidas', { total: materiasEliminadas.length, materias: materiasEliminadas });
-    } catch (err) {
-      error(res, 'Error al obtener materias eliminadas', 500, err.message);
-    }
-  },
-  
-  restaurarMateria: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const materiaRestaurada = await materiaServices.restaurarMateria(id);
-      exito(res, 'Materia restaurada correctamente', materiaRestaurada);
-    } catch (err) {
-      if (err.message.includes('no encontrada')) {
-        return error(res, err.message, 404);
-      }
-      error(res, 'Error al restaurar la materia', 500, err.message);
-    }
-  },
 
-  /**
-   * --- ¡FUNCIONES AÑADIDAS PARA ENUMs! ---
-   */
-  obtenerEstadosMateria: async (req, res) => {
+  restaurarMateria: async (solicitud, respuesta) => {
     try {
-      const estados = await materiaServices.obtenerEstadosMateria();
-      exito(res, 'Estados de materia obtenidos', estados);
+      const { id } = solicitud.params;
+      const materiaRestaurada = await servicioMaterias.restaurarMateria(id);
+      
+      exito(respuesta, 'Materia restaurada correctamente', materiaRestaurada);
     } catch (err) {
-      error(res, 'Error al obtener estados', 500, err.message);
+      if (err.message.includes('no encontrada') || err.message.includes('no está eliminada')) {
+        return error(respuesta, err.message, 404);
+      }
+      error(respuesta, 'Error al restaurar materia', 500, err.message);
     }
-  },
-  obtenerCiclosMateria: async (req, res) => {
-    try {
-      const ciclos = await materiaServices.obtenerCiclosMateria();
-      exito(res, 'Ciclos de materia obtenidos', ciclos);
-    } catch (err) {
-      error(res, 'Error al obtener ciclos', 500, err.message);
-    }
-  },
+  }
 };
 
-module.exports = materiaController;
+module.exports = controladorMaterias;
