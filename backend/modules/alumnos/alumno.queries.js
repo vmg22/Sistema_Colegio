@@ -60,6 +60,42 @@ const consultasAlumnos = {
     ORDER BY fecha_inscripcion DESC
   `,
 
+  obtenerPorEdad: `
+    SELECT 
+      id_alumno, dni_alumno, nombre_alumno, apellido_alumno,
+      fecha_nacimiento,
+      TIMESTAMPDIFF(YEAR, fecha_nacimiento, CURDATE()) as edad
+    FROM alumno 
+    WHERE deleted_at IS NULL
+      AND TIMESTAMPDIFF(YEAR, fecha_nacimiento, CURDATE()) BETWEEN ? AND ?
+    ORDER BY edad, apellido_alumno
+  `,
+
+  obtenerConContactoIncompleto: `
+    SELECT 
+      id_alumno, dni_alumno, nombre_alumno, apellido_alumno, 
+      telefono, email, direccion
+    FROM alumno 
+    WHERE deleted_at IS NULL 
+      AND (telefono IS NULL OR telefono = '' OR email IS NULL OR email = '')
+    ORDER BY apellido_alumno
+  `,
+
+  obtenerAlumnoCompleto: `
+    SELECT 
+      a.*,
+      t.id_tutor,
+      t.nombre as tutor_nombre,
+      t.apellido as tutor_apellido,
+      t.dni_tutor,
+      t.parentesco,
+      t.telefono as tutor_telefono,
+      t.email as tutor_email
+    FROM alumno a
+    LEFT JOIN alumno_tutor at ON a.id_alumno = at.id_alumno AND at.deleted_at IS NULL
+    LEFT JOIN tutor t ON at.id_tutor = t.id_tutor AND t.deleted_at IS NULL
+    WHERE a.id_alumno = ?`,
+
   // ====================
   // CONSULTAS DE CREACIÓN
   // ====================
@@ -140,6 +176,34 @@ const consultasAlumnos = {
   SELECT id_alumno FROM alumno 
   WHERE id_alumno = ?
 `,
+
+// ====================
+  // CONSULTAS PARA TUTOR (Usadas en crearConTutor)
+  // ====================
+
+  verificarDniTutorExistente: `
+    SELECT id_tutor FROM tutor 
+    WHERE dni_tutor = ? AND deleted_at IS NULL
+  `,
+
+  // ====================
+  // CONSULTAS PARA USUARIO (Usadas en crearConTutor)
+  // ====================
+
+  verificarUsernameExistente: `
+    SELECT id_usuario FROM usuario 
+    WHERE username = ? AND deleted_at IS NULL
+  `,
+
+  verificarEmailUsuarioExistente: `
+    SELECT id_usuario FROM usuario 
+    WHERE email_usuario = ? AND deleted_at IS NULL
+  `,
+
+  crearUsuario: `
+    INSERT INTO usuario (username, password_hash, email_usuario, rol, estado)
+    VALUES (?, ?, ?, 'tutor', 'activo')
+  `,
 
   // ====================
   // CONSULTAS ESTADÍSTICAS

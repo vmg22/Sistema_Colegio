@@ -30,17 +30,21 @@ const controladorAlumnos = {
     }
   },
 
-  crearConTutor : async (req, res) => {
-  try {
-    const resultado = await servicioAlumnos.crearConTutor(req.body);
-    res.status(201).json({
-      mensaje: resultado.mensaje,
-      data: resultado.alumno
-    });
-  } catch (error) {
-    manejarError(res, error, 'Error al crear alumno con tutor.');
-  }
-},
+  crearConTutor: async (req, res) => {
+    try {
+      const resultado = await servicioAlumnos.crearConTutor(req.body);
+      res.status(201).json({
+        mensaje: resultado.mensaje,
+        data: {
+          alumno: resultado.alumno,
+          id_tutor: resultado.id_tutor,
+          id_usuario: resultado.id_usuario
+        }
+      });
+    } catch (error) {
+      manejarError(res, error, 'Error al crear alumno con tutor.');
+    }
+  },
   
   obtenerPorId: async (req, res) => {
     try {
