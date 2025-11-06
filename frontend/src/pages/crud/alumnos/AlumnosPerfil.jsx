@@ -1,52 +1,59 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import BtnVolver from "../../../components/ui/BtnVolver";
 import { getAlumnoId } from "../../../services/alumnosService";
 import { useParams } from "react-router-dom";
 import { getAlumnoTutorId, getTutor } from "../../../services/alumnoTutor";
+import ModalEditTutor from "../../../components/modals/ModalEditTutor";
 
 const AlumnosPerfil = () => {
   const [alumno, setAlumno] = useState({});
   const [tutor, setTutor] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { id } = useParams();
 
-  useEffect(() => {
-    const traerDatos = async () => {
-      try {
-        setIsLoading(true);
-        
-        // Traer datos del alumno
-        const responseAlumno = await getAlumnoId(id);
-        setAlumno(responseAlumno);
+  // 3. REFACTORIZA traerDatos CON useCallback
+  // Lo इamos para poder llamarlo tanto en el useEffect como después de guardar
+  const traerDatos = useCallback(async () => {
+    try {
+      setIsLoading(true);
 
-        // Traer relación alumno-tutor
-        const responseAlumnoTutor = await getAlumnoTutorId(id);
-        console.log("Alumno-Tutor:", responseAlumnoTutor);
+      // Traer datos del alumno
+      const responseAlumno = await getAlumnoId(id);
+      setAlumno(responseAlumno);
 
-        // Obtener el id_tutor de la respuesta
-        const idTutor = responseAlumnoTutor?.datos[0].id_tutor || responseAlumnoTutor?.id_tutor;
-        console.log(idTutor)
-        if (idTutor) {
-          // Traer datos del tutor
-          const responseTutor = await getTutor(idTutor);
-          console.log("Respuesta Tutor completa:", responseTutor);
-          
-          // IMPORTANTE: El backend envuelve la respuesta en 'datos'
-          const datosTutor = responseTutor?.datos || responseTutor;
-          console.log("Datos Tutor extraídos:", datosTutor);
-          
-          setTutor(datosTutor);
-        }
-      } catch (error) {
-        console.error("Error al cargar datos:", error);
-      } finally {
-        setIsLoading(false);
+      // Traer relación alumno-tutor
+      const responseAlumnoTutor = await getAlumnoTutorId(id);
+      console.log("Alumno-Tutor:", responseAlumnoTutor);
+
+      // Obtener el id_tutor de la respuesta
+      const idTutor =
+        responseAlumnoTutor?.datos[0].id_tutor ||
+        responseAlumnoTutor?.id_tutor;
+      
+      if (idTutor) {
+        // Traer datos del tutor
+        const responseTutor = await getTutor(idTutor);
+        console.log("Respuesta Tutor completa:", responseTutor);
+
+        const datosTutor = responseTutor?.datos || responseTutor;
+        console.log("Datos Tutor extraídos:", datosTutor);
+
+        setTutor(datosTutor);
       }
-    };
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
+      // Aquí podrías setear un estado de error para mostrar al usuario
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id]); // La dependencia es 'id'
 
+  // useEffect ahora solo llama a traerDatos
+  useEffect(() => {
     traerDatos();
-  }, [id]); // Agregado 'id' como dependencia
+  }, [traerDatos]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -55,6 +62,27 @@ const AlumnosPerfil = () => {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = String(date.getFullYear()).slice(-2);
     return `${day}-${month}-${year}`;
+  };
+
+  const handleTutor = (id_tutor) => {
+    console.log("id tutor:", id_tutor);
+
+  };
+
+  // Esta función se llamará cuando el modal guarde exitosamente
+  const handleSaveTutor = () => {
+    setIsModalOpen(false); // Cierra el modal
+    traerDatos(); // Vuelve a cargar los datos para refrescar la vista
+  };
+
+  // Esta función cierra el modal (puedes llamarla desde el botón Cancelar o el overlay)
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+  
+  // Esta función abre el modal
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
   };
 
   return (
@@ -130,7 +158,7 @@ const AlumnosPerfil = () => {
             {/* Caja Derecha: Información del Tutor */}
             <div className="perfil-cursos-box">
               <h4>Información del Tutor</h4>
-              
+
               {tutor ? (
                 <dl>
                   <dt>Nombre y Apellido</dt>
@@ -157,15 +185,24 @@ const AlumnosPerfil = () => {
                   <dd>{tutor.parentesco || "N/A"}</dd>
 
                   <dt>Estado</dt>
-                <dd>
-                  <span
-                    className={`status-badge ${
-                      tutor.estado?.toLowerCase() || "inactivo"
-                    }`}
-                  >
-                    {tutor.estado}
-                  </span>
-                </dd>
+                  <dd>
+                    <span
+                      className={`status-badge ${
+                        tutor.estado?.toLowerCase() || "inactivo"
+                      }`}
+                    >
+                      {tutor.estado}
+                    </span>
+                  </dd>
+                  <div className="d-flex justify-content-end ">
+                    <button
+                      className="btn btn-primary"
+                      //onClick={handleTutor(tutor.id_tutor)} // <-- ESTO ES INCORRECTO
+                      onClick={handleOpenModal} // <-- ESTA ES LA FORMA CORRECTA
+                    >
+                      Editar Tutor
+                    </button>
+                  </div>
                 </dl>
               ) : (
                 <p>No hay tutor asignado.</p>
@@ -173,6 +210,14 @@ const AlumnosPerfil = () => {
             </div>
           </div>
         </>
+      )}
+
+      {isModalOpen && (
+        <ModalEditTutor
+          tutorToEdit={tutor}     // Pasa el objeto tutor que ya cargaste
+          onClose={handleCloseModal}  // Pasa la función para cerrar
+          onSave={handleSaveTutor}    // Pasa la función para guardar y refrescar
+        />
       )}
     </div>
   );
