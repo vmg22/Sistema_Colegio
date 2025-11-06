@@ -47,6 +47,8 @@ import SolicitarRecuperacion from './pages/alumno/solicitarRecuperacion.jsx'
 
 import InscripcionWizard from './components/crud/InscripcionWizard.jsx'
 
+import Cursos from './pages/crud/cursos/Curso.jsx'
+
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -111,6 +113,7 @@ function App() {
         <Route path="/inscripcion-wizard" element={<ProtectedRoute><InscripcionWizard /></ProtectedRoute>} />
       
         <Route path="/docentes/:id" element={<ProtectedRoute><DocentePerfil /></ProtectedRoute>} />
+        <Route path="/cursoscrud" element={ <Cursos /> } />
         <Route path="*" element={<NotFountPage/>} />
       </Routes>
     </>
