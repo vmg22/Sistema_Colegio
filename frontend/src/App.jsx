@@ -113,6 +113,8 @@ function App() {
         <Route path="reporte-curso/comunicacion" element={<ProtectedRoute><CursoComunicacion /></ProtectedRoute>} />
         <Route path="/inscripcion-wizard" element={<ProtectedRoute><InscripcionWizard /></ProtectedRoute>} />
         <Route path="/docentes/:id" element={<ProtectedRoute><DocentePerfil /></ProtectedRoute>} />
+        <Route path="/alumnos/:id" element={<ProtectedRoute><AlumnosPerfil /></ProtectedRoute>} />
+        <Route path="/cursoscrud" element={ <Cursos /> } />
         <Route path="*" element={<NotFountPage/>} />
       </Routes>
     </>
