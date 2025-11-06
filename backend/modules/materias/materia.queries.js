@@ -1,17 +1,34 @@
-/**
- * Consultas SQL para el módulo de Materias
- */
+// materia.queries.js
 const consultasMaterias = {
   // Obtener todas las materias activas
   obtenerTodos: `
-    SELECT * FROM materia
+    SELECT 
+      id_materia, 
+      nombre, 
+      descripcion, 
+      carga_horaria, 
+      nivel, 
+      ciclo, 
+      estado, 
+      created_at, 
+      updated_at
+    FROM materia
     WHERE deleted_at IS NULL
-    -- La lógica de BÚSQUEDA y ORDEN se añade en el service
   `,
 
   // Obtener una materia por ID
   obtenerPorId: `
-    SELECT * FROM materia 
+    SELECT 
+      id_materia, 
+      nombre, 
+      descripcion, 
+      carga_horaria, 
+      nivel, 
+      ciclo, 
+      estado, 
+      created_at, 
+      updated_at
+    FROM materia 
     WHERE id_materia = ? AND deleted_at IS NULL
   `,
 
@@ -45,7 +62,18 @@ const consultasMaterias = {
 
   // Obtener materias eliminadas
   obtenerEliminados: `
-    SELECT * FROM materia
+    SELECT 
+      id_materia, 
+      nombre, 
+      descripcion, 
+      carga_horaria, 
+      nivel, 
+      ciclo, 
+      estado, 
+      created_at, 
+      updated_at,
+      deleted_at
+    FROM materia
     WHERE deleted_at IS NOT NULL
     ORDER BY deleted_at DESC
   `,
@@ -55,26 +83,6 @@ const consultasMaterias = {
     UPDATE materia 
     SET deleted_at = NULL 
     WHERE id_materia = ? AND deleted_at IS NOT NULL
-  `,
-  
-  /**
-   * --- ¡CONSULTAS AÑADIDAS! ---
-   */
-
-  // Verificar si ya existe una materia con ese nombre y nivel
-  verificarExiste: `
-    SELECT id_materia FROM materia
-    WHERE nombre = ? AND nivel = ? AND deleted_at IS NULL
-  `,
-
-  // Obtener valores del ENUM 'ciclo'
-  obtenerValoresEnumCiclo: `
-    SHOW COLUMNS FROM materia LIKE 'ciclo'
-  `,
-  
-  // Obtener valores del ENUM 'estado'
-  obtenerValoresEnumEstado: `
-    SHOW COLUMNS FROM materia LIKE 'estado'
   `
 };
 

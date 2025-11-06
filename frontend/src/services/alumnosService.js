@@ -14,3 +14,18 @@ export const getAllAlumnos = async() =>{
         const response = await axios.get(ALUMNOS_URL);
         return response.data;
 }
+
+export const getAlumnoId = async(id)=>{
+
+        const response = await axios.get(`${ALUMNOS_URL}/${id}`)
+        return response.data;
+}
+
+export const deleteAlumno = async(id)=>{
+        const response = await axios.delete(`${ALUMNOS_URL}/${id}`)
+        return response.data;
+}
+
+export const editAlumno = async ()=>{
+        
+}

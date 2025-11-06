@@ -36,6 +36,15 @@ const servicioAlumnos = {
     }
     return rows[0];
   },
+   obtenerPorId: async (id) => {
+    const [rows] = await pool.query(consultas.obtenerPorId, [id]);
+    if (rows.length === 0) {
+      const error = new Error('No se encontró ningún alumno con ese id.');
+      error.statusCode = 404;
+      throw error;
+    }
+    return rows[0];
+  },
 
   crear: async (datos) => {
     const { dni_alumno, email } = datos;

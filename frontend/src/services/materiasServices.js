@@ -1,4 +1,4 @@
-import API from "../api/api"
+import API from "../api/api";
 import axios from "axios";
 
 const MATERIAS_URL = `${API}/materias`;
@@ -7,20 +7,19 @@ export const getMaterias = async () => {
   try {
     const response = await axios.get(MATERIAS_URL);
     // Devuelve el array que está DENTRO de la propiedad 'datos'
-    return response.data.datos || []; 
+    return response.data.datos || [];
   } catch (error) {
     console.error("Error al obtener materias:", error);
-    return []; 
+    return [];
   }
 };
 
 export const getMateriasId = async (id) => {
-  try {
-    const response = await axios.get(`${MATERIAS_URL}/${id}`);
-    return response.data.datos; 
-
-  } catch (error) {
-    console.error("Error al obtener materia por ID:", error);
-    return null; 
-  }
+  try {
+    const response = await axios.get(`${MATERIAS_URL}/${id}`);
+    return response.data.datos;
+  } catch (error) {
+    console.error("Error al obtener materia por ID:", error);
+    return null;
+  }
 };
