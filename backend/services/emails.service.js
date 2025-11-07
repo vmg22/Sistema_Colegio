@@ -1107,7 +1107,7 @@ const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 const pool = require("../config/db");
 const {
-  QUERY_REPORTE_ALUMNO,
+  QUERY_ALUMNO_BASICO,
 } = require("../modules/reportesAlumnoDni/reporte.queries");
 const {
   QUERY_ALUMNOS_POR_CURSO,
@@ -1378,7 +1378,7 @@ const calcularAsistencias = (materias) => {
 // Obtener datos del alumno desde la BD
 const obtenerDatosAlumno = async (dni, anio) => {
   try {
-    const [rows] = await pool.execute(QUERY_REPORTE_ALUMNO, [dni, anio]);
+    const [rows] = await pool.execute(QUERY_ALUMNO_BASICO, [dni, anio]);
 
     if (rows.length === 0) {
       throw new Error("Alumno no encontrado o sin datos para ese año lectivo.");
