@@ -92,10 +92,15 @@ const PerfilAlumno = () => {
           icono="description"
           to="/home-certificados"
         />
-        <AccionCard
+        {/* <AccionCard
           titulo="Generar Mail"
           icono="mail"
           to="/perfil-alumno/generar-mail"
+        /> */}
+        <AccionCard
+          titulo="Generar Mail"
+          icono="mail"
+          to="/perfil-alumno/generar-mail-alumno"
         />
       </div>
     </div>

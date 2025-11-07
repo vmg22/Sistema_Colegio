@@ -519,3 +519,20 @@ h4 {
     margin-top: 4px;
   }
 }
+/* ✅ NUEVO: Contenedor para ícono de enviar mail (azul pastel) */
+.icono-contenedor-mail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  height: 90px;
+  width: 90px;
+  background-color: #E3F2FD; /* Azul claro */
+}
+
+/* Ícono de mail */
+.mail {
+  font-size: 60px;
+  color: #1976D2; /* Azul medio */
+}

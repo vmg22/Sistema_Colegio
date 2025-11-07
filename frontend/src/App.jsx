@@ -39,7 +39,7 @@ import CursoComunicacion from './pages/curso/CursoComunicacion.jsx'
 import EnviarAlertaTutoresPage from './pages/curso/EnviarAlertaTutoresPage.jsx'
 // import AdminPrincipal from './pages/alumno/adminPrincipal.jsx'  
 
-
+import GenerarMailAlumno from './pages/alumno/GenerarMailAlumno.jsx'
 
 
 
@@ -104,8 +104,9 @@ function App() {
         <Route path="/constanciaAlumnoRegular" element={<ProtectedRoute><ConstanciaAlumnoRegular/></ProtectedRoute>} />
         <Route path="/certificadoEscolar" element={<ProtectedRoute><CertificadoEscolar/></ProtectedRoute>} />
         <Route path="/certificados-cCVac" element={<ProtectedRoute><CertificadoComprobanteDeVacante/></ProtectedRoute>} />
-        <Route path="/perfil-alumno/generar-mail" element={<ProtectedRoute><GenerarMail/></ProtectedRoute>} />
+        <Route path="/generar-mail" element={<ProtectedRoute><GenerarMail/></ProtectedRoute>} />
         <Route path="/enviar-alerta-tutores" element={<ProtectedRoute><EnviarAlertaTutoresPage/></ProtectedRoute>} />
+        <Route path="/perfil-alumno/generar-mail-alumno" element={<GenerarMailAlumno/>} />
         {/* <Route path="/admin-principal" element={<ProtectedRoute><AdminPrincipal/></ProtectedRoute>} /> */}
       
         
