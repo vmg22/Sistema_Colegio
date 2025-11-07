@@ -4,7 +4,8 @@ import { getAlumnoId } from "../../../services/alumnosService";
 import { useParams } from "react-router-dom";
 import { getAlumnoTutorId, getTutor } from "../../../services/alumnoTutor";
 import ModalEditTutor from "../../../components/modals/ModalEditTutor";
-
+import ModalAddCursoMateria from "../../../components/modals/ModalAddCursoMateria";
+import "../../../styles/alumnoperfil.css"
 const AlumnosPerfil = () => {
   const [alumno, setAlumno] = useState({});
   const [tutor, setTutor] = useState({});
@@ -29,9 +30,8 @@ const AlumnosPerfil = () => {
 
       // Obtener el id_tutor de la respuesta
       const idTutor =
-        responseAlumnoTutor?.datos[0].id_tutor ||
-        responseAlumnoTutor?.id_tutor;
-      
+        responseAlumnoTutor?.datos[0].id_tutor || responseAlumnoTutor?.id_tutor;
+
       if (idTutor) {
         // Traer datos del tutor
         const responseTutor = await getTutor(idTutor);
@@ -63,12 +63,7 @@ const AlumnosPerfil = () => {
     const year = String(date.getFullYear()).slice(-2);
     return `${day}-${month}-${year}`;
   };
-
-  const handleTutor = (id_tutor) => {
-    console.log("id tutor:", id_tutor);
-
-  };
-
+  
   // Esta función se llamará cuando el modal guarde exitosamente
   const handleSaveTutor = () => {
     setIsModalOpen(false); // Cierra el modal
@@ -79,7 +74,13 @@ const AlumnosPerfil = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  
+
+  // Esta función se llamará cuando el modal guarde exitosamente
+  const handleSaveAlumno = () => {
+    setIsModalOpen(false); // Cierra el modal
+    traerDatos(); // Vuelve a cargar los datos para refrescar la vista
+  };
+
   // Esta función abre el modal
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -110,11 +111,10 @@ const AlumnosPerfil = () => {
             </div>
           </div>
 
-          <div className="perfil-grid">
+          <div className="perfil-alumno">
             {/* Caja Izquierda: Información alumno */}
-            <div className="perfil-info-box">
+            <div className="perfil-alumno-box">
               <h4>Información del Alumno</h4>
-
               <dl>
                 <dt>Nombre y Apellido</dt>
                 <dd>
@@ -145,18 +145,25 @@ const AlumnosPerfil = () => {
                 <dt>Estado</dt>
                 <dd>
                   <span
-                    className={`status-badge ${
+                    className={`status-alumno ${
                       alumno.estado?.toLowerCase() || "inactivo"
                     }`}
                   >
                     {alumno.estado}
                   </span>
                 </dd>
+                {/* <div className="d-flex justify-content-end ">
+                  <button className="add-button" onClick={handleOpenModal}>
+                    <span className="add-icon"></span>
+                    Agregar curso/materia
+                  </button>
+                </div> */}
+                
               </dl>
             </div>
 
             {/* Caja Derecha: Información del Tutor */}
-            <div className="perfil-cursos-box">
+            <div className="perfil-alumno-box">
               <h4>Información del Tutor</h4>
 
               {tutor ? (
@@ -187,7 +194,7 @@ const AlumnosPerfil = () => {
                   <dt>Estado</dt>
                   <dd>
                     <span
-                      className={`status-badge ${
+                      className={`status-alumno ${
                         tutor.estado?.toLowerCase() || "inactivo"
                       }`}
                     >
@@ -197,8 +204,7 @@ const AlumnosPerfil = () => {
                   <div className="d-flex justify-content-end ">
                     <button
                       className="btn btn-primary"
-                      //onClick={handleTutor(tutor.id_tutor)} // <-- ESTO ES INCORRECTO
-                      onClick={handleOpenModal} // <-- ESTA ES LA FORMA CORRECTA
+                      onClick={handleOpenModal}
                     >
                       Editar Tutor
                     </button>
@@ -207,16 +213,20 @@ const AlumnosPerfil = () => {
               ) : (
                 <p>No hay tutor asignado.</p>
               )}
+
+               
             </div>
+            <div className="perfil-alumno-box">
+              <h4>Curso y Materias</h4></div>
           </div>
         </>
       )}
 
       {isModalOpen && (
         <ModalEditTutor
-          tutorToEdit={tutor}     // Pasa el objeto tutor que ya cargaste
-          onClose={handleCloseModal}  // Pasa la función para cerrar
-          onSave={handleSaveTutor}    // Pasa la función para guardar y refrescar
+          tutorToEdit={tutor} // Pasa el objeto tutor que ya cargaste
+          onClose={handleCloseModal} // Pasa la función para cerrar
+          onSave={handleSaveTutor} // Pasa la función para guardar y refrescar
         />
       )}
     </div>
