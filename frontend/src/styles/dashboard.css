@@ -56,38 +56,55 @@ h4 {
   border: 2px solid #1d4ed8;
 }
 
-.icono-contenedor {
+/* ✅ CONTENEDORES DE ÍCONOS - TODOS CON EL MISMO TAMAÑO */
+.icono-contenedor,
+.icono-contenedor-group,
+.icono-contenedor-settings {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 10px;
-  background-color: #D6DBFF;
   border-radius: 50%;
   height: 90px;
   width: 90px;
+}
+
+/* Contenedor para ícono de persona (azul) */
+.icono-contenedor {
+  background-color: #D6DBFF;
+}
+
+/* Contenedor para ícono de grupo (rosa) */
+.icono-contenedor-group {
+  background-color: #FDE1EB;
+}
+
+/* ✅ NUEVO: Contenedor para ícono de settings (verde/morado) */
+.icono-contenedor-settings {
+  background-color: #E8F5E9; /* Verde claro */
+}
+
+/* ✅ ÍCONOS - TODOS CON EL MISMO TAMAÑO */
+.person,
+.group,
+.settings {
+  font-size: 60px;
 }
 
 .person {
-  font-size: 60px;
-  color: #1e40af;
-}
-
-.icono-contenedor-group {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-  background-color: #FDE1EB;
-  border-radius: 50%;
-  height: 90px;
-  width: 90px;
+  color: #1e40af; /* Azul oscuro */
 }
 
 .group {
-  font-size: 60px;
-  color: #F50057;
+  color: #F50057; /* Rosa */
 }
 
+/* ✅ NUEVO: Color del ícono settings */
+.settings {
+  color: #388E3C; /* Verde oscuro */
+}
+
+/* Texto del botón */
 .btn-texto {
   text-align: center;
   font-weight: 600;
@@ -134,7 +151,283 @@ h4 {
 /* ======== TARJETAS DE INFORMACIÓN ======== */
 .info-card {
   background-color: #ffffff;
-  border: 1px solid #e5e7eb; /* borde sutil */
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin: 20px 0;
+  transition: box-shadow 0.3s ease;
+}
+
+.info-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.info-card h5 {
+  color: #1e3a8a;
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 8px;
+}
+
+/* Filas */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.info-value {
+  color: #111827;
+  display: flex;
+  align-items: center;
+}
+
+/* Icono copiar */
+.copy-icon {
+  margin-left: 6px;
+  cursor: pointer;
+  color: #4b5563;
+  transition: color 0.2s;
+}
+
+.copy-icon:hover {
+  color: #2563eb;
+}
+
+/* ======== DIVISOR ======== */
+.linea-separadora {
+  border: none;
+  height: 1px;
+  width: 100%;
+  background-color: #6b7280;
+  margin: 20px 0;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 768px) {
+  .contenedor-botones-dash {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-tipo {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .contenedor-busqueda {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .info-value {
+    margin-top: 4px;
+  }
+}
+
+/* ======== ESTILOS GENERALES ======== */
+.nombre_vista {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f5f7fb;
+}
+
+h4 {
+  text-align: start;
+  color: #303F9F;
+  font-weight: bolder !important;
+}
+
+.search {
+  color: #303F9F;
+  font-size: 30px;
+  font-weight: bolder;
+}
+
+/* ✅ BADGE DE USUARIO ADMIN */
+.admin-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.admin-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.admin-icon {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.admin-text {
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+/* ======== BOTONES DE DASHBOARD ======== */
+.contenedor-botones-dash {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-bottom: 20px;
+}
+
+.btn-tipo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 180px;
+  width: 306px;
+  padding: 20px;
+  border: none;
+  border-radius: 12px;
+  background-color: white;
+  color: #2563eb;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.btn-tipo:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid #1d4ed8;
+}
+
+.btn-tipo:active {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid #1d4ed8;
+}
+
+/* ✅ CONTENEDORES DE ÍCONOS - TODOS CON EL MISMO TAMAÑO */
+.icono-contenedor,
+.icono-contenedor-group,
+.icono-contenedor-settings {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  height: 90px;
+  width: 90px;
+}
+
+/* Contenedor para ícono de persona (azul) */
+.icono-contenedor {
+  background-color: #D6DBFF;
+}
+
+/* Contenedor para ícono de grupo (rosa) */
+.icono-contenedor-group {
+  background-color: #FDE1EB;
+}
+
+/* ✅ NUEVO: Contenedor para ícono de settings (verde/morado) */
+.icono-contenedor-settings {
+  background-color: #E8F5E9; /* Verde claro */
+}
+
+/* ✅ ÍCONOS - TODOS CON EL MISMO TAMAÑO */
+.person,
+.group,
+.settings {
+  font-size: 60px;
+}
+
+.person {
+  color: #1e40af; /* Azul oscuro */
+}
+
+.group {
+  color: #F50057; /* Rosa */
+}
+
+/* ✅ NUEVO: Color del ícono settings */
+.settings {
+  color: #388E3C; /* Verde oscuro */
+}
+
+/* Texto del botón */
+.btn-texto {
+  text-align: center;
+  font-weight: 600;
+  font-size: medium;
+  color: #303F9F;
+  padding-top: 12px;
+}
+
+/* ======== FORMULARIO DE BÚSQUEDA ======== */
+.contenedor-busqueda {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  background-color: white;
+  width: 80%;
+  margin: 30px auto;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  padding: 20px 30px;
+}
+
+.tituloForm {
+  color: #303F9F;
+  font-weight: 550;
+  margin-left: 15px;
+  margin-top: 15px;
+}
+
+.formLabel {
+  color: #303F9F;
+  font-weight: 550;
+}
+
+.btnBuscar {
+  background-color: #1e40af;
+  border: none;
+}
+
+.btnBuscar:hover {
+  background-color: rgb(16, 45, 141);
+}
+
+/* ======== TARJETAS DE INFORMACIÓN ======== */
+.info-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 10px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   padding: 20px;
