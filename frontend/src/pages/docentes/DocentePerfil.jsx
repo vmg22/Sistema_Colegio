@@ -270,7 +270,7 @@ const DocentePerfil = () => {
           onSave={handleSave}
           docente={docente}
           cursosList={cursosList}
-          materiasList={materiasList.materias || []}
+          materiasList={materiasList} // <-- CORREGIDO: Pasa el estado directamente
           asignacionToEdit={asignacionToEdit}
         />
       )}

@@ -1,90 +1,56 @@
-// anio_lectivo.queries.js
-const consultasAniosLectivos = {
-  // Obtener todos los años lectivos activos
+// modules/anioLectivo/anioLectivo.queries.js
+
+const consultasAnioLectivo = {
   obtenerTodos: `
     SELECT 
-      id_anio_lectivo,
-      anio,
-      fecha_inicio,
-      fecha_fin,
-      estado,
-      created_at,
-      updated_at
+      id_anio_lectivo, anio, fecha_inicio, 
+      fecha_fin, estado
     FROM anio_lectivo
     WHERE deleted_at IS NULL
+    ORDER BY anio DESC
   `,
-
-  // Obtener un año lectivo por ID
+  
   obtenerPorId: `
     SELECT 
-      id_anio_lectivo,
-      anio,
-      fecha_inicio,
-      fecha_fin,
-      estado,
-      created_at,
-      updated_at
-    FROM anio_lectivo 
+      id_anio_lectivo, anio, fecha_inicio, 
+      fecha_fin, estado
+    FROM anio_lectivo
     WHERE id_anio_lectivo = ? AND deleted_at IS NULL
   `,
-
-  // Crear un nuevo año lectivo
+  
   crear: `
     INSERT INTO anio_lectivo 
-      (anio, fecha_inicio, fecha_fin, estado)
+      (anio, fecha_inicio, fecha_fin, estado) 
     VALUES (?, ?, ?, ?)
   `,
-
-  // Actualizar un año lectivo completo
-  actualizarCompleto: `
-    UPDATE anio_lectivo
+  
+  actualizar: `
+    UPDATE anio_lectivo 
     SET 
       anio = ?, 
       fecha_inicio = ?, 
       fecha_fin = ?, 
-      estado = ?, 
-      updated_at = CURRENT_TIMESTAMP
+      estado = ?
     WHERE id_anio_lectivo = ? AND deleted_at IS NULL
   `,
-// Actualizar año lectivo parcial 
-  actualizarParcial: `
-    UPDATE anio_lectivo
-    SET 
-      fecha_inicio = COALESCE(?, fecha_inicio),
-      fecha_fin = COALESCE(?, fecha_fin),
-      estado = COALESCE(?, estado),
-      updated_at = CURRENT_TIMESTAMP
-    WHERE id_anio_lectivo = ? AND deleted_at IS NULL
-  `,
-  // Eliminar lógicamente un año lectivo
-  eliminarLogico: `
+  
+  eliminar: `
     UPDATE anio_lectivo 
-    SET deleted_at = CURRENT_TIMESTAMP 
+    SET deleted_at = CURRENT_TIMESTAMP
     WHERE id_anio_lectivo = ? AND deleted_at IS NULL
   `,
-
-  // Obtener años lectivos eliminados
-  obtenerEliminados: `
-    SELECT 
-      id_anio_lectivo,
-      anio,
-      fecha_inicio,
-      fecha_fin,
-      estado,
-      created_at,
-      updated_at,
-      deleted_at
-    FROM anio_lectivo
-    WHERE deleted_at IS NOT NULL
-    ORDER BY deleted_at DESC
-  `,
-
-  // Restaurar un año lectivo eliminado
+  
   restaurar: `
-    UPDATE anio_lectivo 
-    SET deleted_at = NULL 
+    UPDATE anio_lectivo
+    SET deleted_at = NULL
     WHERE id_anio_lectivo = ? AND deleted_at IS NOT NULL
+  `,
+  
+  // Verificación para evitar duplicados al crear
+  verificarAnioExistente: `
+    SELECT id_anio_lectivo FROM anio_lectivo
+    WHERE anio = ? AND deleted_at IS NULL
   `
 };
 
-module.exports = consultasAniosLectivos;
+module.exports = consultasAnioLectivo;
