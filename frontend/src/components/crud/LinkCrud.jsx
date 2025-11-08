@@ -18,6 +18,18 @@ const cardData = [
     color: "#2563EB", // azul-600
     },
     {
+    to: "/materias",
+    label: "Materias",
+    icon: "menu_book", // Ícono de Google para Materias
+    color: "#2563EB", // indigo-600
+    },
+    {
+    to: "/curso-materia",
+    label: "Asignacion Materia-Curso",
+    icon: "group", // Ícono de Google para Alumnos
+    color: "#2563EB", // azul-600
+    },
+    {
     to: "/alumnos",
     label: "Alumnos",
     icon: "person", // Ícono de Google para Alumnos
@@ -28,12 +40,6 @@ const cardData = [
     label: "Docentes",
     icon: "work", // Ícono de Google para Docentes
     color: "#2563EB", // verde-600
-    },
-    {
-    to: "/materias",
-    label: "Materias",
-    icon: "menu_book", // Ícono de Google para Materias
-    color: "#2563EB", // indigo-600
     },
     {
     to: "/plan-de-equivalencias",

@@ -23,6 +23,8 @@ const alumnoTutorRoutes = require("../modules/alumno_tutor/alumno_tutor.routes")
 const usuarioRoutes = require("../modules/usuario/usuario.routes.js");
 const authRoutes = require('../modules/usuario/auth.routes.js');
 const asignacionRoutes = require("../modules/CRUD/asignaciones/asignacion.routes");
+const cursoMateriaRoutes = require("../modules/CRUD/curso-materia/curso-materia.routes.js");
+
 
 // ✅ NUEVO: Módulo de altas (Docente + Usuario)
 const altasRoutes = require("../modules/altas/alta.routes.js");
@@ -57,6 +59,7 @@ router.use('/mail', mailRoutes);
 //  Ruta de altas
 router.use("/altas", altasRoutes);
 router.use("/altasmaterias", altasmateriasRoutes);
+router.use("/curso-materia", cursoMateriaRoutes);
 
 // RUTAS PARA INCRIPCIONES /CRUD INSCRIPCION
 router.use('/inscripciones', inscripcionesRoutes);
@@ -76,6 +79,7 @@ router.get("/", (req, res) => {
       cursos: "/api/v1/cursos",
       cursosCrud: "/api/v1/cursos-crud",
       materias: "/api/v1/materias",
+      cursoMateria: "/api/v1/curso-materia",
       calificaciones: "/api/v1/calificaciones",
       aniosLectivos: "/api/v1/anios-lectivos",
       tutores: "/api/v1/tutores",
