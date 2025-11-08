@@ -39,7 +39,7 @@ const cardData = [
     to: "/alumnos",
     label: "Alumnos",
     icon: "person", // Ícono de Google para Alumnos
-    color: "#2563EB", // azul-600
+    color: "#6b86c2ff", // azul-600
     }
 ];
 
