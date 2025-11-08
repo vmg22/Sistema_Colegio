@@ -5,9 +5,10 @@ const router = express.Router();
 const alumnoRoutes = require("../modules/alumnos/alumno.routes");
 const docenteRoutes = require("../modules/docentes/docente.routes");
 const cursoRoutes = require("../modules/cursos/curso.routes");
+const cursoCrudRoutes = require("../modules/CRUD/curso/curso.routes.js");
 const materiaRoutes = require("../modules/materias/materia.routes");
 const calificacionRoutes = require("../modules/calificaciones/calificacion.routes");
-const anioLectivoRoutes = require('../modules/anios-lectivos/anio.routes');
+const anioLectivoRoutes = require("../modules/anios-lectivos/anio.routes");
 const tutorRoutes = require("../modules/tutores/tutor.routes");
 const comunicacionRoutes = require("../modules/comunicaciones/comunicacion.routes");
 const asistenciaRoutes = require('../modules/asistencia_alumno/asistencia_alumno.routes');
@@ -27,15 +28,11 @@ const asignacionRoutes = require("../modules/CRUD/asignaciones/asignacion.routes
 const altasRoutes = require("../modules/altas/alta.routes.js");
 
 const altasmateriasRoutes = require("../modules/altasmaterias/altasmaterias.routes.js")
-
-
-const matriculacionRoutes = require("../modules/CRUD/matriculacion/matriculacion.routes")
-
-
 // Registrar rutas de los módulos
 router.use("/alumnos", alumnoRoutes);
 router.use("/docentes", docenteRoutes);
 router.use("/cursos", cursoRoutes);
+router.use("/cursos-crud", cursoCrudRoutes);
 router.use("/materias", materiaRoutes);
 router.use("/calificaciones", calificacionRoutes);
 router.use("/anios-lectivos", anioLectivoRoutes);
@@ -61,17 +58,12 @@ router.use('/mail', mailRoutes);
 router.use("/altas", altasRoutes);
 router.use("/altasmaterias", altasmateriasRoutes);
 
-router.use("/matriculacion", matriculacionRoutes);
-
 // RUTAS PARA INCRIPCIONES /CRUD INSCRIPCION
 router.use('/inscripciones', inscripcionesRoutes);
 
 // CRUD ASIGNAR MATERIA A DOCENTE 
 
 router.use("/asignaciones", asignacionRoutes);
-
-
-
 
 // Ruta principal de la API
 router.get("/", (req, res) => {
@@ -82,6 +74,7 @@ router.get("/", (req, res) => {
       alumnos: "/api/v1/alumnos",
       docentes: "/api/v1/docentes",
       cursos: "/api/v1/cursos",
+      cursosCrud: "/api/v1/cursos-crud",
       materias: "/api/v1/materias",
       calificaciones: "/api/v1/calificaciones",
       aniosLectivos: "/api/v1/anios-lectivos",
@@ -96,7 +89,6 @@ router.get("/", (req, res) => {
       usuarios: "/api/v1/usuarios",
       auth: "/api/v1/auth",
       altasmateriasRoutes : "/api/v1/altasmaterias",
-      matriculacionRoutes : "/api/v1/matriculacion"
     },
   });
 });
