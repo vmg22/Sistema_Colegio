@@ -3,6 +3,7 @@ import { Button, Table, Spinner, Alert, Container, Row, Col } from 'react-bootst
 import { getAniosLectivos, deleteAnioLectivo } from '../../../services/aniosServices';
 import AnioLectivoModal from '../../../components/modals/AnioLectivoModal';
 import Swal from 'sweetalert2'; // Para la confirmación de borrado
+import BtnVolver from '../../../components/ui/BtnVolver';
 
 const GestionAniosLectivos = () => {
   const [aniosLectivos, setAniosLectivos] = useState([]);
@@ -103,6 +104,7 @@ const GestionAniosLectivos = () => {
 
   return (
     <Container className="mt-4">
+        <BtnVolver/>
       <Row className="mb-3">
         <Col>
           <h2>Gestión de Años Lectivos</h2>
