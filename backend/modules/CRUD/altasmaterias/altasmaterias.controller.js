@@ -1,5 +1,5 @@
 const materiaServices = require('./altasmaterias.services');
-const { exito, error } = require('../../utils/responses'); // Asumo que tienes esto en utils
+const { exito, error } = require('../../../utils/responses'); // Asumo que tienes esto en utils
 
 const materiaController = {
   
