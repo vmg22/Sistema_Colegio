@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useConsultaStore } from "../../store/consultaStore";
+import BtnVolver from "../../components/ui/BtnVolver.jsx"; 
+import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
+import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx";
+import { Spinner } from "react-bootstrap";
+import "../../styles/perfilAlumno.css";
 
 const HistorialComunicaciones = () => {
+  const { reporteAlumno } = useConsultaStore();
   const [reporte, setReporte] = useState(null);
   const [comunicaciones, setComunicaciones] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,12 +42,6 @@ const HistorialComunicaciones = () => {
 
       const result = await response.json();
       console.log("✅ Datos recibidos del servidor:", result);
-      console.log("📊 Tipo de result:", typeof result);
-      console.log("📊 Es array?:", Array.isArray(result));
-      console.log("📊 result.datos existe?:", !!result.datos);
-      console.log("📊 result.datos es array?:", Array.isArray(result.datos));
-      console.log("📊 result.data existe?:", !!result.data);
-      console.log("📊 result.exito:", result.exito);
       
       // Extrae las comunicaciones del formato de respuesta
       let comunicacionesData = [];
@@ -58,17 +59,11 @@ const HistorialComunicaciones = () => {
       } else if (Array.isArray(result)) {
         comunicacionesData = result;
         console.log("📋 Formato detectado: Array directo");
-      } else {
-        console.log("⚠️ Formato de respuesta no reconocido");
-        console.log("⚠️ Estructura completa:", JSON.stringify(result, null, 2));
       }
       
       console.log("✨ Comunicaciones procesadas:", comunicacionesData);
       console.log("🔢 Cantidad de comunicaciones:", comunicacionesData.length);
-      console.log("🔢 Primera comunicación:", comunicacionesData[0]);
       
-      // CRITICAL: Actualiza el estado
-      console.log("⚡ Actualizando estado con", comunicacionesData.length, "comunicaciones");
       setComunicaciones(comunicacionesData);
       console.log("✅ Estado actualizado");
       
@@ -81,39 +76,37 @@ const HistorialComunicaciones = () => {
   }, [API_URL]);
 
   useEffect(() => {
-    const storedData = sessionStorage.getItem("reporteAlumno");
+    let dataToSet = reporteAlumno;
+
+    if (!dataToSet) {
+      const storedData = sessionStorage.getItem("reporteAlumno");
+      if (storedData) {
+        dataToSet = JSON.parse(storedData);
+      }
+    }
+
+    console.log("📦 Datos del reporte:", dataToSet);
+    setReporte(dataToSet);
     
-    console.log("🔎 Verificando sessionStorage...");
-    
-    if (storedData) {
-      try {
-        const dataToSet = JSON.parse(storedData);
-        console.log("📦 Datos del sessionStorage:", dataToSet);
-        setReporte(dataToSet);
-        
-        // Intenta obtener el ID de diferentes formas
-        const idAlumno = dataToSet?.alumno?.id_alumno || 
-                        dataToSet?.alumno?.id || 
-                        dataToSet?.id_alumno || 
-                        dataToSet?.id;
-        
-        console.log("🆔 ID del alumno encontrado:", idAlumno);
-        
-        if (idAlumno) {
-          cargarComunicaciones(idAlumno);
-        } else {
-          console.error("❌ No se encontró id del alumno");
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("❌ Error al parsear datos:", error);
+    if (dataToSet) {
+      // Intenta obtener el ID de diferentes formas
+      const idAlumno = dataToSet?.alumno?.id_alumno || 
+                      dataToSet?.alumno?.id || 
+                      dataToSet?.id_alumno || 
+                      dataToSet?.id;
+      
+      console.log("🆔 ID del alumno encontrado:", idAlumno);
+      
+      if (idAlumno) {
+        cargarComunicaciones(idAlumno);
+      } else {
+        console.error("❌ No se encontró id del alumno");
         setLoading(false);
       }
     } else {
-      console.error("❌ No hay datos en sessionStorage");
       setLoading(false);
     }
-  }, [cargarComunicaciones]);
+  }, [reporteAlumno, cargarComunicaciones]);
 
   const formatearFecha = (fecha) => {
     if (!fecha) return "Fecha no disponible";
@@ -134,10 +127,6 @@ const HistorialComunicaciones = () => {
     }
   };
 
-  const handleVolver = useCallback(() => {
-    window.history.back();
-  }, []);
-
   // Cálculos de paginación
   const indexUltimaComunicacion = paginaActual * comunicacionesPorPagina;
   const indexPrimeraComunicacion = indexUltimaComunicacion - comunicacionesPorPagina;
@@ -153,18 +142,9 @@ const HistorialComunicaciones = () => {
   // LOADING STATE
   if (loading) {
     return (
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        backgroundColor: "#f5f5f5"
-      }}>
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando...</span>
-        </div>
-        <p style={{ marginTop: "20px", color: "#666" }}>Cargando comunicaciones...</p>
+      <div className="perfil-alumno-loading-container">
+        <Spinner animation="border" variant="primary" />
+        <p className="mt-3">Cargando comunicaciones...</p>
       </div>
     );
   }
@@ -172,42 +152,9 @@ const HistorialComunicaciones = () => {
   // ERROR STATE - No hay reporte
   if (!reporte) {
     return (
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        backgroundColor: "#f5f5f5",
-        padding: "20px"
-      }}>
-        <span className="material-symbols-outlined" style={{
-          fontSize: "64px",
-          color: "#dc3545",
-          marginBottom: "20px"
-        }}>
-          error_outline
-        </span>
+      <div className="perfil-alumno-loading-container">
         <h5>No se encontraron datos del alumno.</h5>
-        <p style={{ color: "#6c757d" }}>
-          Vuelve al perfil e intenta nuevamente.
-        </p>
-        <button 
-          style={{
-            padding: "10px 30px",
-            backgroundColor: "#1976d2",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-            marginTop: "20px",
-            fontSize: "16px",
-            fontWeight: "500"
-          }}
-          onClick={handleVolver}
-        >
-          Volver
-        </button>
+        <p>Vuelve al panel e intenta realizar una nueva búsqueda.</p>
       </div>
     );
   }
@@ -215,114 +162,21 @@ const HistorialComunicaciones = () => {
   console.log("🎨 Renderizando componente con", comunicaciones.length, "comunicaciones");
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      backgroundColor: "#f5f5f5",
-      padding: "20px",
-      position: "relative"
-    }}>
+    <div className="perfil-alumno-container">
       {/* Botón Volver */}
-      <button
-        onClick={handleVolver}
-        style={{
-          position: "absolute",
-          top: "20px",
-          left: "20px",
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          color: "#1976d2",
-          fontSize: "16px",
-          fontWeight: "500",
-          padding: "8px 12px",
-          borderRadius: "8px",
-          transition: "background-color 0.2s",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "#e3f2fd";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "transparent";
-        }}
-      >
-        <span className="material-symbols-outlined">arrow_back</span>
-        Volver
-      </button>
+      <BtnVolver />
 
-      {/* Header */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "15px",
-        marginBottom: "30px",
-        marginTop: "60px"
-      }}>
-        <span className="material-symbols-outlined" style={{
-          fontSize: "40px",
-          color: "#1976d2"
-        }}>
-          chat
-        </span>
-        <h2 style={{
-          margin: 0,
-          color: "#333",
-          fontSize: "28px"
-        }}>
-          Historial de Comunicaciones
-        </h2>
+      {/* Encabezado con título e ícono */}
+      <div className="curso-dashboard-header">
+        <span className="material-symbols-outlined calificaciones-page-icon">chat</span>
+        <h2 className="perfil-alumno-title">Historial de Comunicaciones</h2>
       </div>
 
       {/* Card de Información del Alumno */}
-      <div style={{
-       backgroundColor: "#fff",
-        borderRadius: "12px",
-        padding: "24px",
-        marginBottom: "30px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        display: "flex",
-        alignItems: "center",
-        gap: "20px"
-      }}>
-        <div style={{
-          fontSize: "60px",
-          color: "#1976d2"
-        }}>
-          <span className="material-symbols-outlined" style={{ fontSize: "inherit" }}>
-            account_circle
-          </span>
-        </div>
-        <div style={{ flex: 1 }}>
-          <h3 style={{
-            margin: "0 0 10px 0",
-            color: "#333",
-            fontSize: "24px"
-          }}>
-            {reporte?.apellido || reporte?.alumno?.apellido || ''}, {reporte?.nombre || reporte?.alumno?.nombre || ''}
-          </h3>
-          <div style={{
-            display: "flex",
-            gap: "20px",
-            flexWrap: "wrap",
-            color: "#666",
-            fontSize: "14px"
-          }}>
-            <span>
-              <strong>DNI:</strong> {reporte?.dni || reporte?.alumno?.dni || 'N/A'}
-            </span>
-            {(reporte?.curso?.anio || reporte?.curso?.anio_curso) && (
-              <span>
-                <strong>Curso:</strong> {reporte?.curso?.anio || reporte?.curso?.anio_curso}° {reporte?.curso?.division || ''}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
+      <DivHeaderInfo />
 
       {/* Contenedor de Comunicaciones */}
-      <div>
+      <div style={{ marginTop: "30px" }}>
         {comunicaciones.length === 0 ? (
           <div style={{
             textAlign: "center",
@@ -330,6 +184,7 @@ const HistorialComunicaciones = () => {
             backgroundColor: "#fff",
             borderRadius: "12px",
             border: "2px dashed #dee2e6",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
           }}>
             <span className="material-symbols-outlined" style={{
               fontSize: "64px",
@@ -357,7 +212,8 @@ const HistorialComunicaciones = () => {
               padding: "12px",
               borderRadius: "8px",
               color: "#155724",
-              fontWeight: "500"
+              fontWeight: "500",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
             }}>
               ✅ Se encontraron {comunicaciones.length} comunicación(es) | Página {paginaActual} de {totalPaginas}
             </div>
