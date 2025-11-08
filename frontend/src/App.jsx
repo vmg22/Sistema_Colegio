@@ -48,6 +48,7 @@ import SolicitarRecuperacion from './pages/alumno/solicitarRecuperacion.jsx'
 import InscripcionWizard from './components/crud/InscripcionWizard.jsx'
 import AlumnosPerfil from './pages/crud/alumnos/AlumnosPerfil.jsx'
 import GestionAniosLectivos from './pages/crud/anio-lectivo/GestionAniosLectivos.jsx'
+import GestionCursos from './pages/crud/cursos/GestionCursos.jsx'
 
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
@@ -115,6 +116,7 @@ function App() {
         <Route path="/docentes/:id" element={<ProtectedRoute><DocentePerfil /></ProtectedRoute>} />
         <Route path="/alumnos/:id" element={<ProtectedRoute><AlumnosPerfil /></ProtectedRoute>} />
         <Route path="*" element={<NotFountPage/>} />
+        <Route path="/cursos-crud" element={<ProtectedRoute><GestionCursos /></ProtectedRoute>} />
       </Routes>
     </>
   )
