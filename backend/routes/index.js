@@ -5,6 +5,7 @@ const router = express.Router();
 const alumnoRoutes = require("../modules/alumnos/alumno.routes");
 const docenteRoutes = require("../modules/docentes/docente.routes");
 const cursoRoutes = require("../modules/cursos/curso.routes");
+const cursoCrudRoutes = require("../modules/CRUD/curso/curso.routes");
 const materiaRoutes = require("../modules/materias/materia.routes");
 const calificacionRoutes = require("../modules/calificaciones/calificacion.routes");
 const anioLectivoRoutes = require("../modules/anios-lectivos/anio.routes");
@@ -31,6 +32,7 @@ const altasmateriasRoutes = require("../modules/altasmaterias/altasmaterias.rout
 router.use("/alumnos", alumnoRoutes);
 router.use("/docentes", docenteRoutes);
 router.use("/cursos", cursoRoutes);
+router.use("/cursos-crud", cursoCrudRoutes);
 router.use("/materias", materiaRoutes);
 router.use("/calificaciones", calificacionRoutes);
 router.use("/anios-lectivos", anioLectivoRoutes);
@@ -72,6 +74,7 @@ router.get("/", (req, res) => {
       alumnos: "/api/v1/alumnos",
       docentes: "/api/v1/docentes",
       cursos: "/api/v1/cursos",
+      cursosCrud: "/api/v1/cursos-crud",
       materias: "/api/v1/materias",
       calificaciones: "/api/v1/calificaciones",
       aniosLectivos: "/api/v1/anios-lectivos",
