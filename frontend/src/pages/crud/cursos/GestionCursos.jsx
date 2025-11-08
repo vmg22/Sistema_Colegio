@@ -3,6 +3,7 @@ import { Button, Table, Spinner, Alert, Container, Row, Col } from 'react-bootst
 import { getCursos, deleteCurso } from '../../../services/cursosService';
 import CursoModal from '../../../components/modals/CursoModal';
 import Swal from 'sweetalert2';
+import BtnVolver from '../../../components/ui/BtnVolver';
 
 const GestionCursos = () => {
   const [cursos, setCursos] = useState([]);
@@ -88,6 +89,7 @@ const GestionCursos = () => {
 
   return (
     <Container className="mt-4">
+      <BtnVolver/>
       <Row className="mb-3">
         <Col>
           <h2>Gestión de Cursos</h2>

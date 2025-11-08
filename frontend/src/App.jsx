@@ -104,6 +104,7 @@ function App() {
         <Route path="/perfil-alumno/generar-mail" element={<ProtectedRoute><GenerarMail/></ProtectedRoute>} />
         <Route path="/enviar-alerta-tutores" element={<ProtectedRoute><EnviarAlertaTutoresPage/></ProtectedRoute>} />
         <Route path="/anio-lectivo" element={<ProtectedRoute><GestionAniosLectivos/></ProtectedRoute>} />
+        <Route path="/cursos-crud" element={<ProtectedRoute><GestionCursos/></ProtectedRoute>} />
         
         <Route path="/cursoDashboard" element={<ProtectedRoute><CursoDashboardPage/></ProtectedRoute>} />
         <Route path="/reporte-curso/listado" element={<ProtectedRoute><ReporteCursoListPage /></ProtectedRoute>} />

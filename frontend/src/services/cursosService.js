@@ -1,7 +1,7 @@
 import API from "../api/api"
 import axios from "axios";
 
-const CURSOS_URL = `${API}/cursos`;
+const CURSOS_URL = `${API}/cursos-crud`;
 
 /**
  * Obtiene todos los cursos (con nombre de tutor).
