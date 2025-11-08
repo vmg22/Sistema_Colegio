@@ -30,22 +30,16 @@ const cardData = [
     color: "#2563EB", // azul-600
     },
     {
-    to: "/alumnos",
-    label: "Alumnos",
-    icon: "person", // Ícono de Google para Alumnos
-    color: "#2563EB", // azul-600
-    },
-    {
     to: "/altas-docentes",
     label: "Docentes",
     icon: "work", // Ícono de Google para Docentes
     color: "#2563EB", // verde-600
     },
     {
-    to: "/plan-de-equivalencias",
-    label: "Plan de Equivalencias",
-    icon: "description", // Ícono de Google para Plan de Equivalencias
-    color: "#2563EB", // rojo-600
+    to: "/alumnos",
+    label: "Alumnos",
+    icon: "person", // Ícono de Google para Alumnos
+    color: "#2563EB", // azul-600
     }
 ];
 

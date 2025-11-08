@@ -52,7 +52,7 @@ const DocentePerfil = () => {
       setDocente(docenteData);
       setAsignaciones(asignacionesData);
       setMateriasList(materiasData);
-      setCursosList(cursosData);
+      setCursosList(cursosData.datos || []);
     } catch (err) {
       setError(err.message || "Error al cargar los datos del perfil.");
     } finally {
@@ -269,8 +269,7 @@ const DocentePerfil = () => {
           onClose={handleCloseModal}
           onSave={handleSave}
           docente={docente}
-          cursosList={cursosList}
-          materiasList={materiasList} // <-- CORREGIDO: Pasa el estado directamente
+          cursosList={cursosList || []}
           asignacionToEdit={asignacionToEdit}
         />
       )}
