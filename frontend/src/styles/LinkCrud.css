@@ -10,6 +10,10 @@
     gap: 20px; /* Espacio entre la grilla, el <hr> y el botón */
 }
 
+<<<<<<< HEAD
+/* Grid container para las tarjetas */
+=======
+>>>>>>> 7d411b359a463e146eb364a0a1032af62eb138c1
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
