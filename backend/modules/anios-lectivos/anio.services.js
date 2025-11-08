@@ -1,140 +1,97 @@
-const db = require('../../config/db');
-const consultas = require('./anio.queries'); 
+// modules/anioLectivo/anioLectivo.service.js
+const pool = require('../../config/db'); // 
+const consultas = require('./anio.queries');
 
-// Obtener todos los años lectivos activos
-exports.obtenerTodosAniosLectivos = async () => {
-  const [rows] = await db.query(consultas.obtenerTodos);
-  return rows;
-};
+// Helper para formatear fechas (tu BD espera YYYY-MM-DD)
+function _formatDate(date) {
+  if (!date) return null;
+  return new Date(date).toISOString().slice(0, 10);
+}
 
-// Obtener un año lectivo por su ID
-exports.obtenerAnioLectivoPorId = async (id) => {
-  const [rows] = await db.query(consultas.obtenerPorId, [id]);
-  return rows[0];
-};
+const servicioAnioLectivo = {
 
-// Crear un nuevo año lectivo
-exports.crearAnioLectivo = async (data) => {
-  const {
-    anio,
-    fecha_inicio,
-    fecha_fin,
-    estado
-  } = data;
+  obtenerTodos: async () => {
+    const [rows] = await pool.query(consultas.obtenerTodos);
+    return rows;
+  },
 
-  // Validación adicional
-  if (!anio || !fecha_inicio || !fecha_fin) {
-    throw new Error('Año, fecha inicio y fecha fin son obligatorios');
-  }
+  obtenerPorId: async (id) => {
+    const [rows] = await pool.query(consultas.obtenerPorId, [id]);
+    if (rows.length === 0) {
+      const error = new Error('Año lectivo no encontrado.');
+      error.statusCode = 404;
+      throw error;
+    }
+    return rows[0];
+  },
 
-  const [result] = await db.query(consultas.crear, [
-    anio,
-    fecha_inicio,
-    fecha_fin,
-    estado || 'planificacion'
-  ]);
+  crear: async (datos) => {
+    const { anio, fecha_inicio, fecha_fin, estado } = datos;
 
-  // Obtener el año lectivo recién creado con todos sus campos
-  const [anioLectivoCreado] = await db.query(consultas.obtenerPorId, [result.insertId]);
+    // Verificación de duplicados
+    const [existente] = await pool.query(consultas.verificarAnioExistente, [anio]);
+    if (existente.length > 0) {
+      const error = new Error('Ya existe un año lectivo con ese número.');
+      error.statusCode = 409; // 409 Conflict
+      throw error;
+    }
+
+    const params = [
+      anio,
+      _formatDate(fecha_inicio),
+      _formatDate(fecha_fin),
+      estado || 'planificacion'
+    ];
+    
+    const [resultado] = await pool.query(consultas.crear, params);
+    
+    // Devolvemos el objeto recién creado
+    return await servicioAnioLectivo.obtenerPorId(resultado.insertId);
+  },
+
+  actualizar: async (id, datos) => {
+    // Primero, verificamos que existe
+    const existente = await servicioAnioLectivo.obtenerPorId(id);
+
+    const { anio, fecha_inicio, fecha_fin, estado } = datos;
+
+    // Verificación de duplicados (si cambia el año)
+    if (anio !== existente.anio) {
+      const [duplicado] = await pool.query(consultas.verificarAnioExistente, [anio]);
+      if (duplicado.length > 0) {
+        const error = new Error('Ya existe otro año lectivo con ese número.');
+        error.statusCode = 409;
+        throw error;
+      }
+    }
+    
+    const params = [
+      anio || existente.anio,
+      _formatDate(fecha_inicio) || existente.fecha_inicio,
+      _formatDate(fecha_fin) || existente.fecha_fin,
+      estado || existente.estado,
+      id
+    ];
+
+    await pool.query(consultas.actualizar, params);
+    
+    // Devolvemos el objeto actualizado
+    return await servicioAnioLectivo.obtenerPorId(id);
+  },
+
+  eliminar: async (id) => {
+    // Verificamos que existe
+    await servicioAnioLectivo.obtenerPorId(id);
+    
+    await pool.query(consultas.eliminar, [id]);
+    
+    return { mensaje: `Año lectivo con ID ${id} eliminado.` };
+  },
   
-  return anioLectivoCreado[0];
+  restaurar: async (id) => {
+    await pool.query(consultas.restaurar, [id]);
+    return await servicioAnioLectivo.obtenerPorId(id);
+  }
 };
 
-// Actualizar un año lectivo
-exports.actualizarAnioLectivo = async (id, data) => {
-  // Primero verificar que el año lectivo existe
-  const anioLectivoExistente = await exports.obtenerAnioLectivoPorId(id);
-  
-  if (!anioLectivoExistente) {
-    throw new Error('Año lectivo no encontrado');
-  }
-
-  const {
-    anio,
-    fecha_inicio,
-    fecha_fin,
-    estado
-  } = data;
-
-  const [result] = await db.query(consultas.actualizarCompleto, [
-    anio || anioLectivoExistente.anio,
-    fecha_inicio || anioLectivoExistente.fecha_inicio,
-    fecha_fin || anioLectivoExistente.fecha_fin,
-    estado || anioLectivoExistente.estado,
-    id
-  ]);
-
-  if (result.affectedRows === 0) {
-    throw new Error('No se pudo actualizar el año lectivo');
-  }
-
-  // Retornar el año lectivo actualizado
-  const [anioLectivoActualizado] = await db.query(consultas.obtenerPorId, [id]);
-  return anioLectivoActualizado[0];
-};
-
-exports.actualizarAnioLectivoParcial = async (id, data) => {
-  // Verificar que existe
-  const anioLectivoExistente = await exports.obtenerAnioLectivoPorId(id);
-  
-  if (!anioLectivoExistente) {
-    throw new Error('Año lectivo no encontrado');
-  }
-
-  const {
-    fecha_inicio,
-    fecha_fin,
-    estado
-  } = data;
-
-  const [result] = await db.query(consultas.actualizarParcial, [
-    fecha_inicio !== undefined ? fecha_inicio : null,
-    fecha_fin !== undefined ? fecha_fin : null,
-    estado !== undefined ? estado : null,
-    id
-  ]);
-
-  if (result.affectedRows === 0) {
-    throw new Error('No se pudo actualizar el año lectivo');
-  }
-
-  // Retornar el año lectivo actualizado
-  const [anioLectivoActualizado] = await db.query(consultas.obtenerPorId, [id]);
-  return anioLectivoActualizado[0];
-};
-
-// Eliminar lógicamente un año lectivo
-exports.eliminarAnioLectivo = async (id) => {
-  // Verificar que existe antes de eliminar
-  const anioLectivoExistente = await exports.obtenerAnioLectivoPorId(id);
-  
-  if (!anioLectivoExistente) {
-    throw new Error('Año lectivo no encontrado');
-  }
-
-  const [result] = await db.query(consultas.eliminarLogico, [id]);
-  
-  return { 
-    mensaje: result.affectedRows > 0 ? 'Año lectivo eliminado correctamente' : 'No se pudo eliminar el año lectivo',
-    id_anio_lectivo: id
-  };
-};
-
-// Obtener años lectivos eliminados
-exports.obtenerAniosLectivosEliminados = async () => {
-  const [rows] = await db.query(consultas.obtenerEliminados);
-  return rows;
-};
-
-// Restaurar un año lectivo eliminado
-exports.restaurarAnioLectivo = async (id) => {
-  const [result] = await db.query(consultas.restaurar, [id]);
-  
-  if (result.affectedRows === 0) {
-    throw new Error('Año lectivo no encontrado o no está eliminado');
-  }
-
-  // Retornar el año lectivo restaurado
-  const [anioLectivo] = await db.query(consultas.obtenerPorId, [id]);
-  return anioLectivo[0];
-};
+module.exports = servicioAnioLectivo;

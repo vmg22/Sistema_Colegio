@@ -111,7 +111,7 @@ const AlumnosPerfil = () => {
             </div>
           </div>
 
-          <div className="perfil-alumno">
+          <div className="perfil-alumno"> 
             {/* Caja Izquierda: Información alumno */}
             <div className="perfil-alumno-box">
               <h4>Información del Alumno</h4>
