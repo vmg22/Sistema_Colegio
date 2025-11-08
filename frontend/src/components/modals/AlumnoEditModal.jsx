@@ -143,7 +143,8 @@ const AlumnoEditModal = ({ alumnoToEdit, onClose, onSave }) => {
                                     <option value="activo">Activo</option>
                                     <option value="inactivo">Inactivo</option>
                                     <option value="egresado">Egresado</option>
-                                    <option value="abandono">Abandono</option>
+                                    <option value="baja">Baja</option>
+                                    <option value="suspendido">Suspendido</option>
                                 </select>
                             </div>
                         </div>

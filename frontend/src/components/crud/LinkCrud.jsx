@@ -6,6 +6,12 @@ import '../../styles/LinkCrud.css';
 
 const cardData = [
     {
+    to: "/anio-lectivo",
+    label: "Año Lectivo",
+    icon: "group", // Ícono de Google para Alumnos
+    color: "#2563EB", // azul-600
+    },
+    {
     to: "/alumnos",
     label: "Alumnos",
     icon: "group", // Ícono de Google para Alumnos

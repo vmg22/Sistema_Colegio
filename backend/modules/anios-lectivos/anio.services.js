@@ -4,8 +4,13 @@ const consultas = require('./anio.queries');
 
 // Helper para formatear fechas (tu BD espera YYYY-MM-DD)
 function _formatDate(date) {
+<<<<<<< HEAD
   if (!date) return null;
   return new Date(date).toISOString().slice(0, 10);
+=======
+  if (!date) return null;
+  return new Date(date).toISOString().slice(0, 10);
+>>>>>>> 7d411b359a463e146eb364a0a1032af62eb138c1
 }
 
 const servicioAnioLectivo = {

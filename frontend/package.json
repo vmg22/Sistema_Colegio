@@ -27,6 +27,7 @@
     "react-router-dom": "^7.9.4",
     "react-to-print": "^3.2.0",
     "react-toastify": "^11.0.5",
+    "sweetalert2": "^11.26.3",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

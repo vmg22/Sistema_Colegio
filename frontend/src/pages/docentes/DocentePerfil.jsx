@@ -18,7 +18,7 @@ const DocentePerfil = () => {
 
   // --- Estados del Perfil ---
   const [docente, setDocente] = useState(null);
-  const [asignaciones, setAsignaciones] = useState([]);
+  const [asignaciones, setAsignaciones] = useState([]); 
 
   // --- Estados para los Dropdowns de los Modales ---
   const [materiasList, setMateriasList] = useState([]);
