@@ -8,7 +8,7 @@ import {
   getEstadosMateria 
 } from '../../services/materiasaltasService';
 
-const initialState = {
+  const initialState = {
     nombre: '',
     nivel: 1,
     ciclo: 'basico',
@@ -19,6 +19,8 @@ const initialState = {
 
 const MateriaModal = ({ show, onHide, onSave, materiaAEditar }) => {
   
+
+
   const [formData, setFormData] = useState(initialState);
   const [isEditMode, setIsEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -70,7 +72,7 @@ const MateriaModal = ({ show, onHide, onSave, materiaAEditar }) => {
       }
     };
     loadModalData();
-  }, [materiaAEditar, show, initialState]);
+  }, [materiaAEditar, show]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
