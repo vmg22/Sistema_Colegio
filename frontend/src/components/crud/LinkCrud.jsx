@@ -8,13 +8,19 @@ const cardData = [
     {
     to: "/anio-lectivo",
     label: "Año Lectivo",
+    icon: "calendar_add_on", // Ícono de Google para Alumnos
+    color: "#2563EB", // azul-600
+    },
+    {
+    to: "/cursos-crud",
+    label: "Cursos",
     icon: "group", // Ícono de Google para Alumnos
     color: "#2563EB", // azul-600
     },
     {
     to: "/alumnos",
     label: "Alumnos",
-    icon: "group", // Ícono de Google para Alumnos
+    icon: "person", // Ícono de Google para Alumnos
     color: "#2563EB", // azul-600
     },
     {

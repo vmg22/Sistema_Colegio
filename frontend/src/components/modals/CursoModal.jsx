@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert, Spinner, Row, Col } from 'react-bootstrap';
-import { createCurso, updateCurso } from '../../services/cursosService';
-// NOTA: Aún no importamos docentes, usaremos un input numérico.
-
+import { createCurso, updateCurso } from "../../services/cursosService"
 const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
   
   const initialState = {
@@ -10,7 +8,6 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
     anio: 1,
     division: '',
     turno: 'mañana',
-    id_docente_tutor: null,
     estado: 'activo'
   };
 
@@ -23,18 +20,15 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
     if (show) {
       setError(null);
       if (cursoAEditar) {
-        // Modo Edición
         setIsEditMode(true);
         setFormData({
           nombre: cursoAEditar.nombre,
           anio: cursoAEditar.anio,
           division: cursoAEditar.division,
           turno: cursoAEditar.turno,
-          id_docente_tutor: cursoAEditar.id_docente_tutor || null,
           estado: cursoAEditar.estado,
         });
       } else {
-        // Modo Creación
         setIsEditMode(false);
         setFormData(initialState);
       }
@@ -43,11 +37,7 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      // Si el valor es de un 'number' y está vacío, guárdalo como null
-      [name]: value === '' && name === 'id_docente_tutor' ? null : value 
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -55,20 +45,13 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
     setSaving(true);
     setError(null);
 
-    // Preparamos los datos
-    const datosParaEnviar = {
-      ...formData,
-      // Asegurarnos que el id_docente_tutor se vaya como número o null
-      id_docente_tutor: formData.id_docente_tutor ? parseInt(formData.id_docente_tutor, 10) : null
-    };
-
     try {
       if (isEditMode) {
-        await updateCurso(cursoAEditar.id_curso, datosParaEnviar);
+        await updateCurso(cursoAEditar.id_curso, formData);
       } else {
-        await createCurso(datosParaEnviar);
+        await createCurso(formData);
       }
-      onSave(); // Llama al padre para refrescar y cerrar
+      onSave();
       
     } catch (err) {
       setError(err.response?.data?.mensaje || 'Error al guardar. Verifique los datos.');
@@ -113,7 +96,7 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
                   value={formData.anio}
                   onChange={handleChange}
                   min="1"
-                  max="6" // O el máximo que tengas
+                  max="6"
                   required
                   disabled={saving}
                 />
@@ -122,7 +105,7 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
           </Row>
 
           <Row>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3" controlId="formDivision">
                 <Form.Label>División <span className="text-danger">*</span></Form.Label>
                 <Form.Control
@@ -137,7 +120,7 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3" controlId="formTurno">
                 <Form.Label>Turno <span className="text-danger">*</span></Form.Label>
                 <Form.Select
@@ -153,27 +136,8 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
                 </Form.Select>
               </Form.Group>
             </Col>
-          </Row>
-
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="formDocenteTutor">
-                <Form.Label>ID Docente Tutor</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="id_docente_tutor"
-                  value={formData.id_docente_tutor || ''}
-                  onChange={handleChange}
-                  placeholder="(Opcional)"
-                  disabled={saving}
-                />
-                <Form.Text className="text-muted">
-                  Por ahora, ingresar el ID. Más adelante será un buscador.
-                </Form.Text>
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="formEstado">
+            <Col md={4}>
+               <Form.Group className="mb-3" controlId="formEstado">
                 <Form.Label>Estado</Form.Label>
                 <Form.Select
                   name="estado"
@@ -196,9 +160,7 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
             Cancelar
           </Button>
           <Button variant="primary" type="submit" disabled={saving}>
-            {saving ? (
-              <Spinner as="span" animation="border" size="sm" />
-            ) : 'Guardar'}
+            {saving ? <Spinner as="span" animation="border" size="sm" /> : 'Guardar'}
           </Button>
         </Modal.Footer>
       </Form>
