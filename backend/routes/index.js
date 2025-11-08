@@ -26,8 +26,8 @@ const asignacionRoutes = require("../modules/CRUD/asignaciones/asignacion.routes
 const cursoMateriaRoutes = require("../modules/CRUD/curso-materia/curso-materia.routes.js");
 
 
-// ✅ NUEVO: Módulo de altas (Docente + Usuario)
-const altasRoutes = require("../modules/altas/alta.routes.js");
+// Módulo de altas (Docente + Usuario)
+const altasRoutesDocentes = require("../modules/CRUD/altas/alta.routes.js");
 
 const altasmateriasRoutes = require("../modules/CRUD/altasmaterias/altasmaterias.routes.js")
 // Registrar rutas de los módulos
@@ -57,7 +57,7 @@ router.use('/mail', mailRoutes);
 
 
 //  Ruta de altas
-router.use("/altas", altasRoutes);
+router.use("/altas-docentes", altasRoutesDocentes);
 router.use("/altasmaterias", altasmateriasRoutes);
 router.use("/curso-materia", cursoMateriaRoutes);
 
@@ -75,7 +75,6 @@ router.get("/", (req, res) => {
     version: "1.0.0",
     endpoints: {
       alumnos: "/api/v1/alumnos",
-      docentes: "/api/v1/docentes",
       cursos: "/api/v1/cursos",
       cursosCrud: "/api/v1/cursos-crud",
       materias: "/api/v1/materias",
@@ -89,7 +88,7 @@ router.get("/", (req, res) => {
       reportesAlumno: "/api/v1/reportes/alumno?dni_alumno=X&anio_lectivo=Y",
       reportesCurso: "/api/v1/reportes/curso?id_curso=X&id_materia=Y&anio_lectivo=Z&cuatrimestre=N",
       //  NUEVO: Endpoint de altas para crar docentes y usuarios ya que sin usuario no se puede crear docente
-      altas: "/api/v1/altas/docentes",
+      altasRoutesDocentes: "/api/v1/altas-docentes",
       usuarios: "/api/v1/usuarios",
       auth: "/api/v1/auth",
       altasmateriasRoutes : "/api/v1/altasmaterias",

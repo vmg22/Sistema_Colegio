@@ -10,7 +10,7 @@ const altaController = require('./altas.controller');
 // =============================================
 // RUTAS DE CONSULTA
 // =============================================
-router.get('/docentes', altaController.obtenerTodosDocentes);
+router.get('/', altaController.obtenerTodosDocentes);
 
 // --- ¡RUTA CORREGIDA! ---
 // Debe ir ANTES de /docentes/:id para que 'estados' no sea tratado como un ID

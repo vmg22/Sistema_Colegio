@@ -36,7 +36,7 @@ const cardData = [
     color: "#2563EB", // azul-600
     },
     {
-    to: "/docentes",
+    to: "/altas-docentes",
     label: "Docentes",
     icon: "work", // Ícono de Google para Docentes
     color: "#2563EB", // verde-600

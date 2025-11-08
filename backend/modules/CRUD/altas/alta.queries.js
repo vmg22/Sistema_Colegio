@@ -6,7 +6,7 @@ const altaDocenteUsuario = {
   // =============================================
   // CONSULTAS DE USUARIO
   // =============================================
-  
+
   crearUsuario: `
     INSERT INTO usuario 
       (username, password_hash, email_usuario, rol, estado)
@@ -44,7 +44,7 @@ const altaDocenteUsuario = {
   // =============================================
   // CONSULTAS DE DOCENTE
   // =============================================
-  
+
   crearDocente: `
     INSERT INTO docente 
       (id_usuario, dni_docente, nombre, apellido, email, telefono, especialidad, estado)
@@ -108,23 +108,25 @@ const altaDocenteUsuario = {
 
   actualizarDocente: `
     UPDATE docente 
-    SET 
-      nombre = ?,
-      apellido = ?,
-      email = ?,
-      telefono = ?,
-      especialidad = ?,
-      estado = ?,
-      dni_docente = ?
-    WHERE id_docente = ? 
-      AND deleted_at IS NULL
-  `,
+ SET 
+ nombre = ?,
+ apellido = ?,
+ email = ?,
+telefono = ?,
+ especialidad = ?,
+ estado = ?,
+dni_docente = ?  -- <-- FALTABA ESTE CAMPO
+ WHERE id_docente = ? 
+AND deleted_at IS NULL
+ `,
 
   eliminarDocente: `
-    UPDATE docente 
-    SET deleted_at = CURRENT_TIMESTAMP 
-    WHERE id_docente = ?
-  `,
+ UPDATE docente 
+SET 
+        deleted_at = CURRENT_TIMESTAMP,
+        estado = 'inactivo' -- Añadido para consistencia
+WHERE id_docente = ?
+`,
 
   eliminarUsuario: `
     UPDATE usuario 
@@ -147,11 +149,12 @@ const altaDocenteUsuario = {
     ORDER BY d.deleted_at DESC
   `,
 
-  restaurarDocente: `
-    UPDATE docente 
-    SET deleted_at = NULL 
-    WHERE id_docente = ?
-  `,
+  restaurarDocente: `UPDATE docente 
+SET 
+        deleted_at = NULL,
+        estado = 'activo' -- Añadido para consistencia
+WHERE id_docente = ?
+`,
 
   restaurarUsuario: `
     UPDATE usuario 
@@ -168,7 +171,7 @@ const altaDocenteUsuario = {
   `,
   obtenerValoresEnumEstado: `
     SHOW COLUMNS FROM docente LIKE 'estado'
-  `
+  `,
 };
 
 module.exports = altaDocenteUsuario;
