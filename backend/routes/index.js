@@ -27,7 +27,7 @@ const asignacionRoutes = require("../modules/CRUD/asignaciones/asignacion.routes
 // ✅ NUEVO: Módulo de altas (Docente + Usuario)
 const altasRoutes = require("../modules/altas/alta.routes.js");
 
-const altasmateriasRoutes = require("../modules/altasmaterias/altasmaterias.routes.js")
+const altasmateriasRoutes = require("../modules/CRUD/altasmaterias/altasmaterias.routes.js")
 // Registrar rutas de los módulos
 router.use("/alumnos", alumnoRoutes);
 router.use("/docentes", docenteRoutes);
