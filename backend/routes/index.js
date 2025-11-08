@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+//algo
 // IMPORTACIÓN DE MÓDULOS
 const alumnoRoutes = require("../modules/alumnos/alumno.routes");
 const docenteRoutes = require("../modules/docentes/docente.routes");
