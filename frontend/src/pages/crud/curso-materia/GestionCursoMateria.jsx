@@ -40,11 +40,7 @@ const GestionCursoMateria = () => {
       setMaterias(resMaterias || []);
       
     } catch (err) {
-<<<<<<< HEAD
       setError(err.message || "Error al cargar las cursos-materias.");
-=======
-      setError('Error al cargar datos maestros (cursos o materias).');
->>>>>>> b299816bb625a16e5bd7d9ed9f4f5da09d4d091a
     } finally {
       setLoadingCursos(false);
       setLoadingMaterias(false);
@@ -74,11 +70,7 @@ const GestionCursoMateria = () => {
         setMateriasMarcadas(idsSet);
 
       } catch (err) {
-<<<<<<< HEAD
       setError(err.message || "Error al cargar las materias asignadas a este cursso .");
-=======
-        setError('Error al cargar las materias asignadas a este curso.');
->>>>>>> b299816bb625a16e5bd7d9ed9f4f5da09d4d091a
       } finally {
         setLoadingAsignaciones(false);
       }

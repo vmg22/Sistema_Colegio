@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const altaController = require('./alta.controller');
+const altaController = require('./altas.controller');
 
 /**
  * Rutas para gestión de Docentes y Usuarios
