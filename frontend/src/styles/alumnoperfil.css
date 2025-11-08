@@ -12,13 +12,12 @@
     border: 1px solid #e0e0e0;
 }
 
-.perfil-alumno{
+.perfil-alumno {
     display: grid;
-    grid-template-columns: 2fr 1fr; /* 66% para info, 33% para materias */
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
     gap: 30px;
     margin-bottom: 30px;
 }
-
 .perfil-alumno-box{
     background-color: #fff;
     border-radius: 8px;

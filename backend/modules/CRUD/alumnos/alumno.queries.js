@@ -277,6 +277,90 @@ const consultasAlumnos = {
     FROM alumno 
     WHERE deleted_at IS NULL
   `,
+  inscribirEnCurso: `
+ INSERT INTO alumno_curso
+ (id_alumno, id_curso, anio_lectivo, estado, fecha_inscripcion)
+ VALUES (?, ?, ?, 'regular', CURDATE())
+ `,
+
+ /**
+   * Obtiene la lista de IDs de materias del plan de estudios de un curso
+   * Params: [id_curso]
+   */
+ obtenerMateriasDeCurso: `
+ SELECT id_materia FROM curso_materia
+ WHERE id_curso = ? AND deleted_at IS NULL
+ `,
+
+ /**
+   * Crea los registros iniciales en 'alumno_materia_estado'
+   * (Bulk Insert)
+   * Params: [ [id_alumno, id_materia, id_curso, anio_lectivo, 'cursando'], [...] ]
+   */
+ inscribirEnMaterias: `
+ INSERT INTO alumno_materia_estado
+ (id_alumno, id_materia, id_curso, anio_lectivo, estado)
+ VALUES ?
+ `,
+ obtenerCursoYMateriasActual: `
+    -- 1. Obtenemos el curso actual del alumno
+    WITH AlumnoCursoActual AS (
+      SELECT 
+        a.id_alumno,
+        a.nombre_alumno,
+        a.apellido_alumno,
+        c.id_curso,
+        c.nombre AS nombre_curso,
+        c.division,
+        c.turno,
+        c.anio AS anio_curso,
+        ac.anio_lectivo
+      FROM alumno a
+      JOIN alumno_curso ac ON a.id_alumno = ac.id_alumno
+      JOIN curso c ON ac.id_curso = c.id_curso
+      WHERE 
+        a.id_alumno = ? 
+        AND ac.anio_lectivo = ? -- (Ej: 2025)
+        AND a.deleted_at IS NULL
+        AND ac.deleted_at IS NULL
+    ),
+    -- 2. Obtenemos las materias del plan de estudios DE ESE curso
+    MateriasDelPlan AS (
+      SELECT 
+        cm.id_materia,
+        m.nombre AS nombre_materia,
+        m.descripcion AS descripcion_materia
+      FROM curso_materia cm
+      JOIN materia m ON cm.id_materia = m.id_materia
+      -- Usamos un subquery para obtener el id_curso (maneja si AlumnoCursoActual está vacío)
+      WHERE cm.id_curso = (SELECT id_curso FROM AlumnoCursoActual)
+        AND cm.deleted_at IS NULL
+        AND m.deleted_at IS NULL
+    )
+    -- 3. Unimos todo
+    SELECT 
+      acc.*, -- Datos del Alumno y Curso
+      
+      -- Datos de la Materia (del Plan)
+      mp.id_materia,
+      mp.nombre_materia,
+      mp.descripcion_materia,
+      
+      -- Datos del ESTADO (del Alumno)
+      ame.estado AS estado_materia,
+      ame.calificacion_final
+      
+    FROM AlumnoCursoActual acc
+    -- LEFT JOIN: Crucial para mostrar el curso aunque no tenga materias
+    LEFT JOIN MateriasDelPlan mp ON 1=1
+    -- LEFT JOIN: Crucial para obtener el estado de CADA materia
+    LEFT JOIN alumno_materia_estado ame 
+      ON ame.id_alumno = acc.id_alumno
+      AND ame.id_materia = mp.id_materia
+      AND ame.anio_lectivo = acc.anio_lectivo
+      AND ame.deleted_at IS NULL
+    ORDER BY mp.nombre_materia
+ `,
 };
 
 module.exports = consultasAlumnos;

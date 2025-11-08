@@ -81,6 +81,36 @@ const controladorAlumnos = {
       manejarError(res, error, 'Error al eliminar el alumno.');
     }
   },
+  matricularEnCurso: async (req, res) => {
+    try {
+      const { id } = req.params; // id_alumno
+      const { id_curso, anio_lectivo } = req.body;
+
+      if (!id_curso || !anio_lectivo) {
+        return manejarError(res, { message: 'id_curso y anio_lectivo son requeridos.', statusCode: 400 });
+      }
+
+      const resultado = await servicioAlumnos.matricularEnCurso(id, id_curso, anio_lectivo);
+      res.status(201).json({ mensaje: resultado.mensaje, data: resultado });
+
+    } catch (error) {
+      manejarError(res, error, 'Error al matricular al alumno.');
+    }
+  },
+  obtenerCursoYMateriasActual: async (req, res) => {
+ try {
+const { id } = req.params;
+      // 1. OBTENEMOS EL AÑO ACTUAL
+      const anio_lectivo_actual = new Date().getFullYear(); 
+
+      // 2. PASAMOS AMBOS PARÁMETROS
+ const resultado = await servicioAlumnos.obtenerCursoYMateriasActual(id, anio_lectivo_actual);
+
+      res.status(200).json(resultado);
+} catch (error) {
+manejarError(res, error, 'Error al obtener curso y materias del alumno.');
+ }
+ },
 
   // --- ACCIONES ESPECIALES ---
   actualizarEstado: async (req, res) => {

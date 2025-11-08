@@ -16,6 +16,8 @@ router.get('/dni/:dni', controladorAlumnos.obtenerPorDni);
 router.get('/', controladorAlumnos.obtenerTodos);
 router.post('/', controladorAlumnos.crear);
 router.post('/con-tutor', controladorAlumnos.crearConTutor);
+router.get('/:id/curso-materias-actual', controladorAlumnos.obtenerCursoYMateriasActual);
+router.post('/:id/matricular', controladorAlumnos.matricularEnCurso);
 router.get('/:id', controladorAlumnos.obtenerPorId); // <-- Ahora sí funciona correctamente
 router.put('/:id', controladorAlumnos.actualizarCompleto);
 router.patch('/:id', controladorAlumnos.actualizarParcial);

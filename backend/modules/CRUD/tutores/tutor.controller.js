@@ -1,5 +1,5 @@
 const servicioTutores = require('./tutor.services');
-const { exito, error } = require('../../utils/responses');
+const { exito, error } = require('../../../utils/responses');
 
 const controladorTutores = {
  

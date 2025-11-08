@@ -2,14 +2,14 @@ const express = require("express");
 const router = express.Router();
 //algo
 // IMPORTACIÓN DE MÓDULOS
-const alumnoRoutes = require("../modules/alumnos/alumno.routes");
+const alumnoRoutes = require("../modules/CRUD/alumnos/alumno.routes.js");
 const docenteRoutes = require("../modules/docentes/docente.routes");
 const cursoRoutes = require("../modules/cursos/curso.routes");
 const cursoCrudRoutes = require("../modules/CRUD/curso/curso.routes.js");
 const materiaRoutes = require("../modules/materias/materia.routes");
 const calificacionRoutes = require("../modules/calificaciones/calificacion.routes");
 const anioLectivoRoutes = require("../modules/anios-lectivos/anio.routes");
-const tutorRoutes = require("../modules/tutores/tutor.routes");
+const tutorRoutes = require("../modules/CRUD/tutores/tutor.routes.js");
 const comunicacionRoutes = require("../modules/comunicaciones/comunicacion.routes");
 const asistenciaRoutes = require('../modules/asistencia_alumno/asistencia_alumno.routes');
 const reportesAlumnoRoutes = require("../modules/reportesAlumnoDni/reporte.routes");
@@ -19,7 +19,7 @@ const mailRoutes = require('../modules/mail/mail.routes');
 const materiaCorrelativaRoutes = require("../modules/materia_correlativa/materia_correlativa.routes");
 const destinatarioRoutes = require("../modules/comunicacion_destinatario/comunicacion_destinatario.routes");
 const logActividadRoutes = require("../modules/log_actividad/log_actividad.routes");
-const alumnoTutorRoutes = require("../modules/alumno_tutor/alumno_tutor.routes"); 
+const alumnoTutorRoutes = require("../modules/CRUD/alumno_tutor/alumno_tutor.routes.js"); 
 const usuarioRoutes = require("../modules/usuario/usuario.routes.js");
 const authRoutes = require('../modules/usuario/auth.routes.js');
 const asignacionRoutes = require("../modules/CRUD/asignaciones/asignacion.routes");
