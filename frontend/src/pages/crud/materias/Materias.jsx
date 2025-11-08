@@ -129,7 +129,7 @@ const Materias = () => {
 
   return (
     <Container className="mt-4">
-        <BtnVolver />
+      <BtnVolver/>
       <Row className="mb-3 align-items-center">
         <Col md={6}>
           <h2>Gestión de Materias</h2>

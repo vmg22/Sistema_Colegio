@@ -7,7 +7,6 @@ import Header from './components/layout/Header'
 import MainCrud from './pages/crud/MainCrud'
 import Alumnos from './pages/crud/alumnos/Alumnos'
 import Materias from "./pages/crud/materias/Materias"
-import Docentes from './pages/crud/docentes/Docentes.jsx'
 import NotFountPage from './pages/NotFoundPage'
 import Consulta from './pages/crud/alumnos/Consulta'
 import PerfilAlumno from './pages/alumno/PerfilAlumno.jsx'
@@ -49,6 +48,7 @@ import AlumnosPerfil from './pages/crud/alumnos/AlumnosPerfil.jsx'
 import GestionAniosLectivos from './pages/crud/anio-lectivo/GestionAniosLectivos.jsx'
 import GestionCursos from './pages/crud/cursos/GestionCursos.jsx'
 import GestionCursoMateria from './pages/crud/curso-materia/GestionCursoMateria.jsx'
+import Docentes from './pages/crud/docentes/Docentes.jsx'
 
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
@@ -83,7 +83,6 @@ function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/crud" element={<ProtectedRoute><MainCrud /></ProtectedRoute>} />
         <Route path="/alumnos" element={<ProtectedRoute><Alumnos /></ProtectedRoute>} />
-        <Route path="/altas-docentes" element={<ProtectedRoute><Docentes /></ProtectedRoute>} />
         <Route path="/materias" element={<ProtectedRoute><Materias/></ProtectedRoute>} />
         <Route path="/botones" element={<ProtectedRoute><ButtonShowcase /></ProtectedRoute>} />
         <Route path="/consulta" element={<ProtectedRoute><Consulta/></ProtectedRoute>} />
@@ -105,6 +104,8 @@ function App() {
         <Route path="/anio-lectivo" element={<ProtectedRoute><GestionAniosLectivos/></ProtectedRoute>} />
         <Route path="/cursos-crud" element={<ProtectedRoute><GestionCursos/></ProtectedRoute>} />
         <Route path="/curso-materia" element={<ProtectedRoute><GestionCursoMateria/></ProtectedRoute>} />
+        <Route path="/altas-docentes" element={<ProtectedRoute><Docentes/></ProtectedRoute>} />
+        
         <Route path="/cursoDashboard" element={<ProtectedRoute><CursoDashboardPage/></ProtectedRoute>} />
         <Route path="/reporte-curso/listado" element={<ProtectedRoute><ReporteCursoListPage /></ProtectedRoute>} />
         <Route path="/reporte-curso/Asistencias" element={<ProtectedRoute><ResumenAsistenciasPage /></ProtectedRoute>} />
