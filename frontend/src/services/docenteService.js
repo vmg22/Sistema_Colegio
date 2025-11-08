@@ -1,7 +1,6 @@
 import axios from "axios";
 import API from "../api/api";
-const ALTAS_URL = `${API}/altas`;
-
+const ALTAS_URL = `${API}/altas-docentes`;
 /**
  * Función genérica para manejar errores y extraer el mensaje del backend.
  */

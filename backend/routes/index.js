@@ -23,10 +23,12 @@ const alumnoTutorRoutes = require("../modules/alumno_tutor/alumno_tutor.routes")
 const usuarioRoutes = require("../modules/usuario/usuario.routes.js");
 const authRoutes = require('../modules/usuario/auth.routes.js');
 const asignacionRoutes = require("../modules/CRUD/asignaciones/asignacion.routes");
+const cursoMateriaRoutes = require("../modules/CRUD/curso-materia/curso-materia.routes.js");
+
 
 // ✅ NUEVO: Módulo de altas (Docente + Usuario)
-const altasRoutes = require("../modules/altas/alta.routes.js");
-
+// Módulo de altas (Docente + Usuario)
+const altasRoutesDocentes = require("../modules/CRUD/altas/alta.routes.js");
 const altasmateriasRoutes = require("../modules/CRUD/altasmaterias/altasmaterias.routes.js")
 // Registrar rutas de los módulos
 router.use("/alumnos", alumnoRoutes);
@@ -55,8 +57,9 @@ router.use('/mail', mailRoutes);
 
 
 //  Ruta de altas
-router.use("/altas", altasRoutes);
+router.use("/altas-docentes", altasRoutesDocentes);
 router.use("/altasmaterias", altasmateriasRoutes);
+router.use("/curso-materia", cursoMateriaRoutes);
 
 // RUTAS PARA INCRIPCIONES /CRUD INSCRIPCION
 router.use('/inscripciones', inscripcionesRoutes);
@@ -64,6 +67,7 @@ router.use('/inscripciones', inscripcionesRoutes);
 // CRUD ASIGNAR MATERIA A DOCENTE 
 
 router.use("/asignaciones", asignacionRoutes);
+
 
 // Ruta principal de la API
 router.get("/", (req, res) => {
@@ -76,6 +80,7 @@ router.get("/", (req, res) => {
       cursos: "/api/v1/cursos",
       cursosCrud: "/api/v1/cursos-crud",
       materias: "/api/v1/materias",
+      cursoMateria: "/api/v1/curso-materia",
       calificaciones: "/api/v1/calificaciones",
       aniosLectivos: "/api/v1/anios-lectivos",
       tutores: "/api/v1/tutores",
@@ -85,7 +90,7 @@ router.get("/", (req, res) => {
       reportesAlumno: "/api/v1/reportes/alumno?dni_alumno=X&anio_lectivo=Y",
       reportesCurso: "/api/v1/reportes/curso?id_curso=X&id_materia=Y&anio_lectivo=Z&cuatrimestre=N",
       //  NUEVO: Endpoint de altas para crar docentes y usuarios ya que sin usuario no se puede crear docente
-      altas: "/api/v1/altas/docentes",
+      altas: "/api/v1/altas-docentes",
       usuarios: "/api/v1/usuarios",
       auth: "/api/v1/auth",
       altasmateriasRoutes : "/api/v1/altasmaterias",
