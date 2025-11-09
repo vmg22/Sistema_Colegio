@@ -33,9 +33,12 @@ const Dashboard = () => {
   const [selectedPeriodo, setSelectedPeriodo] = useState("");
   const [selectedAnio, setSelectedAnio] = useState("");
 
+  // Obtener rol del usuario
+  const [userRole, setUserRole] = useState("");
+
   const navigate = useNavigate();
 
-  // Zustand store  SETEAMOS LOS DATOS PARA GUARDARLOS GLOBALMENTE
+  // Zustand store
   const {
     setAlumnoDni,
     setAlumnoAnio,
@@ -48,6 +51,9 @@ const Dashboard = () => {
   } = useConsultaStore();
 
   useEffect(() => {
+    const role = localStorage.getItem("userRole") || "usuario";
+    setUserRole(role);
+
     const cargarDatos = async () => {
       try {
         const [dataMaterias, dataCursos, dataAnios] = await Promise.all([
@@ -72,18 +78,16 @@ const Dashboard = () => {
     cargarDatos();
   }, []);
 
-  //  FILTRADO DE MATERIAS según el curso seleccionado
+  // FILTRADO DE MATERIAS según el curso seleccionado
   const materiasFiltradas = useMemo(() => {
     if (!selectedCurso) return [];
 
-    // Buscar el curso seleccionado para obtener su año
     const cursoActual = cursos.find(
       (c) => c.id_curso === parseInt(selectedCurso)
     );
 
     if (!cursoActual) return [];
 
-    // Filtrar materias que coincidan con el nivel del curso y estén activas
     return materias.filter(
       (materia) =>
         materia.nivel === cursoActual.anio && materia.estado === "activa"
@@ -97,7 +101,6 @@ const Dashboard = () => {
     setAnioInput("2025");
     setValidated(false);
 
-    // Resetear selecciones de curso cuando cambia el tipo de consulta
     setSelectedCurso("");
     setSelectedMateria("");
     setSelectedPeriodo("");
@@ -119,7 +122,6 @@ const Dashboard = () => {
       return;
     }
 
-    // Guardar en Zustand
     setAlumnoDni(dniInput);
     setAlumnoAnio(anioInput);
 
@@ -136,10 +138,8 @@ const Dashboard = () => {
       console.log("✅ Reporte obtenido:", data);
       setReporteAlumno(data);
 
-      // Guardamos temporalmente en sessionStorage (por si recarga la página)
       sessionStorage.setItem("reporteAlumno", JSON.stringify(data));
 
-      // Redirigimos a la vista de resultados
       navigate("/perfilAlumno");
     } catch (err) {
       console.error("❌ Error al traer reporte:", err);
@@ -179,7 +179,6 @@ const Dashboard = () => {
 
       console.log("✅ Reporte de curso obtenido:", dataReporte);
 
-      // --- ¡NUEVO! Guardamos los nombres seleccionados ---
       const cursoObj = cursos.find(
         (c) => c.id_curso === parseInt(selectedCurso)
       );
@@ -189,7 +188,6 @@ const Dashboard = () => {
       const periodoNombre =
         selectedPeriodo === "1" ? "1er Cuatrimestre" : "2do Cuatrimestre";
 
-      // Guardar en Zustand los datos del reporte y los nombres PARA UTILIZARLO EN UI
       setReporteCurso(dataReporte);
       setSelectedCursoNombre(
         cursoObj ? `${cursoObj.anio}° ${cursoObj.division}` : "Curso"
@@ -198,10 +196,8 @@ const Dashboard = () => {
       setSelectedPeriodoNombre(periodoNombre);
       setSelectedAnioNombre(selectedAnio);
 
-      // Guardar en sessionStorage (para recargas)
       sessionStorage.setItem("reporteCurso", JSON.stringify(dataReporte));
 
-      // Navegar a la página de resultados
       navigate("/cursoDashboard");
     } catch (err) {
       console.error("❌ Error al traer reporte de curso:", err);
@@ -211,10 +207,13 @@ const Dashboard = () => {
     }
   };
 
-  //  Resetear materia cuando cambia el curso
   const handleCursoChange = (e) => {
     setSelectedCurso(e.target.value);
-    setSelectedMateria(""); // Limpiar la materia seleccionada
+    setSelectedMateria("");
+  };
+
+  const handleNavigateToCrud = () => {
+    navigate("/crud");
   };
 
   return (
@@ -223,22 +222,37 @@ const Dashboard = () => {
         style={{
           display: "flex",
           alignItems: "center",
+          justifyContent: "space-between",
           marginLeft: "20px",
+          marginRight: "20px",
           gap: "10px",
         }}
       >
-        <span
-          className="material-symbols-outlined search"
-          style={{ marginRight: "15px" }}
-        >
-          search
-        </span>
-        <h4>Consulta Académica</h4>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span
+            className="material-symbols-outlined search"
+            style={{ marginRight: "15px" }}
+          >
+            search
+          </span>
+          <h4>Consulta Académica</h4>
+        </div>
+
+        {/* ✅ BADGE DE USUARIO ADMIN */}
+        {userRole === "admin" && (
+          <div className="admin-badge">
+            <span className="material-symbols-outlined admin-icon">
+              admin_panel_settings
+            </span>
+            <span className="admin-text">Administrador</span>
+          </div>
+        )}
       </div>
 
       <LineaSeparadora />
 
       <div className="contenedor-botones-dash">
+        {/* CARD ALUMNO */}
         <button
           className={`btn-tipo ${tipoConsulta === "alumno" ? "activo" : ""}`}
           onClick={() => setConsulta2("alumno")}
@@ -250,6 +264,7 @@ const Dashboard = () => {
           <span className="btn-texto">Consulta por Alumno</span>
         </button>
 
+        {/* CARD CURSO */}
         <button
           className={`btn-tipo ${tipoConsulta === "curso" ? "activo" : ""}`}
           onClick={() => setConsulta2("curso")}
@@ -260,6 +275,32 @@ const Dashboard = () => {
           </div>
           <span className="btn-texto">Consulta por Curso</span>
         </button>
+{/* CARD ENVIAR MAIL GENERAL (visible para todos) */}
+        <button
+          className={`btn-tipo ${tipoConsulta === "mail" ? "activo" : ""}`}
+          onClick={() => navigate("/generar-mail")}
+          type="button"
+        >
+          <div className="icono-contenedor-mail">
+            <span className="material-symbols-outlined mail">mail</span>
+          </div>
+          <span className="btn-texto">Enviar Mail General</span>
+        </button>
+        {/* ✅ CARD GESTIÓN DE DATOS (SOLO ADMIN) */}
+        {userRole === "admin" && (
+          <button
+            className={`btn-tipo ${tipoConsulta === "gestion" ? "activo" : ""}`}
+            onClick={handleNavigateToCrud}
+            type="button"
+          >
+            <div className="icono-contenedor-settings">
+              <span className="material-symbols-outlined settings">
+                settings
+              </span>
+            </div>
+            <span className="btn-texto">Gestión de Datos</span>
+          </button>
+        )}
       </div>
 
       <div className="contenedor-busqueda">
@@ -325,7 +366,6 @@ const Dashboard = () => {
             <h5 className="tituloForm">Buscar Curso</h5>
             <hr className="linea-separadora" />
             <Row className="mb-3 d-flex justify-content-around">
-              {/* 🎯 CURSO (DINÁMICO) */}
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Curso</Form.Label>
                 <Form.Select
@@ -343,7 +383,6 @@ const Dashboard = () => {
                 </Form.Select>
               </Form.Group>
 
-              {/* 🎯 MATERIA (FILTRADA DINÁMICAMENTE) */}
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Materia</Form.Label>
                 <Form.Select
@@ -372,7 +411,6 @@ const Dashboard = () => {
             </Row>
 
             <Row className="mb-3 d-flex justify-content-around">
-              {/* PERIODO (ESTÁTICO) */}
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Periodo</Form.Label>
                 <Form.Select
@@ -386,7 +424,6 @@ const Dashboard = () => {
                 </Form.Select>
               </Form.Group>
 
-              {/* AÑO (DINÁMICO) */}
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Año</Form.Label>
                 <Form.Select
@@ -408,7 +445,6 @@ const Dashboard = () => {
               <p style={{ color: "red", textAlign: "center" }}>{error}</p>
             )}
 
-            {/* BOTÓN */}
             <div className="d-flex justify-content-center my-4">
               <Button
                 type="submit"
