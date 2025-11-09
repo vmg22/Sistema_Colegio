@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
-import React, { useEffect, useMemo, useState, useCallback } from "react";
 import BtnVolver from "../../components/ui/BtnVolver";
 import EncabezadoCurso from "../../components/curso/EncabezadoCurso";
 import { useConsultaStore } from "../../store/consultaStore";
@@ -30,9 +29,7 @@ const CargaCalificaciones = () => {
   // Extraemos los filtros una sola vez
   const filtros = reporteCurso?.filtros;
 
-  // ********** HOOKS MOVIDOS ARRIBA DE CUALQUIER RETURN CONDICIONAL **********
-
-  // Corregido: Ahora solo depende del objeto 'filtros' completo.
+  // ✅ SOLUCIÓN 1: Memoizar los valores de los filtros para evitar re-renders
   const filtrosMemorizados = useMemo(() => {
     if (!filtros) return null;
     return {
@@ -41,15 +38,15 @@ const CargaCalificaciones = () => {
       anioLectivo: filtros.anioLectivo,
       cuatrimestre: filtros.cuatrimestre,
     };
-  }, [filtros]); 
+  }, [filtros?.curso, filtros?.materia, filtros?.anioLectivo, filtros?.cuatrimestre]);
 
-  // Corregido: Se añade 'setReporteCurso' como dependencia.
+  // ✅ SOLUCIÓN 2: NO incluir setReporteCurso en las dependencias
   useEffect(() => {
     const traerAlumnos = async () => {
       if (!filtrosMemorizados) return;
-
+      
       const { curso, materia, anioLectivo, cuatrimestre } = filtrosMemorizados;
-
+      
       if (!curso || !materia || !anioLectivo || !cuatrimestre) {
         return;
       }
@@ -61,52 +58,9 @@ const CargaCalificaciones = () => {
         console.error("Error al traer los alumnos:", error);
       }
     };
-
+    
     traerAlumnos();
-  }, [filtrosMemorizados, setReporteCurso]); 
-  
-  // Se mueve arriba (antes del if de loading) para evitar el error de llamada condicional.
-  const alumnosParaMostrar = useMemo(() => {
-    if (!reporteCurso?.alumnos) {
-      return [];
-    }
-    const alumnosOrdenados = [...reporteCurso.alumnos].sort((a, b) => {
-      return a.alumno.nombreCompleto.localeCompare(b.alumno.nombreCompleto);
-    });
-    if (!searchTerm) {
-      return alumnosOrdenados;
-    }
-    const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    return alumnosOrdenados.filter((item) => {
-      const dniString = String(item.alumno.dni ?? "");
-      return item.alumno.nombreCompleto.toLowerCase().includes(lowerCaseSearchTerm) || 
-             dniString.toLowerCase().includes(lowerCaseSearchTerm);
-    });
-  }, [reporteCurso?.alumnos, searchTerm]); // Se utiliza el optional chaining '?' para que useMemo pueda ejecutarse incluso si reporteCurso es null/undefined.
-
-
-  // Se mueve arriba (antes del if de loading) para evitar el error de llamada condicional.
-  const handleSaveSuccess = useCallback(async () => {
-    if (!filtrosMemorizados) return;
-
-    const { curso, materia, anioLectivo, cuatrimestre } = filtrosMemorizados;
-
-    try {
-      const data = await getReporteCurso(curso, materia, anioLectivo, cuatrimestre);
-      setReporteCurso(data);
-      console.log("Datos recargados exitosamente después de guardar.");
-    } catch (error) {
-      console.error("Error al recargar los datos:", error);
-      console.error(`Error al recargar: ${error.message}`);
-    }
-  }, [filtrosMemorizados, setReporteCurso]);
-  
-  const handleAbrirModal = (item) => {
-    setAlumnoSeleccionado(item);
-    handleShow();
-  };
-  
-  // ********** FIN DE HOOKS **********
+  }, [filtrosMemorizados]); // ✅ Solo depende de los filtros, NO de setReporteCurso
 
   if (
     !selectedCursoNombre ||
@@ -121,6 +75,44 @@ const CargaCalificaciones = () => {
       </div>
     );
   }
+
+  const alumnosParaMostrar = useMemo(() => {
+    if (!reporteCurso.alumnos) {
+      return [];
+    }
+    const alumnosOrdenados = [...reporteCurso.alumnos].sort((a, b) => {
+      return a.alumno.nombreCompleto.localeCompare(b.alumno.nombreCompleto);
+    });
+    if (!searchTerm) {
+      return alumnosOrdenados;
+    }
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return alumnosOrdenados.filter((item) => {
+      const dniString = String(item.alumno.dni ?? "");
+      return dniString.toLowerCase().includes(lowerCaseSearchTerm);
+    });
+  }, [reporteCurso.alumnos, searchTerm]);
+
+  const handleAbrirModal = (item) => {
+    setAlumnoSeleccionado(item);
+    handleShow();
+  };
+
+  // ✅ SOLUCIÓN 3: Usar useCallback para memoizar la función
+  const handleSaveSuccess = useCallback(async () => {
+    if (!filtrosMemorizados) return;
+    
+    const { curso, materia, anioLectivo, cuatrimestre } = filtrosMemorizados;
+
+    try {
+      const data = await getReporteCurso(curso, materia, anioLectivo, cuatrimestre);
+      setReporteCurso(data);
+      console.log("Datos recargados exitosamente después de guardar.");
+    } catch (error) {
+      console.error("Error al recargar los datos:", error);
+      alert(`Error al recargar: ${error.message}`);
+    }
+  }, [filtrosMemorizados, setReporteCurso]);
 
   return (
     <div className="curso-dashboard-container">
@@ -137,7 +129,7 @@ const CargaCalificaciones = () => {
         <input
           type="text"
           className="reporte-curso-search-input"
-          placeholder="Buscar alumno por DNI o Nombre"
+          placeholder="Buscar alumno por DNI"
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <button className="reporte-curso-search-btn">Buscar alumno</button>
