@@ -270,28 +270,48 @@ const controladorUsuarios = {
     }
   },
 
+// obtenerPorEmail: async (solicitud, respuesta) => {
+//     try {
+//       const { email } = solicitud.params;
+
+//       if (!email) {
+//         return error(respuesta, "Email es obligatorio", 400);
+//       }
+
+//       const usuario = await servicioUsuarios.obtenerUsuarioPorEmail(email);
+
+//       if (!usuario) {
+//         return error(respuesta, "Usuario no encontrado", 404);
+//       }
+
+//       // No enviar información sensible
+//       const { password_hash, ...usuarioSinPassword } = usuario;
+
+//       exito(respuesta, "Usuario encontrado", usuarioSinPassword);
+//     } catch (err) {
+//       error(respuesta, "Error al obtener usuario por email", 500, err.message);
+//     }
+//   }, // 
+// };
+
 obtenerPorEmail: async (solicitud, respuesta) => {
-    try {
-      const { email } = solicitud.params;
+  try {
+    const { email } = solicitud.params;
 
-      if (!email) {
-        return error(respuesta, "Email es obligatorio", 400);
-      }
-
-      const usuario = await servicioUsuarios.obtenerUsuarioPorEmail(email);
-
-      if (!usuario) {
-        return error(respuesta, "Usuario no encontrado", 404);
-      }
-
-      // No enviar información sensible
-      const { password_hash, ...usuarioSinPassword } = usuario;
-
-      exito(respuesta, "Usuario encontrado", usuarioSinPassword);
-    } catch (err) {
-      error(respuesta, "Error al obtener usuario por email", 500, err.message);
+    if (!esEmailValido(email)) {
+      return error(respuesta, "El formato del email no es válido", 400);
     }
-  }, // 
-};
 
+    const usuario = await servicioUsuarios.obtenerUsuarioPorEmail(email);
+
+    if (!usuario) {
+      return error(respuesta, "Usuario no encontrado", 404);
+    }
+
+    exito(respuesta, "Usuario encontrado", usuario);
+  } catch (err) {
+    error(respuesta, "Error al obtener usuario por email", 500, err.message);
+  }
+}
+ };
 module.exports = controladorUsuarios;

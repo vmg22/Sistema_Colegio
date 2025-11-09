@@ -193,7 +193,7 @@ const Materias = () => {
         </button>
 
         <button onClick={handleOpenCreate} className="add-button">
-          <span className="add-icon"></span> Nueva Materia
+          <span className="material-symbols-outlined add-icon" style={{marginRight: '5px'}}>add</span>Nueva Materia
         </button>
       </div>
 

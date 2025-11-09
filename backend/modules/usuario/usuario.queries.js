@@ -66,20 +66,46 @@ exports.obtenerUsuarioPorUsername = async (username) => {
 };
 
 /**
- * Busca un usuario por email (sin password_hash)
+ * ✅ Busca un usuario por email (sin password_hash)
+ * Usada en el paso 1 del login para obtener datos básicos
  */
 exports.obtenerUsuarioPorEmail = async (email) => {
-  const [rows] = await db.query(
-    `SELECT ${CAMPOS_SELECT}
-     FROM usuario 
-     WHERE email_usuario = ? AND deleted_at IS NULL`,
-    [email]
-  );
-  return rows[0];
+  try {
+    const [rows] = await db.query(
+      `SELECT id_usuario, username, email_usuario, rol, estado, ultimo_login
+       FROM usuario 
+       WHERE email_usuario = ? AND deleted_at IS NULL`,
+      [email]
+    );
+    return rows[0] || null;
+  } catch (error) {
+    console.error("Error al buscar usuario por email:", error);
+    throw new Error("Error al buscar usuario");
+  }
+};
+
+/**
+ * ✅ Obtiene un usuario con su password_hash por ID
+ * Usada para validar contraseñas
+ */
+exports.obtenerUsuarioConPassword = async (id_usuario) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT id_usuario, username, email_usuario, rol, estado, password_hash
+       FROM usuario 
+       WHERE id_usuario = ? AND deleted_at IS NULL`,
+      [id_usuario]
+    );
+    return rows[0] || null;
+  } catch (error) {
+    console.error("Error al obtener usuario con password:", error);
+    throw new Error("Error al obtener usuario");
+  }
 };
 
 /**
  * Busca un usuario por email (incluye password_hash para autenticación)
+ * @deprecated Usar obtenerUsuarioPorEmail + obtenerUsuarioConPassword
  */
 exports.obtenerUsuarioPorEmailConPassword = async (email) => {
   const [rows] = await db.query(
@@ -161,37 +187,21 @@ exports.restaurarUsuarioEliminado = async (id) => {
 };
 
 /**
- * Actualiza la fecha del último login
+ * ✅ Actualiza la fecha del último login
+ * Se llama después de un login exitoso
  */
-exports.actualizarUltimoLogin = async (id) => {
-  const [result] = await db.query(
-    `UPDATE usuario 
-     SET ultimo_login = CURRENT_TIMESTAMP
-     WHERE id_usuario = ?`,
-    [id]
-  );
-  return result.affectedRows;
+exports.actualizarUltimoLogin = async (id_usuario) => {
+  try {
+    await db.query(
+      `UPDATE usuario 
+       SET ultimo_login = NOW()
+       WHERE id_usuario = ?`,
+      [id_usuario]
+    );
+  } catch (error) {
+    console.error("Error al actualizar último login:", error);
+    // No lanzamos error para no interrumpir el login
+  }
 };
-/**
- * Obtener usuario por email
- */
-// const obtenerPorEmail = async (email) => {
-//   try {
-//     const query = `
-//       SELECT id, username, email_usuario, password_hash, rol, estado
-//       FROM usuarios
-//       WHERE email_usuario = ? AND activo = true
-//       LIMIT 1
-//     `;
-//     const [rows] = await pool.query(query, [email]);
-//     return rows[0] || null;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
 
-// module.exports = {
-//   // ... otros métodos
-//   obtenerPorEmail,
-// };
 module.exports.CAMPOS_SELECT = CAMPOS_SELECT;

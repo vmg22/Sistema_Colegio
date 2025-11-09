@@ -174,7 +174,7 @@ const GestionCursos = () => {
         </button>
 
         <button onClick={handleOpenCreate} className="add-button">
-          <span className="add-icon"></span> Nuevo Curso
+          <span className="material-symbols-outlined add-icon" style={{marginRight: '5px'}}>add</span>Nuevo Curso
         </button>
       </div>
 

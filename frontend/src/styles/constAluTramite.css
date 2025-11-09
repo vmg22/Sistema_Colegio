@@ -5,20 +5,24 @@
    ======================================== */
 
 /* ========================================
-   CONTENEDOR PRINCIPAL
+   CONTENEDOR PRINCIPAL - FONDO CAMBIADO A #f5f7fb
    ======================================== */
 .constancia-body {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f5f7fb !important; /* ✅ FORZAR EL CAMBIO CON !important */
   padding: 2rem;
+  padding-left: 380px;
   font-family: 'Georgia', 'Times New Roman', serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* ========================================
    CERTIFICADO / DOCUMENTO
    ======================================== */
 .constancia-body .certificate-container {
-  max-width: 21cm; /* Tamaño A4 */
+  max-width: 21cm;
   min-height: 29.7cm;
   margin: 0 auto;
   background: white;
@@ -26,14 +30,11 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
   position: relative;
-  
-  /* Borde decorativo oficial */
   border: 3px solid #2c3e50;
   outline: 1px solid #34495e;
   outline-offset: -12px;
 }
 
-/* Marca de agua sutil */
 .constancia-body .certificate-container::before {
   content: 'CONSTANCIA OFICIAL';
   position: absolute;
@@ -126,7 +127,6 @@
   font-style: italic;
 }
 
-/* Campos editables con fondo destacado */
 .constancia-body .form-group.editable {
   background: rgba(52, 152, 219, 0.05);
   padding: 1rem;
@@ -178,7 +178,7 @@
    ESPACIOS PARA SELLOS
    ======================================== */
 .constancia-body .seal-space {
-  display: none; /* ✅ OCULTO POR DEFECTO - No aparece en descarga ni impresión */
+  display: none;
   justify-content: space-around;
   gap: 2rem;
   margin-top: 3rem;
@@ -238,17 +238,15 @@
   transform: translateY(0);
 }
 
-/* Botón primario */
 .constancia-body .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #3498db; /* ✅ CAMBIADO DE MORADO A AZUL */
   color: white;
 }
 
 .constancia-body .btn-primary:hover {
-  background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+  background: #2980b9;
 }
 
-/* Botón secundario */
 .constancia-body .btn-secondary {
   background: white;
   color: #2c3e50;
@@ -260,7 +258,6 @@
   color: white;
 }
 
-/* Iconos de Material Symbols */
 .constancia-body .actions .material-symbols-outlined {
   font-size: 1.25rem;
 }
@@ -279,12 +276,11 @@
   padding: 2rem;
 }
 
-/* Spinner de carga */
 .constancia-body .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(103, 126, 234, 0.2);
-  border-top-color: #667eea;
+  border: 4px solid rgba(52, 152, 219, 0.2);
+  border-top-color: #3498db;
   border-radius: 50%;
   animation: constancia-spin 0.8s linear infinite;
   margin-bottom: 1rem;
@@ -302,7 +298,6 @@
   margin-top: 1rem;
 }
 
-/* Contenedor de error */
 .constancia-body .error-container {
   color: #e74c3c;
 }
@@ -341,7 +336,7 @@
 }
 
 /* ========================================
-   ESTILOS PARA IMPRESIÓN - CORREGIDOS ✅
+   ESTILOS PARA IMPRESIÓN
    ======================================== */
 @media print {
   @page {
@@ -349,7 +344,6 @@
     margin: 0.5cm;
   }
 
-  /* ✅ FORZAR que las firmas estén lado a lado en impresión */
   .constancia-body .signature-space {
     display: flex !important;
     flex-direction: row !important;
@@ -373,17 +367,14 @@
     display: none;
   }
 
-  /* ✅ OCULTAR los sellos completamente */
   .constancia-body .seal-space {
     display: none !important;
   }
 
-  /* ✅ También ocultar la marca de agua */
   .constancia-body .certificate-container::before {
     display: none !important;
   }
 
-  /* ✅ OCULTAR NAVBAR y elementos de navegación */
   nav,
   header,
   .navbar,
@@ -403,7 +394,7 @@
   .constancia-body {
     background: white !important;
     padding: 0 !important;
-    padding-left: 0 !important; /* Quitar padding del panel en impresión */
+    padding-left: 0 !important;
     margin: 0 !important;
     min-height: auto !important;
   }
@@ -421,7 +412,6 @@
     outline: none !important;
   }
 
-  /* Ocultar botones, formularios y panel de edición */
   .constancia-body .actions,
   .constancia-body .no-print,
   .constancia-body .form-group,
@@ -429,7 +419,6 @@
     display: none !important;
   }
 
-  /* ✅ Ajustar tamaños de fuente */
   .constancia-body .certificate-header {
     margin-bottom: 1.2rem !important;
     padding-bottom: 0.6rem !important;
@@ -443,7 +432,6 @@
     line-height: 1.5 !important;
   }
 
-  /* ✅ Reducir altura de los <br> */
   .constancia-body br {
     line-height: 0.3 !important;
     height: 0.3em !important;
@@ -455,7 +443,7 @@
    ======================================== */
 @media (max-width: 1200px) {
   .constancia-body {
-    padding-left: 2rem; /* Restaurar padding normal */
+    padding-left: 2rem;
   }
 
   .constancia-body .edit-panel {
@@ -523,7 +511,6 @@
   }
 }
 
-/* Mejora de contraste para texto */
 @media (prefers-contrast: high) {
   .constancia-body .certificate-container p {
     color: #000;
@@ -543,7 +530,7 @@
 }
 
 /* ========================================
-   PANEL DE EDICIÓN - ARRIBA A LA IZQUIERDA
+   PANEL DE EDICIÓN
    ======================================== */
 .constancia-body .edit-panel {
   position: fixed;
@@ -566,12 +553,4 @@
   color: #2c3e50;
   border-bottom: 2px solid #3498db;
   padding-bottom: 0.5rem;
-}
-
-/* Ajustar el contenedor del certificado cuando hay panel de edición */
-.constancia-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-left: 380px; /* Espacio para el panel lateral */
 }

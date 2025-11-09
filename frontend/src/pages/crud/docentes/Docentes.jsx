@@ -156,7 +156,7 @@ const Docentes = () => {
                 </div>
                 <button onClick={handleSearch} className="search-button">Buscar</button>
                 <button onClick={handleOpenAddModal} className="add-button">
-                    <span className="add-icon"></span>
+                    <span className="material-symbols-outlined add-icon" style={{marginRight: '5px'}}>add</span>
                     Agregar docente
                 </button>
             </div>

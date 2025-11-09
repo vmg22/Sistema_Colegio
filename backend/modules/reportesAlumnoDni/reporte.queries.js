@@ -115,3 +115,63 @@ LEFT JOIN
 ORDER BY 
     m.nombre, cal.cuatrimestre, asi.fecha_clase;
 `;
+
+
+/*Para enviar mail*/
+
+exports.QUERY_ALUMNO_BASICO = `
+SELECT 
+    a.id_alumno,
+    a.dni_alumno,
+    a.nombre_alumno,
+    a.apellido_alumno,
+    a.email,
+    a.estado,
+    a.fecha_nacimiento,
+    a.fecha_inscripcion,
+    a.lugar_nacimiento,
+    a.direccion,
+    a.telefono,
+    c.id_curso,
+    c.nombre AS nombre_curso,
+    c.division,
+    c.turno,
+    c.anio AS anio_curso,
+    al.anio AS anio_lectivo,
+    t.id_tutor,
+    t.nombre AS nombre_tutor,
+    t.apellido AS apellido_tutor,
+    t.dni_tutor,
+    t.direccion AS direccion_tutor,
+    t.parentesco,
+    t.telefono AS telefono_tutor,
+    t.email AS email_tutor
+FROM alumno a
+JOIN alumno_curso ac ON a.id_alumno = ac.id_alumno
+JOIN curso c ON ac.id_curso = c.id_curso
+JOIN anio_lectivo al ON ac.anio_lectivo = al.anio
+LEFT JOIN alumno_tutor at ON a.id_alumno = at.id_alumno
+LEFT JOIN tutor t ON at.id_tutor = t.id_tutor
+WHERE 
+    a.dni_alumno = ?
+    AND al.anio = ?
+    AND a.estado = 'activo'
+LIMIT 1;
+`;
+
+exports.QUERY_TUTORES_ALUMNO = `
+SELECT 
+    t.id_tutor,
+    t.nombre AS nombre_tutor,
+    t.apellido AS apellido_tutor,
+    t.dni_tutor,
+    t.direccion AS direccion_tutor,
+    t.parentesco,
+    t.telefono AS telefono_tutor,
+    t.email AS email_tutor
+FROM tutor t
+JOIN alumno_tutor at ON t.id_tutor = at.id_tutor
+JOIN alumno a ON at.id_alumno = a.id_alumno
+WHERE 
+    a.dni_alumno = ?;
+`;

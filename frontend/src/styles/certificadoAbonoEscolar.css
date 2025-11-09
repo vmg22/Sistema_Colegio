@@ -5,7 +5,7 @@
    ======================================== */
 
 /* ========================================
-   CONTENEDOR PRINCIPAL
+   CONTENEDOR PRINCIPAL - FONDO CAMBIADO A #f5f7fb
    ======================================== */
 
 .constancia-body-certificado{
@@ -36,8 +36,6 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
   position: relative;
-  
-  /* Borde decorativo oficial */
   border: 3px solid #2c3e50;
   outline: 1px solid #34495e;
   outline-offset: -12px;
@@ -283,8 +281,8 @@
 .constancia-body-certificado .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(103, 126, 234, 0.2);
-  border-top-color: #667eea;
+  border: 4px solid rgba(52, 152, 219, 0.2);
+  border-top-color: #3498db;
   border-radius: 50%;
   animation: constancia-spin 0.8s linear infinite;
   margin-bottom: 1rem;
@@ -341,7 +339,7 @@
 }
 
 /* ========================================
-   ESTILOS PARA IMPRESIÓN - CORREGIDOS ✅
+   ESTILOS PARA IMPRESIÓN
    ======================================== */
 @media print {
   @page {
@@ -383,7 +381,6 @@
     display: none !important;
   }
 
-  /* ✅ OCULTAR NAVBAR y elementos de navegación */
   nav,
   header,
   .navbar,
@@ -403,7 +400,7 @@
   .constancia-body-certificado {
     background: white !important;
     padding: 0 !important;
-    padding-left: 0 !important; /* Quitar padding del panel en impresión */
+    padding-left: 0 !important;
     margin: 0 !important;
     min-height: auto !important;
   }
@@ -524,7 +521,6 @@
   }
 }
 
-/* Mejora de contraste para texto */
 @media (prefers-contrast: high) {
   .constancia-body-certificado .certificate-container p {
     color: #000;
@@ -544,7 +540,7 @@
 }
 
 /* ========================================
-   PANEL DE EDICIÓN - ARRIBA A LA IZQUIERDA
+   PANEL DE EDICIÓN
    ======================================== */
 .constancia-body-certificado .edit-panel {
   position: fixed;

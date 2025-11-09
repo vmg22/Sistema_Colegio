@@ -85,8 +85,8 @@ const styles = {
         {/* <AccionCard
           titulo="Acta Volante Examen"
           icono="mail"
-          to="/certificados-ActVolEx"
-        /> */}
+          to="/certificados-ActVolEx"       
+        />*/}
       </div>
       
     </div>

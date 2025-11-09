@@ -6,8 +6,6 @@ const { enviarRecuperacionPassword } = require('../../services/emails.service');
 const dotenv = require('dotenv');
 dotenv.config();
 
-console.log('✅ enviarRecuperacionPassword importado:', typeof enviarRecuperacionPassword);
-
 // Roles válidos según el esquema de la tabla usuario
 const ROLES_VALIDOS = ["admin", "docente", "preceptor", "secretario", "tutor"];
 
@@ -16,26 +14,16 @@ const tokenBlacklist = new Set();
 
 // ==================== FUNCIONES AUXILIARES ====================
 
-/**
- * Función auxiliar para verificar formato de email.
- */
 const esEmailValido = (email) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
 };
 
-/**
- * Función auxiliar para verificar si un ID es un entero positivo
- */
 const esIdValido = (id) => {
   const numId = parseInt(id, 10);
   return !isNaN(numId) && numId > 0;
 };
 
-/**
- * Función auxiliar para validar fortaleza de contraseña
- * Mínimo 8 caracteres, al menos una mayúscula, una minúscula, un número
- */
 const esPasswordSeguro = (password) => {
   if (!password || password.length < 8) return false;
   
@@ -46,9 +34,6 @@ const esPasswordSeguro = (password) => {
   return tieneMayuscula && tieneMinuscula && tieneNumero;
 };
 
-/**
- * Genera un token JWT para un usuario
- */
 const generarToken = (usuario, tipo = 'auth') => {
   const payload = {
     id: usuario.id_usuario,
@@ -65,27 +50,14 @@ const generarToken = (usuario, tipo = 'auth') => {
   return jwt.sign(payload, process.env.JWT_SECRET, options);
 };
 
-/**
- * Agrega un token a la blacklist
- */
 const agregarTokenABlacklist = (token) => {
   tokenBlacklist.add(token);
-  // En producción: guardar en Redis con TTL igual a la expiración del token
-  // await redisClient.setex(`blacklist:${token}`, ttl, 'true');
 };
 
-/**
- * Verifica si un token está en la blacklist
- */
 const estaEnBlacklist = (token) => {
   return tokenBlacklist.has(token);
-  // En producción: verificar en Redis
-  // return await redisClient.exists(`blacklist:${token}`);
 };
 
-/**
- * Extrae el token de la cabecera Authorization
- */
 const extraerToken = (solicitud) => {
   const authHeader = solicitud.headers['authorization'];
   return authHeader && authHeader.split(' ')[1];
@@ -95,11 +67,10 @@ const extraerToken = (solicitud) => {
 
 const controladorAuth = {
   
-  // ==================== LOGIN Y REGISTRO ====================
-
   /**
    * POST /api/auth/login
    * Inicio de sesión de usuario con email y contraseña
+   * Flujo de seguridad mejorado
    */
   login: async (solicitud, respuesta) => {
     try {
@@ -119,20 +90,49 @@ const controladorAuth = {
         return error(respuesta, "El formato del email no es válido", 400);
       }
 
-      // 3. Validar credenciales usando el servicio
-      const usuario = await servicioUsuarios.validarCredencialesPorEmail(
-        email_usuario, 
-        password
-      );
+      // 3. Buscar usuario por email (sin password)
+      const usuario = await servicioUsuarios.obtenerUsuarioPorEmail(email_usuario);
 
+      // 4. Si no existe, mensaje genérico (no revelar si el email existe)
       if (!usuario) {
         return error(respuesta, "Credenciales inválidas", 401);
       }
 
-      // 4. Generar token JWT
+      // 5. Verificar estado ANTES de validar contraseña (seguridad)
+      if (usuario.estado !== 'activo') {
+        return error(
+          respuesta, 
+          "Cuenta inactiva. Contacte al administrador", 
+          403
+        );
+      }
+
+      // 6. Obtener usuario con password para validación
+      const usuarioConPassword = await servicioUsuarios.obtenerUsuarioConPassword(
+        usuario.id_usuario
+      );
+
+      if (!usuarioConPassword || !usuarioConPassword.password_hash) {
+        return error(respuesta, "Error en la autenticación", 500);
+      }
+
+      // 7. Validar contraseña
+      const passwordValido = await bcrypt.compare(
+        password, 
+        usuarioConPassword.password_hash
+      );
+
+      if (!passwordValido) {
+        return error(respuesta, "Credenciales inválidas", 401);
+      }
+
+      // 8. Actualizar último login
+      await servicioUsuarios.actualizarUltimoLogin(usuario.id_usuario);
+
+      // 9. Generar token JWT
       const token = generarToken(usuario);
 
-      // 5. Respuesta exitosa (sin enviar password_hash)
+      // 10. Respuesta exitosa con rol y estado incluidos
       exito(respuesta, "Inicio de sesión exitoso", {
         token,
         usuario: {
@@ -141,14 +141,11 @@ const controladorAuth = {
           email_usuario: usuario.email_usuario,
           rol: usuario.rol,
           estado: usuario.estado,
-          ultimo_login: usuario.ultimo_login
+          ultimo_login: new Date().toISOString()
         },
       });
     } catch (err) {
-      // Manejo de errores específicos
-      if (err.message === "Usuario inactivo") {
-        return error(respuesta, "Usuario inactivo. Contacte al administrador", 403);
-      }
+      console.error("Error en login:", err);
       error(respuesta, "Error al iniciar sesión", 500, err.message);
     }
   },
@@ -161,7 +158,6 @@ const controladorAuth = {
     try {
       const { username, password, email_usuario, rol } = solicitud.body;
 
-      // 1. Validación de campos obligatorios
       if (!username || !password || !email_usuario || !rol) {
         return error(
           respuesta,
@@ -170,12 +166,10 @@ const controladorAuth = {
         );
       }
 
-      // 2. Validar formato de email
       if (!esEmailValido(email_usuario)) {
         return error(respuesta, "El formato del email no es válido", 400);
       }
 
-      // 3. Validar fortaleza de contraseña
       if (!esPasswordSeguro(password)) {
         return error(
           respuesta,
@@ -184,7 +178,6 @@ const controladorAuth = {
         );
       }
 
-      // 4. Validar rol
       if (!ROLES_VALIDOS.includes(rol.toLowerCase())) {
         return error(
           respuesta,
@@ -193,7 +186,6 @@ const controladorAuth = {
         );
       }
 
-      // 5. Crear usuario
       const usuarioCreado = await servicioUsuarios.crearUsuario({
         username,
         password,
@@ -201,7 +193,6 @@ const controladorAuth = {
         rol: rol.toLowerCase(),
       });
 
-      // 6. Generar token JWT para login automático
       const token = generarToken(usuarioCreado);
 
       exito(respuesta, "Usuario registrado exitosamente", {
@@ -209,7 +200,6 @@ const controladorAuth = {
         usuario: usuarioCreado,
       }, 201);
     } catch (err) {
-      // Errores de duplicados
       if (err.message.includes("ya está en uso")) {
         return error(respuesta, err.message, 409);
       }
@@ -226,7 +216,6 @@ const controladorAuth = {
       const token = extraerToken(solicitud);
       
       if (token) {
-        // Agregar token a la blacklist
         agregarTokenABlacklist(token);
       }
 
@@ -236,16 +225,12 @@ const controladorAuth = {
     }
   },
 
-  // ==================== PERFIL DE USUARIO ====================
-
   /**
    * GET /api/auth/perfil
    * Obtiene el perfil del usuario autenticado
-   * Requiere: authenticateToken middleware
    */
   obtenerPerfil: async (solicitud, respuesta) => {
     try {
-      // req.user viene del middleware authenticateToken
       const usuario = await servicioUsuarios.obtenerUsuarioPorId(
         solicitud.user.id
       );
@@ -263,13 +248,11 @@ const controladorAuth = {
   /**
    * PATCH /api/auth/perfil
    * Actualiza el perfil del usuario autenticado
-   * Requiere: authenticateToken middleware
    */
   actualizarPerfil: async (solicitud, respuesta) => {
     try {
       const datosActualizados = solicitud.body;
       
-      // Validar que se envió al menos un campo
       if (Object.keys(datosActualizados).length === 0) {
         return error(
           respuesta,
@@ -278,12 +261,10 @@ const controladorAuth = {
         );
       }
 
-      // Validar email si está presente
       if (datosActualizados.email_usuario && !esEmailValido(datosActualizados.email_usuario)) {
         return error(respuesta, "El formato del email no es válido", 400);
       }
 
-      // Validar password si está presente
       if (datosActualizados.password && !esPasswordSeguro(datosActualizados.password)) {
         return error(
           respuesta,
@@ -292,7 +273,6 @@ const controladorAuth = {
         );
       }
 
-      // No permitir cambio de rol desde el perfil
       if (datosActualizados.rol) {
         return error(
           respuesta,
@@ -320,11 +300,9 @@ const controladorAuth = {
   /**
    * GET /api/auth/verificar
    * Verifica si el token actual es válido
-   * Requiere: authenticateToken middleware
    */
   verificarToken: async (solicitud, respuesta) => {
     try {
-      // Si llega aquí, el token ya fue validado por el middleware
       exito(respuesta, "Token válido", {
         usuario: {
           id: solicitud.user.id,
@@ -338,8 +316,6 @@ const controladorAuth = {
     }
   },
 
-  // ==================== RECUPERACIÓN DE CONTRASEÑA ====================
-
   /**
    * POST /api/auth/solicitar-reset
    * Solicita reset de contraseña (envía email con token)
@@ -348,20 +324,16 @@ const controladorAuth = {
     try {
       const { email_usuario } = solicitud.body;
 
-      // 1. Validación de campo obligatorio
       if (!email_usuario) {
         return error(respuesta, "El email es obligatorio", 400);
       }
 
-      // 2. Validar formato de email
       if (!esEmailValido(email_usuario)) {
         return error(respuesta, "El formato del email no es válido", 400);
       }
 
-      // Mensaje genérico por seguridad
       const mensajeGenerico = "Si el email existe, recibirás un correo con instrucciones para recuperar tu contraseña";
 
-      // 3. Buscar usuario por email
       const usuario = await servicioUsuarios.obtenerUsuarioPorEmail(email_usuario);
 
       if (!usuario) {
@@ -369,7 +341,6 @@ const controladorAuth = {
         return exito(respuesta, mensajeGenerico, null);
       }
 
-      // 4. Verificar que el usuario esté activo
       if (usuario.estado !== "activo") {
         console.log('🚫 Usuario inactivo:', usuario.email_usuario);
         return exito(respuesta, mensajeGenerico, null);
@@ -377,27 +348,23 @@ const controladorAuth = {
 
       console.log('✅ Usuario encontrado y activo:', usuario.email_usuario);
 
-      // 5. Generar token de recuperación (válido por 15 minutos)
       const token = jwt.sign(
-  {
-    id: usuario.id_usuario,
-    email: usuario.email_usuario,
-    tipo: "reset_password",
-  },
-  process.env.JWT_SECRET,
-  { expiresIn: "15m" }
-);
+        {
+          id: usuario.id_usuario,
+          email: usuario.email_usuario,
+          tipo: "reset_password",
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "15m" }
+      );
 
-// CODIFICAR CORRECTAMENTE el token para URL
-const encodedToken = encodeURIComponent(token);
+      const encodedToken = encodeURIComponent(token);
+      const resetLink = `http://localhost:5173/reset-password?token=${encodedToken}`;
 
-// Construir el link
-const resetLink = `http://localhost:5173/reset-password?token=${encodedToken}`;
+      console.log('🔐 Token original:', token);
+      console.log('🔐 Token encoded:', encodedToken);
+      console.log('🔗 Reset link:', resetLink);
 
-console.log('🔐 Token original:', token);
-console.log('🔐 Token encoded:', encodedToken);
-console.log('🔗 Reset link:', resetLink);
-      // 9. Enviar email usando el servicio de emails
       await enviarRecuperacionPassword(
         usuario.email_usuario, 
         resetLink, 
@@ -417,6 +384,7 @@ console.log('🔗 Reset link:', resetLink);
       );
     }
   },
+
   /**
    * GET /api/auth/validar-token-reset/:token
    * Valida si el token de recuperación es válido
@@ -429,15 +397,12 @@ console.log('🔗 Reset link:', resetLink);
         return error(respuesta, "Token no proporcionado", 400);
       }
 
-      // Verificar token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Verificar que sea un token de reset
       if (decoded.tipo !== "reset_password") {
         return error(respuesta, "Token inválido", 401);
       }
 
-      // Verificar que el usuario siga existiendo y activo
       const usuario = await servicioUsuarios.obtenerUsuarioPorId(decoded.id);
 
       if (!usuario || usuario.estado !== "activo") {
@@ -467,7 +432,6 @@ console.log('🔗 Reset link:', resetLink);
     try {
       const { token, newPassword } = solicitud.body;
 
-      // 1. Validación de campos obligatorios
       if (!token || !newPassword) {
         return error(
           respuesta,
@@ -476,7 +440,6 @@ console.log('🔗 Reset link:', resetLink);
         );
       }
 
-      // 2. Validar fortaleza de contraseña
       if (!esPasswordSeguro(newPassword)) {
         return error(
           respuesta,
@@ -485,22 +448,18 @@ console.log('🔗 Reset link:', resetLink);
         );
       }
 
-      // 3. Verificar token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // 4. Verificar que sea un token de reset
       if (decoded.tipo !== "reset_password") {
         return error(respuesta, "Token inválido", 401);
       }
 
-      // 5. Verificar que el usuario siga existiendo y activo
       const usuario = await servicioUsuarios.obtenerUsuarioPorId(decoded.id);
 
       if (!usuario || usuario.estado !== "activo") {
         return error(respuesta, "Token inválido o expirado", 401);
       }
 
-      // 6. Actualizar contraseña usando el servicio (que la hasheará)
       await servicioUsuarios.actualizarUsuarioParcial(decoded.id, { 
         password: newPassword 
       });
@@ -519,14 +478,12 @@ console.log('🔗 Reset link:', resetLink);
 
   /**
    * POST /api/auth/cambiar-password-autenticado
-   * Cambia la contraseña del usuario autenticado (sin token de recuperación)
-   * Requiere: authenticateToken middleware
+   * Cambia la contraseña del usuario autenticado
    */
   cambiarPasswordAutenticado: async (solicitud, respuesta) => {
     try {
       const { currentPassword, newPassword } = solicitud.body;
 
-      // 1. Validación de campos obligatorios
       if (!currentPassword || !newPassword) {
         return error(
           respuesta,
@@ -535,7 +492,6 @@ console.log('🔗 Reset link:', resetLink);
         );
       }
 
-      // 2. Validar fortaleza de nueva contraseña
       if (!esPasswordSeguro(newPassword)) {
         return error(
           respuesta,
@@ -544,15 +500,12 @@ console.log('🔗 Reset link:', resetLink);
         );
       }
 
-      // 3. Obtener usuario con password_hash
       const usuario = await servicioUsuarios.obtenerUsuarioPorId(solicitud.user.id);
       
       if (!usuario) {
         return error(respuesta, "Usuario no encontrado", 404);
       }
 
-      // 4. Verificar contraseña actual (necesitamos el password_hash)
-      // Nota: Esto requiere una query especial que incluya password_hash
       const usuarioConPassword = await servicioUsuarios.obtenerUsuarioConPassword(solicitud.user.id);
       
       const passwordValido = await bcrypt.compare(currentPassword, usuarioConPassword.password_hash);
@@ -561,12 +514,10 @@ console.log('🔗 Reset link:', resetLink);
         return error(respuesta, "La contraseña actual es incorrecta", 401);
       }
 
-      // 5. Actualizar contraseña
       await servicioUsuarios.actualizarUsuarioParcial(solicitud.user.id, { 
         password: newPassword 
       });
 
-      // 6. Invalidar el token actual (opcional - forzar re-login)
       const token = extraerToken(solicitud);
       if (token) {
         agregarTokenABlacklist(token);
@@ -578,12 +529,6 @@ console.log('🔗 Reset link:', resetLink);
     }
   },
 
-  // ==================== UTILIDADES ====================
-
-  /**
-   * Verifica si un token está en la blacklist
-   * Usado por el middleware
-   */
   verificarBlacklist: (token) => {
     return estaEnBlacklist(token);
   }
