@@ -90,24 +90,13 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
       <div className="wizard-content large" onClick={(e) => e.stopPropagation()}>
         <form onSubmit={handleSubmit} className="wizard-form">
           <div className="wizard-header">
-            <h3>Agregar Nuevo Alumno</h3>
-            <div className="wizard-steps">
-              <span className={step === 1 ? 'active' : step > 1 ? 'completed' : ''}>
-                1. Datos del Alumno
-              </span>
-              <span className={step === 2 ? 'active' : step > 2 ? 'completed' : ''}>
-                2. Datos del Tutor
-              </span>
-              <span className={step === 3 ? 'active' : ''}>
-                3. Crear Usuario (Opcional)
-              </span>
-            </div>
+            <h3 className='text-center'>Agregar Nuevo Alumno</h3>
           </div>
 
           {/* PASO 1: DATOS DEL ALUMNO */}
           {step === 1 && (
             <fieldset className="wizard-fieldset">
-              <legend className="wizard-legend">Datos del Alumno *</legend>
+              <legend className="wizard-legend text-center">Datos del Alumno</legend>
               
               <div className="form-row">
                 <div className="wizard-form-group">
@@ -203,7 +192,7 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
           {/* PASO 2: DATOS DEL TUTOR */}
           {step === 2 && (
             <fieldset className="wizard-fieldset">
-              <legend className="wizard-legend">Datos del Tutor *</legend>
+              <legend className="wizard-legend text-center">Datos del Tutor</legend>
               
               <div className="form-row">
                 <div className="wizard-form-group">
@@ -363,7 +352,7 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="wizard-btn wizard-btn-next"
+                className="btn btn-primary"
               >
                 Siguiente
               </button>

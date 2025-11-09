@@ -7,8 +7,6 @@ import Header from './components/layout/Header'
 import MainCrud from './pages/crud/MainCrud'
 import Alumnos from './pages/crud/alumnos/Alumnos'
 import Materias from "./pages/crud/materias/Materias"
-import PlanEquivalencias from './pages/crud/plan/PlanEquivalencias'
-import Docentes from './pages/crud/docentes/Docentes.jsx'
 import NotFountPage from './pages/NotFoundPage'
 import Consulta from './pages/crud/alumnos/Consulta'
 import PerfilAlumno from './pages/alumno/PerfilAlumno.jsx'
@@ -50,8 +48,10 @@ import SolicitarRecuperacion from './pages/alumno/solicitarRecuperacion.jsx'
 
 import InscripcionWizard from './components/crud/InscripcionWizard.jsx'
 import AlumnosPerfil from './pages/crud/alumnos/AlumnosPerfil.jsx'
-
-import Cursos from './pages/crud/cursos/Curso.jsx'
+import GestionAniosLectivos from './pages/crud/anio-lectivo/GestionAniosLectivos.jsx'
+import GestionCursos from './pages/crud/cursos/GestionCursos.jsx'
+import GestionCursoMateria from './pages/crud/curso-materia/GestionCursoMateria.jsx'
+import Docentes from './pages/crud/docentes/Docentes.jsx'
 
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
@@ -86,9 +86,7 @@ function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/crud" element={<ProtectedRoute><MainCrud /></ProtectedRoute>} />
         <Route path="/alumnos" element={<ProtectedRoute><Alumnos /></ProtectedRoute>} />
-        <Route path="/docentes" element={<ProtectedRoute><Docentes /></ProtectedRoute>} />
         <Route path="/materias" element={<ProtectedRoute><Materias/></ProtectedRoute>} />
-        <Route path="/plan-de-equivalencias" element={<ProtectedRoute><PlanEquivalencias/></ProtectedRoute>} />
         <Route path="/botones" element={<ProtectedRoute><ButtonShowcase /></ProtectedRoute>} />
         <Route path="/consulta" element={<ProtectedRoute><Consulta/></ProtectedRoute>} />
         <Route path="/constanciaAlumnoTramite" element={<ProtectedRoute><ConstAluTramite/></ProtectedRoute>} />
@@ -106,6 +104,10 @@ function App() {
         <Route path="/certificados-cCVac" element={<ProtectedRoute><CertificadoComprobanteDeVacante/></ProtectedRoute>} />
         <Route path="/generar-mail" element={<ProtectedRoute><GenerarMail/></ProtectedRoute>} />
         <Route path="/enviar-alerta-tutores" element={<ProtectedRoute><EnviarAlertaTutoresPage/></ProtectedRoute>} />
+        <Route path="/anio-lectivo" element={<ProtectedRoute><GestionAniosLectivos/></ProtectedRoute>} />
+        <Route path="/cursos-crud" element={<ProtectedRoute><GestionCursos/></ProtectedRoute>} />
+        <Route path="/curso-materia" element={<ProtectedRoute><GestionCursoMateria/></ProtectedRoute>} />
+        <Route path="/altas-docentes" element={<ProtectedRoute><Docentes/></ProtectedRoute>} />
         <Route path="/perfil-alumno/generar-mail-alumno" element={<GenerarMailAlumno/>} />
         {/* <Route path="/admin-principal" element={<ProtectedRoute><AdminPrincipal/></ProtectedRoute>} /> */}
       
@@ -120,7 +122,6 @@ function App() {
         <Route path="/inscripcion-wizard" element={<ProtectedRoute><InscripcionWizard /></ProtectedRoute>} />
         <Route path="/docentes/:id" element={<ProtectedRoute><DocentePerfil /></ProtectedRoute>} />
         <Route path="/alumnos/:id" element={<ProtectedRoute><AlumnosPerfil /></ProtectedRoute>} />
-        <Route path="/cursoscrud" element={ <Cursos /> } />
         <Route path="*" element={<NotFountPage/>} />
       </Routes>
     </>

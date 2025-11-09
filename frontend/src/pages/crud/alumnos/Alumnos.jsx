@@ -5,7 +5,7 @@ import TableCrud from "../../../components/crud/TableCrud";
 import { getAllAlumnos, deleteAlumno } from "../../../services/alumnosService";
 import AlumnoEditModal from "../../../components/modals/AlumnoEditModal";
 import AlumnoWizardModal from "../../../components/modals/AlumnoWizardModal";
-
+import "../../../styles/alumnocrud.css"
 const Alumnos = () => {
   // Estados
   const [alumnos, setAlumnos] = useState([]);
@@ -131,7 +131,7 @@ const Alumnos = () => {
       accessor: "estado",
       cell: (item) => (
         <span
-          className={`status-badge ${item.estado?.toLowerCase() || "inactivo"}`}
+          className={`status-alumno ${item.estado?.toLowerCase() || "inactivo"}`}
         >
           {item.estado}
         </span>

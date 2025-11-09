@@ -159,30 +159,6 @@ const DocenteWizardModal = ({ onClose, onSave }) => {
                     onChange={handleChange}
                   />
                 </div>
-              
-                <div className="form-group">
-                  <label htmlFor="estado">Estado:</label>
-                  <select
-                    id="estado"
-                    name="estado"
-                    value={perfilData.estado}
-                    onChange={handleChange}
-                    disabled={loadingEstados} // Deshabilitado mientras carga
-                  >
-                    {loadingEstados ? (
-                      // Mostramos el valor por defecto mientras carga
-                      <option value="activo">Cargando...</option>
-                    ) : (
-                      // Mapeamos los estados traídos de la API
-                      listaEstados.map((estado) => (
-                        <option key={estado} value={estado}>
-                          {/* Capitaliza la primera letra para que se vea bien */}
-                          {estado.charAt(0).toUpperCase() + estado.slice(1)}
-                        </option>
-                      ))
-                    )}
-                  </select>
-                </div>
               </fieldset>
 
               {error && <p className="error-message">{error}</p>}

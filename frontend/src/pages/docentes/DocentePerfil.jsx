@@ -18,7 +18,7 @@ const DocentePerfil = () => {
 
   // --- Estados del Perfil ---
   const [docente, setDocente] = useState(null);
-  const [asignaciones, setAsignaciones] = useState([]);
+  const [asignaciones, setAsignaciones] = useState([]); 
 
   // --- Estados para los Dropdowns de los Modales ---
   const [materiasList, setMateriasList] = useState([]);
@@ -52,7 +52,7 @@ const DocentePerfil = () => {
       setDocente(docenteData);
       setAsignaciones(asignacionesData);
       setMateriasList(materiasData);
-      setCursosList(cursosData);
+      setCursosList(cursosData.datos || []);
     } catch (err) {
       setError(err.message || "Error al cargar los datos del perfil.");
     } finally {
@@ -269,8 +269,7 @@ const DocentePerfil = () => {
           onClose={handleCloseModal}
           onSave={handleSave}
           docente={docente}
-          cursosList={cursosList}
-          materiasList={materiasList.materias || []}
+          cursosList={cursosList || []}
           asignacionToEdit={asignacionToEdit}
         />
       )}

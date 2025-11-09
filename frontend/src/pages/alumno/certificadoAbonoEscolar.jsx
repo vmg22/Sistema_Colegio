@@ -5,6 +5,7 @@ import { getReporteAlumno } from "../../services/reportesService";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "../../styles/certificadoAbonoEscolar.css";
+import BtnVolver from "../../components/ui/BtnVolver";
 
 const CertificadoAbonoEscolar = () => {
   const navigate = useNavigate();
@@ -173,9 +174,13 @@ const CertificadoAbonoEscolar = () => {
   }
 
   return (
-    <div className="constancia-body">
+    <div>
+      <div className="no-print">
+        <BtnVolver/>
+      </div>
+<div className="constancia-body-certificado">
       {/* 📝 PANEL DE EDICIÓN - ARRIBA A LA IZQUIERDA (FIJO) */}
-      <div className="edit-panel no-print">
+      <div className="edit-panel no-print mt-3">
         <h3>✏️ Datos Editables</h3>
         
         <div className="form-group editable">
@@ -209,11 +214,11 @@ const CertificadoAbonoEscolar = () => {
         </p>
         
         <p>
-          <b>{datosFormulario.nombreEstudiante}</b>
+          Nombre del Alumno: <b>{datosFormulario.nombreEstudiante}</b>
         </p>
         
         <p>
-          Turno <b>{datosFormulario.turno}</b> <b>{datosFormulario.curso}</b>{" "}
+          Turno <b>{datosFormulario.turno}</b> Grado <b>{datosFormulario.curso}</b>{" "}
           Edad <b>{datosFormulario.edad}</b>
         </p>
         
@@ -248,20 +253,18 @@ const CertificadoAbonoEscolar = () => {
 
       {/* 🎯 BOTONES DE ACCIÓN */}
       <div className="actions no-print">
-        <button onClick={manejarVolver} className="btn-secondary">
-          <span className="material-symbols-outlined">arrow_back</span>
-          Volver
-        </button>
-        <button onClick={manejarDescargarPDF} className="btn-primary">
+        <button onClick={manejarDescargarPDF} className="btn btn-primary">
           <span className="material-symbols-outlined">download</span>
           Descargar PDF
         </button>
-        <button onClick={manejarImprimir} className="btn-primary">
+        <button onClick={manejarImprimir} className="btn btn-primary">
           <span className="material-symbols-outlined">print</span>
           Imprimir
         </button>
       </div>
     </div>
+    </div>
+    
   );
 };
 

@@ -111,7 +111,7 @@ const ModalEditTutor = ({ tutorToEdit, onClose, onSave }) => {
 
                     {/* Datos Personales */}
                     <fieldset className="wizard-fieldset">
-                        <legend className="wizard-legend">Datos Personales (Editables)</legend>
+                        <legend className="wizard-legend text-center">Datos Personales</legend>
                         
                         <div className="form-row">
                             <div className="wizard-form-group">
@@ -260,7 +260,7 @@ const ModalEditTutor = ({ tutorToEdit, onClose, onSave }) => {
                         >
                             Cancelar
                         </button>
-                        <button type="submit" className="wizard-btn wizard-btn-save" disabled={isSaving}>
+                        <button type="submit" className="btn btn-primary" disabled={isSaving}>
                             {isSaving ? 'Guardando...' : 'Guardar Cambios'}
                         </button>
                     </div>

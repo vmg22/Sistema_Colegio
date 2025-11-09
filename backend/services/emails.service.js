@@ -1759,7 +1759,7 @@ const generarHTMLNotificacionGeneral = (datos) => {
 // FUNCIONES SINGULARES (MODIFICADAS para registro)
 // ===============================================
 
-const enviarAlertaAsistencia = async (dni, anio, faltasMaximas = 20, id_usuario = 0) => {
+const enviarAlertaAsistencia = async (dni, anio, faltasMaximas = 10, id_usuario = 0) => {
   try {
     const alumnoData = await obtenerDatosAlumno(dni, anio);
     const asistencias = calcularAsistencias(alumnoData.materias);

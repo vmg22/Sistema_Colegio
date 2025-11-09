@@ -529,8 +529,8 @@ const Dashboard = () => {
         );
 
         setMaterias(dataMaterias);
-        setCursos(dataCursos);
-        setAnios(dataAnios);
+        setCursos(dataCursos.datos);
+        setAnios(dataAnios.datos);
       } catch (error) {
         console.error("Error al cargar materias:", error);
       }
@@ -787,13 +787,14 @@ const Dashboard = () => {
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Año</Form.Label>
                 <Form.Select
-                  value={anioInput}
-                  onChange={(e) => setAnioInput(e.target.value)}
                   required
+                  value={selectedAnio}
+                  onChange={(e) => setSelectedAnio(e.target.value)}
                 >
-                  {[2025, 2026].map((a) => (
-                    <option key={a} value={a}>
-                      {a}
+                  <option value="">Seleccione año</option>
+                  {anios?.map((anioObj) => (
+                    <option key={anioObj.id_anio_lectivo} value={anioObj.anio}>
+                      {anioObj.anio}
                     </option>
                   ))}
                 </Form.Select>

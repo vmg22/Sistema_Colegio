@@ -1,35 +1,40 @@
-// curso.queries.js
 const consultasCursos = {
-  // Obtener todos los cursos activos
+  // Obtener todos los cursos activos CON DATOS DEL TUTOR
   obtenerTodos: `
     SELECT 
-      id_curso, 
-      nombre, 
-      anio, 
-      division, 
-      turno, 
-      id_docente_tutor, 
-      estado, 
-      created_at, 
-      updated_at
-    FROM curso
-    WHERE deleted_at IS NULL
+      c.id_curso, 
+      c.nombre, 
+      c.anio, 
+      c.division, 
+      c.turno, 
+      c.id_docente_tutor, 
+      c.estado, 
+      c.created_at, 
+      c.updated_at,
+      d.nombre AS tutor_nombre,
+      d.apellido AS tutor_apellido
+    FROM curso c
+    LEFT JOIN docente d ON c.id_docente_tutor = d.id_docente
+    WHERE c.deleted_at IS NULL
   `,
 
-  // Obtener un curso por ID
+  // Obtener un curso por ID CON DATOS DEL TUTOR
   obtenerPorId: `
     SELECT 
-      id_curso, 
-      nombre, 
-      anio, 
-      division, 
-      turno, 
-      id_docente_tutor, 
-      estado, 
-      created_at, 
-      updated_at
-    FROM curso 
-    WHERE id_curso = ? AND deleted_at IS NULL
+      c.id_curso, 
+      c.nombre, 
+      c.anio, 
+      c.division, 
+      c.turno, 
+      c.id_docente_tutor, 
+      c.estado, 
+      c.created_at, 
+      c.updated_at,
+      d.nombre AS tutor_nombre,
+      d.apellido AS tutor_apellido
+    FROM curso c
+    LEFT JOIN docente d ON c.id_docente_tutor = d.id_docente
+    WHERE c.id_curso = ? AND c.deleted_at IS NULL
   `,
 
   // Crear un nuevo curso
@@ -60,22 +65,25 @@ const consultasCursos = {
     WHERE id_curso = ? AND deleted_at IS NULL
   `,
 
-  // Obtener cursos eliminados
+  // Obtener cursos eliminados CON DATOS DEL TUTOR
   obtenerEliminados: `
     SELECT 
-      id_curso, 
-      nombre, 
-      anio, 
-      division, 
-      turno, 
-      id_docente_tutor, 
-      estado, 
-      created_at, 
-      updated_at,
-      deleted_at
-    FROM curso
-    WHERE deleted_at IS NOT NULL
-    ORDER BY deleted_at DESC
+      c.id_curso, 
+      c.nombre, 
+      c.anio, 
+      c.division, 
+      c.turno, 
+      c.id_docente_tutor, 
+      c.estado, 
+      c.created_at, 
+      c.updated_at,
+      c.deleted_at,
+      d.nombre AS tutor_nombre,
+      d.apellido AS tutor_apellido
+    FROM curso c
+    LEFT JOIN docente d ON c.id_docente_tutor = d.id_docente
+    WHERE c.deleted_at IS NOT NULL
+    ORDER BY c.deleted_at DESC
   `,
 
   // Restaurar un curso eliminado
@@ -83,7 +91,11 @@ const consultasCursos = {
     UPDATE curso 
     SET deleted_at = NULL 
     WHERE id_curso = ? AND deleted_at IS NOT NULL
-  `
+  `,
+
+
+obtenerValoresEnumTurno: `SHOW COLUMNS FROM curso LIKE 'turno'`,
+  obtenerValoresEnumEstado: `SHOW COLUMNS FROM curso LIKE 'estado'`
 };
 
 module.exports = consultasCursos;

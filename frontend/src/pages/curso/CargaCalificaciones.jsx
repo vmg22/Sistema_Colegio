@@ -21,7 +21,7 @@ const CargaCalificaciones = () => {
     reporteCurso,
     selectedCursoNombre,
     selectedMateriaNombre,
-    setReporteCurso, //  OBTENER LA FUNCIÓN PARA ACTUALIZAR EL STORE
+    setReporteCurso, // OBTENER LA FUNCIÓN PARA ACTUALIZAR EL STORE
   } = useConsultaStore();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -54,7 +54,22 @@ const CargaCalificaciones = () => {
       }
     };
     traerAlumnos();
-  }, [filtros, setReporteCurso]); //  EJECUTA CUANDO CAMBIEN LOS FILTROS
+  }, [filtros, setReporteCurso]);
+
+  // ✅ useMemo debe ir antes del return condicional
+  const alumnosParaMostrar = useMemo(() => {
+    if (!reporteCurso?.alumnos) return [];
+    const alumnosOrdenados = [...reporteCurso.alumnos].sort((a, b) =>
+      a.alumno.nombreCompleto.localeCompare(b.alumno.nombreCompleto)
+    );
+    if (!searchTerm) return alumnosOrdenados;
+
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return alumnosOrdenados.filter((item) => {
+      const dniString = String(item.alumno.dni ?? "");
+      return dniString.toLowerCase().includes(lowerCaseSearchTerm);
+    });
+  }, [reporteCurso?.alumnos, searchTerm]);
 
   if (
     !selectedCursoNombre ||
@@ -70,34 +85,13 @@ const CargaCalificaciones = () => {
     );
   }
 
-  // useMemo se re-ejecutará cuando 'reporteCurso.alumnos' cambie
-  const alumnosParaMostrar = useMemo(() => {
-    if (!reporteCurso.alumnos) {
-      return [];
-    }
-    const alumnosOrdenados = [...reporteCurso.alumnos].sort((a, b) => {
-      return a.alumno.nombreCompleto.localeCompare(b.alumno.nombreCompleto);
-    });
-    if (!searchTerm) {
-      return alumnosOrdenados;
-    }
-    const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    return alumnosOrdenados.filter((item) => {
-      const dniString = String(item.alumno.dni ?? "");
-      return dniString.toLowerCase().includes(lowerCaseSearchTerm);
-    });
-  }, [reporteCurso.alumnos, searchTerm]);
-
   const handleAbrirModal = (item) => {
     setAlumnoSeleccionado(item);
     handleShow();
   };
 
-  // Esta función se la pasaremos al modal para que la llame
-  // cuando termine de guardar exitosamente.
   const handleSaveSuccess = async () => {
     try {
-      // Recargar los datos
       const data = await getReporteCurso(
         filtros.curso,
         filtros.materia,
@@ -176,21 +170,17 @@ const CargaCalificaciones = () => {
                   className={`reporte-curso-td reporte-curso-estado-${item.calificaciones.estado}`}
                 >
                   {item.calificaciones.estado === "aprobada" && "Aprobado"}
-                  {item.calificaciones.estado === "desaprobada" &&
-                    "Desaprobado"}
+                  {item.calificaciones.estado === "desaprobada" && "Desaprobado"}
                   {item.calificaciones.estado === "cursando" && "Cursando"}
                   {item.calificaciones.estado === "libre" && "Libre"}
                 </td>
               ) : (
                 <td className="reporte-curso-td">-</td>
               )}
-
               <td className="reporte-curso-td">
                 <button
                   className="btn btn-warning"
-                  onClick={() => {
-                    handleAbrirModal(item);
-                  }}
+                  onClick={() => handleAbrirModal(item)}
                 >
                   <span className="material-symbols-outlined">edit</span>
                 </button>
@@ -204,11 +194,12 @@ const CargaCalificaciones = () => {
         show={show}
         handleClose={handleClose}
         alumno={alumnoSeleccionado}
-        filtros={filtros} // Pasamos los filtros
-        onSaveSuccess={handleSaveSuccess} // Pasamos la función de recarga
+        filtros={filtros}
+        onSaveSuccess={handleSaveSuccess}
       />
     </div>
   );
 };
 
 export default CargaCalificaciones;
+
