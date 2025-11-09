@@ -109,7 +109,7 @@ function App() {
         <Route path="/curso-materia" element={<ProtectedRoute><GestionCursoMateria/></ProtectedRoute>} />
         <Route path="/altas-docentes" element={<ProtectedRoute><Docentes/></ProtectedRoute>} />
         <Route path="/perfil-alumno/generar-mail-alumno" element={<GenerarMailAlumno/>} />
-        {/* <Route path="/admin-principal" element={<ProtectedRoute><AdminPrincipal/></ProtectedRoute>} /> */}
+        {/* <Route path="/admin-principal" element={<ProtectedRoute><AdminPrincipal/></ProtectedRoute>} /> */} 
       
         
         <Route path="/cursoDashboard" element={<ProtectedRoute><CursoDashboardPage/></ProtectedRoute>} />
