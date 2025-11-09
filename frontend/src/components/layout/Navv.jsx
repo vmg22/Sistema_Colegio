@@ -71,7 +71,7 @@ const Navv = () => {
       <Navbar expand="lg" className="nav">
         <Container>
           <div className="d-flex align-items-center">
-            <Navbar.Brand href="/" className="d-flex align-items-center">
+            <Navbar.Brand to="/dashboard" className="d-flex align-items-center">
               <img
                 src={logo}
                 alt="Logo"
@@ -98,7 +98,7 @@ const Navv = () => {
 
             <Nav className="d-flex align-items-center gap-3">
               <Nav.Link
-                to="/"
+                href="/dashboard"
                 className="text-white px-3 py-1 rounded small"
                 style={{ color: "white" }}
               >
