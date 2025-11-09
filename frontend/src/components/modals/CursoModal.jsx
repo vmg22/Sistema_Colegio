@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Alert, Spinner, Row, Col } from 'react-bootstrap';
-import { createCurso, updateCurso } from "../../services/cursosService"
+import { createCurso, updateCurso } from "../../services/cursosService";
+import '../../styles/docentesmodal.css'; // Tu CSS personalizado
+
 const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
   
   const initialState = {
@@ -52,7 +53,6 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
         await createCurso(formData);
       }
       onSave();
-      
     } catch (err) {
       setError(err.response?.data?.mensaje || 'Error al guardar. Verifique los datos.');
     } finally {
@@ -60,24 +60,28 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
     }
   };
 
+  if (!show) return null;
+
   return (
-    <Modal show={show} onHide={onHide} backdrop="static" keyboard={false} size="lg">
-      <Modal.Header closeButton>
-        <Modal.Title>
-          {isEditMode ? 'Editar Curso' : 'Crear Nuevo Curso'}
-        </Modal.Title>
-      </Modal.Header>
-      
-      <Form onSubmit={handleSubmit}>
-        <Modal.Body>
-          {error && <Alert variant="danger">{error}</Alert>}
+    <div className="modal-overlay" onClick={onHide}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <h3>{isEditMode ? 'Editar Curso' : 'Crear Nuevo Curso'}</h3>
+        
+        <form onSubmit={handleSubmit}>
+          {error && <p className="error-message">{error}</p>}
           
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="formNombre">
-                <Form.Label>Nombre <span className="text-danger">*</span></Form.Label>
-                <Form.Control
+          <fieldset>
+            <legend>Datos del Curso</legend>
+            
+            {/* Fila 1: Nombre y Año */}
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '18px' }}>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label htmlFor="nombre">
+                  Nombre <span style={{ color: '#dc3545' }}>*</span>
+                </label>
+                <input
                   type="text"
+                  id="nombre"
                   name="nombre"
                   value={formData.nombre}
                   onChange={handleChange}
@@ -85,13 +89,15 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
                   required
                   disabled={saving}
                 />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="formAnio">
-                <Form.Label>Año <span className="text-danger">*</span></Form.Label>
-                <Form.Control
+              </div>
+              
+              <div className="form-group" style={{ flex: '0 0 150px' }}>
+                <label htmlFor="anio">
+                  Año <span style={{ color: '#dc3545' }}>*</span>
+                </label>
+                <input
                   type="number"
+                  id="anio"
                   name="anio"
                   value={formData.anio}
                   onChange={handleChange}
@@ -100,16 +106,18 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
                   required
                   disabled={saving}
                 />
-              </Form.Group>
-            </Col>
-          </Row>
+              </div>
+            </div>
 
-          <Row>
-            <Col md={4}>
-              <Form.Group className="mb-3" controlId="formDivision">
-                <Form.Label>División <span className="text-danger">*</span></Form.Label>
-                <Form.Control
+            {/* Fila 2: División, Turno y Estado */}
+            <div style={{ display: 'flex', gap: '15px' }}>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label htmlFor="division">
+                  División <span style={{ color: '#dc3545' }}>*</span>
+                </label>
+                <input
                   type="text"
+                  id="division"
                   name="division"
                   value={formData.division}
                   onChange={handleChange}
@@ -118,12 +126,14 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
                   required
                   disabled={saving}
                 />
-              </Form.Group>
-            </Col>
-            <Col md={4}>
-              <Form.Group className="mb-3" controlId="formTurno">
-                <Form.Label>Turno <span className="text-danger">*</span></Form.Label>
-                <Form.Select
+              </div>
+              
+              <div className="form-group" style={{ flex: 1 }}>
+                <label htmlFor="turno">
+                  Turno <span style={{ color: '#dc3545' }}>*</span>
+                </label>
+                <select
+                  id="turno"
                   name="turno"
                   value={formData.turno}
                   onChange={handleChange}
@@ -133,13 +143,13 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
                   <option value="mañana">Mañana</option>
                   <option value="tarde">Tarde</option>
                   <option value="noche">Noche</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col md={4}>
-               <Form.Group className="mb-3" controlId="formEstado">
-                <Form.Label>Estado</Form.Label>
-                <Form.Select
+                </select>
+              </div>
+              
+              <div className="form-group" style={{ flex: 1 }}>
+                <label htmlFor="estado">Estado</label>
+                <select
+                  id="estado"
                   name="estado"
                   value={formData.estado}
                   onChange={handleChange}
@@ -148,23 +158,32 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
                   <option value="activo">Activo</option>
                   <option value="inactivo">Inactivo</option>
                   <option value="completado">Completado</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-          </Row>
-          
-        </Modal.Body>
-        
-        <Modal.Footer>
-          <Button variant="secondary" onClick={onHide} disabled={saving}>
-            Cancelar
-          </Button>
-          <Button variant="primary" type="submit" disabled={saving}>
-            {saving ? <Spinner as="span" animation="border" size="sm" /> : 'Guardar'}
-          </Button>
-        </Modal.Footer>
-      </Form>
-    </Modal>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          {/* Botones de acción */}
+          <div className="modal-actions">
+            <button 
+              type="button" 
+              className="btn-cancel" 
+              onClick={onHide} 
+              disabled={saving}
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              className="btn-save" 
+              disabled={saving}
+            >
+              {saving ? 'Guardando...' : 'Guardar'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 

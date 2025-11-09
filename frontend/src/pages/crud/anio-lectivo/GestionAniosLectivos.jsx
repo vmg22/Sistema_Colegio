@@ -1,183 +1,178 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, Spinner, Alert, Container, Row, Col } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'; // Usamos useNavigate en lugar de BtnVolver
+import Swal from 'sweetalert2';
 import { getAniosLectivos, deleteAnioLectivo } from '../../../services/aniosServices';
 import AnioLectivoModal from '../../../components/modals/AnioLectivoModal';
-import Swal from 'sweetalert2'; // Para la confirmación de borrado
-import BtnVolver from '../../../components/ui/BtnVolver';
+import TableCrud from '../../../components/crud/TableCrud';
+
+// Importamos el MISMO archivo CSS que usan Docentes y Alumnos
+import "../../../styles/docentescrud.css";
 
 const GestionAniosLectivos = () => {
+  const navigate = useNavigate(); // Hook para navegación
+
+  // --- Estados ---
   const [aniosLectivos, setAniosLectivos] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); 
   const [error, setError] = useState(null);
-  
-  // Estado para el modal
+  const [searchTerm, setSearchTerm] = useState(''); 
   const [showModal, setShowModal] = useState(false);
   const [anioAEditar, setAnioAEditar] = useState(null);
 
-  // Carga inicial de datos
-  const cargarAnios = async () => {
+  // --- Carga de Datos ---
+  const loadAnios = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
       const response = await getAniosLectivos();
-      setAniosLectivos(response.datos || []); // Asumimos que la respuesta es { datos: [...] }
+      setAniosLectivos(response.datos || response || []); 
     } catch (err) {
-      setError('Error al cargar los años lectivos.');
-      console.error(err);
+      setError(err.message || 'Error al cargar los años lectivos.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    cargarAnios();
+    loadAnios();
   }, []);
 
-  // --- Handlers para el Modal ---
-  
+  // --- Handlers ---
+  const handleSearch = () => {
+    loadAnios(); // Recarga (implementar filtro en backend si es necesario)
+  };
+
   const handleOpenCreate = () => {
-    setAnioAEditar(null); // 'null' significa modo "Crear"
+    setAnioAEditar(null);
     setShowModal(true);
   };
 
   const handleOpenEdit = (anio) => {
-    setAnioAEditar(anio); // Pasamos el objeto a editar
+    setAnioAEditar(anio);
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setAnioAEditar(null);
   };
 
-  const handleSave = () => {
-    // Cuando el modal guarda exitosamente, cerramos y refrescamos la tabla
+  const handleSaveSuccess = () => { // Renombrado a handleSaveSuccess para consistencia
     handleCloseModal();
-    cargarAnios(); 
+    loadAnios();
   };
 
-  // --- Handler para Borrar ---
-  
-  const handleDelete = (id) => {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: "No podrás revertir esto (luego implementaremos 'restaurar').",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
+  const handleDelete = async (id) => {
+    // Usamos window.confirm para mantener el estilo simple, 
+    // o puedes seguir usando Swal si lo prefieres.
+    if (window.confirm('¿Estás seguro de eliminar este año lectivo?')) {
         try {
-          await deleteAnioLectivo(id);
-          Swal.fire(
-            '¡Eliminado!',
-            'El año lectivo ha sido eliminado.',
-            'success'
-          );
-          // Refrescar la lista filtrando el item eliminado
-          setAniosLectivos(prev => prev.filter(a => a.id_anio_lectivo !== id));
+            await deleteAnioLectivo(id);
+            loadAnios();
         } catch (err) {
-          Swal.fire(
-            'Error',
-            err.response?.data?.mensaje || 'No se pudo eliminar el año lectivo.',
-            'error'
-          );
+            // Si prefieres Swal para errores, úsalo aquí
+            alert(err.message || 'No se pudo eliminar.');
         }
-      }
-    });
+    }
   };
 
-  // --- Renderizado ---
+  // --- Definición de Columnas (Igual que antes) ---
+  const columns = [
+    { header: "Año", accessor: "anio" },
+    { header: "Fecha Inicio", accessor: "fecha_inicio", cell: (row) => new Date(row.fecha_inicio).toLocaleDateString() },
+    { header: "Fecha Fin", accessor: "fecha_fin", cell: (row) => new Date(row.fecha_fin).toLocaleDateString() },
+    { 
+      header: "Estado", 
+      accessor: "estado", 
+      cell: (row) => (
+        // Usamos la clase 'status-badge' de tu CSS personalizado
+        <span className={`status-badge ${row.estado?.toLowerCase()}`}>
+          {row.estado}
+        </span>
+      ) 
+    }
+  ];
 
-  if (loading) {
-    return (
-      <Container className="text-center mt-5">
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Cargando...</span>
-        </Spinner>
-        <p>Cargando años lectivos...</p>
-      </Container>
-    );
-  }
+  // --- Definición de Acciones (Usando tus clases .action-button) ---
+  const renderActions = (anio) => (
+    <>
+      <button 
+        onClick={() => handleOpenEdit(anio)}
+        className="action-button edit"
+        title="Editar"
+      >
+        <span className="material-symbols-outlined">edit</span>
+      </button>
+      <button 
+        onClick={() => handleDelete(anio.id_anio_lectivo)}
+        className="action-button delete"
+        title="Eliminar"
+      >
+        <span className="material-symbols-outlined">delete</span>
+      </button>
+    </>
+  );
 
+  // --- Renderizado (Usando la estructura de 'docentescrud.css') ---
   return (
-    <Container className="mt-4">
-        <BtnVolver/>
-      <Row className="mb-3">
-        <Col>
-          <h2>Gestión de Años Lectivos</h2>
-        </Col>
-        <Col className="text-end">
-          <Button variant="primary" onClick={handleOpenCreate}>
-            + Crear Nuevo Año Lectivo
-          </Button>
-        </Col>
-      </Row>
+    <div className="gestion-page-container">
+        
+        {/* 1. Header de la Página */}
+        <div className="gestion-header">
+            <button onClick={() => navigate(-1)} className="back-button">← VOLVER</button>
+            <h2>Gestión de Años Lectivos</h2>
+        </div>
 
-      {error && <Alert variant="danger">{error}</Alert>}
+        {/* 2. Barra de Búsqueda y Botón Agregar */}
+        <div className="search-add-bar">
+            <div className="search-box">
+                <span className="material-symbols-outlined search-icon">search</span>
+                <input 
+                    type="text" 
+                    placeholder="Buscar año lectivo..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    // Puedes añadir onKeyPress para buscar con Enter
+                />
+            </div>
+            <button onClick={handleSearch} className="search-button">Buscar</button>
+            
+            <button onClick={handleOpenCreate} className="add-button">
+                <span className="material-symbols-outlined add-icon" style={{marginRight: '5px'}}>add</span>
+                Nuevo Año Lectivo
+            </button>
+        </div>
 
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>Año</th>
-            <th>Fecha Inicio</th>
-            <th>Fecha Fin</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {aniosLectivos.length > 0 ? (
-            aniosLectivos.map(anio => (
-              <tr key={anio.id_anio_lectivo}>
-                <td>{anio.anio}</td>
-                <td>{new Date(anio.fecha_inicio).toLocaleDateString()}</td>
-                <td>{new Date(anio.fecha_fin).toLocaleDateString()}</td>
-                <td>
-                  <span className={`badge bg-${
-                    anio.estado === 'activo' ? 'success' :
-                    anio.estado === 'planificacion' ? 'warning' : 'secondary'
-                  }`}>
-                    {anio.estado}
-                  </span>
-                </td>
-                <td>
-                  <Button 
-                    variant="outline-secondary" 
-                    size="sm" 
-                    className="me-2"
-                    onClick={() => handleOpenEdit(anio)}
-                  >
-                    Editar
-                  </Button>
-                  <Button 
-                    variant="outline-danger" 
-                    size="sm"
-                    onClick={() => handleDelete(anio.id_anio_lectivo)}
-                  >
-                    Eliminar
-                  </Button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" className="text-center">No hay años lectivos registrados.</td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
+        {/* 3. Contenedor de la Tabla */}
+        <div className="list-container">
+            <div className="list-header">
+                <h3>Listado de Años Lectivos</h3>
+                {/* Mostramos el total solo si no está cargando */}
+                {!isLoading && !error && <span>Total: {aniosLectivos.length}</span>}
+            </div>
 
-      {/* El Modal (se renderiza pero solo se muestra si showModal es true) */}
-      <AnioLectivoModal
-        show={showModal}
-        onHide={handleCloseModal}
-        onSave={handleSave}
-        anioAEditar={anioAEditar}
-      />
-    </Container>
+            <TableCrud 
+                columns={columns}
+                data={aniosLectivos}
+                isLoading={isLoading}
+                error={error}
+                renderActions={renderActions}
+                getKey={(item) => item.id_anio_lectivo}
+                emptyMessage="No hay años lectivos registrados."
+            />
+        </div>
+
+        {/* 4. Modal (Asegúrate de que tu AnioLectivoModal use también tus estilos personalizados si quieres que coincida al 100%) */}
+        {showModal && (
+            <AnioLectivoModal
+                show={showModal} // O 'isOpen', depende de cómo esté hecho tu modal
+                onHide={handleCloseModal} // O 'onClose'
+                onSave={handleSaveSuccess}
+                anioAEditar={anioAEditar}
+            />
+        )}
+
+    </div>
   );
 };
 

@@ -1,39 +1,127 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Alert, Spinner } from 'react-bootstrap';
 import { createAnioLectivo, updateAnioLectivo } from '../../services/aniosServices';
 
-// Helper para formatear la fecha que viene de la BD (ej: "2025-03-01T...Z")
-// a un formato que el input type="date" entiende (ej: "2025-03-01")
+// --- OBJETOS DE ESTILO (Estilos en línea) ---
+const styles = {
+    overlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)', // Fondo oscuro semitransparente
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+    },
+    modal: {
+        backgroundColor: '#fff',
+        borderRadius: '10px',
+        boxShadow: '0 5px 20px rgba(0,0,0,0.2)',
+        width: '90%',
+        maxWidth: '500px',
+        overflow: 'hidden',
+        fontFamily: "'Segoe UI', sans-serif",
+        animation: 'fadeIn 0.3s ease-out' // Nota: Las animaciones complejas requieren CSS real, esto es un intento básico
+    },
+    header: {
+        margin: 0,
+        padding: '20px 25px',
+        backgroundColor: '#f7f9fc',
+        borderBottom: '1px solid #e0e0e0',
+        color: '#333',
+        fontSize: '20px',
+        fontWeight: '600',
+    },
+    form: {
+        padding: '25px',
+    },
+    formGroup: {
+        marginBottom: '18px',
+    },
+    label: {
+        display: 'block',
+        marginBottom: '8px',
+        fontWeight: '500',
+        color: '#555',
+        fontSize: '15px',
+    },
+    requiredStar: {
+        color: '#dc3545',
+    },
+    input: {
+        width: '100%',
+        padding: '12px',
+        border: '1px solid #ccc',
+        borderRadius: '6px',
+        fontSize: '16px',
+        boxSizing: 'border-box', // Vital para que el padding no rompa el ancho
+        transition: 'border-color 0.3s',
+    },
+    footer: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        gap: '15px',
+        marginTop: '30px',
+        paddingTop: '20px',
+        borderTop: '1px solid #f0f0f0',
+    },
+    btnBase: {
+        padding: '12px 25px',
+        borderRadius: '6px',
+        fontSize: '16px',
+        fontWeight: '600',
+        cursor: 'pointer',
+        border: 'none',
+        transition: 'opacity 0.2s',
+    },
+    btnCancel: {
+        backgroundColor: '#6c757d',
+        color: 'white',
+    },
+    btnSave: {
+        backgroundColor: '#0d6efd',
+        color: 'white',
+    },
+    error: {
+        color: '#dc3545',
+        backgroundColor: '#f8d7da',
+        border: '1px solid #f5c6cb',
+        padding: '12px 20px',
+        borderRadius: '6px',
+        marginBottom: '20px',
+        textAlign: 'center',
+        fontWeight: '500',
+    }
+};
+
+// Helper para fechas
 const formatDateForInput = (dateString) => {
   if (!dateString) return '';
-  try {
-    return new Date(dateString).toISOString().split('T')[0];
-  } catch (error) {
+  try { return new Date(dateString).toISOString().split('T')[0]; } 
+  catch (error) {
     console.error("Error formateando fecha:", dateString, error);
-    return '';
-  }
+    return '';}
+};
+
+const initialState = {
+  anio: new Date().getFullYear() + 1,
+  fecha_inicio: '',
+  fecha_fin: '',
+  estado: 'planificacion'
 };
 
 const AnioLectivoModal = ({ show, onHide, onSave, anioAEditar }) => {
-  
-  const initialState = {
-    anio: new Date().getFullYear() + 1, // Sugiere el próximo año
-    fecha_inicio: '',
-    fecha_fin: '',
-    estado: 'planificacion'
-  };
-
   const [formData, setFormData] = useState(initialState);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
+  const isEditMode = Boolean(anioAEditar);
 
   useEffect(() => {
     if (show) {
-      setError(null); // Limpia errores al abrir
-      if (anioAEditar) {
-        // Modo Edición
-        setIsEditMode(true);
+      setError(null);
+      if (isEditMode) {
         setFormData({
           anio: anioAEditar.anio,
           fecha_inicio: formatDateForInput(anioAEditar.fecha_inicio),
@@ -41,12 +129,10 @@ const AnioLectivoModal = ({ show, onHide, onSave, anioAEditar }) => {
           estado: anioAEditar.estado,
         });
       } else {
-        // Modo Creación
-        setIsEditMode(false);
         setFormData(initialState);
       }
     }
-  }, [anioAEditar, show]); // Se re-ejecuta cuando el modal se abre o cambia el prop
+  }, [anioAEditar, show, isEditMode]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,110 +141,127 @@ const AnioLectivoModal = ({ show, onHide, onSave, anioAEditar }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
+    setIsSaving(true);
     setError(null);
-
     try {
       if (isEditMode) {
-        // Lógica de Actualizar (PUT)
         await updateAnioLectivo(anioAEditar.id_anio_lectivo, formData);
       } else {
-        // Lógica de Crear (POST)
         await createAnioLectivo(formData);
       }
-      onSave(); // Llama al padre para refrescar la tabla y cerrar
-      
+      onSave();
     } catch (err) {
-      // Captura errores de la API (ej: año duplicado)
       setError(err.response?.data?.mensaje || 'Error al guardar. Intente de nuevo.');
     } finally {
-      setSaving(false);
+      setIsSaving(false);
     }
   };
 
+  if (!show) return null;
+
   return (
-    <Modal show={show} onHide={onHide} backdrop="static" keyboard={false}>
-      <Modal.Header closeButton>
-        <Modal.Title>
-          {isEditMode ? 'Editar Año Lectivo' : 'Crear Nuevo Año Lectivo'}
-        </Modal.Title>
-      </Modal.Header>
-      
-      <Form onSubmit={handleSubmit}>
-        <Modal.Body>
-          {error && <Alert variant="danger">{error}</Alert>}
+    <div style={styles.overlay} onClick={onHide}>
+      {/* 'e.stopPropagation()' evita que clicks dentro del modal lo cierren */}
+      <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+        
+        <h3 style={styles.header}>
+            {isEditMode ? 'Editar Año Lectivo' : 'Crear Nuevo Año Lectivo'}
+        </h3>
+        
+        <form onSubmit={handleSubmit} style={styles.form}>
           
-          <Form.Group className="mb-3" controlId="formAnio">
-            <Form.Label>Año <span className="text-danger">*</span></Form.Label>
-            <Form.Control
+          {error && <div style={styles.error}>{error}</div>}
+
+          <div style={styles.formGroup}>
+            <label style={styles.label} htmlFor="anio">
+                Año <span style={styles.requiredStar}>*</span>
+            </label>
+            <input
               type="number"
+              id="anio"
               name="anio"
               value={formData.anio}
               onChange={handleChange}
               placeholder="Ej: 2026"
-              min="2020"
-              max="2040"
-              required
-              disabled={saving}
+              min="2020" max="2040" required
+              disabled={isSaving}
+              style={styles.input}
             />
-          </Form.Group>
+          </div>
 
-          <Form.Group className="mb-3" controlId="formFechaInicio">
-            <Form.Label>Fecha de Inicio <span className="text-danger">*</span></Form.Label>
-            <Form.Control
+          <div style={styles.formGroup}>
+            <label style={styles.label} htmlFor="fecha_inicio">
+                Fecha de Inicio <span style={styles.requiredStar}>*</span>
+            </label>
+            <input
               type="date"
+              id="fecha_inicio"
               name="fecha_inicio"
               value={formData.fecha_inicio}
               onChange={handleChange}
               required
-              disabled={saving}
+              disabled={isSaving}
+              style={styles.input}
             />
-          </Form.Group>
+          </div>
 
-          <Form.Group className="mb-3" controlId="formFechaFin">
-            <Form.Label>Fecha de Fin <span className="text-danger">*</span></Form.Label>
-            <Form.Control
+          <div style={styles.formGroup}>
+            <label style={styles.label} htmlFor="fecha_fin">
+                Fecha de Fin <span style={styles.requiredStar}>*</span>
+            </label>
+            <input
               type="date"
+              id="fecha_fin"
               name="fecha_fin"
               value={formData.fecha_fin}
               onChange={handleChange}
               required
-              disabled={saving}
+              disabled={isSaving}
+              style={styles.input}
             />
-          </Form.Group>
+          </div>
 
-          <Form.Group className="mb-3" controlId="formEstado">
-            <Form.Label>Estado <span className="text-danger">*</span></Form.Label>
-            <Form.Select
+          <div style={styles.formGroup}>
+            <label style={styles.label} htmlFor="estado">
+                Estado <span style={styles.requiredStar}>*</span>
+            </label>
+            <select
+              id="estado"
               name="estado"
               value={formData.estado}
               onChange={handleChange}
               required
-              disabled={saving}
+              disabled={isSaving}
+              style={styles.input} // Reutilizamos el estilo de input para el select
             >
               <option value="planificacion">Planificación</option>
               <option value="activo">Activo</option>
               <option value="finalizado">Finalizado</option>
-            </Form.Select>
-          </Form.Group>
-          
-        </Modal.Body>
-        
-        <Modal.Footer>
-          <Button variant="secondary" onClick={onHide} disabled={saving}>
-            Cancelar
-          </Button>
-          <Button variant="primary" type="submit" disabled={saving}>
-            {saving ? (
-              <>
-                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                {' Guardando...'}
-              </>
-            ) : 'Guardar Cambios'}
-          </Button>
-        </Modal.Footer>
-      </Form>
-    </Modal>
+            </select>
+          </div>
+
+          <div style={styles.footer}>
+            <button 
+              type="button" 
+              onClick={onHide} 
+              disabled={isSaving}
+              // Combinamos estilos base con estilos específicos del botón
+              style={{...styles.btnBase, ...styles.btnCancel, opacity: isSaving ? 0.6 : 1}}
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              disabled={isSaving}
+              style={{...styles.btnBase, ...styles.btnSave, opacity: isSaving ? 0.6 : 1}}
+            >
+              {isSaving ? 'Guardando...' : 'Guardar'}
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
   );
 };
 

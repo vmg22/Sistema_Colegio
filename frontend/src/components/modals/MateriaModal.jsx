@@ -1,32 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Alert, Spinner, Row, Col } from 'react-bootstrap';
-// --- CORRECCIÓN: Importamos los nombres de tu servicio ---
-import { 
-  createMateria, 
-  updateMateria, 
-  getCiclosMateria, 
-  getEstadosMateria 
+import {
+  createMateria,
+  updateMateria,
+  getCiclosMateria,
+  getEstadosMateria
 } from '../../services/materiasaltasService';
+import '../../styles/docentesmodal.css';
 
-  const initialState = {
-    nombre: '',
-    nivel: 1,
-    ciclo: 'basico',
-    estado: 'activa',
-    carga_horaria: '',
-    descripcion: ''
-  };
+const initialState = {
+  nombre: '',
+  nivel: 1,
+  ciclo: 'basico',
+  estado: 'activa',
+  carga_horaria: '',
+  descripcion: ''
+};
 
 const MateriaModal = ({ show, onHide, onSave, materiaAEditar }) => {
-  
-
-
   const [formData, setFormData] = useState(initialState);
   const [isEditMode, setIsEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loadingEnums, setLoadingEnums] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const [ciclos, setCiclos] = useState([]);
   const [estados, setEstados] = useState([]);
 
@@ -35,18 +31,16 @@ const MateriaModal = ({ show, onHide, onSave, materiaAEditar }) => {
       if (show) {
         setError(null);
         setLoadingEnums(true);
-        
+
         try {
-          // --- CORRECCIÓN: Usamos los nombres de tu servicio ---
           const [resCiclos, resEstados] = await Promise.all([
             getCiclosMateria(),
             getEstadosMateria()
           ]);
-          
-          // --- CORRECCIÓN: Tu servicio ya devuelve el array ---
+
           setCiclos(resCiclos || []);
           setEstados(resEstados || []);
-          
+
         } catch (err) {
           setError(err.message || 'Error al cargar opciones del formulario.');
         } finally {
@@ -54,7 +48,6 @@ const MateriaModal = ({ show, onHide, onSave, materiaAEditar }) => {
         }
 
         if (materiaAEditar) {
-          // Modo Edición
           setIsEditMode(true);
           setFormData({
             nombre: materiaAEditar.nombre,
@@ -65,7 +58,6 @@ const MateriaModal = ({ show, onHide, onSave, materiaAEditar }) => {
             descripcion: materiaAEditar.descripcion || ''
           });
         } else {
-          // Modo Creación
           setIsEditMode(false);
           setFormData(initialState);
         }
@@ -76,8 +68,8 @@ const MateriaModal = ({ show, onHide, onSave, materiaAEditar }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
+    setFormData(prev => ({
+      ...prev,
       [name]: (name === 'carga_horaria' || name === 'nivel') ? (value === '' ? '' : parseInt(value, 10)) : value
     }));
   };
@@ -95,43 +87,46 @@ const MateriaModal = ({ show, onHide, onSave, materiaAEditar }) => {
 
     try {
       if (isEditMode) {
-        // Tu servicio usa PATCH para updateMateria, lo cual es genial
         await updateMateria(materiaAEditar.id_materia, datosParaEnviar);
       } else {
         await createMateria(datosParaEnviar);
       }
       onSave();
-      
+
     } catch (err) {
-      // --- CORRECCIÓN: Tu servicio ya procesa el error ---
       setError(err.message || 'Error al guardar. Verifique los datos.');
     } finally {
       setSaving(false);
     }
   };
 
+  if (!show) return null;
+
   return (
-    <Modal show={show} onHide={onHide} backdrop="static" keyboard={false} size="lg">
-      <Modal.Header closeButton>
-        <Modal.Title>
-          {isEditMode ? 'Editar Materia' : 'Crear Nueva Materia'}
-        </Modal.Title>
-      </Modal.Header>
-      
-      <Form onSubmit={handleSubmit}>
-        <Modal.Body>
-          {error && <Alert variant="danger">{error}</Alert>}
-          {loadingEnums && <Spinner animation="border" size="sm" />}
+    <div className="modal-overlay" onClick={onHide}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <h3>{isEditMode ? 'Editar Materia' : 'Crear Nueva Materia'}</h3>
 
-          {/* ... (El resto del formulario (Filas y Columnas) no cambia) ... */}
-          {/* ... (Nombre, Nivel, Ciclo, Estado, Carga Horaria, Descripción) ... */}
+        <form onSubmit={handleSubmit}>
+          {error && <p className="error-message">{error}</p>}
+          {loadingEnums && (
+            <p style={{ textAlign: 'center', color: '#666' }}>
+              Cargando opciones...
+            </p>
+          )}
 
-          <Row>
-            <Col md={8}>
-              <Form.Group className="mb-3" controlId="formNombre">
-                <Form.Label>Nombre Materia <span className="text-danger">*</span></Form.Label>
-                <Form.Control
+          <fieldset>
+            <legend>Información Básica</legend>
+
+            {/* Fila 1: Nombre y Nivel */}
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '18px' }}>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label htmlFor="nombre">
+                  Nombre Materia <span style={{ color: '#dc3545' }}>*</span>
+                </label>
+                <input
                   type="text"
+                  id="nombre"
                   name="nombre"
                   value={formData.nombre}
                   onChange={handleChange}
@@ -139,30 +134,34 @@ const MateriaModal = ({ show, onHide, onSave, materiaAEditar }) => {
                   required
                   disabled={saving || loadingEnums}
                 />
-              </Form.Group>
-            </Col>
-            <Col md={4}>
-              <Form.Group className="mb-3" controlId="formNivel">
-                <Form.Label>Nivel (Año) <span className="text-danger">*</span></Form.Label>
-                <Form.Control
+              </div>
+
+              <div className="form-group" style={{ flex: '0 0 150px' }}>
+                <label htmlFor="nivel">
+                  Nivel (Año) <span style={{ color: '#dc3545' }}>*</span>
+                </label>
+                <input
                   type="number"
+                  id="nivel"
                   name="nivel"
                   value={formData.nivel}
                   onChange={handleChange}
                   min="1"
-                  max="6" 
+                  max="6"
                   required
                   disabled={saving || loadingEnums}
                 />
-              </Form.Group>
-            </Col>
-          </Row>
+              </div>
+            </div>
 
-          <Row>
-            <Col md={4}>
-              <Form.Group className="mb-3" controlId="formCiclo">
-                <Form.Label>Ciclo <span className="text-danger">*</span></Form.Label>
-                <Form.Select
+            {/* Fila 2: Ciclo, Estado y Carga Horaria */}
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '18px' }}>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label htmlFor="ciclo">
+                  Ciclo <span style={{ color: '#dc3545' }}>*</span>
+                </label>
+                <select
+                  id="ciclo"
                   name="ciclo"
                   value={formData.ciclo}
                   onChange={handleChange}
@@ -170,31 +169,35 @@ const MateriaModal = ({ show, onHide, onSave, materiaAEditar }) => {
                   disabled={saving || loadingEnums}
                 >
                   {ciclos.map(ciclo => (
-                    <option key={ciclo} value={ciclo}>{ciclo.charAt(0).toUpperCase() + ciclo.slice(1)}</option>
+                    <option key={ciclo} value={ciclo}>
+                      {ciclo.charAt(0).toUpperCase() + ciclo.slice(1)}
+                    </option>
                   ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col md={4}>
-              <Form.Group className="mb-3" controlId="formEstado">
-                <Form.Label>Estado</Form.Label>
-                <Form.Select
+                </select>
+              </div>
+
+              <div className="form-group" style={{ flex: 1 }}>
+                <label htmlFor="estado">Estado</label>
+                <select
+                  id="estado"
                   name="estado"
                   value={formData.estado}
                   onChange={handleChange}
                   disabled={saving || loadingEnums}
                 >
                   {estados.map(estado => (
-                    <option key={estado} value={estado}>{estado.charAt(0).toUpperCase() + estado.slice(1)}</option>
+                    <option key={estado} value={estado}>
+                      {estado.charAt(0).toUpperCase() + estado.slice(1)}
+                    </option>
                   ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-             <Col md={4}>
-              <Form.Group className="mb-3" controlId="formCargaHoraria">
-                <Form.Label>Carga Horaria (Hs. Semanales)</Form.Label>
-                <Form.Control
+                </select>
+              </div>
+
+              <div className="form-group" style={{ flex: '0 0 180px' }}>
+                <label htmlFor="carga_horaria">Carga Horaria (Hs.)</label>
+                <input
                   type="number"
+                  id="carga_horaria"
                   name="carga_horaria"
                   value={formData.carga_horaria}
                   onChange={handleChange}
@@ -202,35 +205,56 @@ const MateriaModal = ({ show, onHide, onSave, materiaAEditar }) => {
                   min="0"
                   disabled={saving || loadingEnums}
                 />
-              </Form.Group>
-            </Col>
-          </Row>
+              </div>
+            </div>
 
-          <Form.Group className="mb-3" controlId="formDescripcion">
-            <Form.Label>Descripción</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              name="descripcion"
-              value={formData.descripcion}
-              onChange={handleChange}
-              placeholder="(Opcional) Breve descripción de la materia..."
+            {/* Descripción */}
+            <div className="form-group">
+              <label htmlFor="descripcion">Descripción</label>
+              <textarea
+                id="descripcion"
+                name="descripcion"
+                value={formData.descripcion}
+                onChange={handleChange}
+                placeholder="(Opcional) Breve descripción de la materia..."
+                rows="3"
+                disabled={saving || loadingEnums}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #ccc',
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  boxSizing: 'border-box',
+                  transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+                  fontFamily: 'inherit',
+                  resize: 'vertical'
+                }}
+              />
+            </div>
+          </fieldset>
+
+          {/* Botones de acción */}
+          <div className="modal-actions">
+            <button
+              type="button"
+              className="btn-cancel"
+              onClick={onHide}
+              disabled={saving}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="btn-save"
               disabled={saving || loadingEnums}
-            />
-          </Form.Group>
-          
-        </Modal.Body>
-        
-        <Modal.Footer>
-          <Button variant="secondary" onClick={onHide} disabled={saving}>
-            Cancelar
-          </Button>
-          <Button variant="primary" type="submit" disabled={saving || loadingEnums}>
-            {saving ? <Spinner as="span" animation="border" size="sm" /> : 'Guardar'}
-          </Button>
-        </Modal.Footer>
-      </Form>
-    </Modal>
+            >
+              {saving ? 'Guardando...' : 'Guardar'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 
