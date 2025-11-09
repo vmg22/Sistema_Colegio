@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import BtnVolver from "../../components/ui/BtnVolver";
 import EncabezadoCurso from "../../components/curso/EncabezadoCurso";
 import { useConsultaStore } from "../../store/consultaStore";
@@ -21,40 +21,46 @@ const CargaCalificaciones = () => {
     reporteCurso,
     selectedCursoNombre,
     selectedMateriaNombre,
-    setReporteCurso, //  OBTENER LA FUNCIÓN PARA ACTUALIZAR EL STORE
+    setReporteCurso,
   } = useConsultaStore();
 
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Extraemos los filtros para usarlos como dependencia
-  const filtros = reporteCurso?.filtros; // OBTENER LOS FILTROS
+  // Extraemos los filtros una sola vez
+  const filtros = reporteCurso?.filtros;
 
-  // useEffect SE ENCARGARÁ DE BUSCAR LOS DATOS
+  // ✅ SOLUCIÓN 1: Memoizar los valores de los filtros para evitar re-renders
+  const filtrosMemorizados = useMemo(() => {
+    if (!filtros) return null;
+    return {
+      curso: filtros.curso,
+      materia: filtros.materia,
+      anioLectivo: filtros.anioLectivo,
+      cuatrimestre: filtros.cuatrimestre,
+    };
+  }, [filtros?.curso, filtros?.materia, filtros?.anioLectivo, filtros?.cuatrimestre]);
+
+  // ✅ SOLUCIÓN 2: NO incluir setReporteCurso en las dependencias
   useEffect(() => {
     const traerAlumnos = async () => {
-      if (
-        !filtros ||
-        !filtros.curso ||
-        !filtros.materia ||
-        !filtros.anioLectivo ||
-        !filtros.cuatrimestre
-      ) {
+      if (!filtrosMemorizados) return;
+      
+      const { curso, materia, anioLectivo, cuatrimestre } = filtrosMemorizados;
+      
+      if (!curso || !materia || !anioLectivo || !cuatrimestre) {
         return;
       }
+
       try {
-        const data = await getReporteCurso(
-          filtros.curso,
-          filtros.materia,
-          filtros.anioLectivo,
-          filtros.cuatrimestre
-        );
+        const data = await getReporteCurso(curso, materia, anioLectivo, cuatrimestre);
         setReporteCurso(data);
       } catch (error) {
         console.error("Error al traer los alumnos:", error);
       }
     };
+    
     traerAlumnos();
-  }, [filtros, setReporteCurso]); //  EJECUTA CUANDO CAMBIEN LOS FILTROS
+  }, [filtrosMemorizados]); // ✅ Solo depende de los filtros, NO de setReporteCurso
 
   if (
     !selectedCursoNombre ||
@@ -70,7 +76,6 @@ const CargaCalificaciones = () => {
     );
   }
 
-  // useMemo se re-ejecutará cuando 'reporteCurso.alumnos' cambie
   const alumnosParaMostrar = useMemo(() => {
     if (!reporteCurso.alumnos) {
       return [];
@@ -93,24 +98,21 @@ const CargaCalificaciones = () => {
     handleShow();
   };
 
-  // Esta función se la pasaremos al modal para que la llame
-  // cuando termine de guardar exitosamente.
-  const handleSaveSuccess = async () => {
+  // ✅ SOLUCIÓN 3: Usar useCallback para memoizar la función
+  const handleSaveSuccess = useCallback(async () => {
+    if (!filtrosMemorizados) return;
+    
+    const { curso, materia, anioLectivo, cuatrimestre } = filtrosMemorizados;
+
     try {
-      // Recargar los datos
-      const data = await getReporteCurso(
-        filtros.curso,
-        filtros.materia,
-        filtros.anioLectivo,
-        filtros.cuatrimestre
-      );
+      const data = await getReporteCurso(curso, materia, anioLectivo, cuatrimestre);
       setReporteCurso(data);
       console.log("Datos recargados exitosamente después de guardar.");
     } catch (error) {
       console.error("Error al recargar los datos:", error);
       alert(`Error al recargar: ${error.message}`);
     }
-  };
+  }, [filtrosMemorizados, setReporteCurso]);
 
   return (
     <div className="curso-dashboard-container">
@@ -204,8 +206,8 @@ const CargaCalificaciones = () => {
         show={show}
         handleClose={handleClose}
         alumno={alumnoSeleccionado}
-        filtros={filtros} // Pasamos los filtros
-        onSaveSuccess={handleSaveSuccess} // Pasamos la función de recarga
+        filtros={filtros}
+        onSaveSuccess={handleSaveSuccess}
       />
     </div>
   );
