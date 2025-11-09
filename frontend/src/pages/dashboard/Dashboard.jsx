@@ -63,8 +63,8 @@ const Dashboard = () => {
         );
 
         setMaterias(dataMaterias);
-        setCursos(dataCursos);
-        setAnios(dataAnios);
+        setCursos(dataCursos.datos);
+        setAnios(dataAnios.datos);
       } catch (error) {
         console.error("Error al cargar materias:", error);
       }

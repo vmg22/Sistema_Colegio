@@ -5,12 +5,14 @@ import { getReporteAlumno } from "../../services/reportesService";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "../../styles/constanciaAlumnoRegular.css";
+import BtnVolver from "../../components/ui/BtnVolver";
 
 const ConstanciaAlumnoRegular = () => {
   const navigate = useNavigate();
-  
+
   // ✅ Obtenemos datos del store de Zustand
-  const { alumnoDni, alumnoAnio, reporteAlumno, setReporteAlumno } = useConsultaStore();
+  const { alumnoDni, alumnoAnio, reporteAlumno, setReporteAlumno } =
+    useConsultaStore();
 
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -20,8 +22,18 @@ const ConstanciaAlumnoRegular = () => {
   // 🗓️ Función auxiliar para mostrar el mes actual en texto
   const obtenerMesActual = () => {
     const meses = [
-      "enero", "febrero", "marzo", "abril", "mayo", "junio",
-      "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+      "enero",
+      "febrero",
+      "marzo",
+      "abril",
+      "mayo",
+      "junio",
+      "julio",
+      "agosto",
+      "septiembre",
+      "octubre",
+      "noviembre",
+      "diciembre",
     ];
     return meses[new Date().getMonth()];
   };
@@ -31,7 +43,9 @@ const ConstanciaAlumnoRegular = () => {
     const cargarDatos = async () => {
       // Validar que tengamos DNI
       if (!alumnoDni) {
-        setError("No se encontró el DNI del alumno. Por favor, vuelve a realizar la consulta.");
+        setError(
+          "No se encontró el DNI del alumno. Por favor, vuelve a realizar la consulta."
+        );
         setCargando(false);
         return;
       }
@@ -44,10 +58,10 @@ const ConstanciaAlumnoRegular = () => {
         if (!data || data.dni !== alumnoDni) {
           console.log("📡 Cargando datos del alumno desde el backend...");
           const response = await getReporteAlumno(alumnoDni, alumnoAnio);
-          
+
           // El backend devuelve { success: true, data: {...} }
           data = response.data || response;
-          
+
           // Guardar en el store para futuras consultas
           setReporteAlumno(data);
         } else {
@@ -56,7 +70,9 @@ const ConstanciaAlumnoRegular = () => {
 
         // 🔁 Construir datos del formulario
         setDatosFormulario({
-          nombreEstudiante: `${data.nombre || ""} ${data.apellido || ""}`.trim(),
+          nombreEstudiante: `${data.nombre || ""} ${
+            data.apellido || ""
+          }`.trim(),
           numeroDocumento: data.dni || alumnoDni,
           curso: data.curso?.nombre || data.curso?.curso_nombre || "",
           division: data.curso?.division || data.curso?.curso_division || "",
@@ -74,9 +90,9 @@ const ConstanciaAlumnoRegular = () => {
       } catch (err) {
         console.error("❌ Error al cargar datos:", err);
         setError(
-          err.message || 
-          err.data?.message || 
-          "Error al cargar los datos del alumno. Por favor, intenta nuevamente."
+          err.message ||
+            err.data?.message ||
+            "Error al cargar los datos del alumno. Por favor, intenta nuevamente."
         );
       } finally {
         setCargando(false);
@@ -147,87 +163,82 @@ const ConstanciaAlumnoRegular = () => {
 
   // 🧾 Render principal
   return (
-    <div className="constancia-body">
-      {/* 📝 PANEL DE EDICIÓN - ARRIBA A LA IZQUIERDA */}
-      <div className="edit-panel no-print">
-        <h3>✏️ Datos Editables</h3>
-        
-        
+    <div>
+      <div className="no-print">
+      <BtnVolver />
 
-        <div className="form-group editable">
-          <label>Autoridad destinataria:</label>
-          <input
-            type="text"
-            name="autoridad"
-            placeholder="Ej: Ministerio de Educación"
-            value={datosFormulario.autoridad}
-            onChange={manejarCambio}
-          />
-        </div>
       </div>
 
-      {/* 📄 CERTIFICADO PRINCIPAL */}
-      <div className="certificate-container" ref={refCertificado}>
-        <h1 className="certificate-header">Constancia de Alumno Regular</h1>
+      <div className="constancia-body-constancia">
+        {/* 📝 PANEL DE EDICIÓN - ARRIBA A LA IZQUIERDA */}
+        <div className="edit-panel no-print mt-3">
+          <h3>✏️ Datos Editables</h3>
 
-        <p>
-          Se hace constar que{" "}
-          <b>{datosFormulario.nombreEstudiante}</b>, es alumno del Instituto Carlos Guido Spano, 
-          cursa el año{" "}
-          <b>{datosFormulario.curso}</b> , en este Establecimiento.
-        </p>
-
-        <p>
-          En la ciudad de {datosFormulario.ciudad}, a los{" "}
-          {datosFormulario.dia} días del mes de {datosFormulario.mes} de 20
-          {datosFormulario.anioActual}.
-        </p>
-
-        <p>
-          Se extiende la presente constancia en San Miguel de Tucumán 
-          para ser presentada ante las autoridades de{" "}
-          <b>{datosFormulario.autoridad || "..."}</b>.
-        </p>
-
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-
-        <div className="signature-space">
-          <div className="signature-box">Sello</div>
-          <div className="signature-box">Firma Autorizada</div>
+          <div className="form-group editable">
+            <label>Autoridad destinataria:</label>
+            <input
+              type="text"
+              name="autoridad"
+              placeholder="Ej: Ministerio de Educación"
+              value={datosFormulario.autoridad}
+              onChange={manejarCambio}
+            />
+          </div>
         </div>
 
-        <div className="seal-space">
-          <div className="seal">Sello Escolar</div>
-          <div className="seal">Sello del Establecimiento</div>
-        </div>
-      </div>
+        {/* 📄 CERTIFICADO PRINCIPAL */}
+        <div className="certificate-container" ref={refCertificado}>
+          <h1 className="certificate-header">Constancia de Alumno Regular</h1>
 
-      {/* 🎯 BOTONES DE ACCIÓN */}
-      <div className="actions no-print">
-        <button onClick={manejarVolver} className="btn-secondary">
-          <span className="material-symbols-outlined">arrow_back</span>
-          Volver
-        </button>
-        <button onClick={manejarDescargarPDF} className="btn-primary">
-          <span className="material-symbols-outlined">download</span>
-          Descargar PDF
-        </button>
-        <button onClick={manejarImprimir} className="btn-primary">
-          <span className="material-symbols-outlined">print</span>
-          Imprimir
-        </button>
+          <p>
+            Se hace constar que <b>{datosFormulario.nombreEstudiante}</b>, es
+            alumno del Instituto Carlos Guido Spano, cursa el año{" "}
+            <b>{datosFormulario.curso}</b> , en este Establecimiento.
+          </p>
+          <p>
+            A pedido del interesado se extiende la presente constancia en San
+            Miguel de Tucumán a los {datosFormulario.dia} días del mes de{" "}
+            {datosFormulario.mes} de 20
+            {datosFormulario.anioActual}.
+          </p>
+          <p>
+            Para ser presentada ante las autoridades de{" "}
+            <b>{datosFormulario.autoridad || "..."}</b>.
+          </p>
+
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+
+          <div className="signature-space">
+            <div className="signature-box">Sello</div>
+            <div className="signature-box">Firma Autorizada</div>
+          </div>
+
+          <div className="seal-space">
+            <div className="seal">Sello Escolar</div>
+            <div className="seal">Sello del Establecimiento</div>
+          </div>
+        </div>
+
+        {/* 🎯 BOTONES DE ACCIÓN */}
+        <div className="actions no-print">
+          <button onClick={manejarDescargarPDF} className="btn btn-primary">
+            <span className="material-symbols-outlined">download</span>
+            Descargar PDF
+          </button>
+          <button onClick={manejarImprimir} className="btn btn-primary">
+            <span className="material-symbols-outlined">print</span>
+            Imprimir
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
 export default ConstanciaAlumnoRegular;
-
