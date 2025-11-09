@@ -2,6 +2,7 @@
  * Consultas SQL para el módulo de Altas (Docente + Usuario)
  */
 // comentario backkkkk
+// algo
 const altaDocenteUsuario = {
   // =============================================
   // CONSULTAS DE USUARIO

@@ -5,6 +5,7 @@ import { getReporteAlumno } from "../../services/reportesService";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "../../styles/CertificadoComprobanteDeVacante.css";
+import BtnVolver from "../../components/ui/BtnVolver";
 
 const CertificadoComprobanteDeVacante = () => {
   const navigate = useNavigate();
@@ -147,9 +148,13 @@ const CertificadoComprobanteDeVacante = () => {
 
   // 🧾 Render principal
   return (
-    <div className="constancia-body">
+    <div>
+      <div className="no-print">
+        <BtnVolver/>
+      </div>
+        <div className="constancia-body-vacante">
       {/* 📝 PANEL DE EDICIÓN - ARRIBA A LA IZQUIERDA (FIJO) */}
-      <div className="edit-panel no-print">
+      <div className="edit-panel no-print mt-3">
         <h3>✏️ Datos Editables</h3>
         
         <div className="form-group editable">
@@ -190,7 +195,7 @@ const CertificadoComprobanteDeVacante = () => {
         </p>
         
         <p>
-          Deja constancia que puede ser inscripto el o la alumno(a){" "}
+          deja constancia que puede ser inscripto el o la alumno(a){" "}
           <b>{datosFormulario.alumno || "..."}</b>
         </p>
         
@@ -217,20 +222,18 @@ const CertificadoComprobanteDeVacante = () => {
 
       {/* 🎯 BOTONES DE ACCIÓN */}
       <div className="actions no-print">
-        <button onClick={manejarVolver} className="btn-secondary">
-          <span className="material-symbols-outlined">arrow_back</span>
-          Volver
-        </button>
-        <button onClick={manejarDescargarPDF} className="btn-primary">
+        <button onClick={manejarDescargarPDF} className="btn btn-primary">
           <span className="material-symbols-outlined">download</span>
           Descargar PDF
         </button>
-        <button onClick={manejarImprimir} className="btn-primary">
+        <button onClick={manejarImprimir} className="btn btn-primary">
           <span className="material-symbols-outlined">print</span>
           Imprimir
         </button>
       </div>
     </div>
+    </div>
+    
   );
 };
 
