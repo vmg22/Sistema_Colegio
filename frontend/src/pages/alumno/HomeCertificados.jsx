@@ -48,22 +48,14 @@ const styles = {
 };
   return (
     
-    <div style={styles.pageContainer}><DivHeaderInfo/>
+    <div style={styles.pageContainer}>
       {/* 1. Botón Volver (sin prop 'rutaVolver') */}
       <BtnVolver />
-      <div style={styles.header}>
-        <span
-          className="material-symbols-outlined"
-          style={{ fontSize: "28px" }}
-        >
-          badge
-        </span>
-        <h2 style={styles.title}>Certificados</h2>
+      <div className="curso-dashboard-header">
+         <span className="material-symbols-outlined calificaciones-page-icon">badge</span>
+        <h2 className="perfil-alumno-title">Certificados</h2>
       </div>
-        
-        
-        <br /><br /><br />
-        
+      <DivHeaderInfo/><br />
         <div style={styles.cardGrid}>
         <AccionCard
           titulo="Constancia Alumno Regular"
@@ -90,11 +82,11 @@ const styles = {
           icono="description"
           to="/constanciaAlumnoTramite"
         />
-        <AccionCard
+        {/* <AccionCard
           titulo="Acta Volante Examen"
           icono="mail"
           to="/certificados-ActVolEx"
-        />
+        /> */}
       </div>
       
     </div>
