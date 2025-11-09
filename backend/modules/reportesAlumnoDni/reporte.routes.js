@@ -7,4 +7,3 @@ const { getReporteAlumnoPorDNIyAnio } = require("./reporte.controller");
 router.get("/:dni/:anio", getReporteAlumnoPorDNIyAnio);
 
 module.exports = router;
-
