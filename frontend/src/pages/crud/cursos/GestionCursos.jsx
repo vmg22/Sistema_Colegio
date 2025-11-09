@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, Spinner, Alert, Container, Row, Col } from 'react-bootstrap';
 import { getCursos, deleteCurso } from '../../../services/cursosService';
 import CursoModal from '../../../components/modals/CursoModal';
+import TableCrud from '../../../components/crud/TableCrud';
 import Swal from 'sweetalert2';
-import BtnVolver from '../../../components/ui/BtnVolver';
+import '../../../styles/docentescrud.css';
 
 const GestionCursos = () => {
   const [cursos, setCursos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   
   const [showModal, setShowModal] = useState(false);
   const [cursoAEditar, setCursoAEditar] = useState(null);
@@ -20,7 +21,7 @@ const GestionCursos = () => {
       const response = await getCursos();
       setCursos(response.datos || []);
     } catch (err) {
-      setError('Error al cargar los cursos.');
+      setError(err.message || 'Error al cargar los cursos.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -31,8 +32,6 @@ const GestionCursos = () => {
     cargarCursos();
   }, []);
 
-  // --- Handlers Modal ---
-  
   const handleOpenCreate = () => {
     setCursoAEditar(null);
     setShowModal(true);
@@ -52,8 +51,6 @@ const GestionCursos = () => {
     cargarCursos(); 
   };
 
-  // --- Handler Delete ---
-  
   const handleDelete = (id) => {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -68,7 +65,7 @@ const GestionCursos = () => {
         try {
           await deleteCurso(id);
           Swal.fire('¡Eliminado!', 'El curso ha sido eliminado.', 'success');
-          setCursos(prev => prev.filter(c => c.id_curso !== id));
+          cargarCursos();
         } catch (err) {
           Swal.fire('Error', err.response?.data?.mensaje || 'No se pudo eliminar.', 'error');
         }
@@ -76,83 +73,127 @@ const GestionCursos = () => {
     });
   };
 
-  // --- Renderizado ---
+  const handleSearch = () => {
+    cargarCursos();
+  };
 
-  if (loading) {
+  // Filtrar cursos por búsqueda
+  const cursosFiltrados = cursos.filter(curso => 
+    searchTerm === '' || 
+    curso.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    curso.anio?.toString().includes(searchTerm) ||
+    curso.division?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Definición de columnas para TableCrud
+  const columns = [
+    { 
+      header: 'Nombre', 
+      accessor: 'nombre' 
+    },
+    { 
+      header: 'Año', 
+      accessor: 'anio', 
+      cell: (item) => `${item.anio}°` 
+    },
+    { 
+      header: 'División', 
+      accessor: 'division', 
+      cell: (item) => `"${item.division}"` 
+    },
+    { 
+      header: 'Turno', 
+      accessor: 'turno', 
+      cell: (item) => item.turno ? item.turno.charAt(0).toUpperCase() + item.turno.slice(1) : '' 
+    },
+    { 
+      header: 'Estado', 
+      accessor: 'estado', 
+      cell: (item) => (
+        <span className={`status-badge ${item.estado?.toLowerCase()}`}>
+          {item.estado}
+        </span>
+      ) 
+    }
+  ];
+
+  // Función para renderizar los botones de acción
+  const renderActions = (curso) => {
     return (
-      <Container className="text-center mt-5">
-        <Spinner animation="border" />
-        <p>Cargando cursos...</p>
-      </Container>
+      <>
+        <button 
+          onClick={() => handleOpenEdit(curso)} 
+          className="action-button view"
+          title="Ver Curso"
+        >
+          <span className="material-symbols-outlined">visibility</span>
+        </button>
+        <button 
+          onClick={() => handleOpenEdit(curso)} 
+          className="action-button edit"
+          title="Editar"
+        >
+          <span className="material-symbols-outlined">edit</span>
+        </button>
+        <button 
+          onClick={() => handleDelete(curso.id_curso)} 
+          className="action-button delete"
+          title="Eliminar"
+        >
+          <span className="material-symbols-outlined">delete</span>
+        </button>
+      </>
     );
-  }
+  };
 
   return (
-    <Container className="mt-4">
-      <BtnVolver/>
-      <Row className="mb-3">
-        <Col>
-          <h2>Gestión de Cursos</h2>
-        </Col>
-        <Col className="text-end">
-          <Button variant="primary" onClick={handleOpenCreate}>
-            + Crear Nuevo Curso
-          </Button>
-        </Col>
-      </Row>
+    <div className="gestion-page-container">
+      {/* Header */}
+      <div className="gestion-header">
+        <button onClick={() => window.history.back()} className="back-button">
+          ← VOLVER
+        </button>
+        <h2>Gestión de Cursos</h2>
+      </div>
 
-      {error && <Alert variant="danger">{error}</Alert>}
+      {/* Barra de búsqueda y botones */}
+      <div className="search-add-bar">
+        <div className="search-box">
+          <span className="material-symbols-outlined search-icon">search</span>
+          <input 
+            type="text"
+            placeholder="Buscar curso..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+          />
+        </div>
+        
+        <button onClick={handleSearch} className="search-button">
+          Buscar
+        </button>
 
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Año</th>
-            <th>División</th>
-            <th>Turno</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cursos.length > 0 ? (
-            cursos.map(curso => (
-              <tr key={curso.id_curso}>
-                <td>{curso.nombre}</td>
-                <td>{curso.anio}°</td>
-                <td>{curso.division}</td>
-                <td>{curso.turno}</td>
-                <td>
-                  <span className={`badge bg-${curso.estado === 'activo' ? 'success' : 'secondary'}`}>
-                    {curso.estado}
-                  </span>
-                </td>
-                <td>
-                  <Button 
-                    variant="outline-secondary" 
-                    size="sm" 
-                    className="me-2"
-                    onClick={() => handleOpenEdit(curso)}
-                  >
-                    Editar
-                  </Button>
-                  <Button 
-                    variant="outline-danger" 
-                    size="sm"
-                    onClick={() => handleDelete(curso.id_curso)}
-                  >
-                    Eliminar
-                  </Button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6" className="text-center">No hay cursos registrados.</td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
+        <button onClick={handleOpenCreate} className="add-button">
+          <span className="add-icon"></span> Nuevo Curso
+        </button>
+      </div>
+
+      {/* Contenedor de la tabla */}
+      <div className="list-container">
+        <div className="list-header">
+          <h3>Listado de Cursos</h3>
+          {!loading && !error && <span>Total: {cursosFiltrados.length}</span>}
+        </div>
+
+        <TableCrud
+          columns={columns}
+          data={cursosFiltrados}
+          isLoading={loading}
+          error={error}
+          renderActions={renderActions}
+          getKey={(curso) => curso.id_curso}
+        />
+      </div>
 
       <CursoModal
         show={showModal}
@@ -160,7 +201,7 @@ const GestionCursos = () => {
         onSave={handleSave}
         cursoAEditar={cursoAEditar}
       />
-    </Container>
+    </div>
   );
 };
 
