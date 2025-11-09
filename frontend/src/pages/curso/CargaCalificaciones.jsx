@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import BtnVolver from "../../components/ui/BtnVolver";
 import EncabezadoCurso from "../../components/curso/EncabezadoCurso";
 import { useConsultaStore } from "../../store/consultaStore";
@@ -21,40 +21,91 @@ const CargaCalificaciones = () => {
     reporteCurso,
     selectedCursoNombre,
     selectedMateriaNombre,
-    setReporteCurso, //  OBTENER LA FUNCIÓN PARA ACTUALIZAR EL STORE
+    setReporteCurso,
   } = useConsultaStore();
 
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Extraemos los filtros para usarlos como dependencia
-  const filtros = reporteCurso?.filtros; // OBTENER LOS FILTROS
+  // Extraemos los filtros una sola vez
+  const filtros = reporteCurso?.filtros;
 
-  // useEffect SE ENCARGARÁ DE BUSCAR LOS DATOS
+  // ********** HOOKS MOVIDOS ARRIBA DE CUALQUIER RETURN CONDICIONAL **********
+
+  // Corregido: Ahora solo depende del objeto 'filtros' completo.
+  const filtrosMemorizados = useMemo(() => {
+    if (!filtros) return null;
+    return {
+      curso: filtros.curso,
+      materia: filtros.materia,
+      anioLectivo: filtros.anioLectivo,
+      cuatrimestre: filtros.cuatrimestre,
+    };
+  }, [filtros]); 
+
+  // Corregido: Se añade 'setReporteCurso' como dependencia.
   useEffect(() => {
     const traerAlumnos = async () => {
-      if (
-        !filtros ||
-        !filtros.curso ||
-        !filtros.materia ||
-        !filtros.anioLectivo ||
-        !filtros.cuatrimestre
-      ) {
+      if (!filtrosMemorizados) return;
+
+      const { curso, materia, anioLectivo, cuatrimestre } = filtrosMemorizados;
+
+      if (!curso || !materia || !anioLectivo || !cuatrimestre) {
         return;
       }
+
       try {
-        const data = await getReporteCurso(
-          filtros.curso,
-          filtros.materia,
-          filtros.anioLectivo,
-          filtros.cuatrimestre
-        );
+        const data = await getReporteCurso(curso, materia, anioLectivo, cuatrimestre);
         setReporteCurso(data);
       } catch (error) {
         console.error("Error al traer los alumnos:", error);
       }
     };
+
     traerAlumnos();
-  }, [filtros, setReporteCurso]); //  EJECUTA CUANDO CAMBIEN LOS FILTROS
+  }, [filtrosMemorizados, setReporteCurso]); 
+  
+  // Se mueve arriba (antes del if de loading) para evitar el error de llamada condicional.
+  const alumnosParaMostrar = useMemo(() => {
+    if (!reporteCurso?.alumnos) {
+      return [];
+    }
+    const alumnosOrdenados = [...reporteCurso.alumnos].sort((a, b) => {
+      return a.alumno.nombreCompleto.localeCompare(b.alumno.nombreCompleto);
+    });
+    if (!searchTerm) {
+      return alumnosOrdenados;
+    }
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return alumnosOrdenados.filter((item) => {
+      const dniString = String(item.alumno.dni ?? "");
+      return item.alumno.nombreCompleto.toLowerCase().includes(lowerCaseSearchTerm) || 
+             dniString.toLowerCase().includes(lowerCaseSearchTerm);
+    });
+  }, [reporteCurso?.alumnos, searchTerm]); // Se utiliza el optional chaining '?' para que useMemo pueda ejecutarse incluso si reporteCurso es null/undefined.
+
+
+  // Se mueve arriba (antes del if de loading) para evitar el error de llamada condicional.
+  const handleSaveSuccess = useCallback(async () => {
+    if (!filtrosMemorizados) return;
+
+    const { curso, materia, anioLectivo, cuatrimestre } = filtrosMemorizados;
+
+    try {
+      const data = await getReporteCurso(curso, materia, anioLectivo, cuatrimestre);
+      setReporteCurso(data);
+      console.log("Datos recargados exitosamente después de guardar.");
+    } catch (error) {
+      console.error("Error al recargar los datos:", error);
+      console.error(`Error al recargar: ${error.message}`);
+    }
+  }, [filtrosMemorizados, setReporteCurso]);
+  
+  const handleAbrirModal = (item) => {
+    setAlumnoSeleccionado(item);
+    handleShow();
+  };
+  
+  // ********** FIN DE HOOKS **********
 
   if (
     !selectedCursoNombre ||
@@ -69,48 +120,6 @@ const CargaCalificaciones = () => {
       </div>
     );
   }
-
-  // useMemo se re-ejecutará cuando 'reporteCurso.alumnos' cambie
-  const alumnosParaMostrar = useMemo(() => {
-    if (!reporteCurso.alumnos) {
-      return [];
-    }
-    const alumnosOrdenados = [...reporteCurso.alumnos].sort((a, b) => {
-      return a.alumno.nombreCompleto.localeCompare(b.alumno.nombreCompleto);
-    });
-    if (!searchTerm) {
-      return alumnosOrdenados;
-    }
-    const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    return alumnosOrdenados.filter((item) => {
-      const dniString = String(item.alumno.dni ?? "");
-      return dniString.toLowerCase().includes(lowerCaseSearchTerm);
-    });
-  }, [reporteCurso.alumnos, searchTerm]);
-
-  const handleAbrirModal = (item) => {
-    setAlumnoSeleccionado(item);
-    handleShow();
-  };
-
-  // Esta función se la pasaremos al modal para que la llame
-  // cuando termine de guardar exitosamente.
-  const handleSaveSuccess = async () => {
-    try {
-      // Recargar los datos
-      const data = await getReporteCurso(
-        filtros.curso,
-        filtros.materia,
-        filtros.anioLectivo,
-        filtros.cuatrimestre
-      );
-      setReporteCurso(data);
-      console.log("Datos recargados exitosamente después de guardar.");
-    } catch (error) {
-      console.error("Error al recargar los datos:", error);
-      alert(`Error al recargar: ${error.message}`);
-    }
-  };
 
   return (
     <div className="curso-dashboard-container">
@@ -127,7 +136,7 @@ const CargaCalificaciones = () => {
         <input
           type="text"
           className="reporte-curso-search-input"
-          placeholder="Buscar alumno por DNI"
+          placeholder="Buscar alumno por DNI o Nombre"
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <button className="reporte-curso-search-btn">Buscar alumno</button>
@@ -204,8 +213,8 @@ const CargaCalificaciones = () => {
         show={show}
         handleClose={handleClose}
         alumno={alumnoSeleccionado}
-        filtros={filtros} // Pasamos los filtros
-        onSaveSuccess={handleSaveSuccess} // Pasamos la función de recarga
+        filtros={filtros}
+        onSaveSuccess={handleSaveSuccess}
       />
     </div>
   );

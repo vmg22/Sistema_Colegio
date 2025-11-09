@@ -99,7 +99,6 @@
     background-color: #157347;
 }
 .add-button .add-icon::before { 
-    content: '+';
     font-size: 24px;
     line-height: 1;
     font-weight: bold;

@@ -163,7 +163,7 @@ const GenerarMailAlumno = () => {
   // --- Loading / sin datos ---
   if (loading) {
     return (
-      <div className="perfil-alumno-loading-container">
+      <div className="gma-perfil-alumno-loading-container">
         <Spinner animation="border" variant="primary" />
         <p className="mt-3">Cargando datos...</p>
       </div>
@@ -172,7 +172,7 @@ const GenerarMailAlumno = () => {
 
   if (!reporte) {
     return (
-      <div className="perfil-alumno-loading-container">
+      <div className="gma-perfil-alumno-loading-container">
         <h5>No se encontraron datos del alumno.</h5>
         <Link to="/">
           <Button variant="secondary">Volver</Button>
@@ -183,7 +183,7 @@ const GenerarMailAlumno = () => {
 
   // --- Render principal ---
   return (
-    <div className="perfil-alumno-container" style={{ paddingBottom: "3rem" }}>
+    <div className="gma-perfil-alumno-container" style={{ paddingBottom: "3rem" }}>
       <BtnVolver />
       <EncabezadoEstudiante
         nombre={reporte.nombre || "Alumno"}
@@ -193,11 +193,11 @@ const GenerarMailAlumno = () => {
       <DivHeaderInfo />
 
       {/* === Distribución en dos columnas: Info del alumno + Formulario === */}
-      <div className="container mt-4">
+      <div className="gma-container mt-4">
         <Row>
           {/* Columna izquierda: información del alumno */}
           <Col md={5}>
-            <Card className="shadow-sm p-3 mb-4">
+            <Card className="gma-card shadow-sm p-3 mb-4">
               <h5 className="mb-3 text-center">📘 Información del Alumno</h5>
               <DivBodyInfo />
             </Card>
@@ -205,7 +205,7 @@ const GenerarMailAlumno = () => {
 
           {/* Columna derecha: formulario de envío de mail */}
           <Col md={7}>
-            <h3 className="text-center mb-4">Enviar Correo al Tutor</h3>
+            <h3 className="gma-text-center mb-4">Enviar Correo al Tutor</h3>
 
             {responseMessage && (
               <Alert
@@ -217,7 +217,7 @@ const GenerarMailAlumno = () => {
               </Alert>
             )}
 
-            <Card className="p-4 shadow-sm">
+            <Card className="gma-card p-4 shadow-sm">
               <Form>
                 <Row>
                   <Col md={6}>
@@ -332,4 +332,3 @@ const GenerarMailAlumno = () => {
 };
 
 export default GenerarMailAlumno;
-

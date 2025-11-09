@@ -194,7 +194,7 @@ const Alumnos = () => {
           )}
         </div>
         <button className="add-button" onClick={handleOpenWizardModal}>
-          <span className="add-icon"></span>
+          <span className="material-symbols-outlined add-icon" style={{marginRight: '5px'}}>add</span>
           Agregar alumno
         </button>
       </div>
