@@ -29,7 +29,7 @@ import HomeCertificados from './pages/alumno/HomeCertificados.jsx'
 import CertificadoAbonoEscolar from './pages/alumno/certificadoAbonoEscolar.jsx'
 import CertificadoComprobanteDeVacante from './pages/alumno/certificadoComprobanteDeVacante.jsx'
 import ConstAluTramite from './pages/alumno/ConstAluTramite.jsx'
-import ActaVolanteExamen from './pages/alumno/actaVolanteExamen.jsx'
+// import ActaVolanteExamen from './pages/alumno/actaVolanteExamen.jsx'
 import ConstanciaAlumnoRegular from './pages/alumno/constanciaAlumnoRegular.jsx'
 import CertificadoEscolar from './pages/alumno/certificadoEscolar.jsx'
 import GenerarMail from "./pages/alumno/generarmail.jsx";
@@ -98,7 +98,7 @@ function App() {
         <Route path="perfil-alumno/historial-comunicacion" element={<ProtectedRoute><HistorialComunicacion/></ProtectedRoute>} />
         <Route path="/home-certificados" element={<ProtectedRoute><HomeCertificados/></ProtectedRoute>} />
         <Route path="/certificados-AbnEsc" element={<ProtectedRoute><CertificadoAbonoEscolar/></ProtectedRoute>} />
-        <Route path="/certificados-ActVolEx" element={<ProtectedRoute><ActaVolanteExamen/></ProtectedRoute>} />
+        {/* <Route path="/certificados-ActVolEx" element={<ProtectedRoute><ActaVolanteExamen/></ProtectedRoute>} /> */}
         <Route path="/constanciaAlumnoRegular" element={<ProtectedRoute><ConstanciaAlumnoRegular/></ProtectedRoute>} />
         <Route path="/certificadoEscolar" element={<ProtectedRoute><CertificadoEscolar/></ProtectedRoute>} />
         <Route path="/certificados-cCVac" element={<ProtectedRoute><CertificadoComprobanteDeVacante/></ProtectedRoute>} />
@@ -109,7 +109,7 @@ function App() {
         <Route path="/curso-materia" element={<ProtectedRoute><GestionCursoMateria/></ProtectedRoute>} />
         <Route path="/altas-docentes" element={<ProtectedRoute><Docentes/></ProtectedRoute>} />
         <Route path="/perfil-alumno/generar-mail-alumno" element={<GenerarMailAlumno/>} />
-        {/* <Route path="/admin-principal" element={<ProtectedRoute><AdminPrincipal/></ProtectedRoute>} /> */}
+        {/* <Route path="/admin-principal" element={<ProtectedRoute><AdminPrincipal/></ProtectedRoute>} /> */} 
       
         
         <Route path="/cursoDashboard" element={<ProtectedRoute><CursoDashboardPage/></ProtectedRoute>} />
