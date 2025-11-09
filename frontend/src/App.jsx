@@ -36,9 +36,6 @@ import CursoComunicacion from './pages/curso/CursoComunicacion.jsx'
 import EnviarAlertaTutoresPage from './pages/curso/EnviarAlertaTutoresPage.jsx'
 
 
-
-
-
 import Login from './pages/alumno/login.jsx'
 import OlvideContrasena from './pages/alumno/olvideContraseña.jsx'
 import SolicitarRecuperacion from './pages/alumno/solicitarRecuperacion.jsx'
@@ -49,7 +46,7 @@ import GestionAniosLectivos from './pages/crud/anio-lectivo/GestionAniosLectivos
 import GestionCursos from './pages/crud/cursos/GestionCursos.jsx'
 import GestionCursoMateria from './pages/crud/curso-materia/GestionCursoMateria.jsx'
 import Docentes from './pages/crud/docentes/Docentes.jsx'
-
+import Breadcrumb from './components/layout/Breadcrumb';
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -66,11 +63,14 @@ function App() {
   
   // Rutas donde NO queremos mostrar el Header
   const rutasSinHeader = ['/', '/login', '/reset-password', '/solicitar-reset']
+  
   const mostrarHeader = !rutasSinHeader.includes(location.pathname)
 
   return (
     <>
       {mostrarHeader && <Header />}
+      
+
       
       <Routes>
         {/* Rutas públicas (sin protección) */}
@@ -123,4 +123,3 @@ function App() {
 }
 
 export default App
-

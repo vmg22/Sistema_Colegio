@@ -13,9 +13,9 @@ const GestionAniosLectivos = () => {
 
   // --- Estados ---
   const [aniosLectivos, setAniosLectivos] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Renombrado a isLoading para consistencia
+  const [isLoading, setIsLoading] = useState(true); 
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(''); // Añadido para la barra de búsqueda
+  const [searchTerm, setSearchTerm] = useState(''); 
   const [showModal, setShowModal] = useState(false);
   const [anioAEditar, setAnioAEditar] = useState(null);
 
@@ -24,9 +24,7 @@ const GestionAniosLectivos = () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Si tu servicio soporta búsqueda, pásale 'searchTerm' aquí
-      const response = await getAniosLectivos(); 
-      // Ajusta esto según lo que devuelva tu servicio (response.datos, response.data, etc.)
+      const response = await getAniosLectivos();
       setAniosLectivos(response.datos || response || []); 
     } catch (err) {
       setError(err.message || 'Error al cargar los años lectivos.');
