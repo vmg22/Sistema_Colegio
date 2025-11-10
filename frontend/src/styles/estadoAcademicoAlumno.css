@@ -1,0 +1,30 @@
+.estado-academico-page {
+  padding: 0 40px 40px 40px;
+  background-color: #f4f7fa;
+  min-height: calc(100vh - 80px);
+  font-family: 'Inter', sans-serif;
+}
+
+.estado-academico-page__title {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  color: #303F9F; /* Primary Dark */
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.estado-academico-page__card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.estado-academico-page__loading-container {
+  text-align: center;
+  margin-top: 100px;
+  font-family: 'Inter', sans-serif;
+}

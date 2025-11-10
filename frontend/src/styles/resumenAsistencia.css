@@ -1,0 +1,246 @@
+.asistencias-page-container {
+  padding: 0 40px 40px 40px;
+  background-color: #f4f7fa;
+  min-height: calc(100vh - 80px);
+  font-family: 'Inter', sans-serif;
+}
+
+.asistencias-page-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #303F9F;
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.asistencias-page-icon {
+  font-size: 28px;
+}
+
+.asistencias-loading-container {
+  text-align: center;
+  margin-top: 100px;
+  font-family: 'Inter', sans-serif;
+}
+
+.asistencias-content-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 30px;
+  align-items: start;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.asistencias-stats-container {
+  background-color: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #ddd;
+}
+
+.asistencias-right-column-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.asistencias-chart-container {
+  background-color: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 400px;
+}
+
+.asistencias-insight-box {
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #e3f2fd;
+  color: #0d47a1;
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 20px;
+  border: 1px solid #bbdefb;
+}
+
+.asistencias-stat-box {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.asistencias-stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #303F9F;
+  margin: 0;
+}
+
+.asistencias-stat-label {
+  font-size: 1rem;
+  color: #555;
+  margin: 0;
+}
+
+.asistencias-stat-row {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+
+.asistencias-stat-small-box {
+  text-align: center;
+  flex: 1;
+}
+
+.asistencias-stat-small-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.asistencias-stat-small-value--green {
+  color: #4caf50;
+}
+
+.asistencias-stat-small-value--red {
+  color: #f44336;
+}
+
+.asistencias-stat-small-label {
+  font-size: 0.9rem;
+  color: #777;
+  margin: 0;
+}
+
+.asistencias-top3-container {
+  margin-top: 0;
+  background-color: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #ddd;
+}
+
+.asistencias-top3-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.asistencias-top3-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.asistencias-top3-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
+}
+
+.asistencias-top3-rank {
+  font-weight: 600;
+  color: #303F9F;
+}
+
+.asistencias-top3-promedio {
+  font-weight: 600;
+}
+
+.asistencias-riesgo-container {
+  margin-top: 0;
+  background-color: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #ddd;
+}
+
+.asistencias-riesgo-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #dc3545;
+  margin-bottom: 10px;
+}
+
+.asistencias-riesgo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.asistencias-riesgo-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
+}
+
+.asistencias-riesgo-reason {
+  font-size: 0.85rem;
+  color: #dc3545;
+  font-weight: 500;
+}
+
+/* Responsive design para tablets */
+@media (max-width: 1024px) {
+  .asistencias-content-grid {
+    grid-template-columns: 1fr;
+    max-width: 800px;
+    gap: 20px;
+  }
+  
+  .asistencias-right-column-container {
+    gap: 20px;
+  }
+  
+  .asistencias-chart-container {
+    position: static;
+  }
+}
+
+/* Responsive design para móviles */
+@media (max-width: 768px) {
+  .asistencias-page-container {
+    padding: 0 20px 20px 20px;
+  }
+  
+  .asistencias-content-grid {
+    gap: 15px;
+  }
+  
+  .asistencias-stats-container,
+  .asistencias-chart-container,
+  .asistencias-top3-container,
+  .asistencias-riesgo-container {
+    padding: 20px 15px;
+  }
+  
+  .asistencias-page-title {
+    font-size: 1.3rem;
+  }
+  
+  .asistencias-stat-value {
+    font-size: 2rem;
+  }
+  
+  .asistencias-stat-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .asistencias-stat-small-box {
+    text-align: left;
+  }
+}

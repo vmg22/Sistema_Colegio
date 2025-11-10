@@ -1,0 +1,44 @@
+/* src/styles/breadcrumb.css */
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 20px;
+    list-style: none;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    color: #6c757d; /* Gris suave */
+}
+
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+}
+
+/* El separador (/) entre items */
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›"; /* Usamos un carácter más elegante que la barra / */
+    margin: 0 8px;
+    color: #ccc;
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* Enlaces en el breadcrumb */
+.breadcrumb-item a {
+    color: #0d6efd; /* Tu color azul principal */
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.breadcrumb-item a:hover {
+    color: #0a58ca; /* Azul más oscuro al pasar el mouse */
+    text-decoration: underline;
+}
+
+/* El último item (página actual) */
+.breadcrumb-item.active {
+    color: #333; /* Color oscuro, no es un enlace */
+    font-weight: 500;
+}

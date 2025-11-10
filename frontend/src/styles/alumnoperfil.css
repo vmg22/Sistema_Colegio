@@ -1,0 +1,50 @@
+
+
+/* --- Banner Superior --- */
+.perfil-banner {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 20px 25px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+}
+
+.perfil-alumno {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+    gap: 30px;
+    margin-bottom: 30px;
+}
+.perfil-alumno-box{
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 25px;
+    border: 1px solid #e0e0e0;
+    height: fit-content; /* Para que se ajuste al contenido */
+}
+
+.avatar-icon {
+    font-size: 32px;
+    color: #ffffff;
+    background-color: #3f51b5; /* Azul oscuro */
+    border-radius: 60%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+}
+
+
+
+/* --- Responsividad --- */
+@media (max-width: 992px) {
+    .perfil-banner {
+        grid-template-columns: 1fr; /* Apila las columnas */
+    }
+}

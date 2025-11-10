@@ -1,0 +1,56 @@
+.linkCrud {
+  color: #303F9F;
+  font-weight: 700;
+  font-size: larger;
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+  min-width: 120px;
+  text-align: center;
+}
+
+.linkCrud:hover {
+  color: #1A237E;
+}
+
+.linkCrud::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: #303F9F;
+  transition: width 0.3s ease;
+}
+
+.linkCrud:hover::after {
+  width: 100%;
+}
+
+.volverBtn {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 25px;
+  gap: 15px;
+  color: #303F9F;
+  font-weight: 600;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.volverBtn:hover {
+  color: #1A237E;
+}
+
+.linea-separadora2 {
+  border: none;
+  height: 2px;
+  width: 97%;
+  background-color: #6b7280;
+  margin: 20px auto;
+  display: block;
+}
