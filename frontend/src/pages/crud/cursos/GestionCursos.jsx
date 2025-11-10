@@ -14,7 +14,6 @@ const GestionCursos = () => {
   
   const [showModal, setShowModal] = useState(false);
   const [cursoAEditar, setCursoAEditar] = useState(null);
-
   const cargarCursos = async () => {
     try {
       setLoading(true);

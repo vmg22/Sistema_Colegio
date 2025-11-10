@@ -233,6 +233,103 @@ id_materia: row.id_materia,
     if (rows.length === 0) throw Object.assign(new Error('No se encontró ningún alumno con ese id.'), { statusCode: 404 });
     return rows[0];
   },
+  actualizarCompleto: async (id, datosAlumno) => {
+    // 1. Validar que el alumno existe
+    await _obtenerAlumnoPorId(id);
+
+    // 2. Preparar parámetros (similar a _crearAlumno)
+    // NOTA: Asume que 'datosAlumno' contiene TODOS los campos requeridos.
+    const params = [
+      datosAlumno.dni_alumno,
+      datosAlumno.nombre_alumno,
+      datosAlumno.apellido_alumno,
+      _formatDate(datosAlumno.fecha_nacimiento),
+      datosAlumno.lugar_nacimiento || null,
+      datosAlumno.direccion || null,
+      datosAlumno.telefono || null,
+      datosAlumno.email || null,
+      _formatDate(datosAlumno.fecha_inscripcion) || _formatDate(new Date()),
+      datosAlumno.estado?.toUpperCase() || 'ACTIVO',
+      id // ID para el WHERE
+    ];
+
+    // TODO: Mover esta query a 'alumno.queries.js'
+    const sql = `
+      UPDATE alumno SET
+        dni_alumno = ?, nombre_alumno = ?, apellido_alumno = ?,
+        fecha_nacimiento = ?, lugar_nacimiento = ?, direccion = ?,
+        telefono = ?, email = ?, fecha_inscripcion = ?, estado = ?
+      WHERE id_alumno = ?
+    `;
+    
+    // TODO: Agregar validación de DNI/Email único (WHERE id_alumno != ?)
+    await pool.query(sql, params);
+
+    // 3. Devolver el alumno actualizado
+    return await _obtenerAlumnoPorId(id);
+  },
+
+  /**
+   * Actualización Parcial (PATCH)
+   * Actualiza solo los campos proporcionados.
+   */
+  actualizarParcial: async (id, datosAlumno) => {
+    // 1. Validar que el alumno existe
+    await _obtenerAlumnoPorId(id);
+
+    // 2. Construir la query dinámicamente
+    const fields = [];
+    const values = [];
+
+    // Mapeo de claves JS a columnas SQL (solo campos de 'alumnos')
+    const fieldMap = {
+      dni_alumno: 'dni_alumno',
+      nombre_alumno: 'nombre_alumno',
+      apellido_alumno: 'apellido_alumno',
+      fecha_nacimiento: 'fecha_nacimiento',
+      lugar_nacimiento: 'lugar_nacimiento',
+      direccion: 'direccion',
+      telefono: 'telefono',
+      email: 'email',
+      fecha_inscripcion: 'fecha_inscripcion',
+      estado: 'estado'
+    };
+
+    // Formatear valores si existen
+    if (datosAlumno.fecha_nacimiento) {
+        datosAlumno.fecha_nacimiento = _formatDate(datosAlumno.fecha_nacimiento);
+    }
+    if (datosAlumno.fecha_inscripcion) {
+        datosAlumno.fecha_inscripcion = _formatDate(datosAlumno.fecha_inscripcion);
+    }
+    if (datosAlumno.estado) {
+        datosAlumno.estado = datosAlumno.estado.toUpperCase();
+    }
+
+    // Llenar los arrays para la query
+    for (const key in datosAlumno) {
+      if (Object.prototype.hasOwnProperty.call(fieldMap, key)) {
+        fields.push(`${fieldMap[key]} = ?`);
+        values.push(datosAlumno[key]);
+      }
+    }
+
+    if (fields.length === 0) {
+      throw Object.assign(new Error('No se proporcionaron campos válidos para actualizar.'), { statusCode: 400 });
+    }
+
+    values.push(id); // Agregar el ID al final para el WHERE
+
+    // TODO: Mover esta query (la parte estática) a 'alumno.queries.js'
+    const sql = `UPDATE alumno SET ${fields.join(', ')} WHERE id_alumno = ?`;
+
+    // 3. Ejecutar
+    // TODO: Agregar validación de DNI/Email único (WHERE id_alumno != ?)
+    await pool.query(sql, values);
+
+    // 4. Devolver el alumno actualizado
+    return await _obtenerAlumnoPorId(id);
+  },
 
   eliminar: async (id) => {
     await _obtenerAlumnoPorId(id);

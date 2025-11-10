@@ -5,6 +5,7 @@ import TableCrud from "../../../components/crud/TableCrud";
 import Swal from "sweetalert2";
 import { useDebounce } from "use-debounce";
 import "../../../styles/docentescrud.css";
+import BtnVolver from "../../../components/ui/BtnVolver";
 
 const Materias = () => {
   const [materias, setMaterias] = useState([]);
@@ -27,14 +28,21 @@ const Materias = () => {
       const materiasArray = await getMaterias({ buscar: buscar });
       setMaterias(materiasArray || []);
     } catch (err) {
-      setError(err.message || "Error al cargar las materias.");
+      const errorMsg = err.message || "Error al cargar las materias.";
+      setError(errorMsg);
+      // <-- MODIFICADO: Alerta de error en la carga -->
+      Swal.fire(
+        "Error de Carga",
+        errorMsg,
+        "error"
+      );
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, []); // El array de dependencias vacío estaba correcto aquí
 
-  // Búsqueda con debounce
+  // Búsqueda con debounce (Sin cambios, ya funcionaba "mientras escribes")
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
@@ -55,23 +63,40 @@ const Materias = () => {
     setShowModal(true);
   };
 
+  // <-- MODIFICADO: Limpiar estado al cerrar -->
   const handleCloseModal = () => {
     setShowModal(false);
+    setMateriaAEditar(null); // Importante para la lógica de handleSave
   };
 
+  // <-- MODIFICADO: Alerta de éxito al guardar -->
   const handleSave = () => {
+    // 1. Verificamos si era una edición ANTES de cerrar
+    const isEdit = materiaAEditar !== null;
+    
+    // 2. Cerramos el modal
     handleCloseModal();
-    setSearchTerm("");
-    if (debouncedSearchTerm === "") {
-      cargarMaterias("");
-    }
+    
+    // 3. Recargamos los datos de la vista actual
+    cargarMaterias(debouncedSearchTerm);
+
+    // 4. Mostramos la alerta de éxito
+    Swal.fire({
+      title: isEdit ? "¡Actualizada!" : "¡Creada!",
+      text: isEdit
+        ? "La materia se actualizó correctamente."
+        : "La materia se creó correctamente.",
+      icon: "success",
+      timer: 1500,
+      showConfirmButton: false,
+    });
   };
 
-  // Handler Delete
+  // Handler Delete (Sin cambios, ya usaba Swal correctamente)
   const handleDelete = (id) => {
     Swal.fire({
       title: "¿Estás seguro?",
-      text: "La materia se moverá a la papelera (borrado lógico).",
+      text: "La materia se moverá a la papelera.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -82,7 +107,7 @@ const Materias = () => {
         try {
           await deleteMateria(id);
           Swal.fire("¡Movido a Papelera!", "La materia ha sido eliminada.", "success");
-          cargarMaterias(debouncedSearchTerm);
+          cargarMaterias(debouncedSearchTerm); // Recarga la vista actual
         } catch (err) {
           Swal.fire("Error", err.message || "No se pudo eliminar.", "error");
         }
@@ -90,11 +115,12 @@ const Materias = () => {
     });
   };
 
+  // Botón "Buscar" (Sin cambios)
   const handleSearch = () => {
     cargarMaterias(searchTerm);
   };
 
-  // Definición de columnas para TableCrud
+  // Definición de columnas (Sin cambios)
   const columns = [
     {
       header: "Nombre",
@@ -136,7 +162,7 @@ const Materias = () => {
     },
   ];
 
-  // Función para renderizar los botones de acción
+  // Función para renderizar los botones de acción (Sin cambios)
   const renderActions = (materia) => {
     return (
       <>
@@ -165,14 +191,13 @@ const Materias = () => {
     );
   };
 
+  // Renderizado (Sin cambios)
   return (
     <div className="gestion-page-container">
       {/* Header */}
       <div className="gestion-header">
-        <button onClick={() => window.history.back()} className="back-button">
-          ← VOLVER
-        </button>
-        <h2>Gestión de Materias</h2>
+        <BtnVolver/>
+        <h2 className='mx-4'>Gestión de Materias</h2>
       </div>
 
       {/* Barra de búsqueda y botones */}
@@ -217,7 +242,7 @@ const Materias = () => {
       <MateriaModal
         show={showModal}
         onHide={handleCloseModal}
-        onSave={handleSave}
+        onSave={handleSave} // Esta función ahora dispara el Swal
         materiaAEditar={materiaAEditar}
       />
     </div>

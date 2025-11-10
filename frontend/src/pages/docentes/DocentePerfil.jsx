@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2"; // <-- 1. IMPORTADO
 
 import * as docenteService from "../../services/docenteService";
 import * as asignacionService from "../../services/asignacionService";
@@ -11,9 +12,10 @@ import AsignacionModal from "../../components/modals/AsignacionModal";
 
 import "../../styles/docentescrud.css";
 import "../../styles/docenteperfil.css";
+import BtnVolver from "../../components/ui/BtnVolver";
 
 const DocentePerfil = () => {
-  const { id } = useParams(); // El ID del docente desde la URL
+  const { id } = useParams(); 
   const navigate = useNavigate();
 
   // --- Estados del Perfil ---
@@ -40,7 +42,6 @@ const DocentePerfil = () => {
       setIsLoading(true);
       setError(null);
 
-      // 4. Cargamos todo en paralelo
       const [docenteData, asignacionesData, materiasData, cursosData] =
         await Promise.all([
           docenteService.getDocenteById(id),
@@ -54,7 +55,10 @@ const DocentePerfil = () => {
       setMateriasList(materiasData);
       setCursosList(cursosData.datos || []);
     } catch (err) {
-      setError(err.message || "Error al cargar los datos del perfil.");
+      const errorMsg = err.message || "Error al cargar los datos del perfil.";
+      setError(errorMsg);
+      // <-- 2. ALERTA DE ERROR EN CARGA -->
+      Swal.fire("Error de Carga", errorMsg, "error");
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +66,7 @@ const DocentePerfil = () => {
 
   useEffect(() => {
     fetchData();
-  }, [id]); // Se recarga si el ID cambia
+  }, [id]); 
 
   // --- Handlers para Asignaciones ---
   const handleOpenAsignacionModal = (asignacion = null) => {
@@ -76,20 +80,52 @@ const DocentePerfil = () => {
     setAsignacionToEdit(null);
   };
 
+  // <-- 3. ALERTA DE ÉXITO EN GUARDADO -->
   const handleSave = () => {
+    // Verificamos si era edición ANTES de cerrar
+    const isEdit = asignacionToEdit !== null;
+
     handleCloseModal();
     fetchData(); // Recarga toda la data de la página
+
+    Swal.fire({
+      title: isEdit ? "¡Actualizada!" : "¡Asignada!",
+      text: isEdit
+        ? "La asignación se actualizó correctamente."
+        : "La materia fue asignada al docente.",
+      icon: "success",
+      timer: 1500,
+      showConfirmButton: false,
+    });
   };
 
+  // <-- 4. ALERTAS DE BORRADO -->
   const handleDeleteAsignacion = async (id_asignacion) => {
-    if (window.confirm("¿Estás seguro de quitar esta asignación?")) {
-      try {
-        await asignacionService.deleteAsignacion(id_asignacion);
-        fetchData(); // Recarga
-      } catch (err) {
-        setError(err.message || "No se pudo eliminar la asignación.");
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¿Quieres quitar esta asignación del docente?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonText: "Cancelar",
+      confirmButtonText: "Sí, quitar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await asignacionService.deleteAsignacion(id_asignacion);
+          Swal.fire(
+            "¡Eliminada!",
+            "La asignación ha sido quitada.",
+            "success"
+          );
+          fetchData(); // Recarga
+        } catch (err) {
+          const errorMsg = err.message || "No se pudo eliminar la asignación.";
+          setError(errorMsg);
+          Swal.fire("Error", errorMsg, "error");
+        }
       }
-    }
+    });
   };
 
   // --- Definiciones de la Tabla de Asignaciones ---
@@ -142,7 +178,7 @@ const DocentePerfil = () => {
         <p>Cargando perfil...</p>
       </div>
     );
-  // No mostramos el error principal si solo es un error de carga de asignaciones
+  
   if (error && !docente)
     return (
       <div className="gestion-page-container">
@@ -158,14 +194,13 @@ const DocentePerfil = () => {
 
   return (
     <div className="gestion-page-container">
-      {/* Header (Tu código - sin cambios) */}
+      {/* Header */}
       <div className="gestion-header">
-        <button onClick={() => navigate(-1)} className="back-button">
-          ← VOLVER
-        </button>
-        <h2>Perfil del Docente</h2>
+        <BtnVolver/>
+        <h2 className='mx-4'>Perfil del Docente</h2>
       </div>
 
+      {/* Mostramos error si la carga de asignaciones falla, pero el perfil cargó */}
       {error && <p className="error-message">{error}</p>}
 
       <div className="perfil-banner">
@@ -182,7 +217,7 @@ const DocentePerfil = () => {
         </div>
       </div>
 
-      {/* --- 2. GRID PRINCIPAL (Tu 'perfil-card' renombrado) --- */}
+      {/* --- 2. GRID PRINCIPAL --- */}
       <div className="perfil-grid">
         {/* Caja Izquierda: Información Docente */}
         <div className="perfil-info-box">
@@ -253,8 +288,8 @@ const DocentePerfil = () => {
         <TableCrud
           columns={columnsAsignaciones}
           data={asignaciones}
-          isLoading={isLoading} // El loading principal ya pasó
-          error={null} // El error se maneja arriba
+          isLoading={isLoading} 
+          error={null} // El error principal se maneja arriba
           renderActions={renderAsignacionActions}
           getKey={(item) => item.id_asignacion}
           emptyMessage="Este docente no tiene materias asignadas."
@@ -267,7 +302,7 @@ const DocentePerfil = () => {
       {showAsignacionModal && (
         <AsignacionModal
           onClose={handleCloseModal}
-          onSave={handleSave}
+          onSave={handleSave} // Esta función ahora dispara el Swal
           docente={docente}
           cursosList={cursosList || []}
           asignacionToEdit={asignacionToEdit}

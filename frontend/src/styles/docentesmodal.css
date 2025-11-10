@@ -1,179 +1,165 @@
 /* --- Base del Modal (Reutilizado) --- */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6); /* Más oscuro para más contraste */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+.modal-overlay{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background-color:rgba(0,0,0,0.6);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:1000;
 }
-
-.modal-content {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 550px; /* Un poco más ancho para el wizard */
-    animation: fadeIn 0.3s ease-out;
-    overflow: hidden; /* Para que el header y footer se vean bien */
+.modal-content{
+background-color:#fff;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.2);
+width:90%;
+max-width:550px;
+animation:fadeIn 0.3s ease-out;
+overflow:hidden;
+max-height:85vh;
+overflow-y:auto;
 }
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(-20px);}
+to{opacity:1;transform:translateY(0);}
 }
-
 /* --- ESTILOS DEL WIZARD --- */
-
-/* Encabezado del Modal */
-.modal-content h3 {
-    margin: 0;
-    padding: 20px 25px;
-    background-color: #f7f9fc; /* Fondo gris claro */
-    border-bottom: 1px solid #e0e0e0;
-    color: #333;
-    font-size: 22px;
-    font-weight: 600;
+.modal-content h3{
+margin:0;
+padding:20px 25px;
+background-color:#f7f9fc;
+border-bottom:1px solid #e0e0e0;
+color:#333;
+font-size:22px;
+font-weight:600;
+position:sticky;
+top:0;
+z-index:10;
 }
-
-/* Subtítulo (Paso 1 de 2) */
-.modal-content h3::after {
-    content: attr(data-step); /* Le pasaremos el "Paso 1 de 2" desde el JSX */
-    float: right;
-    font-size: 14px;
-    font-weight: 500;
-    color: #666;
+.modal-content h3::after{
+content:attr(data-step);
+float:right;
+font-size:14px;
+font-weight:500;
+color:#666;
 }
-
-/* Contenido del Formulario */
-.modal-content form {
-    padding: 25px;
+.modal-content form{
+padding:25px;
 }
-
-/* Mensaje de "Creando cuenta para..." */
-.modal-content p {
-    font-size: 16px;
-    color: #555;
-    background-color: #f7f9fc;
-    border: 1px solid #e0e0e0;
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    text-align: center;
+.modal-content p{
+font-size:16px;
+color:#555;
+background-color:#f7f9fc;
+border:1px solid #e0e0e0;
+padding:12px;
+border-radius:6px;
+margin-bottom:20px;
+text-align:center;
 }
-
-/* Estilo para los <fieldset> */
-.modal-content fieldset {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
+.modal-content fieldset{
+border:1px solid #ddd;
+border-radius:8px;
+padding:20px;
+margin-bottom:20px;
 }
-
-.modal-content legend {
-    font-size: 18px;
-    font-weight: 600;
-    color: #303F9F; /* Azul de tu tema */
-    padding: 0 10px;
-    margin-left: 10px;
+.modal-content legend{
+font-size:18px;
+font-weight:600;
+color:#303F9F;
+padding:0 10px;
+margin-left:10px;
 }
-
 /* --- Campos del Formulario (Reutilizado) --- */
-.form-group {
-    margin-bottom: 18px;
+.form-group{
+margin-bottom:18px;
 }
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #555;
-    font-size: 15px;
+.form-group label{
+display:block;
+margin-bottom:8px;
+font-weight:600;
+color:#555;
+font-size:15px;
 }
-
 .form-group input[type="text"],
 .form-group input[type="email"],
 .form-group input[type="password"],
-.form-group select {
-    width: 100%; /* Ocupa todo el ancho */
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
-    box-sizing: border-box; /* Importante */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+.form-group select{
+width:100%;
+padding:12px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:16px;
+box-sizing:border-box;
+transition:border-color 0.3s ease,box-shadow 0.3s ease;
 }
-
 .form-group input:focus,
-.form-group select:focus {
-    border-color: #0d6efd;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+.form-group select:focus{
+border-color:#0d6efd;
+outline:none;
+box-shadow:0 0 0 3px rgba(13,110,253,0.2);
 }
-
-.form-group select[disabled] {
-    background-color: #f0f0f0;
-    color: #999;
+.form-group select[disabled]{
+background-color:#f0f0f0;
+color:#999;
 }
-
 /* --- Mensaje de Error (Reutilizado) --- */
-.error-message {
-    color: #dc3545;
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
-    padding: 12px 20px;
-    border-radius: 6px;
-    margin: 10px 0 20px 0;
-    font-weight: 500;
-    text-align: center;
+.error-message{
+color:#dc3545;
+background-color:#f8d7da;
+border:1px solid #f5c6cb;
+padding:12px 20px;
+border-radius:6px;
+margin:10px 0 20px 0;
+font-weight:500;
+text-align:center;
 }
-
 /* --- Botones (Reutilizado) --- */
-.modal-actions {
-    display: flex;
-    justify-content: flex-end; /* Alinea a la derecha */
-    gap: 15px;
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid #f0f0f0;
+.modal-actions{
+display:flex;
+justify-content:flex-end;
+gap:15px;
+margin-top:30px;
+padding-top:20px;
+border-top:1px solid #f0f0f0;
+position:sticky;
+bottom:0;
+z-index:10;
+background-color:#fff;
+padding-right:25px;
+padding-bottom:25px;
+margin-bottom:-25px;
 }
-
-.modal-actions button {
-    padding: 12px 25px;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+.modal-actions button{
+padding:12px 25px;
+border-radius:6px;
+font-size:16px;
+font-weight:600;
+cursor:pointer;
+border:none;
+transition:background-color 0.3s ease,transform 0.2s ease;
 }
-
-.modal-actions button:hover {
-    transform: translateY(-2px);
+.modal-actions button:hover{
+transform:translateY(-2px);
 }
-
-.btn-cancel {
-    background-color: #6c757d;
-    color: white;
+.btn-cancel{
+background-color:#6c757d;
+color:white;
 }
-.btn-cancel:hover {
-    background-color: #5a6268;
+.btn-cancel:hover{
+background-color:#5a6268;
 }
-
-.btn-save {
-    background-color: #303F9F;
-    color: white;
+.btn-save{
+background-color:#303F9F;
+color:white;
 }
-.btn-save:hover {
-    background-color: #303F9F;
+.btn-save:hover{
+background-color:#303F9F;
 }
-
-.modal-actions button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-} 
+.modal-actions button:disabled{
+opacity:0.6;
+cursor:not-allowed;
+transform:none;
+}

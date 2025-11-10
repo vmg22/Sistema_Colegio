@@ -38,7 +38,10 @@ const GestionCursoMateria = () => {
       setMaterias(resMaterias || []);
       
     } catch (err) {
-      setError(err.message || "Error al cargar las cursos-materias.");
+      const errorMsg = err.message || "Error al cargar las cursos-materias.";
+      setError(errorMsg);
+      // <-- MODIFICADO: Alerta de error
+      Swal.fire("Error de Carga", errorMsg, "error");
     } finally {
       setLoadingCursos(false);
       setLoadingMaterias(false);
@@ -64,7 +67,10 @@ const GestionCursoMateria = () => {
         const idsSet = new Set(materiasAsignadas.map(m => m.id_materia));
         setMateriasMarcadas(idsSet);
       } catch (err) {
-        setError(err.message || "Error al cargar las materias asignadas a este curso.");
+        const errorMsg = err.message || "Error al cargar las materias asignadas a este curso.";
+        setError(errorMsg);
+        // <-- MODIFICADO: Alerta de error
+        Swal.fire("Error al Cargar Asignaciones", errorMsg, "error");
       } finally {
         setLoadingAsignaciones(false);
       }
@@ -73,7 +79,7 @@ const GestionCursoMateria = () => {
     cargarAsignaciones();
   }, [selectedCursoId]);
 
-  // Filtrado de Materias
+  // Filtrado de Materias (Sin Cambios)
   const materiasFiltradas = useMemo(() => {
     if (!selectedCursoId || !cursos.length || !materias.length) {
       return [];
@@ -109,22 +115,25 @@ const GestionCursoMateria = () => {
     
     try {
       await actualizarAsignaciones(selectedCursoId, idMateriasArray);
-      Swal.fire(
+      Swal.fire( // <-- Esta ya estaba (bien)
         '¡Guardado!',
         'El plan de estudios del curso ha sido actualizado.',
         'success'
       );
     } catch (err) {
-      setError(err.message || 'Error al guardar los cambios.');
+      const errorMsg = err.message || 'Error al guardar los cambios.';
+      setError(errorMsg);
+      // <-- MODIFICADO: Alerta de error
+      Swal.fire("Error al Guardar", errorMsg, "error");
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Estilos en línea - Azul Institucional
+  // Estilos en línea - (Sin Cambios)
   const styles = {
     container: {
-      backgroundColor: '#e8eef5',
+      backgroundColor: '#F1F5F9',
       minHeight: '100vh',
       padding: '24px',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
@@ -259,11 +268,11 @@ const GestionCursoMateria = () => {
 
   return (
     <div style={styles.container}>
-      <BtnVolver/>
-      
-      <div style={styles.header}>
-        <h2 style={styles.title}>Gestión de Planes de Estudio</h2>
-        <p style={styles.subtitle}>Seleccione un curso para ver y asignar sus materias.</p>
+
+      <div className="gestion-header">
+        <BtnVolver/>
+        <h2 className='mx-4'>Gestión de Planes de Estudio</h2>
+        
       </div>
 
       {error && (
@@ -332,27 +341,27 @@ const GestionCursoMateria = () => {
                   <div style={styles.checkboxContainer}>
                     {materiasFiltradas.map(materia => (
                       <div 
-                        key={materia.id_materia}
-                        style={styles.checkboxWrapper}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f4f9'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        onClick={() => handleMateriaToggle(materia.id_materia)}
-                      >
-                        <input
-                          type="checkbox"
-                          id={`materia-${materia.id_materia}`}
-                          style={styles.checkbox}
-                          checked={materiasMarcadas.has(materia.id_materia)}
-                          onChange={() => handleMateriaToggle(materia.id_materia)}
-                          disabled={isSaving}
-                        />
-                        <label 
-                          htmlFor={`materia-${materia.id_materia}`}
-                          style={styles.checkboxLabel}
-                        >
-                          {materia.nombre} (Nivel {materia.nivel})
-                        </label>
-                      </div>
+                    key={materia.id_materia}
+                    style={styles.checkboxWrapper}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f4f9'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    // onClick={() => handleMateriaToggle(materia.id_materia)} // <-- BORRA ESTA LÍNEA
+                  >
+                    <input
+                      type="checkbox"
+                      id={`materia-${materia.id_materia}`}
+                      style={styles.checkbox}
+                      checked={materiasMarcadas.has(materia.id_materia)}
+                      onChange={() => handleMateriaToggle(materia.id_materia)} // <-- DEJA ESTA LÍNEA
+                      disabled={isSaving}
+                    />
+                    <label 
+                      htmlFor={`materia-${materia.id_materia}`} // <-- Y DEJA ESTA
+                      style={styles.checkboxLabel}
+                    >
+                      {materia.nombre} (Nivel {materia.nivel})
+                    </label>
+                  </div>
                     ))}
                   </div>
                   
