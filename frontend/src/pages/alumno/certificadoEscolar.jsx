@@ -181,6 +181,17 @@ const CertificadoEscolar = () => {
             onChange={manejarCambio}
           />
         </div>
+
+        <div className="form-group editable">
+          <label>Año:</label>
+          <input
+            type="text"
+            name="anio"
+            placeholder="Ej: 2025"
+            value={datosFormulario.anio}
+            onChange={manejarCambio}
+          />
+        </div>
         
         <div className="form-group editable">
           <label>Solicitante:</label>
@@ -243,7 +254,7 @@ const CertificadoEscolar = () => {
         <h1 className="certificate-header">Certificado Escolar</h1>
 
         <p>
-          La Escuela/instituto Instituto Carlos Guido Spano{" "}
+          El Instituto Carlos Guido Spano{" "}
            C.U.E {" "}<b>{datosFormulario.cue}</b>
         </p>
         
@@ -252,11 +263,11 @@ const CertificadoEscolar = () => {
         </p>
         
         <p>
-          DNI/CUIL{" "}<b>{datosFormulario.numeroDocumento}</b> ha Iniciado | 
+          DNI/CUIL N° {" "}<b>{datosFormulario.numeroDocumento}</b> ha Iniciado | 
           Finalizado el <b>{datosFormulario.fechaFinalizacion}</b>,
-          como alumno regular del ciclo lectivo (normal/verano) correspondiente 
-          al año de 20{datosFormulario.anioActual} en Nivel Inicial/Primario/Secundario{" "}
-          <b>{datosFormulario.curso}</b> grado Año/otros en este Establecimiento Educativo.
+          como alumno/a regular del ciclo lectivo (normal/verano) correspondiente 
+          al año {datosFormulario.anio} en Nivel Secundario{" "}
+          <b>{datosFormulario.curso}</b> en este Establecimiento Educativo.
         </p>
         
         <p>
@@ -302,11 +313,11 @@ const CertificadoEscolar = () => {
 
       {/* 🎯 BOTONES DE ACCIÓN */}
       <div className="actions no-print">
-        <button onClick={manejarDescargarPDF} className="btn-primary">
+        <button onClick={manejarDescargarPDF} className="btn btn-primary">
           <span className="material-symbols-outlined">download</span>
           Descargar PDF
         </button>
-        <button onClick={manejarImprimir} className="btn-primary">
+        <button onClick={manejarImprimir} className="btn btn-primary">
           <span className="material-symbols-outlined">print</span>
           Imprimir
         </button>

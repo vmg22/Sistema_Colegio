@@ -104,8 +104,9 @@
    =============================== */
 .gma-text-center {
   font-weight: 700;
-  color: #1f2937;
+  color:  #303F9F;
   text-align: center;
+  padding-top: 30px;
 }
 
 /* ===============================
@@ -138,3 +139,4 @@
 .gma-container select {
   box-sizing: border-box;
 }
+

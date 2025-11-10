@@ -1128,13 +1128,14 @@ const GenerarMail = () => {
   // --- Render ---
 
   return (
-    <div style={styles.pageContainer}>
+    <div className='curso-dashboard-container' style={styles.pageContainer}>
       <BtnVolver />
-
-      <div style={styles.mainTitleContainer}>
-        <h1 style={{ fontWeight: 500, fontSize: "2rem" }}>Generar Mail</h1>
+<div className="curso-dashboard-header">
+        <span className="material-symbols-outlined curso-dashboard-icon">
+          mail
+        </span>
+        <h2 className="curso-dashboard-title">Generar Mail</h2>
       </div>
-
       {responseMessage && (
         <Alert variant={responseMessage.variant} className="mt-3">
           {responseMessage.text}

@@ -9,6 +9,7 @@ import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx";
 import DivBodyInfo from "../../components/alumno/DivBodyInfo.jsx";
 import "../../styles/perfilAlumno.css";
 import "../../styles/generarMailAlumno.css";
+import LineaSeparadora from "../../components/ui/LineaSeparadora.jsx";
 // --- Configuración general ---
 const API_BASE_URL = "http://localhost:3000/api/v1/mail";
 const ID_USUARIO = 1;
@@ -183,8 +184,14 @@ const GenerarMailAlumno = () => {
 
   // --- Render principal ---
   return (
-    <div className="gma-perfil-alumno-container" style={{ paddingBottom: "3rem" }}>
+    <div className="curso-dashboard-container" style={{ paddingBottom: "3rem" }}>
       <BtnVolver />
+      <div className="curso-dashboard-header">
+        <span className="material-symbols-outlined curso-dashboard-icon">
+          mail
+        </span>
+        <h2 className="curso-dashboard-title">Generar Mail</h2>
+      </div>
       <EncabezadoEstudiante
         nombre={reporte.nombre || "Alumno"}
         dni={reporte.dni || ""}
@@ -197,17 +204,17 @@ const GenerarMailAlumno = () => {
         <Row>
           {/* Columna izquierda: información del alumno */}
           <Col md={5}>
-            <Card className="gma-card shadow-sm p-3 mb-4">
-              <h5 className="mb-3 text-center">📘 Información del Alumno</h5>
+            <Card className="gma-card shadow-sm">
               <DivBodyInfo />
             </Card>
           </Col>
 
           {/* Columna derecha: formulario de envío de mail */}
           <Col md={7}>
+          <Card className="gma-card shadow-sm">
             <h3 className="gma-text-center mb-4">Enviar Correo al Tutor</h3>
-
-            {responseMessage && (
+            <LineaSeparadora/>
+{responseMessage && (
               <Alert
                 variant={responseMessage.variant}
                 onClose={() => setResponseMessage(null)}
@@ -324,6 +331,9 @@ const GenerarMailAlumno = () => {
                 </div>
               </Form>
             </Card>
+          </Card>
+
+            
           </Col>
         </Row>
       </div>

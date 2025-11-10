@@ -1,27 +1,26 @@
 /* ========================================
-   CONSTANCIA - DOCUMENTO OFICIAL
-   Diseño formal para presentar ante autoridades
-   TODAS las clases tienen prefijo "constancia-" para evitar conflictos
-   ======================================== */
+CONSTANCIA - DOCUMENTO OFICIAL
+Diseño formal para presentar ante autoridades
+TODAS las clases tienen prefijo "constancia-" para evitar conflictos
+======================================== */
 
 /* ========================================
-   CONTENEDOR PRINCIPAL - FONDO CAMBIADO A #f5f7fb
-   ======================================== */
-.constancia-body {
+CONTENEDOR PRINCIPAL - FONDO CAMBIADO A #f5f7fb
+======================================== */
+.constancia-body-escolar {
   min-height: 100vh;
-  background: #f5f7fb !important; /* ✅ FORZAR EL CAMBIO CON !important */
-  padding: 2rem;
-  padding-left: 380px;
-  font-family: 'Georgia', 'Times New Roman', serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background-color: #f1f5f9;
+  font-family: "Georgia", "Times New Roman", serif;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2rem;
+  align-items: start;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
-/* ========================================
-   CERTIFICADO / DOCUMENTO
-   ======================================== */
-.constancia-body .certificate-container {
+.constancia-body-escolar .certificate-container {
   max-width: 21cm;
   min-height: 29.7cm;
   margin: 0 auto;
@@ -35,8 +34,8 @@
   outline-offset: -12px;
 }
 
-.constancia-body .certificate-container::before {
-  content: 'CONSTANCIA OFICIAL';
+.constancia-body-escolar .certificate-container::before {
+  content: "CONSTANCIA OFICIAL";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -49,10 +48,7 @@
   white-space: nowrap;
 }
 
-/* ========================================
-   ENCABEZADO DEL CERTIFICADO
-   ======================================== */
-.constancia-body .certificate-header {
+.constancia-body-escolar .certificate-header {
   text-align: center;
   font-size: 1.8rem;
   font-weight: bold;
@@ -66,10 +62,7 @@
   z-index: 1;
 }
 
-/* ========================================
-   CONTENIDO DEL DOCUMENTO
-   ======================================== */
-.constancia-body .certificate-container p {
+.constancia-body-escolar .certificate-container p {
   font-size: 1.05rem;
   line-height: 1.9;
   color: #2c3e50;
@@ -80,21 +73,18 @@
   z-index: 1;
 }
 
-.constancia-body .certificate-container p b {
+.constancia-body-escolar .certificate-container p b {
   font-weight: 600;
   color: #1a252f;
 }
 
-/* ========================================
-   CAMPOS EDITABLES DEL FORMULARIO
-   ======================================== */
-.constancia-body .form-group {
+.constancia-body-escolar .form-group {
   margin-bottom: 1.5rem;
   position: relative;
   z-index: 1;
 }
 
-.constancia-body .form-group label {
+.constancia-body-escolar .form-group label {
   display: block;
   font-weight: 600;
   color: #2c3e50;
@@ -104,40 +94,37 @@
   letter-spacing: 0.5px;
 }
 
-.constancia-body .form-group input {
+.constancia-body-escolar .form-group input {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 2px solid #bdc3c7;
   border-radius: 4px;
   font-size: 1rem;
-  font-family: 'Georgia', serif;
-  transition: all 0.3s ease;
+  font-family: "Georgia", serif;
+  transition: 0.3s ease;
   background: #f8f9fa;
 }
 
-.constancia-body .form-group input:focus {
+.constancia-body-escolar .form-group input:focus {
   outline: none;
   border-color: #3498db;
   background: white;
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
-.constancia-body .form-group input::placeholder {
+.constancia-body-escolar .form-group input::placeholder {
   color: #95a5a6;
   font-style: italic;
 }
 
-.constancia-body .form-group.editable {
+.constancia-body-escolar .form-group.editable {
   background: rgba(52, 152, 219, 0.05);
   padding: 1rem;
   border-radius: 6px;
   border-left: 4px solid #3498db;
 }
 
-/* ========================================
-   ESPACIOS PARA FIRMAS
-   ======================================== */
-.constancia-body .signature-space {
+.constancia-body-escolar .signature-space {
   display: flex;
   justify-content: space-between;
   gap: 2rem;
@@ -147,7 +134,7 @@
   z-index: 1;
 }
 
-.constancia-body .signature-box {
+.constancia-body-escolar .signature-box {
   flex: 1;
   text-align: center;
   padding-top: 3rem;
@@ -158,8 +145,7 @@
   position: relative;
 }
 
-.constancia-body .signature-box::before {
-  content: '✓';
+.constancia-body-escolar .signature-box::before {
   position: absolute;
   top: -2rem;
   left: 50%;
@@ -170,15 +156,12 @@
   transition: opacity 0.3s ease;
 }
 
-.constancia-body .signature-box:hover::before {
+.constancia-body-escolar .signature-box:hover::before {
   opacity: 0.3;
 }
 
-/* ========================================
-   ESPACIOS PARA SELLOS
-   ======================================== */
-.constancia-body .seal-space {
-  display: none;
+.constancia-body-escolar .seal-space {
+  display: flex; /* ✅ VISIBLE */
   justify-content: space-around;
   gap: 2rem;
   margin-top: 3rem;
@@ -186,7 +169,7 @@
   z-index: 1;
 }
 
-.constancia-body .seal {
+.constancia-body-escolar .seal {
   width: 150px;
   height: 150px;
   border: 3px dashed #7f8c8d;
@@ -203,18 +186,15 @@
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* ========================================
-   BOTONES DE ACCIÓN
-   ======================================== */
-.constancia-body .actions {
+.constancia-body-escolar .actions {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-bottom: 14px;
   flex-wrap: wrap;
 }
 
-.constancia-body .actions button {
+.constancia-body-escolar .actions button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -224,49 +204,37 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-.constancia-body .actions button:hover {
+.constancia-body-escolar .actions button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.constancia-body .actions button:active {
+.constancia-body-escolar .actions button:active {
   transform: translateY(0);
 }
 
-.constancia-body .btn-primary {
-  background: #3498db; /* ✅ CAMBIADO DE MORADO A AZUL */
-  color: white;
-}
-
-.constancia-body .btn-primary:hover {
-  background: #2980b9;
-}
-
-.constancia-body .btn-secondary {
+.constancia-body-escolar .btn-secondary {
   background: white;
   color: #2c3e50;
   border: 2px solid #2c3e50 !important;
 }
 
-.constancia-body .btn-secondary:hover {
+.constancia-body-escolar .btn-secondary:hover {
   background: #2c3e50;
   color: white;
 }
 
-.constancia-body .actions .material-symbols-outlined {
+.constancia-body-escolar .actions .material-symbols-outlined {
   font-size: 1.25rem;
 }
 
-/* ========================================
-   ESTADOS DE CARGA Y ERROR
-   ======================================== */
-.constancia-body .loading-container,
-.constancia-body .error-container {
+.constancia-body-escolar .loading-container,
+.constancia-body-escolar .error-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -276,7 +244,7 @@
   padding: 2rem;
 }
 
-.constancia-body .spinner {
+.constancia-body-escolar .spinner {
   width: 50px;
   height: 50px;
   border: 4px solid rgba(52, 152, 219, 0.2);
@@ -292,34 +260,34 @@
   }
 }
 
-.constancia-body .loading-container p {
+.constancia-body-escolar .loading-container p {
   color: #7f8c8d;
   font-size: 1.1rem;
   margin-top: 1rem;
 }
 
-.constancia-body .error-container {
+.constancia-body-escolar .error-container {
   color: #e74c3c;
 }
 
-.constancia-body .error-icon {
+.constancia-body-escolar .error-icon {
   font-size: 4rem;
   color: #e74c3c;
   margin-bottom: 1rem;
 }
 
-.constancia-body .error-container h3 {
+.constancia-body-escolar .error-container h3 {
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
   color: #c0392b;
 }
 
-.constancia-body .error-container p {
+.constancia-body-escolar .error-container p {
   color: #7f8c8d;
   margin-bottom: 1.5rem;
 }
 
-.constancia-body .btn-back {
+.constancia-body-escolar .btn-back {
   padding: 0.75rem 1.5rem;
   background: #3498db;
   color: white;
@@ -327,24 +295,20 @@
   border-radius: 6px;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: 0.3s ease;
 }
 
-.constancia-body .btn-back:hover {
+.constancia-body-escolar .btn-back:hover {
   background: #2980b9;
   transform: translateY(-2px);
 }
 
-/* ========================================
-   ESTILOS PARA IMPRESIÓN
-   ======================================== */
 @media print {
   @page {
     size: A4;
     margin: 0.5cm;
   }
-
-  .constancia-body .signature-space {
+  .constancia-body-escolar .signature-space {
     display: flex !important;
     flex-direction: row !important;
     justify-content: space-between !important;
@@ -352,8 +316,7 @@
     margin-top: 1.5rem !important;
     margin-bottom: 0.5rem !important;
   }
-
-  .constancia-body .signature-box {
+  .constancia-body-escolar .signature-box {
     flex: 1 !important;
     text-align: center !important;
     padding-top: 1.5rem !important;
@@ -362,19 +325,17 @@
     color: #34495e !important;
     font-weight: 500 !important;
   }
-
-  .constancia-body .signature-box::before {
+  .constancia-body-escolar .signature-box::before {
     display: none;
   }
-
-  .constancia-body .seal-space {
+  .constancia-body-escolar .seal-space { 
+    display: flex !important; /* ✅ VISIBLE EN IMPRESIÓN */
+    justify-content: space-around !important;
+    margin-top: 2rem !important;
+  }
+  .constancia-body-escolar .certificate-container::before {
     display: none !important;
   }
-
-  .constancia-body .certificate-container::before {
-    display: none !important;
-  }
-
   nav,
   header,
   .navbar,
@@ -384,22 +345,20 @@
   button[class*="Cerrar"] {
     display: none !important;
   }
-
-  html, body {
+  html,
+  body {
     margin: 0 !important;
     padding: 0 !important;
     background: white !important;
   }
-
-  .constancia-body {
+  .constancia-body-escolar {
     background: white !important;
     padding: 0 !important;
     padding-left: 0 !important;
     margin: 0 !important;
     min-height: auto !important;
   }
-
-  .constancia-body .certificate-container {
+  .constancia-body-escolar .certificate-container {
     max-width: 100%;
     min-height: auto;
     box-shadow: none;
@@ -411,42 +370,40 @@
     page-break-inside: avoid;
     outline: none !important;
   }
-
-  .constancia-body .actions,
-  .constancia-body .no-print,
-  .constancia-body .form-group,
-  .constancia-body .edit-panel {
+  .constancia-body-escolar .actions,
+  .constancia-body-escolar .no-print,
+  .constancia-body-escolar .form-group,
+  .no-print,
+  .constancia-body-escolar .edit-panel {
     display: none !important;
   }
-
-  .constancia-body .certificate-header {
+  .constancia-body-escolar .certificate-header {
     margin-bottom: 1.2rem !important;
     padding-bottom: 0.6rem !important;
     font-size: 1.4rem !important;
     letter-spacing: 1px !important;
   }
-
-  .constancia-body .certificate-container p {
+  .constancia-body-escolar .certificate-container p {
     margin-bottom: 0.9rem !important;
     font-size: 0.9rem !important;
     line-height: 1.5 !important;
   }
-
-  .constancia-body br {
+  .constancia-body-escolar br {
     line-height: 0.3 !important;
     height: 0.3em !important;
   }
+  .constancia-body-escolar .seal {
+    width: 120px !important;
+    height: 120px !important;
+    font-size: 0.75rem !important;
+  }
 }
 
-/* ========================================
-   RESPONSIVE
-   ======================================== */
 @media (max-width: 1200px) {
-  .constancia-body {
+  .constancia-body-escolar {
     padding-left: 2rem;
   }
-
-  .constancia-body .edit-panel {
+  .constancia-body-escolar .edit-panel {
     position: relative;
     top: auto;
     left: auto;
@@ -456,86 +413,68 @@
 }
 
 @media (max-width: 768px) {
-  .constancia-body {
+  .constancia-body-escolar {
     padding: 1rem;
   }
-
-  .constancia-body .certificate-container {
+  .constancia-body-escolar .certificate-container {
     padding: 2rem 1.5rem;
     min-height: auto;
   }
-
-  .constancia-body .certificate-header {
+  .constancia-body-escolar .certificate-header {
     font-size: 1.4rem;
     letter-spacing: 1px;
   }
-
-  .constancia-body .certificate-container p {
+  .constancia-body-escolar .certificate-container p {
     font-size: 0.95rem;
     line-height: 1.7;
   }
-
-  .constancia-body .signature-space {
+  .constancia-body-escolar .signature-space {
     flex-direction: column;
     gap: 2rem;
     margin-top: 3rem;
   }
-
-  .constancia-body .seal-space {
+  .constancia-body-escolar .seal-space {
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
   }
-
-  .constancia-body .actions {
+  .constancia-body-escolar .actions {
     flex-direction: column;
   }
-
-  .constancia-body .actions button {
+  .constancia-body-escolar .actions button {
     width: 100%;
     justify-content: center;
   }
-
-  .constancia-body .edit-panel {
+  .constancia-body-escolar .edit-panel {
     padding: 1rem;
   }
 }
 
-/* ========================================
-   MEJORAS DE ACCESIBILIDAD
-   ======================================== */
 @media (prefers-reduced-motion: reduce) {
-  .constancia-body * {
+  .constancia-body-escolar * {
     animation: none !important;
     transition: none !important;
   }
 }
 
 @media (prefers-contrast: high) {
-  .constancia-body .certificate-container p {
+  .constancia-body-escolar .certificate-container p {
     color: #000;
   }
-
-  .constancia-body .form-group input {
+  .constancia-body-escolar .form-group input {
     border-color: #000;
   }
 }
 
-/* ========================================
-   HOVER EN EL DOCUMENTO
-   ======================================== */
-.constancia-body .certificate-container:hover {
+.constancia-body-escolar .certificate-container:hover {
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35);
-  transition: box-shadow 0.3s ease;
+  transition: 0.3s ease;
 }
 
-/* ========================================
-   PANEL DE EDICIÓN
-   ======================================== */
-.constancia-body .edit-panel {
+.constancia-body-escolar .edit-panel {
   position: fixed;
   top: 7rem;
-  left: 2rem;
+  left: 10rem;
   background: white;
   padding: 1.5rem;
   border-radius: 8px;
@@ -544,13 +483,20 @@
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
   z-index: 1000;
-  border: 2px solid #3498db;
+  border: 1px solid #e2e8f0;
 }
 
-.constancia-body .edit-panel h3 {
+.constancia-body-escolar .edit-panel h3 {
   margin: 0 0 1rem 0;
   font-size: 1.1rem;
   color: #2c3e50;
   border-bottom: 2px solid #3498db;
   padding-bottom: 0.5rem;
+}
+
+.constancia-body-escolar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 380px;
 }
