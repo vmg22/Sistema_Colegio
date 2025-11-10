@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2"; // <-- 1. IMPORTADO
 import BtnVolver from "../../../components/ui/BtnVolver";
 import TableCrud from "../../../components/crud/TableCrud";
 import { getAllAlumnos, deleteAlumno } from "../../../services/alumnosService";
 import AlumnoEditModal from "../../../components/modals/AlumnoEditModal";
 import AlumnoWizardModal from "../../../components/modals/AlumnoWizardModal";
 import "../../../styles/alumnocrud.css"
+
 const Alumnos = () => {
   // Estados
   const [alumnos, setAlumnos] = useState([]);
@@ -29,7 +31,10 @@ const Alumnos = () => {
       setAlumnosFiltrados(data); // Inicialmente muestra todos
     } catch (err) {
       console.error("Error al cargar alumnos:", err);
-      setError(err.message || 'Error al cargar alumnos.');
+      const errorMsg = err.message || 'Error al cargar alumnos.';
+      setError(errorMsg);
+      // <-- 2. ALERTA DE ERROR EN CARGA -->
+      Swal.fire("Error", errorMsg, "error");
     } finally {
       setIsLoading(false);
     }
@@ -40,14 +45,12 @@ const Alumnos = () => {
     loadAlumnos();
   }, []);
 
-  // Filtrar alumnos en tiempo real cuando cambia el término de búsqueda
+  // Filtrar alumnos en tiempo real (Esta lógica ya estaba, no se toca)
   useEffect(() => {
     if (searchTerm.trim() === '') {
-      // Si no hay búsqueda, mostrar todos
       setAlumnosFiltrados(alumnos);
       setError(null);
     } else {
-      // Filtrar por término de búsqueda
       const term = searchTerm.toLowerCase();
       const filtered = alumnos.filter(alumno => 
         alumno.nombre_alumno?.toLowerCase().includes(term) ||
@@ -58,30 +61,46 @@ const Alumnos = () => {
       
       setAlumnosFiltrados(filtered);
       
-      // Mostrar mensaje si no hay resultados
       if (filtered.length === 0) {
         setError("No se encontraron alumnos que coincidan con la búsqueda.");
       } else {
         setError(null);
       }
     }
-  }, [searchTerm, alumnos]); // Se ejecuta cada vez que cambia searchTerm o alumnos
+  }, [searchTerm, alumnos]);
 
   // Limpiar búsqueda
   const handleClearSearch = () => {
     setSearchTerm("");
   };
 
-  // Eliminar alumno
+  // <-- 3. ALERTAS EN BORRADO -->
   const handleDelete = async (id_alumno) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este alumno?')) {
-      try {
-        await deleteAlumno(id_alumno);
-        loadAlumnos(); // Recargar la lista completa
-      } catch (err) {
-        setError(err.message || 'No se pudo eliminar el alumno.');
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Se eliminará el alumno.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'Sí, eliminar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteAlumno(id_alumno);
+          Swal.fire(
+            '¡Eliminado!',
+            'El alumno ha sido eliminado.',
+            'success'
+          );
+          loadAlumnos(); // Recargar la lista completa
+        } catch (err) {
+          const errorMsg = err.message || 'No se pudo eliminar el alumno.';
+          setError(errorMsg);
+          Swal.fire("Error", errorMsg, "error");
+        }
       }
-    }
+    });
   };
 
   // Abrir modal de edición
@@ -105,11 +124,24 @@ const Alumnos = () => {
     setCurrentAlumno(null);
   };
 
-  // Al guardar exitosamente
+  // <-- 4. ALERTA EN GUARDADO EXITOSO -->
   const handleSaveSuccess = () => {
+    // Verificamos si era una edición ANTES de cerrar el modal
+    const isEdit = currentAlumno !== null;
+
     handleCloseModal();
     setSearchTerm(""); // Limpiar búsqueda
     loadAlumnos(); // Recargar lista
+
+    Swal.fire({
+      title: isEdit ? '¡Actualizado!' : '¡Creado!',
+      text: isEdit 
+          ? 'El alumno se actualizó correctamente.' 
+          : 'El alumno se creó correctamente.',
+      icon: 'success',
+      timer: 1500,
+      showConfirmButton: false
+    });
   };
 
   // Definiciones de columnas
@@ -176,7 +208,6 @@ const Alumnos = () => {
       {/* Barra de Búsqueda */}
       <div className="search-add-bar">
         <div className="search-box">
-          <span className="search-icon">👤</span>
           <input
             type="text"
             placeholder="Buscar por nombre, apellido, DNI o email..."
@@ -233,10 +264,10 @@ const Alumnos = () => {
       )}
 
       {showWizardModal && (
-  <AlumnoWizardModal
-    onClose={handleCloseModal}
-    onSave={handleSaveSuccess}
-  />
+        <AlumnoWizardModal
+          onClose={handleCloseModal}
+          onSave={handleSaveSuccess}
+        />
       )}
     </div>
   );

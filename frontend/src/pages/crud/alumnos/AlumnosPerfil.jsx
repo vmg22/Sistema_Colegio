@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import Swal from "sweetalert2"; // <-- 1. IMPORTADO
 import BtnVolver from "../../../components/ui/BtnVolver";
 import {
   getAlumnoId,
@@ -10,6 +11,7 @@ import { getAlumnoTutorId, getTutor } from "../../../services/alumnoTutor";
 import ModalEditTutor from "../../../components/modals/ModalEditTutor";
 import ModalAddCursoMateria from "../../../components/modals/ModalAddCursoMateria";
 import "../../../styles/alumnoperfil.css";
+
 const AlumnosPerfil = () => {
   const [alumno, setAlumno] = useState({});
   const [tutor, setTutor] = useState({});
@@ -56,6 +58,12 @@ const AlumnosPerfil = () => {
       }
     } catch (error) {
       console.error("Error al cargar datos del perfil:", error);
+      // <-- 2. ALERTA DE ERROR EN CARGA -->
+      Swal.fire(
+        "Error",
+        error.message || "Error al cargar los datos del perfil.",
+        "error"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -78,6 +86,14 @@ const AlumnosPerfil = () => {
   const handleSaveTutor = () => {
     setIsModalOpen(false);
     traerDatos();
+    // <-- 3. ALERTA DE ÉXITO TUTOR -->
+    Swal.fire({
+      title: "¡Guardado!",
+      text: "Los datos del tutor se actualizaron correctamente.",
+      icon: "success",
+      timer: 1500,
+      showConfirmButton: false,
+    });
   };
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -97,6 +113,14 @@ const AlumnosPerfil = () => {
     // Cuando el modal de curso guarda, cerramos y refrescamos todo
     setIsCursoModalOpen(false);
     traerDatos();
+    // <-- 4. ALERTA DE ÉXITO CURSO -->
+    Swal.fire({
+      title: "¡Guardado!",
+      text: "El curso del alumno se actualizó correctamente.",
+      icon: "success",
+      timer: 1500,
+      showConfirmButton: false,
+    });
   };
 
   return (
@@ -166,11 +190,11 @@ const AlumnosPerfil = () => {
                   </span>
                 </dd>
                 {/* <div className="d-flex justify-content-end ">
-                  <button className="add-button" onClick={handleOpenModal}>
-                    <span className="add-icon"></span>
-                    Agregar curso/materia
-                  </button>
-                </div> */}
+                  <button className="add-button" onClick={handleOpenModal}>
+                    <span className="add-icon"></span>
+                    Agregar curso/materia
+                  </button>
+                </div> */}
               </dl>
             </div>
 
