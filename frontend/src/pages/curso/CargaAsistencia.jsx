@@ -5,7 +5,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale, setDefaultLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
 registerLocale("es", es);
-setDefaultLocale("es");
+setDefaultLocale("es", es);
+import Swal from "sweetalert2"; // <-- 1. IMPORTADO
 import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import EncabezadoCurso from "../../components/curso/EncabezadoCurso.jsx";
 import { useConsultaStore } from "../../store/consultaStore.js";
@@ -19,16 +20,14 @@ const CargaAsistencia = () => {
   const [alumnos, setAlumnos] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
-  const { reporteCurso, setReporteCurso } = useConsultaStore(); // 👈 AGREGAR setReporteCurso
+  const { reporteCurso, setReporteCurso } = useConsultaStore(); 
   console.log(reporteCurso);
 
   const formatToMySQLDateTime = (date) => {
     if (!date) return null;
-
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
-
     return `${year}-${month}-${day}`;
   };
 
@@ -51,7 +50,10 @@ const CargaAsistencia = () => {
       setAlumnos(data);
     } catch (error) {
       console.error(error);
-      setError(error.response?.data?.mensaje || "Error al cargar la lista");
+      const errorMsg = error.response?.data?.mensaje || "Error al cargar la lista";
+      setError(errorMsg);
+      // <-- 2. ALERTA DE ERROR EN CARGA -->
+      Swal.fire("Error", errorMsg, "error");
       setAlumnos([]);
     }
   };
@@ -71,7 +73,6 @@ const CargaAsistencia = () => {
     );
   };
 
-  // 👇 NUEVA FUNCIÓN para refrescar el reporte
   const refrescarReporte = async () => {
     try {
       const { materia, curso, anioLectivo, cuatrimestre } = reporteCurso.filtros;
@@ -82,14 +83,12 @@ const CargaAsistencia = () => {
         cuatrimestre
       );
       
-      // Actualizar el store con los datos frescos
       setReporteCurso({
         ...reporteCurso,
         alumnos: reporteActualizado.alumnos,
         totalAlumnos: reporteActualizado.totalAlumnos
       });
 
-      // También guardarlo en sessionStorage
       sessionStorage.setItem('reporteCurso', JSON.stringify({
         ...reporteCurso,
         alumnos: reporteActualizado.alumnos,
@@ -99,6 +98,8 @@ const CargaAsistencia = () => {
       console.log("✅ Reporte actualizado automáticamente");
     } catch (error) {
       console.error("Error al refrescar reporte:", error);
+      // <-- 3. ALERTA DE ERROR EN REFRESCO -->
+      Swal.fire("Error", "No se pudo refrescar el reporte de asistencias.", "error");
     }
   };
 
@@ -114,7 +115,8 @@ const CargaAsistencia = () => {
       }));
 
     if (alumnosParaGuardar.length === 0) {
-      setError("No se ha marcado ninguna asistencia.");
+      // <-- 4. ALERTA DE ADVERTENCIA (VALIDACIÓN) -->
+      Swal.fire("Atención", "No se ha marcado ninguna asistencia.", "warning");
       setIsSaving(false);
       return;
     }
@@ -132,16 +134,25 @@ const CargaAsistencia = () => {
 
     try {
       const resultado = await guardarAsistenciasClase(payload);
-      alert(resultado.mensaje || "Asistencias guardadas con éxito");
       
-      // 👇 REFRESCAR EL REPORTE AUTOMÁTICAMENTE
+      // <-- 5. ALERTA DE ÉXITO (REEMPLAZA ALERT) -->
+      Swal.fire({
+        title: "¡Guardado!",
+        text: resultado.mensaje || "Asistencias guardadas con éxito",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false
+      });
+      
       await refrescarReporte();
-      
-      // Opcional: Recargar la lista actual
       await getAsistencia();
+
     } catch (error) {
       console.error(error);
-      setError(error.response?.data?.mensaje || "Error al guardar");
+      const errorMsg = error.response?.data?.mensaje || "Error al guardar";
+      setError(errorMsg);
+      // <-- 6. ALERTA DE ERROR EN GUARDADO -->
+      Swal.fire("Error", errorMsg, "error");
     } finally {
       setIsSaving(false);
     }

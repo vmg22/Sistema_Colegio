@@ -4,6 +4,7 @@ import EncabezadoCurso from "../../components/curso/EncabezadoCurso";
 import { useConsultaStore } from "../../store/consultaStore";
 import { getReporteCurso } from "../../services/reportesService";
 import { Spinner } from "react-bootstrap";
+import Swal from "sweetalert2"; // <-- 1. IMPORTADO
 import "../../styles/cargaCalificaciones.css";
 import ModalEditarCalificacion from "../../components/curso/ModalEditarCalificacion";
 
@@ -29,7 +30,7 @@ const CargaCalificaciones = () => {
   // Extraemos los filtros una sola vez
   const filtros = reporteCurso?.filtros;
 
-  // ✅ SOLUCIÓN 1: Memoizar los valores de los filtros para evitar re-renders
+  // Memoizar los valores de los filtros
   const filtrosMemorizados = useMemo(() => {
     if (!filtros) return null;
     return {
@@ -40,7 +41,7 @@ const CargaCalificaciones = () => {
     };
   }, [filtros?.curso, filtros?.materia, filtros?.anioLectivo, filtros?.cuatrimestre]);
 
-  // ✅ SOLUCIÓN 2: NO incluir setReporteCurso en las dependencias
+  // Carga de datos
   useEffect(() => {
     const traerAlumnos = async () => {
       if (!filtrosMemorizados) return;
@@ -56,11 +57,17 @@ const CargaCalificaciones = () => {
         setReporteCurso(data);
       } catch (error) {
         console.error("Error al traer los alumnos:", error);
+        // <-- 2. ALERTA DE ERROR EN CARGA -->
+        Swal.fire(
+          "Error",
+          error.message || "No se pudo cargar la lista de alumnos.",
+          "error"
+        );
       }
     };
     
     traerAlumnos();
-  }, [filtrosMemorizados]); // ✅ Solo depende de los filtros, NO de setReporteCurso
+  }, [filtrosMemorizados, setReporteCurso]); // Dependencia de setReporteCurso eliminada en tu código original
 
   if (
     !selectedCursoNombre ||
@@ -98,7 +105,7 @@ const CargaCalificaciones = () => {
     handleShow();
   };
 
-  // ✅ SOLUCIÓN 3: Usar useCallback para memoizar la función
+  // <-- 3 y 4. ALERTAS DE ÉXITO Y ERROR AL GUARDAR/RECARGAR -->
   const handleSaveSuccess = useCallback(async () => {
     if (!filtrosMemorizados) return;
     
@@ -107,10 +114,24 @@ const CargaCalificaciones = () => {
     try {
       const data = await getReporteCurso(curso, materia, anioLectivo, cuatrimestre);
       setReporteCurso(data);
-      console.log("Datos recargados exitosamente después de guardar.");
+      
+      // 3. ALERTA DE ÉXITO
+      Swal.fire({
+        title: "¡Guardado!",
+        text: "Las calificaciones se actualizaron correctamente.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false
+      });
+      
     } catch (error) {
       console.error("Error al recargar los datos:", error);
-      alert(`Error al recargar: ${error.message}`);
+      // 4. ALERTA DE ERROR (reemplazando el alert nativo)
+      Swal.fire(
+        "Error al Recargar",
+        error.message || "No se pudieron actualizar los datos en la vista.",
+        "error"
+      );
     }
   }, [filtrosMemorizados, setReporteCurso]);
 
@@ -207,7 +228,7 @@ const CargaCalificaciones = () => {
         handleClose={handleClose}
         alumno={alumnoSeleccionado}
         filtros={filtros}
-        onSaveSuccess={handleSaveSuccess}
+        onSaveSuccess={handleSaveSuccess} // Esta función ahora dispara el Swal
       />
     </div>
   );
