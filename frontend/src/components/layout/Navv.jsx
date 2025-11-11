@@ -109,7 +109,7 @@ const Navv = () => {
           </div>
 
           <button 
-            className="btn btn-outline-secondary"
+            className="btn btn-outline-light"
             onClick={handleLogout} 
             disabled={loading}
           >

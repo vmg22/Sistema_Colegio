@@ -19,22 +19,25 @@ import ResumenAsistenciasPage from './components/curso/ResumenAsistenciasPage.js
 import CargaCalificaciones from './pages/curso/CargaCalificaciones.jsx'
 import CargaAsistencia from './pages/curso/CargaAsistencia.jsx'
 
+
 import DocentePerfil from './pages/docentes/DocentePerfil.jsx'
 
 import AsistenciaAlumno from './pages/alumno/AsistenciaAlumno'
 import EstadoAcademicoAlumno from './pages/alumno/EstadoAcademicoAlumno'
-import HistorialComunicaciones from './pages/alumno/HistorialComunicaciones'
+import HistorialComunicacion from './pages/alumno/historialComunicacion.jsx'
 import HomeCertificados from './pages/alumno/HomeCertificados.jsx'
 import CertificadoAbonoEscolar from './pages/alumno/certificadoAbonoEscolar.jsx'
 import CertificadoComprobanteDeVacante from './pages/alumno/certificadoComprobanteDeVacante.jsx'
 import ConstAluTramite from './pages/alumno/ConstAluTramite.jsx'
-import ActaVolanteExamen from './pages/alumno/actaVolanteExamen.jsx'
+// import ActaVolanteExamen from './pages/alumno/actaVolanteExamen.jsx'
 import ConstanciaAlumnoRegular from './pages/alumno/constanciaAlumnoRegular.jsx'
 import CertificadoEscolar from './pages/alumno/certificadoEscolar.jsx'
 import GenerarMail from "./pages/alumno/generarmail.jsx";
 import CursoComunicacion from './pages/curso/CursoComunicacion.jsx'
 import EnviarAlertaTutoresPage from './pages/curso/EnviarAlertaTutoresPage.jsx'
+// import AdminPrincipal from './pages/alumno/adminPrincipal.jsx'  
 
+import GenerarMailAlumno from './pages/alumno/GenerarMailAlumno.jsx'
 
 import Login from './pages/alumno/login.jsx'
 import OlvideContrasena from './pages/alumno/olvideContraseña.jsx'
@@ -46,7 +49,7 @@ import GestionAniosLectivos from './pages/crud/anio-lectivo/GestionAniosLectivos
 import GestionCursos from './pages/crud/cursos/GestionCursos.jsx'
 import GestionCursoMateria from './pages/crud/curso-materia/GestionCursoMateria.jsx'
 import Docentes from './pages/crud/docentes/Docentes.jsx'
-
+// import Breadcrumb from './components/layout/Breadcrumb';
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -92,19 +95,22 @@ function App() {
         <Route path="/estadoAcademicoAlumno" element={<ProtectedRoute><EstadoAcademicoPage/></ProtectedRoute>} />
         <Route path="/asistencia-alumno" element={<ProtectedRoute><AsistenciaAlumno/></ProtectedRoute>} />
         <Route path="/estado-academico" element={<ProtectedRoute><EstadoAcademicoAlumno/></ProtectedRoute>} />
-        <Route path="/historial-comunicaciones" element={<ProtectedRoute><HistorialComunicaciones/></ProtectedRoute>} />
+        <Route path="perfil-alumno/historial-comunicacion" element={<ProtectedRoute><HistorialComunicacion/></ProtectedRoute>} />
         <Route path="/home-certificados" element={<ProtectedRoute><HomeCertificados/></ProtectedRoute>} />
         <Route path="/certificados-AbnEsc" element={<ProtectedRoute><CertificadoAbonoEscolar/></ProtectedRoute>} />
-        <Route path="/certificados-ActVolEx" element={<ProtectedRoute><ActaVolanteExamen/></ProtectedRoute>} />
+        {/* <Route path="/certificados-ActVolEx" element={<ProtectedRoute><ActaVolanteExamen/></ProtectedRoute>} /> */}
         <Route path="/constanciaAlumnoRegular" element={<ProtectedRoute><ConstanciaAlumnoRegular/></ProtectedRoute>} />
         <Route path="/certificadoEscolar" element={<ProtectedRoute><CertificadoEscolar/></ProtectedRoute>} />
         <Route path="/certificados-cCVac" element={<ProtectedRoute><CertificadoComprobanteDeVacante/></ProtectedRoute>} />
-        <Route path="/perfil-alumno/generar-mail" element={<ProtectedRoute><GenerarMail/></ProtectedRoute>} />
+        <Route path="/generar-mail" element={<ProtectedRoute><GenerarMail/></ProtectedRoute>} />
         <Route path="/enviar-alerta-tutores" element={<ProtectedRoute><EnviarAlertaTutoresPage/></ProtectedRoute>} />
         <Route path="/anio-lectivo" element={<ProtectedRoute><GestionAniosLectivos/></ProtectedRoute>} />
         <Route path="/cursos-crud" element={<ProtectedRoute><GestionCursos/></ProtectedRoute>} />
         <Route path="/curso-materia" element={<ProtectedRoute><GestionCursoMateria/></ProtectedRoute>} />
         <Route path="/altas-docentes" element={<ProtectedRoute><Docentes/></ProtectedRoute>} />
+        <Route path="/perfil-alumno/generar-mail-alumno" element={<GenerarMailAlumno/>} />
+        {/* <Route path="/admin-principal" element={<ProtectedRoute><AdminPrincipal/></ProtectedRoute>} /> */} 
+      
         
         <Route path="/cursoDashboard" element={<ProtectedRoute><CursoDashboardPage/></ProtectedRoute>} />
         <Route path="/reporte-curso/listado" element={<ProtectedRoute><ReporteCursoListPage /></ProtectedRoute>} />
