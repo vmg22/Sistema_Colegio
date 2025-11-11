@@ -9,3 +9,20 @@
     font-size: 15px;
     font-weight:550;
 }
+
+.btn-outline-light.logout-btn:hover {
+  
+  color: white;
+  background-color: transparent;
+}
+
+logout-btn {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.btn-outline-light.logout-btn:hover {
+  color: white;
+  background-color: transparent;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
+}

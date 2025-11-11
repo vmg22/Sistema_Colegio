@@ -71,6 +71,7 @@ const Login = () => {
   };
 
   return (
+    
     <div className="login-container">
       {/* Formulario de login */}
       <div className="login-form-wrapper">
@@ -157,6 +158,7 @@ const Login = () => {
         </div>
       </div>
     </div>
+  
   );
 };
 
