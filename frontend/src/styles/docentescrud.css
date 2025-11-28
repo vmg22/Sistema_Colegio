@@ -168,14 +168,17 @@
     border-radius: 15px;
     font-size: 13px;
     font-weight: 600;
-    color: white;
+    color: rgb(255, 255, 255);
     text-transform: capitalize;
     display: inline-block;
     min-width: 70px;
     text-align: center;
 }
 .status-badge.activo { background-color: #198754; } 
+.status-badge.activa { background-color: #198754; } 
+
 .status-badge.inactivo { background-color: #dc3545; }
+.status-badge.inactiva { background-color: #dc3545; }
 .status-badge.licencia { background-color: #ffc107; color: #333; }
 .status-badge.completado { background-color: rgb(255, 153, 0);}
 .status-badge.baja-temporal { background-color: #fef0c7; color: #b54708; border: 1px solid #f7d28c; }

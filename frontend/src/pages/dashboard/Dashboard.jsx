@@ -15,6 +15,7 @@ import LineaSeparadora from "../../components/ui/LineaSeparadora";
 import { getMaterias } from "../../services/materiasServices";
 import { getCursos } from "../../services/cursosService";
 import { getAniosLectivos } from "../../services/aniosServices";
+import { getMateriasAsignadas } from "../../services/cursoMateriaService";
 
 const Dashboard = () => {
   const [tipoConsulta, setConsulta] = useState("alumno");
@@ -32,6 +33,9 @@ const Dashboard = () => {
   const [selectedMateria, setSelectedMateria] = useState("");
   const [selectedPeriodo, setSelectedPeriodo] = useState("");
   const [selectedAnio, setSelectedAnio] = useState("");
+  const [materiasCursoSeleccionado, setMateriasCursoSeleccionado] = useState(
+    []
+  );
 
   // Obtener rol del usuario
   const [userRole, setUserRole] = useState("");
@@ -54,29 +58,46 @@ const Dashboard = () => {
     const role = localStorage.getItem("userRole") || "usuario";
     setUserRole(role);
 
-    const cargarDatos = async () => {
+    const cargarDatosEstaticos = async () => {
       try {
-        const [dataMaterias, dataCursos, dataAnios] = await Promise.all([
-          getMaterias(),
+        // SOLO cargamos cursos y años lectivos
+        const [dataCursos, dataAnios] = await Promise.all([
           getCursos(),
           getAniosLectivos(),
         ]);
-        console.log(
-          "Datos recibidos de la API:",
-          dataMaterias,
-          dataCursos,
-          dataAnios
-        );
+        console.log("Datos recibidos de la API:", dataCursos, dataAnios);
 
-        setMaterias(dataMaterias);
         setCursos(dataCursos.datos);
         setAnios(dataAnios.datos);
       } catch (error) {
-        console.error("Error al cargar materias:", error);
+        console.error("Error al cargar datos estáticos:", error);
       }
     };
-    cargarDatos();
+    cargarDatosEstaticos();
   }, []);
+
+  useEffect(() => {
+    if (tipoConsulta === "curso" && selectedCurso) {
+      const cargarMaterias = async () => {
+        try {
+          setLoading(true);
+          setError("");
+          const id_curso = parseInt(selectedCurso);
+          const dataMaterias = await getMateriasAsignadas(id_curso);
+          setMateriasCursoSeleccionado(dataMaterias);
+        } catch (error) {
+          console.error("Error al cargar materias asignadas:", error);
+          setMateriasCursoSeleccionado([]); // Opcional: setError("Error al cargar las materias del curso.");
+        } finally {
+          setLoading(false);
+        }
+      };
+      cargarMaterias();
+    } else {
+      // Limpiar las materias si no hay curso seleccionado o si cambiamos de consulta
+      setMateriasCursoSeleccionado([]);
+    }
+  }, [selectedCurso, tipoConsulta]);
 
   // FILTRADO DE MATERIAS según el curso seleccionado
   const materiasFiltradas = useMemo(() => {
@@ -105,6 +126,7 @@ const Dashboard = () => {
     setSelectedMateria("");
     setSelectedPeriodo("");
     setSelectedAnio("");
+    setMateriasCursoSeleccionado([]);
   };
 
   const handleSubmit = async (event) => {
@@ -182,7 +204,7 @@ const Dashboard = () => {
       const cursoObj = cursos.find(
         (c) => c.id_curso === parseInt(selectedCurso)
       );
-      const materiaObj = materiasFiltradas.find(
+      const materiaObj = materiasCursoSeleccionado.find(
         (m) => m.id_materia === parseInt(selectedMateria)
       );
       const periodoNombre =
@@ -275,7 +297,7 @@ const Dashboard = () => {
           </div>
           <span className="btn-texto">Consulta por Curso</span>
         </button>
-{/* CARD ENVIAR MAIL GENERAL (visible para todos) */}
+        {/* CARD ENVIAR MAIL GENERAL (visible para todos) */}
         <button
           className={`btn-tipo ${tipoConsulta === "mail" ? "activo" : ""}`}
           onClick={() => navigate("/generar-mail")}
@@ -384,29 +406,35 @@ const Dashboard = () => {
               </Form.Group>
 
               <Form.Group as={Col} md="4">
-                <Form.Label className="formLabel">Materia</Form.Label>
+                               {" "}
+                <Form.Label className="formLabel">Materia</Form.Label>         
+                     {" "}
                 <Form.Select
                   required
                   value={selectedMateria}
-                  onChange={(e) => setSelectedMateria(e.target.value)}
-                  disabled={!selectedCurso}
+                  onChange={(e) => setSelectedMateria(e.target.value)} // También deshabilita si está cargando las materias
+                  disabled={!selectedCurso || loading}
                 >
                   <option value="">
                     {!selectedCurso
                       ? "Primero seleccione un curso"
+                      : loading
+                      ? "Cargando materias..." // <-- Mensaje de carga
                       : "Seleccione materia"}
                   </option>
-                  {materiasFiltradas?.map((materia) => (
+                  {materiasCursoSeleccionado?.map((materia) => (
                     <option key={materia.id_materia} value={materia.id_materia}>
-                      {materia.nombre}
+                   {materia.nombre}
                     </option>
                   ))}
                 </Form.Select>
-                {selectedCurso && materiasFiltradas.length === 0 && (
-                  <Form.Text className="text-warning">
-                    No hay materias activas para este curso
-                  </Form.Text>
-                )}
+                {selectedCurso &&
+                  !loading &&
+                  materiasCursoSeleccionado.length === 0 && (
+                    <Form.Text className="text-warning">
+                    No hay materias asignadas a este curso.
+                    </Form.Text>
+                  )}
               </Form.Group>
             </Row>
 
