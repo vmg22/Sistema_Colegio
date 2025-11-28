@@ -158,36 +158,34 @@ const Docentes = () => {
     ];
 
     const renderActions = (docente) => (
-    <>
-        <button 
-            onClick={() => navigate(`/docentes/${docente.id_docente}`)}
-            className="action-button view" 
-            title="Ver Perfil"
+      <>
+        <button
+          onClick={() => navigate(`/docentes/${docente.id_docente}`)}
+          // 1. Usamos una NUEVA clase CSS
+          className="action-button-text view"
+          title="Ver Asignaciones"
         >
-        <span className="material-symbols-outlined">
-                visibility
-            </span>
+          {/* 2. El icono va primero */}
+          <span className="material-symbols-outlined">visibility</span>
+          {/* 3. El texto va después */}
+          Ver Asignaciones
         </button>
 
         <button
-            onClick={() => handleOpenEditModal(docente)}
-            className="action-button edit"
-            title="Editar"
+          onClick={() => handleOpenEditModal(docente)}
+          className="action-button edit"
+          title="Editar"
         >
-        <span className="material-symbols-outlined">
-                edit
-            </span>
+          <span className="material-symbols-outlined">edit</span>
         </button>
         <button
-            onClick={() => handleDelete(docente.id_docente)}
-            className="action-button delete"
-            title="Eliminar"
+          onClick={() => handleDelete(docente.id_docente)}
+          className="action-button delete"
+          title="Eliminar"
         >
-        <span className="material-symbols-outlined">
-                delete
-            </span>
+          <span className="material-symbols-outlined">delete</span>
         </button>
-    </>
+      </>
     );
 
     return (

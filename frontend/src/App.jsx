@@ -49,7 +49,7 @@ import GestionAniosLectivos from './pages/crud/anio-lectivo/GestionAniosLectivos
 import GestionCursos from './pages/crud/cursos/GestionCursos.jsx'
 import GestionCursoMateria from './pages/crud/curso-materia/GestionCursoMateria.jsx'
 import Docentes from './pages/crud/docentes/Docentes.jsx'
-import Breadcrumb from './components/layout/Breadcrumb';
+// import Breadcrumb from './components/layout/Breadcrumb';
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');

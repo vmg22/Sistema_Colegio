@@ -265,3 +265,35 @@
   background-color: #e9ecef; 
   border-color: #bbbfc3; 
 }
+
+/* --- Estilo para Botones de Acción CON TEXTO --- */
+.action-button-text {
+    display: inline-flex;  /* Alinear icono y texto */
+    align-items: center;
+    gap: 6px;             /* Espacio entre icono y texto */
+    padding: 6px 12px;    /* Padding para que el texto entre */
+    border: 1px solid;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;      /* Tamaño del texto */
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none; /* Quitar subrayado si se usa como Link */
+}
+
+/* Colores para el botón "view" (azul) */
+.action-button-text.view {
+    background-color: #ffffff;
+    border-color: #0d6efd;
+    color: #0d6efd;
+}
+.action-button-text.view:hover {
+    background-color: #e6f0ff;
+    border-color: #0b5ed7;
+}
+
+/* Ajusta el tamaño del icono dentro de este botón */
+.action-button-text .material-symbols-outlined {
+    font-size: 18px; /* Un poco más pequeño que el texto */
+    font-weight: 500;
+}
