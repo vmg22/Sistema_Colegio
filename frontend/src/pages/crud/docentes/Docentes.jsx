@@ -167,8 +167,6 @@ const Docentes = () => {
         >
           {/* 2. El icono va primero */}
           <span className="material-symbols-outlined">visibility</span>
-          {/* 3. El texto va después */}
-          Ver Asignaciones
         </button>
 
         <button
