@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
@@ -10,6 +10,26 @@ import "../../styles/nav.css";
 const Navv = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userJSON = localStorage.getItem("usuario");
+    let currentUser = null;
+
+    if (userJSON) {
+      try {
+        currentUser = JSON.parse(userJSON);
+      } catch (e) {
+        console.error("Error al parsear el objeto de usuario:", e);
+      }
+    } // 2. Actualizar los estados
+
+    if (currentUser) {
+      setUser(currentUser); // Guarda el objeto completo
+    } else {
+      // Si no hay objeto 'usuario', intenta leer el rol antiguo por si acaso
+    }
+  }, []);
 
   const handleLogout = async () => {
     setLoading(true);
@@ -25,7 +45,7 @@ const Navv = () => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
           });
         } catch (error) {
@@ -40,22 +60,21 @@ const Navv = () => {
 
       // Redirigir al login con replace: true para no dejar historial
       navigate("/login", { replace: true });
-      
+
       // Prevenir que el usuario vuelva atrás con el botón del navegador
-      window.history.pushState(null, '', '/login');
-      
+      window.history.pushState(null, "", "/login");
+
       // Listener para prevenir navegación hacia atrás
       const preventBack = () => {
-        window.history.pushState(null, '', '/login');
+        window.history.pushState(null, "", "/login");
       };
-      
-      window.addEventListener('popstate', preventBack);
-      
+
+      window.addEventListener("popstate", preventBack);
+
       // Limpiar el listener después de 1 segundo (ya estará en login)
       setTimeout(() => {
-        window.removeEventListener('popstate', preventBack);
+        window.removeEventListener("popstate", preventBack);
       }, 1000);
-
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
       // Aún así limpiar y redirigir
@@ -80,19 +99,19 @@ const Navv = () => {
                 className="d-inline-block me-2"
                 style={{
                   transform: "translateY(-2px)",
-                }} 
+                }}
               />
               <span className="nombreCol">
                 SISTEMA DE GESTIÓN <br /> CARLOS GUIDO SPANO
               </span>
             </Navbar.Brand>
 
-            <div 
-              className="mx-3" 
-              style={{ 
-                height: "40px", 
-                width: "1px", 
-                backgroundColor: "rgba(255,255,255,0.5)" 
+            <div
+              className="mx-3"
+              style={{
+                height: "40px",
+                width: "1px",
+                backgroundColor: "rgba(255,255,255,0.5)",
               }}
             ></div>
 
@@ -108,20 +127,24 @@ const Navv = () => {
             </Nav>
           </div>
 
-          <button 
+          <button
             className="btn btn-outline-light logout-btn"
-            onClick={handleLogout} 
+            onClick={handleLogout}
             disabled={loading}
           >
             {loading ? (
               <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
                 Cerrando...
               </>
             ) : (
               <>
                 <i className="bi bi-box-arrow-right me-2"></i>
-                Cerrar Sesión
+                Cerrar sesión {user?.username}
               </>
             )}
           </button>

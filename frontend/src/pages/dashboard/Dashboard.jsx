@@ -17,6 +17,52 @@ import { getCursos } from "../../services/cursosService";
 import { getAniosLectivos } from "../../services/aniosServices";
 import { getMateriasAsignadas } from "../../services/cursoMateriaService";
 
+const ROLE_CONFIG = {
+  admin: {
+    icon: "admin_panel_settings",
+    text: "Administrador",
+    className: "admin-badge",
+    iconClass: "admin-icon",
+    textClass: "admin-text"
+  },
+  docente: {
+    icon: "school",
+    text: "Docente",
+    className: "docente-badge",
+    iconClass: "docente-icon",
+    textClass: "docente-text"
+  },
+  preceptor: {
+    icon: "security",
+    text: "Preceptor",
+    className: "preceptor-badge",
+    iconClass: "preceptor-icon",
+    textClass: "preceptor-text"
+  },
+  secretario: {
+    icon: "edit_document",
+    text: "Secretario",
+    className: "secretario-badge",
+    iconClass: "secretario-icon",
+    textClass: "secretario-text"
+  },
+  tutor: {
+    icon: "person_add",
+    text: "Tutor",
+    className: "tutor-badge",
+    iconClass: "tutor-icon",
+    textClass: "tutor-text"
+  },
+  // Opcional: Define un valor por defecto para roles no reconocidos
+  default: {
+    icon: "person",
+    text: "Usuario",
+    className: "default-badge",
+    iconClass: "default-icon",
+    textClass: "default-text"
+  },
+};
+
 const Dashboard = () => {
   const [tipoConsulta, setConsulta] = useState("alumno");
   const [validated, setValidated] = useState(false);
@@ -39,6 +85,7 @@ const Dashboard = () => {
 
   // Obtener rol del usuario
   const [userRole, setUserRole] = useState("");
+  const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
 
@@ -55,8 +102,25 @@ const Dashboard = () => {
   } = useConsultaStore();
 
   useEffect(() => {
-    const role = localStorage.getItem("userRole") || "usuario";
-    setUserRole(role);
+    const userJSON = localStorage.getItem("usuario");
+    let currentUser = null;
+
+    if (userJSON) {
+      try {
+        currentUser = JSON.parse(userJSON);
+      } catch (e) {
+        console.error("Error al parsear el objeto de usuario:", e);
+      }
+    } // 2. Actualizar los estados
+
+    if (currentUser) {
+      setUser(currentUser); // Guarda el objeto completo
+      setUserRole(currentUser.rol || "usuario"); // Usa el rol del objeto si existe
+    } else {
+      // Si no hay objeto 'usuario', intenta leer el rol antiguo por si acaso
+      const role = localStorage.getItem("userRole") || "usuario";
+      setUserRole(role);
+    }
 
     const cargarDatosEstaticos = async () => {
       try {
@@ -238,6 +302,8 @@ const Dashboard = () => {
     navigate("/crud");
   };
 
+  const currentRoleConfig = ROLE_CONFIG[userRole] || ROLE_CONFIG["default"];
+  console.log(user)
   return (
     <div className="nombre_vista">
       <div
@@ -260,15 +326,13 @@ const Dashboard = () => {
           <h4>Consulta Académica</h4>
         </div>
 
-        {/* ✅ BADGE DE USUARIO ADMIN */}
-        {userRole === "admin" && (
-          <div className="admin-badge">
-            <span className="material-symbols-outlined admin-icon">
-              admin_panel_settings
-            </span>
-            <span className="admin-text">Administrador</span>
-          </div>
-        )}
+        {/* BADGE DE USUARIO  */}
+        <div className={currentRoleConfig.className}>
+          <span className="material-symbols-outlined icon">
+            {currentRoleConfig.icon}
+          </span>
+          <span className="text">{currentRoleConfig.text}</span>
+        </div>
       </div>
 
       <LineaSeparadora />
@@ -424,7 +488,7 @@ const Dashboard = () => {
                   </option>
                   {materiasCursoSeleccionado?.map((materia) => (
                     <option key={materia.id_materia} value={materia.id_materia}>
-                   {materia.nombre}
+                      {materia.nombre}
                     </option>
                   ))}
                 </Form.Select>
@@ -432,7 +496,7 @@ const Dashboard = () => {
                   !loading &&
                   materiasCursoSeleccionado.length === 0 && (
                     <Form.Text className="text-warning">
-                    No hay materias asignadas a este curso.
+                      No hay materias asignadas a este curso.
                     </Form.Text>
                   )}
               </Form.Group>
