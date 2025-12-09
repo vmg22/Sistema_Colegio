@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2"; // <-- 1. IMPORTADO
+import Swal from "sweetalert2";
 import BtnVolver from "../../../components/ui/BtnVolver";
 import TableCrud from "../../../components/crud/TableCrud";
+import Paginador from "../../../components/crud/Paginador";
 import { getAllAlumnos, deleteAlumno } from "../../../services/alumnosService";
 import AlumnoEditModal from "../../../components/modals/AlumnoEditModal";
 import AlumnoWizardModal from "../../../components/modals/AlumnoWizardModal";
 import "../../../styles/alumnocrud.css"
 
 const Alumnos = () => {
-  // Estados
+  // Estados existentes
   const [alumnos, setAlumnos] = useState([]);
   const [alumnosFiltrados, setAlumnosFiltrados] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +20,11 @@ const Alumnos = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentAlumno, setCurrentAlumno] = useState(null);
   
-  const navigate = useNavigate();
+  // Estados de paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  
+  const _navigate = useNavigate();
 
   // Cargar todos los alumnos
   const loadAlumnos = async () => {
@@ -171,26 +176,37 @@ const Alumnos = () => {
     },
   ];
 
+  // Calcular datos paginados
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const alumnosPaginados = alumnosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(alumnosFiltrados.length / itemsPerPage);
+
+  // Manejar cambio de página
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Manejar cambio de elementos por página
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  };
+
   // Renderizar acciones
   const renderActions = (alumno) => (
-    <div className="table-actions">
+    <div className="action-buttons">
       <button
-        onClick={() => navigate(`/alumnos/${alumno.id_alumno}`)}
-        className="action-button view"
-        title="Ver Perfil"
-      >
-        <span className="material-symbols-outlined">visibility</span>
-      </button>
-      <button
+        className="edit-button"
         onClick={() => handleOpenEditModal(alumno)}
-        className="action-button edit"
         title="Editar"
       >
         <span className="material-symbols-outlined">edit</span>
       </button>
       <button
+        className="delete-button"
         onClick={() => handleDelete(alumno.id_alumno)}
-        className="action-button delete"
         title="Eliminar"
       >
         <span className="material-symbols-outlined">delete</span>
@@ -205,7 +221,6 @@ const Alumnos = () => {
         <h2>Gestión de Alumnos</h2>
       </div>
 
-      {/* Barra de Búsqueda */}
       <div className="search-add-bar">
         <div className="search-box">
           <input
@@ -230,7 +245,6 @@ const Alumnos = () => {
         </button>
       </div>
 
-      {/* Contenedor de la Tabla */}
       <div className="list-container">
         <div className="list-header">
           <h3>Listado de Alumnos</h3>
@@ -246,15 +260,25 @@ const Alumnos = () => {
 
         <TableCrud
           columns={columns}
-          data={alumnosFiltrados}
+          data={alumnosPaginados}
           isLoading={isLoading}
           error={error}
           renderActions={renderActions}
           getKey={(alumno) => alumno.id_alumno}
         />
+
+        {!isLoading && !error && alumnosFiltrados.length > 0 && (
+          <Paginador
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={alumnosFiltrados.length}
+            onItemsPerPageChange={handleItemsPerPageChange}
+          />
+        )}
       </div>
 
-      {/* Modal de Edición */}
       {showEditModal && (
         <AlumnoEditModal
           alumnoToEdit={currentAlumno}

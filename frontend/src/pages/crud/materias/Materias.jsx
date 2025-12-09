@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { getMaterias, deleteMateria } from "../../../services/materiasaltasService";
 import MateriaModal from "../../../components/modals/MateriaModal";
 import TableCrud from "../../../components/crud/TableCrud";
+import Paginador from "../../../components/crud/Paginador";
 import Swal from "sweetalert2";
 import { useDebounce } from "use-debounce";
 import "../../../styles/docentescrud.css";
@@ -14,6 +15,11 @@ const Materias = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [materiaAEditar, setMateriaAEditar] = useState(null);
+
+  // Estados de paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
 
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
@@ -115,9 +121,22 @@ const Materias = () => {
     });
   };
 
-  // Botón "Buscar" (Sin cambios)
+  // Botón "Buscar"
   const handleSearch = () => {
+    setCurrentPage(1); // Reset page on search
     cargarMaterias(searchTerm);
+  };
+
+  // Lógica de Paginación
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = materias.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(materias.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
   };
 
   // Definición de columnas (Sin cambios)
@@ -231,12 +250,24 @@ const Materias = () => {
 
         <TableCrud
           columns={columns}
-          data={materias}
+          data={currentItems}
           isLoading={loading}
           error={error}
           renderActions={renderActions}
           getKey={(materia) => materia.id_materia}
         />
+
+        {/* Paginador */}
+        {!loading && !error && materias.length > 0 && (
+          <Paginador
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={materias.length}
+            onItemsPerPageChange={handleItemsPerPageChange}
+          />
+        )}
       </div>
 
       <MateriaModal

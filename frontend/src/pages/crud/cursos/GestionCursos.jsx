@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { getCursos, deleteCurso } from '../../../services/cursosService';
 import CursoModal from '../../../components/modals/CursoModal';
 import TableCrud from '../../../components/crud/TableCrud';
+import Paginador from '../../../components/crud/Paginador';
 import Swal from 'sweetalert2';
 import '../../../styles/docentescrud.css';
 import BtnVolver from '../../../components/ui/BtnVolver';
@@ -14,6 +15,11 @@ const GestionCursos = () => {
   
   const [showModal, setShowModal] = useState(false);
   const [cursoAEditar, setCursoAEditar] = useState(null);
+
+  // Estados de paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
   const cargarCursos = async () => {
     try {
       setLoading(true);
@@ -100,6 +106,7 @@ const GestionCursos = () => {
   };
 
   const handleSearch = () => {
+    setCurrentPage(1); // Reset page on search
     cargarCursos();
   };
 
@@ -112,6 +119,18 @@ const GestionCursos = () => {
       curso.division?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [cursos, searchTerm]); 
+  
+  // Lógica de Paginación
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = cursosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(cursosFiltrados.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  }; 
 
   // Definición de columnas para TableCrud
   const columns = [
@@ -213,12 +232,24 @@ const GestionCursos = () => {
 
         <TableCrud
           columns={columns}
-          data={cursosFiltrados} 
+          data={currentItems} 
           isLoading={loading}
           error={error} // El TableCrud debería mostrar este error
           renderActions={renderActions}
           getKey={(curso) => curso.id_curso}
         />
+
+        {/* Paginador */}
+        {!loading && !error && cursosFiltrados.length > 0 && (
+          <Paginador
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={cursosFiltrados.length}
+            onItemsPerPageChange={handleItemsPerPageChange}
+          />
+        )}
       </div>
 
       <CursoModal

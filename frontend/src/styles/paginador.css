@@ -1,0 +1,181 @@
+/* ========================================
+   CONTENEDOR PRINCIPAL DEL PAGINADOR
+   ======================================== */
+.paginador-container-crud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 0;
+}
+
+/* ========================================
+   INFORMACIÓN DE REGISTROS
+   ======================================== */
+.paginador-info-crud {
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ========================================
+   CONTROLES DE NAVEGACIÓN
+   ======================================== */
+.paginador-controls-crud {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+/* ========================================
+   BOTONES DEL PAGINADOR
+   ======================================== */
+.paginador-button-crud {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #ddd;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paginador-button-crud:hover:not(:disabled) {
+  background: #f5f5f5;
+  border-color: #5b68df;
+  color: #5b68df;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(91, 104, 223, 0.1);
+}
+
+.paginador-button-crud:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.paginador-button-crud:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f9f9f9;
+}
+
+/* Botón activo (página actual) */
+.paginador-button-active-crud {
+  background: #5b68df !important;
+  color: white !important;
+  border-color: #5b68df !important;
+  font-weight: 600;
+  cursor: default;
+}
+
+.paginador-button-active-crud:hover {
+  transform: none !important;
+}
+
+/* Botones de primera/última página */
+.paginador-button-first-crud,
+.paginador-button-last-crud {
+  font-weight: 700;
+}
+
+/* Botones de página numérica */
+.paginador-button-page-crud {
+  min-width: 36px;
+}
+
+/* ========================================
+   PUNTOS SUSPENSIVOS
+   ======================================== */
+.paginador-ellipsis-crud {
+  padding: 0 8px;
+  color: #999;
+  font-weight: 600;
+  user-select: none;
+}
+
+/* ========================================
+   SELECTOR DE ELEMENTOS POR PÁGINA
+   ======================================== */
+.paginador-select-crud {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.paginador-select-crud:hover {
+  border-color: #5b68df;
+}
+
+.paginador-select-crud:focus {
+  outline: none;
+  border-color: #5b68df;
+  box-shadow: 0 0 0 3px rgba(91, 104, 223, 0.1);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .paginador-container-crud {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .paginador-info-crud {
+    order: 1;
+    width: 100%;
+    text-align: center;
+  }
+
+  .paginador-controls-crud {
+    order: 2;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .paginador-select-crud {
+    order: 3;
+    width: 100%;
+  }
+
+  .paginador-button-crud {
+    min-width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .paginador-button-crud {
+    min-width: 28px;
+    height: 28px;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  .paginador-controls-crud {
+    gap: 3px;
+  }
+
+  .paginador-ellipsis-crud {
+    padding: 0 4px;
+  }
+}
