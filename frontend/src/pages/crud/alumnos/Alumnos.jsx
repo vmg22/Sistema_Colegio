@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2"; // <-- 1. IMPORTADO
+import Swal from "sweetalert2";
 import BtnVolver from "../../../components/ui/BtnVolver";
 import TableCrud from "../../../components/crud/TableCrud";
+import Paginador from "../../../components/ui/Paginador";
 import { getAllAlumnos, deleteAlumno } from "../../../services/alumnosService";
 import AlumnoEditModal from "../../../components/modals/AlumnoEditModal";
 import AlumnoWizardModal from "../../../components/modals/AlumnoWizardModal";
 import "../../../styles/alumnocrud.css"
 
 const Alumnos = () => {
-  // Estados
+  // Estados existentes
   const [alumnos, setAlumnos] = useState([]);
   const [alumnosFiltrados, setAlumnosFiltrados] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -18,6 +19,10 @@ const Alumnos = () => {
   const [showWizardModal, setShowWizardModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentAlumno, setCurrentAlumno] = useState(null);
+  
+  // Estados de paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   
   const navigate = useNavigate();
 
@@ -45,7 +50,7 @@ const Alumnos = () => {
     loadAlumnos();
   }, []);
 
-  // Filtrar alumnos en tiempo real (Esta lógica ya estaba, no se toca)
+  // Filtrar alumnos en tiempo real
   useEffect(() => {
     if (searchTerm.trim() === '') {
       setAlumnosFiltrados(alumnos);
@@ -67,7 +72,25 @@ const Alumnos = () => {
         setError(null);
       }
     }
+    // Resetear a página 1 cuando cambia la búsqueda
+    setCurrentPage(1);
   }, [searchTerm, alumnos]);
+
+  // Calcular datos paginados
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const alumnosPaginados = alumnosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(alumnosFiltrados.length / itemsPerPage);
+
+  // Manejar cambio de página
+  const handlePageChange = (pageNumber, newItemsPerPage) => {
+    if (newItemsPerPage && newItemsPerPage !== itemsPerPage) {
+      setItemsPerPage(newItemsPerPage);
+      setCurrentPage(1);
+    } else {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   // Limpiar búsqueda
   const handleClearSearch = () => {
@@ -246,15 +269,26 @@ const Alumnos = () => {
 
         <TableCrud
           columns={columns}
-          data={alumnosFiltrados}
+          data={alumnosPaginados}
           isLoading={isLoading}
           error={error}
           renderActions={renderActions}
           getKey={(alumno) => alumno.id_alumno}
         />
+
+        {/* Paginación */}
+        {!isLoading && !error && alumnosFiltrados.length > 0 && (
+          <Paginador
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={alumnosFiltrados.length}
+          />
+        )}
       </div>
 
-      {/* Modal de Edición */}
+      {/* Modales */}
       {showEditModal && (
         <AlumnoEditModal
           alumnoToEdit={currentAlumno}

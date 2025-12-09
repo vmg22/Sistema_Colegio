@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { useDebounce } from "use-debounce";
 import "../../../styles/docentescrud.css";
 import BtnVolver from "../../../components/ui/BtnVolver";
+import Paginador from '../../../components/ui/Paginador';
 
 const Materias = () => {
   const [materias, setMaterias] = useState([]);
@@ -17,6 +18,9 @@ const Materias = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const isInitialMount = useRef(true);
 
@@ -118,6 +122,27 @@ const Materias = () => {
   // Botón "Buscar" (Sin cambios)
   const handleSearch = () => {
     cargarMaterias(searchTerm);
+  };
+
+  // Calcular paginación
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const materiasFiltradas = materias.filter(materia => {
+    return (
+      materia.nombre.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+      (materia.descripcion && materia.descripcion.toLowerCase().includes(debouncedSearchTerm.toLowerCase()))
+    );
+  });
+  const currentMaterias = materiasFiltradas.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(materiasFiltradas.length / itemsPerPage);
+
+  const handlePageChange = (page, newItemsPerPage) => {
+    if (newItemsPerPage) {
+      setItemsPerPage(newItemsPerPage);
+      setCurrentPage(1);
+    } else {
+      setCurrentPage(page);
+    }
   };
 
   // Definición de columnas (Sin cambios)
@@ -231,11 +256,19 @@ const Materias = () => {
 
         <TableCrud
           columns={columns}
-          data={materias}
+          data={currentMaterias}
           isLoading={loading}
           error={error}
           renderActions={renderActions}
           getKey={(materia) => materia.id_materia}
+        />
+
+        <Paginador
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={materiasFiltradas.length}
         />
       </div>
 

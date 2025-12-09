@@ -10,6 +10,7 @@ import DocenteEditModal from '../../../components/modals/DocenteEditModal';
 import TableCrud from '../../../components/crud/TableCrud';
 import '../../../styles/docentescrud.css'; 
 import BtnVolver from '../../../components/ui/BtnVolver';
+import Paginador from '../../../components/ui/Paginador';
 
 const Docentes = () => {
     const navigate = useNavigate();
@@ -25,6 +26,9 @@ const Docentes = () => {
     const [showWizardModal, setShowWizardModal] = useState(false); 
     const [showEditModal, setShowEditModal] = useState(false);     
     const [currentDocente, setCurrentDocente] = useState(null); 
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
 
     const loadDocentes = useCallback(async (buscar) => { // <-- Modificado para aceptar 'buscar'
         setIsLoading(true);
@@ -135,7 +139,27 @@ const Docentes = () => {
         });
     };
 
-    
+    // Filtrar docentes por búsqueda
+    const docentesFiltrados = docentes.filter(docente => {
+        const fullName = `${docente.nombre} ${docente.apellido}`.toLowerCase();
+        return fullName.includes(searchTerm.toLowerCase());
+    });
+
+    // Calcular paginación
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentDocentes = docentesFiltrados.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(docentesFiltrados.length / itemsPerPage);
+
+    const handlePageChange = (page, newItemsPerPage) => {
+        if (newItemsPerPage) {
+            setItemsPerPage(newItemsPerPage);
+            setCurrentPage(1);
+        } else {
+            setCurrentPage(page);
+        }
+    };
+
     const columns = [
         { header: 'ID', accessor: 'id_docente' },
         { 
@@ -223,13 +247,21 @@ const Docentes = () => {
                 
                 <TableCrud
                     columns={columns}
-                    data={docentes}
+                    data={currentDocentes}
                     isLoading={isLoading}
                     error={error}
                     renderActions={renderActions}
                     getKey={(docente) => docente.id_docente}
                 />
             </div>
+
+            <Paginador
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                itemsPerPage={itemsPerPage}
+                totalItems={docentesFiltrados.length}
+            />
 
             {showWizardModal && (
                 <DocenteWizardModal 
