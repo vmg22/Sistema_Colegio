@@ -135,6 +135,107 @@ actualizarDocenteParcial: async (solicitud, respuesta) => {
       }
       error(respuesta, 'Error al restaurar docente', 500, err.message);
     }
+  },
+
+  // ============================================================
+  // NUEVOS CONTROLADORES PARA FILTRADO POR DOCENTE
+  // ============================================================
+
+  // Obtener materias asignadas a un docente
+  obtenerMateriasPorDocente: async (solicitud, respuesta) => {
+    try {
+      const { id } = solicitud.params;
+      const materias = await servicioDocentes.obtenerMateriasPorDocente(id);
+      exito(respuesta, 'Materias del docente obtenidas correctamente', materias);
+    } catch (err) {
+      error(respuesta, 'Error al obtener materias del docente', 500, err.message);
+    }
+  },
+
+  // Obtener cursos asignados a un docente
+  obtenerCursosPorDocente: async (solicitud, respuesta) => {
+    try {
+      const { id } = solicitud.params;
+      const { id_materia } = solicitud.query;
+      
+      let cursos;
+      if (id_materia) {
+        cursos = await servicioDocentes.obtenerCursosPorDocenteYMateria(id, id_materia);
+      } else {
+        cursos = await servicioDocentes.obtenerCursosPorDocente(id);
+      }
+      
+      exito(respuesta, 'Cursos del docente obtenidos correctamente', cursos);
+    } catch (err) {
+      error(respuesta, 'Error al obtener cursos del docente', 500, err.message);
+    }
+  },
+
+  // Obtener alumnos de los cursos donde el docente dicta
+  obtenerAlumnosPorDocente: async (solicitud, respuesta) => {
+    try {
+      const { id } = solicitud.params;
+      const { id_curso } = solicitud.query;
+      
+      let alumnos;
+      if (id_curso) {
+        alumnos = await servicioDocentes.obtenerAlumnosPorDocenteYCurso(id, id_curso);
+      } else {
+        alumnos = await servicioDocentes.obtenerAlumnosPorDocente(id);
+      }
+      
+      exito(respuesta, 'Alumnos del docente obtenidos correctamente', alumnos);
+    } catch (err) {
+      error(respuesta, 'Error al obtener alumnos del docente', 500, err.message);
+    }
+  },
+
+  // Verificar si un docente tiene acceso a un alumno
+  verificarAccesoAlumno: async (solicitud, respuesta) => {
+    try {
+      const { id, id_alumno } = solicitud.params;
+      const tieneAcceso = await servicioDocentes.verificarAccesoAlumno(id, id_alumno);
+      
+      if (tieneAcceso) {
+        exito(respuesta, 'El docente tiene acceso al alumno', { tiene_acceso: true });
+      } else {
+        error(respuesta, 'El docente no tiene acceso a este alumno', 403);
+      }
+    } catch (err) {
+      error(respuesta, 'Error al verificar acceso', 500, err.message);
+    }
+  },
+
+  // Verificar si un docente tiene acceso a un curso
+  verificarAccesoCurso: async (solicitud, respuesta) => {
+    try {
+      const { id, id_curso } = solicitud.params;
+      const tieneAcceso = await servicioDocentes.verificarAccesoCurso(id, id_curso);
+      
+      if (tieneAcceso) {
+        exito(respuesta, 'El docente tiene acceso al curso', { tiene_acceso: true });
+      } else {
+        error(respuesta, 'El docente no tiene acceso a este curso', 403);
+      }
+    } catch (err) {
+      error(respuesta, 'Error al verificar acceso', 500, err.message);
+    }
+  },
+
+  // Verificar si un docente tiene acceso a una materia
+  verificarAccesoMateria: async (solicitud, respuesta) => {
+    try {
+      const { id, id_materia } = solicitud.params;
+      const tieneAcceso = await servicioDocentes.verificarAccesoMateria(id, id_materia);
+      
+      if (tieneAcceso) {
+        exito(respuesta, 'El docente tiene acceso a la materia', { tiene_acceso: true });
+      } else {
+        error(respuesta, 'El docente no tiene acceso a esta materia', 403);
+      }
+    } catch (err) {
+      error(respuesta, 'Error al verificar acceso', 500, err.message);
+    }
   }
 };
 
