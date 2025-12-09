@@ -1,0 +1,57 @@
+.reporte-notas-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  margin-top: 15px;
+}
+
+.reporte-notas-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.reporte-notas-th {
+  background-color: #004b9b;
+  color: white;
+  padding: 12px 8px;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 2px solid #003b7d;
+}
+
+.reporte-notas-td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 14px;
+  color: #333;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.reporte-notas-tr-even {
+  background-color: #f9f9f9;
+}
+
+.reporte-notas-tr-hover {
+  background-color: #e6f0ff;
+}
+
+.reporte-notas-nota-promedio {
+  font-weight: bold;
+}
+
+/* Estilos para notas */
+.reporte-notas-nota-excelente {
+  color: #2e8b57;
+}
+
+.reporte-notas-nota-regular {
+  color: #ff9800;
+}
+
+.reporte-notas-nota-insuficiente {
+  color: #d32f2f;
+}

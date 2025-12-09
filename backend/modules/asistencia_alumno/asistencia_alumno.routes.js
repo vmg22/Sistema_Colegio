@@ -16,7 +16,7 @@ router.post('/clase', asistenciaController.guardarAsistenciasClase);
 // 📊 Reporte consolidado de asistencias de un alumno (por DNI y año lectivo)
 router.get('/reporte/alumno/:dni_alumno', asistenciaController.obtenerReportePorAlumno);
 
-// 🧍‍♂️ Obtener todas las asistencias de un alumno por DNI
+// 🧍♂️ Obtener todas las asistencias de un alumno por DNI
 router.get('/alumno/:dni', asistenciaController.obtenerAsistenciaPorDNI);
 
 // ⚙️ Actualizar un registro específico de asistencia (por id_asistencia)

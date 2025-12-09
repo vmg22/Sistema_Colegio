@@ -1,0 +1,177 @@
+.estado-academico-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', sans-serif;
+}
+
+.estado-academico-card__header {
+  background-color: #303F9F; /* Primary Dark */
+  color: white;
+  padding: 12px 16px;
+}
+
+.estado-academico-card__header-title {
+  margin: 0;
+  font-size: 1.1rem; /* 18px */
+  font-weight: 600;
+}
+
+.estado-academico-card__content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.estado-academico-card__section {
+  width: 100%;
+}
+
+.estado-academico-card__section-title {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 4px;
+}
+
+.estado-academico-card__cuatrimestre-container {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+}
+
+.estado-academico-card__cuatrimestre-box {
+  text-align: center;
+  padding: 12px 8px;
+  border-radius: 6px;
+  background-color: #f4f7fa;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.estado-academico-card__cuatrimestre-label {
+  font-size: 0.8rem; /* 12px */
+  color: #777;
+  margin: 0;
+  font-weight: 600;
+}
+
+.estado-academico-card__notas-container {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-height: 32px;
+}
+
+.estado-academico-card__nota-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background-color: #e0e7ff; /* Light blue */
+  color: #303F9F; /* Primary Dark */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.estado-academico-card__nota-box--null {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background-color: #e0e0e0; /* Grey */
+  color: #777;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.estado-academico-card__promedio-container {
+  margin-top: 10px;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 8px;
+}
+
+.estado-academico-card__promedio-label {
+  font-size: 0.75rem; /* 12px */
+  color: #555;
+  margin: 0;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.estado-academico-card__cuatrimestre-promedio {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  color: #303F9F;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.estado-academico-card__final-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.estado-academico-card__final-box {
+  text-align: center;
+}
+
+.estado-academico-card__final-label {
+  font-size: 0.875rem; /* 14px */
+  color: #555;
+  font-weight: 500;
+  margin: 0;
+}
+
+.estado-academico-card__final-value {
+  font-size: 1.1rem; /* 18px */
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.estado-academico-card__nota-final {
+  font-size: 1.75rem; /* 28px */
+  font-weight: 700;
+  color: #303F9F;
+}
+
+.estado-academico-card__no-data {
+  font-size: 0.9rem;
+  color: #888;
+  text-align: center;
+  padding: 5px 0;
+}
+
+/* Estados académicos */
+.estado-academico-card__estado--aprobado {
+  color: #4caf50;
+  font-weight: 700;
+}
+
+.estado-academico-card__estado--reprobado {
+  color: #f44336;
+  font-weight: 700;
+}
+
+.estado-academico-card__estado--cursando {
+  color: #303F9F;
+  font-weight: 600;
+}

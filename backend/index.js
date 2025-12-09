@@ -13,7 +13,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // --- MIDDLEWARES ---
-app.use(cors());
+// CONFIGURACIÓN CORS CORREGIDA - Permite frontend en puerto 5173
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Frontend Vite
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+}));
+
 app.use(express.json());
 app.use(logger);
 
@@ -22,9 +29,10 @@ app.use(logger);
 app.get('/', (req, res) => {
   res.status(200).send(`
     <div style="font-family: Arial, sans-serif; text-align: center; padding: 40px; background-color: #f4f4f9; border-radius: 10px;">
-      <h1 style="color: #333;">🚀 Backend del Sistema Escolar SGGS</h1>
+      <h1 style="color: #333;"> Backend del Sistema Escolar SGGS</h1>
       <p style="color: #555; font-size: 1.2em;">¡El servidor está funcionando correctamente!</p>
       <p style="color: #777;">La API principal se encuentra en la ruta: <a href="/api/v1" style="color: #007bff; text-decoration: none;">/api/v1</a></p>
+      <p style="color: #777;">Frontend React: <a href="http://localhost:5173" style="color: #007bff; text-decoration: none;">http://localhost:5173</a></p>
     </div>
   `);
 });
@@ -32,14 +40,14 @@ app.get('/', (req, res) => {
 // Usamos un prefijo para todas las rutas de la API, es una buena práctica.
 app.use('/api/v1', apiRoutes);
 
-// --- MANEJO DE ERRORES (el orden es crucial) ---
-// 1. Middleware para rutas no encontradas (404)
-app.use((req, res, next) => {
-  res.status(404).json({
-    error: 'Ruta no encontrada',
-    mensaje: `El recurso ${req.method} ${req.originalUrl} no fue encontrado en el servidor.`
-  });
+// --- REDIRECCIÓN PARA RUTAS DEL FRONTEND ---
+// Esto evita que el backend capture rutas del frontend
+app.get(['/reset-password', '/login', '/solicitar-reset'], (req, res) => {
+  const frontendUrl = `http://localhost:5173${req.originalUrl}`;
+  console.log(`🔄 Redirigiendo al frontend: ${frontendUrl}`);
+  res.redirect(frontendUrl);
 });
+
 
 // 2. Middleware de manejo de errores global (siempre al final)
 app.use(manejadorErrores);
@@ -48,9 +56,9 @@ app.use(manejadorErrores);
 async function iniciarSistema() {
   try {
     console.log('='.repeat(50));
-    console.log('🚀 INICIANDO SISTEMA ESCOLAR SGGS');
+    console.log(' INICIANDO SISTEMA ESCOLAR SGGS');
     
-    console.log('🔌 Verificando conexión a la base de datos...');
+    console.log(' Verificando conexión a la base de datos...');
     const connection = await pool.getConnection();
     
     console.log('   ✅ Conexión a BD exitosa.'); 
@@ -61,8 +69,9 @@ async function iniciarSistema() {
     app.listen(PORT, () => {
       console.log('='.repeat(50));
       console.log('   ✅ SISTEMA INICIADO CORRECTAMENTE');
-      console.log(`   📡 Servidor escuchando en: http://localhost:${PORT}`);
-      console.log(`   ✨ API disponible en: http://localhost:${PORT}/api/v1`);
+      console.log(`    Servidor escuchando en: http://localhost:${PORT}`);
+      console.log(`    API disponible en: http://localhost:${PORT}/api/v1`);
+      console.log(`    Frontend disponible en: http://localhost:5173`);
       console.log('='.repeat(50));
     });
     
@@ -75,7 +84,7 @@ async function iniciarSistema() {
 
 // --- MANEJO ELEGANTE DE CIERRE ---
 const cerrarSistema = async () => {
-  console.log('\n🔌 Cerrando conexiones y terminando el sistema...');
+  console.log('\n Cerrando conexiones y terminando el sistema...');
   try {
     await pool.end();
     console.log('   ✅ Pool de conexiones cerrado.');
@@ -89,6 +98,16 @@ const cerrarSistema = async () => {
 process.on('SIGINT', cerrarSistema);
 process.on('SIGTERM', cerrarSistema);
 
+
+// 2. Middleware de manejo de errores global (siempre al final)
+app.use(manejadorErrores);
+
+app.use((req, res, next) => {
+  res.status(404).json({
+    error: 'Ruta no encontrada',
+    mensaje: `El recurso ${req.method} ${req.originalUrl} no fue encontrado en el servidor.`
+  });
+});
 
 // --- ARRANQUE DEL SISTEMA ---
 iniciarSistema();

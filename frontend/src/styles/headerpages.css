@@ -1,0 +1,17 @@
+.headerHeader 
+{
+    display: 'flex';
+    align-items: 'center';
+    gap: '12px';
+  }
+
+  .iconheader {
+    font-size: '2rem'; 
+    color: '#333';    
+  }
+
+  .tituloHeader 
+  {
+    margin: 0; 
+    color : '#111';
+  }

@@ -10,5 +10,5 @@ router.post('/:id/restaurar', comunicacionController.restaurarComunicacion);
 router.put('/:id', comunicacionController.actualizarComunicacion);
 router.patch('/:id', comunicacionController.actualizarComunicacionParcial);
 router.delete('/:id', comunicacionController.eliminarComunicacion);
-
+router.get('/alumno/:idAlumno', comunicacionController.obtenerComunicacionesPorAlumno);
 module.exports = router;

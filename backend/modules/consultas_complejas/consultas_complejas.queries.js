@@ -6,7 +6,7 @@ UPDATE asistencia_alumno
 SET deleted_at = NOW() 
 WHERE id_asistencia = ?`,
 
-  // Reporte de Asistencia por Alumno (Detallado por Materia)
+  // Reporte de Asistencia por Alumno (Detallado por Materia) /// modificar consulta para que la busqueda sea por DNI 
   reporteAsistenciaPorAlumno: `
 SELECT 
     m.nombre AS materia,
@@ -98,7 +98,7 @@ ORDER BY
     a.apellido_alumno, a.nombre_alumno; `,
 
     
-    consultaalumnoporDNIyAnioLectivo: `
+    consultaAlumnoPorDNIyAnioLectivo: `
       SELECT
     JSON_OBJECT(
         'datosAlumno', JSON_OBJECT(
@@ -173,11 +173,6 @@ JOIN
     anio_lectivo al ON ac.anio_lectivo = al.anio
 WHERE 
     a.dni_alumno = ? AND al.anio = ? `
-
-
-
-
-
 
 
 };

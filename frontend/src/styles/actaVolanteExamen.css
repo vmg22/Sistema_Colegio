@@ -1,0 +1,750 @@
+/* ========================================
+   ACTA VOLANTE DE EXAMEN - DOCUMENTO OFICIAL
+   Diseño formal para registro de exámenes
+   TODAS las clases tienen prefijo "acta-" para evitar conflictos
+   ======================================== */
+
+/* ========================================
+   CONTENEDOR PRINCIPAL
+   ======================================== */
+.acta-body {
+  min-height: 100vh;
+  background: #f5f7fb !important; /* ✅ CAMBIADO DE MORADO A GRIS-AZUL CLARO */
+  padding: 2rem;
+  font-family: 'Arial', 'Helvetica', sans-serif;
+}
+
+/* ========================================
+   CONTENEDOR DEL ACTA
+   ======================================== */
+.acta-body .acta-container {
+  max-width: 21cm; /* Tamaño A4 */
+  min-height: 29.7cm;
+  margin: 0 auto 2rem auto;
+  background: #fff;
+  padding: 1.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  position: relative;
+  border: 2px solid #333;
+}
+
+/* ========================================
+   ENCABEZADO DEL ACTA
+   ======================================== */
+.acta-body .acta-header {
+  margin-bottom: 1rem;
+}
+
+.acta-body .acta-header h1 {
+  text-align: right;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #000;
+  margin: 0 0 0.8rem 0;
+  letter-spacing: 1px;
+}
+
+.acta-body .header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.4rem;
+}
+
+.acta-body .info-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.acta-body .label {
+  font-size: 0.85rem;
+  color: #000;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.acta-body .input-underline {
+  border: none;
+  border-bottom: 1px dotted #000;
+  background: transparent;
+  padding: 2px 5px;
+  font-size: 0.85rem;
+  color: #000;
+  font-family: inherit;
+  outline: none;
+}
+
+.acta-body .input-underline:focus {
+  border-bottom: 1px solid #3498db;
+  background: rgba(52, 152, 219, 0.05);
+}
+
+/* Caja de fecha en el header */
+.acta-body .date-box {
+  display: flex;
+  gap: 0.5rem;
+  border: 1px solid #000;
+  padding: 0.3rem 0.5rem;
+}
+
+.acta-body .date-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.acta-body .date-field label {
+  font-size: 0.7rem;
+  color: #000;
+  margin-bottom: 2px;
+  font-weight: 500;
+}
+
+.acta-body .input-box {
+  width: 60px;
+  border: 1px solid #000;
+  background: white;
+  padding: 2px 4px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-family: inherit;
+  color: #000;
+}
+
+/* Línea de asignatura */
+.acta-body .asignatura-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.4rem;
+}
+
+.acta-body .asignatura-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.acta-body .flex-grow {
+  flex: 1;
+  min-width: 200px;
+}
+
+.acta-body .curso-info {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.acta-body .input-small {
+  width: 50px;
+  border: none;
+  border-bottom: 1px dotted #000;
+  background: transparent;
+  padding: 2px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: #000;
+}
+
+/* ========================================
+   TABLA DE ALUMNOS - COMPACTA
+   ======================================== */
+.acta-body .tabla-alumnos {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.8rem;
+  background: white;
+  font-size: 0.65rem;
+}
+
+.acta-body .tabla-alumnos th,
+.acta-body .tabla-alumnos td {
+  border: 1px solid #000;
+  padding: 2px 3px;
+  text-align: center;
+}
+
+.acta-body .tabla-alumnos th {
+  background: #e8e8e8;
+  font-weight: bold;
+  color: #000;
+  font-size: 0.6rem;
+}
+
+.acta-body .tabla-alumnos thead tr:first-child th {
+  padding: 3px 2px;
+}
+
+.acta-body .numero-orden {
+  font-weight: bold;
+  background: #f5f5f5;
+  font-size: 0.65rem;
+  color: #000;
+}
+
+/* Inputs dentro de la tabla */
+.acta-body .input-tabla {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 1px;
+  text-align: center;
+  font-size: 0.65rem;
+  font-family: inherit;
+  outline: none;
+  color: #000;
+}
+
+.acta-body .input-tabla:focus {
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.acta-body .input-tabla.apellido-input {
+  text-align: left;
+  padding-left: 3px;
+}
+
+.acta-body .input-tabla.small {
+  width: 30px;
+}
+
+/* Fila de firma */
+.acta-body .firma-row {
+  background: #f0f0f0;
+}
+
+.acta-body .firma-nota {
+  text-align: center;
+  font-size: 0.65rem;
+  font-style: italic;
+  color: #000;
+  padding: 3px !important;
+}
+
+/* ========================================
+   PIE DEL ACTA - COMPACTO
+   ======================================== */
+.acta-body .footer-section {
+  margin-top: 0.8rem;
+}
+
+.acta-body .vocales-section {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.acta-body .vocal-field {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.acta-body .estadisticas-section {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.4rem;
+  padding-right: 2rem;
+}
+
+.acta-body .stat-field {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.acta-body .input-underline.short {
+  width: 60px;
+}
+
+.acta-body .fecha-footer {
+  text-align: right;
+  padding-right: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+}
+
+.acta-body .input-underline.tiny {
+  width: 30px;
+}
+
+/* ========================================
+   PIE DE PÁGINA
+   ======================================== */
+.acta-body .pie-pagina {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #000;
+}
+
+.acta-body .info-contacto {
+  font-size: 0.65rem;
+  color: #000;
+  text-align: center;
+  line-height: 1.3;
+  font-weight: 500;
+}
+
+/* ========================================
+   BOTONES DE ACCIÓN
+   ======================================== */
+.acta-body .actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem auto;
+  flex-wrap: wrap;
+  max-width: 21cm;
+}
+
+.acta-body .actions button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.acta-body .actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.acta-body .actions button:active {
+  transform: translateY(0);
+}
+
+.acta-body .btn-primary {
+  background: #3498db; /* ✅ CAMBIADO DE MORADO A AZUL */
+  color: white;
+}
+
+.acta-body .btn-primary:hover {
+  background: #2980b9;
+}
+
+.acta-body .btn-secondary {
+  background: white;
+  color: #2c3e50;
+  border: 2px solid #2c3e50 !important;
+}
+
+.acta-body .btn-secondary:hover {
+  background: #2c3e50;
+  color: white;
+}
+
+.acta-body .actions .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+/* ========================================
+   ESTADOS DE CARGA Y ERROR
+   ======================================== */
+.acta-body .loading-container,
+.acta-body .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: 2rem;
+}
+
+.acta-body .spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(52, 152, 219, 0.2);
+  border-top-color: #3498db; /* ✅ CAMBIADO DE MORADO A AZUL */
+  border-radius: 50%;
+  animation: acta-spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes acta-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.acta-body .loading-container p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+.acta-body .error-container {
+  color: #e74c3c;
+}
+
+.acta-body .error-icon {
+  font-size: 4rem;
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.acta-body .error-container h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #c0392b;
+}
+
+.acta-body .error-container p {
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+}
+
+.acta-body .btn-back {
+  padding: 0.75rem 1.5rem;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.acta-body .btn-back:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   ESTILOS PARA IMPRESIÓN - OPTIMIZADO
+   ======================================== */
+@media print {
+  @page {
+    size: A4;
+    margin: 8mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    
+  }
+
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .acta-body {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .acta-body .acta-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    min-height: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 5mm !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    page-break-after: avoid;
+    background: white !important;
+  }
+
+  /* OCULTAR NAVEGACIÓN Y BOTONES */
+  .acta-body .actions,
+  .no-print,
+  nav,
+  header,
+  footer:not(.acta-body .pie-pagina),
+  button {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* COMPACTAR TODO */
+  .acta-body .acta-header {
+    margin-bottom: 3mm !important;
+  }
+
+  .acta-body .acta-header h1 {
+    font-size: 11pt !important;
+    margin-bottom: 2mm !important;
+  }
+
+  .acta-body .label {
+    font-size: 8pt !important;
+    color: #000 !important;
+  }
+
+  /* TABLA COMPACTA */
+  .acta-body .tabla-alumnos {
+    page-break-inside: auto !important;
+    border-collapse: collapse !important;
+    margin-bottom: 3mm !important;
+    font-size: 7pt !important;
+  }
+
+  .acta-body .tabla-alumnos tr {
+    page-break-inside: avoid !important;
+    page-break-after: auto !important;
+  }
+
+  .acta-body .tabla-alumnos th,
+  .acta-body .tabla-alumnos td {
+    border: 0.5pt solid #000 !important;
+    padding: 1pt 2pt !important;
+    font-size: 7pt !important;
+    color: #000 !important;
+  }
+
+  .acta-body .tabla-alumnos th {
+    background: #e8e8e8 !important;
+    font-weight: bold !important;
+    font-size: 6.5pt !important;
+  }
+
+  /* INPUTS COMO TEXTO */
+  .acta-body input,
+  .acta-body .input-underline,
+  .acta-body .input-box,
+  .acta-body .input-small,
+  .acta-body .input-tabla {
+    border: none !important;
+    background: transparent !important;
+    font-weight: 600 !important;
+    color: #000 !important;
+    font-size: 8pt !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .acta-body .input-underline {
+    border-bottom: 0.5pt solid #000 !important;
+  }
+
+  .acta-body .input-tabla {
+    font-size: 7pt !important;
+  }
+
+  /* FOOTER COMPACTO */
+  .acta-body .footer-section {
+    margin-top: 2mm !important;
+  }
+
+  .acta-body .vocales-section,
+  .acta-body .estadisticas-section {
+    margin-bottom: 2mm !important;
+  }
+
+  .acta-body .pie-pagina {
+    margin-top: 2mm !important;
+    padding-top: 1.5mm !important;
+    border-top: 1pt solid #000 !important;
+  }
+
+  .acta-body .info-contacto {
+    font-size: 7pt !important;
+    color: #000 !important;
+    font-weight: 700 !important;
+  }
+
+  /* PREVENIR SALTOS */
+  .acta-body .acta-header,
+  .acta-body .footer-section,
+  .acta-body .pie-pagina {
+    page-break-inside: avoid !important;
+  }
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .acta-body {
+    padding: 0.5rem;
+  }
+
+  .acta-body .acta-container {
+    padding: 1rem;
+    min-height: auto;
+  }
+
+  .acta-body .acta-header h1 {
+    font-size: 1rem;
+  }
+
+  .acta-body .header-info {
+    flex-direction: column;
+  }
+
+  .acta-body .asignatura-line {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .acta-body .tabla-alumnos {
+    font-size: 0.6rem;
+  }
+
+  .acta-body .vocales-section {
+    flex-direction: column;
+  }
+
+  .acta-body .estadisticas-section {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .acta-body .actions {
+    flex-direction: column;
+  }
+
+  .acta-body .actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .acta-body .acta-container {
+    padding: 1.25rem;
+  }
+
+  .acta-body .tabla-alumnos {
+    font-size: 0.65rem;
+  }
+}
+
+/* ========================================
+   MEJORAS DE ACCESIBILIDAD
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  .acta-body * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .acta-body .tabla-alumnos th,
+  .acta-body .tabla-alumnos td {
+    border-color: #000;
+  }
+
+  .acta-body .label {
+    color: #000;
+  }
+
+  .acta-body .input-underline {
+    border-bottom-color: #000;
+  }
+}
+
+.acta-body .acta-container:hover {
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35);
+  transition: box-shadow 0.3s ease;
+}
+
+.acta-body .tabla-alumnos td:hover {
+  background: rgba(52, 152, 219, 0.05);
+  transition: background 0.2s ease;
+}
+
+.acta-body input::placeholder {
+  color: #999;
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .acta-body .tabla-alumnos {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+.acta-body .numero-orden {
+  user-select: none;
+  cursor: default;
+}
+
+.acta-body ::selection {
+  background-color: rgba(52, 152, 219, 0.3);
+  color: #000;
+}
+
+.acta-body .acta-container {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.acta-body .actions button {
+  position: relative;
+  overflow: hidden;
+}
+
+.acta-body .actions button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.acta-body .actions button:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+.acta-body input:focus-visible {
+  outline: 2px solid #3498db;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.acta-body button:focus-visible {
+  outline: 3px solid #3498db;
+  outline-offset: 3px;
+}

@@ -56,6 +56,7 @@ const consultasAsistencia = {
       a.id_alumno,
       a.apellido_alumno,
       a.nombre_alumno,
+      a.dni_alumno,
       aa.id_asistencia, 
       aa.estado
     FROM 
@@ -89,7 +90,7 @@ SELECT
 FROM asistencia_alumno aa
 JOIN materia m ON aa.id_materia = m.id_materia
 JOIN alumno a ON aa.id_alumno = a.id_alumno
-WHERE a.dni_alumno = ? -- ¡CORREGIDO! Usando el nombre correcto de la columna
+WHERE a.dni_alumno = ? 
   AND aa.anio_lectivo = ?
   AND aa.deleted_at IS NULL
 GROUP BY

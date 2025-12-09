@@ -117,6 +117,23 @@ const controladorCursos = {
       }
       error(respuesta, 'Error al restaurar curso', 500, err.message);
     }
+  },
+
+  obtenerTurnosCurso: async (req, res) => {
+    try {
+      const turnos = await cursoServices.obtenerTurnosCurso();
+      exito(res, 'Turnos obtenidos', turnos);
+    } catch (err) {
+      error(res, 'Error al obtener turnos', 500, err.message);
+    }
+  },
+  obtenerEstadosCurso: async (req, res) => {
+    try {
+      const estados = await cursoServices.obtenerEstadosCurso();
+      exito(res, 'Estados obtenidos', estados);
+    } catch (err) {
+      error(res, 'Error al obtener estados', 500, err.message);
+    }
   }
 };
 

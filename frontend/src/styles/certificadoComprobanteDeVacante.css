@@ -1,0 +1,572 @@
+/* ========================================
+   CONSTANCIA - DOCUMENTO OFICIAL
+   Diseño formal para presentar ante autoridades
+   TODAS las clases tienen prefijo "constancia-" para evitar conflictos
+   ======================================== */
+
+/* ========================================
+   CONTENEDOR PRINCIPAL - FONDO CAMBIADO A #f5f7fb
+   ======================================== */
+.constancia-body-vacante {
+  min-height: 100vh;
+  background-color: #F1F5F9;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  display: grid;
+  /* Define 2 columnas: 320px para el panel, 1fr para el resto */
+  grid-template-columns: 320px 1fr; 
+  gap: 2rem; /* Espacio entre el panel y la constancia */
+  align-items: start; /* Alinea el panel arriba */
+  
+  /* Centramos el layout general */
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 2rem; /* Un poco de aire a los costados */
+}
+
+/* ========================================
+   CERTIFICADO / DOCUMENTO
+   ======================================== */
+.constancia-body-vacante .certificate-container {
+  max-width: 21cm; /* Tamaño A4 */
+  min-height: 29.7cm;
+  margin: 0 auto;
+  background: white;
+  padding: 3.5rem 3rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  position: relative;
+  border: 3px solid #2c3e50;
+  outline: 1px solid #34495e;
+  outline-offset: -12px;
+}
+
+/* Marca de agua sutil */
+.constancia-body-vacante .certificate-container::before {
+  content: 'CONSTANCIA OFICIAL';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  font-size: 4rem;
+  color: rgba(52, 152, 219, 0.03);
+  font-weight: bold;
+  z-index: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ========================================
+   ENCABEZADO DEL CERTIFICADO
+   ======================================== */
+.constancia-body-vacante .certificate-header {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 2.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-bottom: 3px double #2c3e50;
+  padding-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ========================================
+   CONTENIDO DEL DOCUMENTO
+   ======================================== */
+.constancia-body-vacante .certificate-container p {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: #2c3e50;
+  text-align: justify;
+  text-justify: inter-word;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.constancia-body-vacante .certificate-container p b {
+  font-weight: 600;
+  color: #1a252f;
+}
+
+/* ========================================
+   CAMPOS EDITABLES DEL FORMULARIO
+   ======================================== */
+.constancia-body-vacante .form-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.constancia-body-vacante .form-group label {
+  display: block;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.constancia-body-vacante .form-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #bdc3c7;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: 'Georgia', serif;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+}
+
+.constancia-body-vacante .form-group input:focus {
+  outline: none;
+  border-color: #3498db;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.constancia-body-vacante .form-group input::placeholder {
+  color: #95a5a6;
+  font-style: italic;
+}
+
+/* Campos editables con fondo destacado */
+.constancia-body-vacante .form-group.editable {
+  background: rgba(52, 152, 219, 0.05);
+  padding: 1rem;
+  border-radius: 6px;
+  border-left: 4px solid #3498db;
+}
+
+/* ========================================
+   ESPACIOS PARA FIRMAS
+   ======================================== */
+.constancia-body-vacante .signature-space {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 4rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.constancia-body-vacante .signature-box {
+  flex: 1;
+  text-align: center;
+  padding-top: 3rem;
+  border-top: 2px solid #2c3e50;
+  font-size: 0.9rem;
+  color: #34495e;
+  font-weight: 500;
+  position: relative;
+}
+
+.constancia-body-vacante .signature-box::before {
+  content: '✓';
+  position: absolute;
+  top: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  color: #27ae60;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.constancia-body-vacante .signature-box:hover::before {
+  opacity: 0.3;
+}
+
+/* ========================================
+   ESPACIOS PARA SELLOS
+   ======================================== */
+.constancia-body-vacante .seal-space {
+  display: none; /* ✅ OCULTO POR DEFECTO - No aparece en descarga ni impresión */
+  justify-content: space-around;
+  gap: 2rem;
+  margin-top: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.constancia-body-vacante .seal {
+  width: 150px;
+  height: 150px;
+  border: 3px dashed #7f8c8d;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  font-weight: 600;
+  padding: 1rem;
+  background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================
+   BOTONES DE ACCIÓN
+   ======================================== */
+.constancia-body-vacante .actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.constancia-body-vacante .actions button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.constancia-body-vacante .actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.constancia-body-vacante .actions button:active {
+  transform: translateY(0);
+}
+/* Botón secundario */
+.constancia-body-vacante .btn-secondary {
+  background: white;
+  color: #2c3e50;
+  border: 2px solid #2c3e50 !important;
+}
+
+.constancia-body-vacante .btn-secondary:hover {
+  background: #2c3e50;
+  color: white;
+}
+
+/* Iconos de Material Symbols */
+.constancia-body-vacante .actions .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+/* ========================================
+   ESTADOS DE CARGA Y ERROR
+   ======================================== */
+.constancia-body-vacante .loading-container,
+.constancia-body-vacante .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Spinner de carga */
+.constancia-body-vacante .spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(52, 152, 219, 0.2);
+  border-top-color: #3498db;
+  border-radius: 50%;
+  animation: constancia-spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes constancia-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.constancia-body-vacante .loading-container p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+/* Contenedor de error */
+.constancia-body-vacante .error-container {
+  color: #e74c3c;
+}
+
+.constancia-body-vacante .error-icon {
+  font-size: 4rem;
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.constancia-body-vacante .error-container h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #c0392b;
+}
+
+.constancia-body-vacante .error-container p {
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+}
+
+.constancia-body-vacante .btn-back {
+  padding: 0.75rem 1.5rem;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.constancia-body-vacante .btn-back:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   ESTILOS PARA IMPRESIÓN
+   ======================================== */
+@media print {
+  @page {
+    size: A4;
+    margin: 0.5cm;
+  }
+
+  /* ✅ FORZAR que las firmas estén lado a lado en impresión */
+  .constancia-body-vacante .signature-space {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    gap: 2rem !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .constancia-body-vacante .signature-box {
+    flex: 1 !important;
+    text-align: center !important;
+    padding-top: 1.5rem !important;
+    border-top: 2px solid #2c3e50 !important;
+    font-size: 0.85rem !important;
+    color: #34495e !important;
+    font-weight: 500 !important;
+  }
+
+  .constancia-body-vacante .signature-box::before {
+    display: none;
+  }
+
+  /* ✅ OCULTAR los sellos completamente */
+  .constancia-body-vacante .seal-space {
+    display: none !important;
+  }
+
+  /* ✅ También ocultar la marca de agua */
+  .constancia-body-vacante .certificate-container::before {
+    display: none !important;
+  }
+
+  nav,
+  header,
+  .navbar,
+  [class*="nav-"],
+  [class*="Nav"],
+  button[class*="cerrar"],
+  button[class*="Cerrar"] {
+    display: none !important;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  .constancia-body-vacante {
+    background: white !important;
+    padding: 0 !important;
+    padding-left: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+  }
+
+  .constancia-body-vacante .certificate-container {
+    max-width: 100%;
+    min-height: auto;
+    box-shadow: none;
+    border-radius: 0;
+    border: 2px solid #2c3e50;
+    margin: 0 !important;
+    padding: 1.2cm 1.5cm !important;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    outline: none !important;
+  }
+
+  /* Ocultar botones, formularios y panel de edición */
+  .constancia-body-vacante .actions,
+  .constancia-body-vacante .no-print,
+  .constancia-body-vacante .form-group,
+  .no-print,
+  .constancia-body-vacante .edit-panel {
+    display: none !important;
+  }
+
+  /* ✅ Ajustar tamaños de fuente */
+  .constancia-body-vacante .certificate-header {
+    margin-bottom: 1.2rem !important;
+    padding-bottom: 0.6rem !important;
+    font-size: 1.4rem !important;
+    letter-spacing: 1px !important;
+  }
+
+  .constancia-body-vacante .certificate-container p {
+    margin-bottom: 0.9rem !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+  }
+
+  /* ✅ Reducir altura de los <br> */
+  .constancia-body-vacante br {
+    line-height: 0.3 !important;
+    height: 0.3em !important;
+  }
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 1200px) {
+  .constancia-body-vacante {
+    padding-left: 2rem; /* Restaurar padding normal */
+  }
+
+  .constancia-body-vacante .edit-panel {
+    position: relative;
+    top: auto;
+    left: auto;
+    max-width: 100%;
+    margin: 0 auto 2rem auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .constancia-body-vacante {
+    padding: 1rem;
+  }
+
+  .constancia-body-vacante .certificate-container {
+    padding: 2rem 1.5rem;
+    min-height: auto;
+  }
+
+  .constancia-body-vacante .certificate-header {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+  }
+
+  .constancia-body-vacante .certificate-container p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .constancia-body-vacante .signature-space {
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .constancia-body-vacante .seal-space {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .constancia-body-vacante .actions {
+    flex-direction: column;
+  }
+
+  .constancia-body-vacante .actions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .constancia-body-vacante .edit-panel {
+    padding: 1rem;
+  }
+}
+
+/* ========================================
+   MEJORAS DE ACCESIBILIDAD
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  .constancia-body-vacante * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .constancia-body-vacante .certificate-container p {
+    color: #000;
+  }
+
+  .constancia-body-vacante .form-group input {
+    border-color: #000;
+  }
+}
+
+/* ========================================
+   HOVER EN EL DOCUMENTO
+   ======================================== */
+.constancia-body-vacante .certificate-container:hover {
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35);
+  transition: box-shadow 0.3s ease;
+}
+
+/* ========================================
+   PANEL DE EDICIÓN
+   ======================================== */
+.constancia-body-vacante .edit-panel {
+  position: fixed;
+  top: 7rem;
+  left: 10rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  max-width: 320px;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+  z-index: 1000;
+  border: 1px solid #e2e8f0; /* Borde más sutil que el azul */
+}
+
+.constancia-body-vacante .edit-panel h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.5rem;
+}
+
+/* Ajustar el contenedor del certificado cuando hay panel de edición */
+.constancia-body-vacante {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 380px; /* Espacio para el panel lateral */
+}

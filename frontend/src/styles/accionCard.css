@@ -1,0 +1,46 @@
+.accion-card {
+  background-color: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  min-height: 170px;
+  font-family: 'Inter', sans-serif;
+  border: 1px solid #3f51b5;
+}
+
+.accion-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  border-color: #3f51b5;
+  border: 2px solid #3f51b5;
+}
+
+.accion-card__icon-circle {
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  background-color: #c5cae9;
+  color: #303F9F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.accion-card__icon {
+  font-size: 32px;
+}
+
+.accion-card__title {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+}
