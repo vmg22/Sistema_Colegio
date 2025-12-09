@@ -2,11 +2,11 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { getMaterias, deleteMateria } from "../../../services/materiasaltasService";
 import MateriaModal from "../../../components/modals/MateriaModal";
 import TableCrud from "../../../components/crud/TableCrud";
+import Paginador from '../../../components/ui/Paginador';
 import Swal from "sweetalert2";
 import { useDebounce } from "use-debounce";
 import "../../../styles/docentescrud.css";
 import BtnVolver from "../../../components/ui/BtnVolver";
-import Paginador from '../../../components/ui/Paginador';
 
 const Materias = () => {
   const [materias, setMaterias] = useState([]);
@@ -19,12 +19,12 @@ const Materias = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
 
+  // Estados de paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const isInitialMount = useRef(true);
 
-  // Carga de datos
   const cargarMaterias = useCallback(async (buscar) => {
     try {
       setLoading(true);
@@ -34,19 +34,13 @@ const Materias = () => {
     } catch (err) {
       const errorMsg = err.message || "Error al cargar las materias.";
       setError(errorMsg);
-      // <-- MODIFICADO: Alerta de error en la carga -->
-      Swal.fire(
-        "Error de Carga",
-        errorMsg,
-        "error"
-      );
+      Swal.fire("Error de Carga", errorMsg, "error");
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, []); // El array de dependencias vacío estaba correcto aquí
+  }, []);
 
-  // Búsqueda con debounce (Sin cambios, ya funcionaba "mientras escribes")
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
@@ -56,7 +50,6 @@ const Materias = () => {
     cargarMaterias(debouncedSearchTerm);
   }, [debouncedSearchTerm, cargarMaterias]);
 
-  // Handlers Modal
   const handleOpenCreate = () => {
     setMateriaAEditar(null);
     setShowModal(true);
@@ -67,24 +60,17 @@ const Materias = () => {
     setShowModal(true);
   };
 
-  // <-- MODIFICADO: Limpiar estado al cerrar -->
   const handleCloseModal = () => {
     setShowModal(false);
-    setMateriaAEditar(null); // Importante para la lógica de handleSave
+    setMateriaAEditar(null);
   };
 
-  // <-- MODIFICADO: Alerta de éxito al guardar -->
   const handleSave = () => {
-    // 1. Verificamos si era una edición ANTES de cerrar
     const isEdit = materiaAEditar !== null;
     
-    // 2. Cerramos el modal
     handleCloseModal();
-    
-    // 3. Recargamos los datos de la vista actual
     cargarMaterias(debouncedSearchTerm);
 
-    // 4. Mostramos la alerta de éxito
     Swal.fire({
       title: isEdit ? "¡Actualizada!" : "¡Creada!",
       text: isEdit
@@ -96,7 +82,6 @@ const Materias = () => {
     });
   };
 
-  // Handler Delete (Sin cambios, ya usaba Swal correctamente)
   const handleDelete = (id) => {
     Swal.fire({
       title: "¿Estás seguro?",
@@ -111,7 +96,7 @@ const Materias = () => {
         try {
           await deleteMateria(id);
           Swal.fire("¡Movido a Papelera!", "La materia ha sido eliminada.", "success");
-          cargarMaterias(debouncedSearchTerm); // Recarga la vista actual
+          cargarMaterias(debouncedSearchTerm);
         } catch (err) {
           Swal.fire("Error", err.message || "No se pudo eliminar.", "error");
         }
@@ -119,20 +104,22 @@ const Materias = () => {
     });
   };
 
-  // Botón "Buscar" (Sin cambios)
   const handleSearch = () => {
+    setCurrentPage(1);
     cargarMaterias(searchTerm);
   };
 
-  // Calcular paginación
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  // Filtrado
   const materiasFiltradas = materias.filter(materia => {
     return (
       materia.nombre.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
       (materia.descripcion && materia.descripcion.toLowerCase().includes(debouncedSearchTerm.toLowerCase()))
     );
   });
+
+  // Calcular paginación
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentMaterias = materiasFiltradas.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(materiasFiltradas.length / itemsPerPage);
 
@@ -145,7 +132,6 @@ const Materias = () => {
     }
   };
 
-  // Definición de columnas (Sin cambios)
   const columns = [
     {
       header: "Nombre",
@@ -187,7 +173,6 @@ const Materias = () => {
     },
   ];
 
-  // Función para renderizar los botones de acción (Sin cambios)
   const renderActions = (materia) => {
     return (
       <>
@@ -216,16 +201,13 @@ const Materias = () => {
     );
   };
 
-  // Renderizado (Sin cambios)
   return (
     <div className="gestion-page-container">
-      {/* Header */}
       <div className="gestion-header">
         <BtnVolver/>
         <h2 className='mx-4'>Gestión de Materias</h2>
       </div>
 
-      {/* Barra de búsqueda y botones */}
       <div className="search-add-bar">
         <div className="search-box">
           <span className="material-symbols-outlined search-icon">search</span>
@@ -247,11 +229,10 @@ const Materias = () => {
         </button>
       </div>
 
-      {/* Contenedor de la tabla */}
       <div className="list-container">
         <div className="list-header">
           <h3>Listado de Materias</h3>
-          {!loading && !error && <span>Total: {materias.length}</span>}
+          {!loading && !error && <span>Total: {materiasFiltradas.length}</span>}
         </div>
 
         <TableCrud
@@ -275,7 +256,7 @@ const Materias = () => {
       <MateriaModal
         show={showModal}
         onHide={handleCloseModal}
-        onSave={handleSave} // Esta función ahora dispara el Swal
+        onSave={handleSave}
         materiaAEditar={materiaAEditar}
       />
     </div>
