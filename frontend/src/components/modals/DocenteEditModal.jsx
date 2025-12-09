@@ -1,33 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { updateDocenteParcial } from '../../services/docenteService'; 
-import '../../styles/docentesmodal.css'; // Reutilizamos un CSS de modal
+import '../../styles/docentesmodal.css';
 
 const DocenteEditModal = ({ docenteToEdit, onClose, onSave }) => {
     const [formData, setFormData] = useState({
-    nombre: '',
-    apellido: '',
-    email: '',
-    telefono: '',
-    especialidad: '',
-    estado: 'activo', // <-- Dale un valor por defecto
-    username: '',
-    email_usuario: '',
-    dni_docente: ''
-  });
+        nombre: '',
+        apellido: '',
+        email: '',
+        telefono: '',
+        especialidad: '',
+        estado: 'activo',
+        username: '',
+        email_usuario: '',
+        dni_docente: ''
+    });
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Llenamos el form con los datos del docente
         if (docenteToEdit) {
             setFormData({
                 nombre: docenteToEdit.nombre || '',
                 apellido: docenteToEdit.apellido || '',
-                email: docenteToEdit.email || '', // Email de Contacto (editable)
+                email: docenteToEdit.email || '',
                 telefono: docenteToEdit.telefono || '',
                 especialidad: docenteToEdit.especialidad || '',
                 estado: docenteToEdit.estado_docente || 'activo',
-                // Datos no editables (solo para mostrar)
                 username: docenteToEdit.username || 'N/A',
                 email_usuario: docenteToEdit.email_usuario || 'N/A',
                 dni_docente: docenteToEdit.dni_docente || '',
@@ -45,11 +43,10 @@ const DocenteEditModal = ({ docenteToEdit, onClose, onSave }) => {
         setIsSaving(true);
         setError(null);
         try {
-            // Solo enviamos los campos del perfil que son editables
             const dataToUpdate = {
                 nombre: formData.nombre,
                 apellido: formData.apellido,
-                email: formData.email, // Email de Contacto
+                email: formData.email,
                 telefono: formData.telefono,
                 especialidad: formData.especialidad,
                 estado: formData.estado,
@@ -84,16 +81,28 @@ const DocenteEditModal = ({ docenteToEdit, onClose, onSave }) => {
 
             <fieldset>
               <legend>Datos Personales (Editables)</legend>
+              
               <div className="form-group">
-                <label>DNI:</label>
+                <label htmlFor="dni_docente">
+                  DNI <span className="required">*</span>
+                </label>
                 <input
-                 type="text"
-                 id= "dni_docente"
-                 name="dni_docente"
-                 value={formData.dni_docente} 
-                onChange={handleChange}
-                required />
+                  type="text"
+                  id="dni_docente"
+                  name="dni_docente"
+                  value={formData.dni_docente}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 8) {
+                      handleChange({ target: { name: 'dni_docente', value: value } });
+                    }
+                  }}
+                  maxLength={8}
+                  placeholder="Ej: 12345678"
+                  required
+                />
               </div>
+
               <div className="form-group">
                 <label htmlFor="nombre">Nombre:</label>
                 <input
@@ -105,6 +114,7 @@ const DocenteEditModal = ({ docenteToEdit, onClose, onSave }) => {
                   required
                 />
               </div>
+
               <div className="form-group">
                 <label htmlFor="apellido">Apellido:</label>
                 <input
@@ -116,6 +126,7 @@ const DocenteEditModal = ({ docenteToEdit, onClose, onSave }) => {
                   required
                 />
               </div>
+
               <div className="form-group">
                 <label htmlFor="email">Email de Contacto (Perfil):</label>
                 <input
@@ -126,6 +137,7 @@ const DocenteEditModal = ({ docenteToEdit, onClose, onSave }) => {
                   onChange={handleChange}
                 />
               </div>
+
               <div className="form-group">
                 <label htmlFor="telefono">Teléfono:</label>
                 <input
@@ -133,9 +145,17 @@ const DocenteEditModal = ({ docenteToEdit, onClose, onSave }) => {
                   id="telefono"
                   name="telefono"
                   value={formData.telefono || ""}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 10) {
+                      handleChange({ target: { name: 'telefono', value: value } });
+                    }
+                  }}
+                  maxLength={10}
+                  placeholder="Ej: 3814123456"
                 />
               </div>
+
               <div className="form-group">
                 <label htmlFor="especialidad">Especialidad:</label>
                 <input
@@ -146,6 +166,7 @@ const DocenteEditModal = ({ docenteToEdit, onClose, onSave }) => {
                   onChange={handleChange}
                 />
               </div>
+
               <div className="form-group">
                 <label htmlFor="estado">Estado:</label>
                 <select

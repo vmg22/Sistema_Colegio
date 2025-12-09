@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { editAlumno } from '../../services/alumnosService';
-import '../../styles/alumnosModalEdit.css'; // Reutilizamos el CSS del modal
+import '../../styles/alumnosModalEdit.css';
 
 const AlumnoEditModal = ({ alumnoToEdit, onClose, onSave }) => {
     const [formData, setFormData] = useState({
@@ -13,7 +13,6 @@ const AlumnoEditModal = ({ alumnoToEdit, onClose, onSave }) => {
         fecha_nacimiento: '',
         lugar_nacimiento: '',
         estado: 'activo',
-        // Datos no editables (solo para mostrar si existen)
         username: '',
         email_usuario: '',
         fecha_inscripcion: ''
@@ -22,9 +21,7 @@ const AlumnoEditModal = ({ alumnoToEdit, onClose, onSave }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Llenamos el form con los datos del alumno
         if (alumnoToEdit) {
-            // Formatear fecha para input type="date"
             const formatDateForInput = (dateString) => {
                 if (!dateString) return '';
                 const date = new Date(dateString);
@@ -41,7 +38,6 @@ const AlumnoEditModal = ({ alumnoToEdit, onClose, onSave }) => {
                 fecha_nacimiento: formatDateForInput(alumnoToEdit.fecha_nacimiento),
                 lugar_nacimiento: alumnoToEdit.lugar_nacimiento || '',
                 estado: alumnoToEdit.estado || 'activo',
-                // Datos no editables
                 username: alumnoToEdit.username || 'N/A',
                 email_usuario: alumnoToEdit.email_usuario || 'N/A',
                 fecha_inscripcion: alumnoToEdit.fecha_inscripcion || ''
@@ -60,7 +56,6 @@ const AlumnoEditModal = ({ alumnoToEdit, onClose, onSave }) => {
         setError(null);
         
         try {
-            // Solo enviamos los campos editables
             const dataToUpdate = {
                 nombre_alumno: formData.nombre_alumno,
                 apellido_alumno: formData.apellido_alumno,
@@ -74,7 +69,7 @@ const AlumnoEditModal = ({ alumnoToEdit, onClose, onSave }) => {
             };
             
             await editAlumno(alumnoToEdit.id_alumno, dataToUpdate);
-            onSave(); // Callback para refrescar la lista
+            onSave();
         } catch (err) {
             console.error('Error al actualizar alumno:', err);
             setError(err.message || 'No se pudo actualizar el alumno.');
@@ -95,7 +90,6 @@ const AlumnoEditModal = ({ alumnoToEdit, onClose, onSave }) => {
                 <form onSubmit={handleSubmit} className="wizard-form">
                     <h3 className="wizard-header">Editar Perfil de Alumno</h3>
 
-                    {/* Datos de Acceso (si tiene usuario vinculado) */}
                     {alumnoToEdit?.username && (
                         <fieldset className="wizard-fieldset">
                             <legend className="wizard-legend">Datos de Acceso (No editables)</legend>
@@ -110,7 +104,6 @@ const AlumnoEditModal = ({ alumnoToEdit, onClose, onSave }) => {
                         </fieldset>
                     )}
 
-                    {/* Datos Personales */}
                     <fieldset className="wizard-fieldset">
                         <legend className="wizard-legend">Datos Personales (Editables)</legend>
                         
@@ -122,10 +115,15 @@ const AlumnoEditModal = ({ alumnoToEdit, onClose, onSave }) => {
                                     id="dni_alumno"
                                     name="dni_alumno"
                                     value={formData.dni_alumno}
-                                    onChange={handleChange}
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(/\D/g, '');
+                                        if (value.length <= 8) {
+                                            handleChange({ target: { name: 'dni_alumno', value: value } });
+                                        }
+                                    }}
+                                    maxLength={8}
+                                    placeholder="Ej: 12345678"
                                     required
-                                    pattern="[0-9]{7,8}"
-                                    title="Ingrese un DNI válido (7-8 dígitos)"
                                     className="wizard-input"
                                 />
                             </div>
@@ -235,19 +233,24 @@ const AlumnoEditModal = ({ alumnoToEdit, onClose, onSave }) => {
                             <div className="wizard-form-group">
                                 <label htmlFor="telefono" className="wizard-label">Teléfono:</label>
                                 <input
-                                    type="tel"
+                                    type="text"
                                     id="telefono"
                                     name="telefono"
                                     value={formData.telefono}
-                                    onChange={handleChange}
-                                    placeholder="381-1234567"
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(/\D/g, '');
+                                        if (value.length <= 10) {
+                                            handleChange({ target: { name: 'telefono', value: value } });
+                                        }
+                                    }}
+                                    maxLength={10}
+                                    placeholder="Ej: 3814123456"
                                     className="wizard-input"
                                 />
                             </div>
                         </div>
                     </fieldset>
 
-                    {/* Información adicional (solo lectura) */}
                     {formData.fecha_inscripcion && (
                         <fieldset className="wizard-fieldset">
                             <legend className="wizard-legend">Información Adicional</legend>

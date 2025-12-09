@@ -1,100 +1,94 @@
-import React from 'react'
-import { useState , useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { editarTutorPorId } from '../../services/tutoresService';
+
 const ModalEditTutor = ({ tutorToEdit, onClose, onSave }) => {
-    
     const [formData, setFormData] = useState({
-            nombre: '',
-            apellido: '',
-            dni_tutor: '',
-            email: '',
-            telefono: '',
-            direccion: '',
-            parentesco: '',
-            estado: 'activo',
-            // Datos no editables (solo para mostrar si existen)
-            username: '',
-            email_usuario: '',
-            fecha_inscripcion: ''
-        });
-        const [isSaving, setIsSaving] = useState(false);
-        const [error, setError] = useState(null);
+        nombre: '',
+        apellido: '',
+        dni_tutor: '',
+        email: '',
+        telefono: '',
+        direccion: '',
+        parentesco: '',
+        estado: 'activo',
+        username: '',
+        email_usuario: '',
+        fecha_inscripcion: ''
+    });
+    const [isSaving, setIsSaving] = useState(false);
+    const [error, setError] = useState(null);
 
-        useEffect(() => {
-                // Llenamos el form con los datos del tutor
-                if (tutorToEdit) {
-                    // Formatear fecha para input type="date"
-                    const formatDateForInput = (dateString) => {
-                        if (!dateString) return '';
-                        const date = new Date(dateString);
-                        return date.toISOString().split('T')[0];
-                    };
+    useEffect(() => {
+        if (tutorToEdit) {
+            console.log('tutorToEdit:', tutorToEdit);
+            
+            setFormData({
+                nombre: tutorToEdit.nombre || '',
+                apellido: tutorToEdit.apellido || '',
+                dni_tutor: tutorToEdit.dni_tutor || '',
+                email: tutorToEdit.email || '',
+                telefono: tutorToEdit.telefono || '',
+                direccion: tutorToEdit.direccion || '',
+                parentesco: tutorToEdit.parentesco || '',
+                estado: tutorToEdit.estado || 'activo',
+                username: tutorToEdit.username || 'N/A',
+                email_usuario: tutorToEdit.email_usuario || 'N/A',
+                fecha_inscripcion: tutorToEdit.fecha_inscripcion || ''
+            });
+        }
+    }, [tutorToEdit]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         
-                    setFormData({
-                        nombre: tutorToEdit.nombre || '',
-                        apellido: tutorToEdit.apellido|| '',
-                        dni_tutor: tutorToEdit.dni_tutor || '',
-                        email: tutorToEdit.email || '',
-                        telefono: tutorToEdit.telefono || '',
-                        direccion: tutorToEdit.direccion || '',
-                        parentesco: tutorToEdit.parentesco || '',
-                        estado: tutorToEdit.estado || 'activo',
-                        // Datos no editables
-                        username: tutorToEdit.username || 'N/A',
-                        email_usuario: tutorToEdit.email_usuario || 'N/A',
-                        fecha_inscripcion: tutorToEdit.fecha_inscripcion || ''
-                    });
-                }
-            }, [tutorToEdit]);
+        if (!tutorToEdit?.id_tutor) {
+            setError('Error: No se puede identificar al tutor.');
+            console.error('tutorToEdit completo:', tutorToEdit);
+            return;
+        }
 
+        setIsSaving(true);
+        setError(null);
+        
+        try {
+            const dataToUpdate = {
+                nombre: formData.nombre,
+                apellido: formData.apellido,
+                dni_tutor: formData.dni_tutor,
+                email: formData.email,
+                telefono: formData.telefono,
+                direccion: formData.direccion,
+                parentesco: formData.parentesco,
+                estado: formData.estado
+            };
+            
+            await editarTutorPorId(tutorToEdit.id_tutor, dataToUpdate);
+            onSave();
+        } catch (err) {
+            console.error('Error al actualizar tutor:', err);
+            setError(err.message || 'No se pudo actualizar el tutor.');
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
-            const handleChange = (e) => {
-                    const { name, value } = e.target;
-                    setFormData(prev => ({ ...prev, [name]: value }));
-                };
-            
-                const handleSubmit = async (e) => {
-                    e.preventDefault();
-                    setIsSaving(true);
-                    setError(null);
-                    
-                    try {
-                        // Solo enviamos los campos editables
-                        const dataToUpdate = {
-                            nombre: formData.nombre,
-                            apellido: formData.apellido,
-                            dni_tutor: formData.dni_tutor,
-                            email: formData.email,
-                            telefono: formData.telefono,
-                            direccion: formData.direccion,
-                            parentesco: formData.parentesco,
-                            estado: formData.estado
-                        };
-                        
-                        await editarTutorPorId(tutorToEdit.id_tutor, dataToUpdate);
-                        onSave(); // Callback para refrescar la lista
-                    } catch (err) {
-                        console.error('Error al actualizar tutor:', err);
-                        setError(err.message || 'No se pudo actualizar el tutor.');
-                    } finally {
-                        setIsSaving(false);
-                    }
-                };
-            
-                const formatDateForDisplay = (dateString) => {
-                    if (!dateString) return 'N/A';
-                    const date = new Date(dateString);
-                    return date.toLocaleDateString('es-AR');
-                };
+    const formatDateForDisplay = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-AR');
+    };
 
-            
-  return (
-    <div className="wizard-overlay" onClick={onClose}>
+    return (
+        <div className="wizard-overlay" onClick={onClose}>
             <div className="wizard-content" onClick={(e) => e.stopPropagation()}>
                 <form onSubmit={handleSubmit} className="wizard-form">
                     <h3 className="wizard-header">Editar Tutor</h3>
 
-                    {/* Datos de Acceso (si tiene usuario vinculado) */}
                     {tutorToEdit?.username && (
                         <fieldset className="wizard-fieldset">
                             <legend className="wizard-legend">Datos de Acceso (No editables)</legend>
@@ -109,7 +103,6 @@ const ModalEditTutor = ({ tutorToEdit, onClose, onSave }) => {
                         </fieldset>
                     )}
 
-                    {/* Datos Personales */}
                     <fieldset className="wizard-fieldset">
                         <legend className="wizard-legend text-center">Datos Personales</legend>
                         
@@ -121,10 +114,15 @@ const ModalEditTutor = ({ tutorToEdit, onClose, onSave }) => {
                                     id="dni_tutor"
                                     name="dni_tutor"
                                     value={formData.dni_tutor}
-                                    onChange={handleChange}
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(/\D/g, '');
+                                        if (value.length <= 8) {
+                                            handleChange({ target: { name: 'dni_tutor', value: value } });
+                                        }
+                                    }}
+                                    maxLength={8}
+                                    placeholder="Ej: 12345678"
                                     required
-                                    pattern="[0-9]{7,8}"
-                                    title="Ingrese un DNI válido (7-8 dígitos)"
                                     className="wizard-input"
                                 />
                             </div>
@@ -203,37 +201,43 @@ const ModalEditTutor = ({ tutorToEdit, onClose, onSave }) => {
                             <div className="wizard-form-group">
                                 <label htmlFor="telefono" className="wizard-label">Teléfono:</label>
                                 <input
-                                    type="tel"
+                                    type="text"
                                     id="telefono"
                                     name="telefono"
                                     value={formData.telefono}
-                                    onChange={handleChange}
-                                    placeholder="381-1234567"
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(/\D/g, '');
+                                        if (value.length <= 10) {
+                                            handleChange({ target: { name: 'telefono', value: value } });
+                                        }
+                                    }}
+                                    maxLength={10}
+                                    placeholder="Ej: 3814123456"
                                     className="wizard-input"
                                 />
                             </div>
+                        </div>
 
-                            <div className="wizard-form-group">
-                                <label htmlFor="estado" className="wizard-label">Parentesco: *</label>
-                                <select
-                                    id="parentesco"
-                                    name="parentesco"
-                                    value={formData.parentesco}
-                                    onChange={handleChange}
-                                    required
-                                    className="wizard-select"
-                                >
-                                    <option value="padre">Padre</option>
-                                    <option value="madre">Madre</option>
-                                    <option value="tutor legal">Tutor legal</option>
-                                    <option value="abuelo/a">Abuelo/a</option>
-                                    <option value="otro">Otro</option>
-                                </select>
-                            </div>
+                        <div className="wizard-form-group">
+                            <label htmlFor="parentesco" className="wizard-label">Parentesco: *</label>
+                            <select
+                                id="parentesco"
+                                name="parentesco"
+                                value={formData.parentesco}
+                                onChange={handleChange}
+                                required
+                                className="wizard-select"
+                            >
+                                <option value="">Seleccione...</option>
+                                <option value="padre">Padre</option>
+                                <option value="madre">Madre</option>
+                                <option value="tutor legal">Tutor legal</option>
+                                <option value="abuelo/a">Abuelo/a</option>
+                                <option value="otro">Otro</option>
+                            </select>
                         </div>
                     </fieldset>
 
-                    {/* Información adicional (solo lectura) */}
                     {formData.fecha_inscripcion && (
                         <fieldset className="wizard-fieldset">
                             <legend className="wizard-legend">Información Adicional</legend>
@@ -260,14 +264,14 @@ const ModalEditTutor = ({ tutorToEdit, onClose, onSave }) => {
                         >
                             Cancelar
                         </button>
-                        <button type="submit" className="btn btn-primary" disabled={isSaving}>
+                        <button type="submit" className="wizard-btn wizard-btn-save" disabled={isSaving}>
                             {isSaving ? 'Guardando...' : 'Guardar Cambios'}
                         </button>
                     </div>
                 </form>
             </div>
         </div>
-  )
-}
+    );
+};
 
-export default ModalEditTutor
+export default ModalEditTutor;

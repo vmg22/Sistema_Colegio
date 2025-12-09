@@ -1,54 +1,69 @@
 import React, { useState, useEffect } from 'react';
-// Importamos los NUEVOS servicios
-import { createDocentePerfil, createUsuarioParaDocente , getDocenteEstados } from '../../services/docenteService'; 
-import '../../styles/docentesmodal.css'; // Reutilizamos el mismo CSS del modal anterior
+import { createDocentePerfil, createUsuarioParaDocente, getDocenteEstados } from '../../services/docenteService'; 
+import '../../styles/docentesmodal.css';
 
-// Datos iniciales para ambos pasos
 const initialPerfilState = {
     dni_docente: '',
     nombre: '',
     apellido: '',
+    email: '', // ✅ AGREGAR - Email de contacto
     telefono: '',
     especialidad: '',
     estado: 'activo',
 };
 const initialUsuarioState = {
     username: '',
-    email: '', // Email de login (obligatorio)
+    email: '',
     password: '',
 };
 
 const DocenteWizardModal = ({ onClose, onSave }) => {
-    const [step, setStep] = useState(1); // Controla el paso (1 o 2)
+    const [step, setStep] = useState(1);
     const [perfilData, setPerfilData] = useState(initialPerfilState);
     const [usuarioData, setUsuarioData] = useState(initialUsuarioState);
-    
-    // Almacena el docente creado en el paso 1
     const [createdDocente, setCreatedDocente] = useState(null); 
-
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState(null);
-
     const [listaEstados, setListaEstados] = useState([]);
     const [loadingEstados, setLoadingEstados] = useState(true);
 
     useEffect(() => {
-    async function fetchEstados() {
-      try {
-        setLoadingEstados(true);
-        const estados = await getDocenteEstados();
-        setListaEstados(estados);
-      } catch (error) {
-        console.error("Error cargando estados:", error);
-        // Si falla, volvemos a los valores hardcodeados como fallback
-        setListaEstados(['activo', 'inactivo', 'licencia']);
-      } finally {
-        setLoadingEstados(false);
-      }
-    }
-    fetchEstados();
-  }, []); // El array vacío asegura que se ejecute solo 1 vez
-    // Manejador genérico para los inputs
+        async function fetchEstados() {
+            try {
+                setLoadingEstados(true);
+                const response = await getDocenteEstados();
+                
+                // ✅ Extraer valores del enum desde el Type
+                let estados = [];
+                
+                if (Array.isArray(response) && response.length > 0 && response[0].Type) {
+                    // Formato: "enum('activo','licencia','inactivo')"
+                    const enumString = response[0].Type;
+                    const match = enumString.match(/enum\((.*?)\)/);
+                    
+                    if (match && match[1]) {
+                        // Extraer: 'activo','licencia','inactivo'
+                        estados = match[1].split(',').map(val => val.replace(/'/g, '').trim());
+                    }
+                }
+                
+                // Fallback si no se pudo extraer
+                if (estados.length === 0) {
+                    estados = ['activo', 'inactivo', 'licencia'];
+                }
+                
+                console.log("✅ Estados extraídos:", estados);
+                setListaEstados(estados);
+            } catch (error) {
+                console.error("Error cargando estados:", error);
+                setListaEstados(['activo', 'inactivo', 'licencia']);
+            } finally {
+                setLoadingEstados(false);
+            }
+        }
+        fetchEstados();
+    }, []);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (step === 1) {
@@ -58,16 +73,14 @@ const DocenteWizardModal = ({ onClose, onSave }) => {
         }
     };
 
-    // Al presionar "Siguiente" (Paso 1)
     const handleStep1Submit = async (e) => {
         e.preventDefault();
         setIsSaving(true);
         setError(null);
         try {
-            // Llama al nuevo servicio para crear SOLO el perfil
             const docente = await createDocentePerfil(perfilData);
-            setCreatedDocente(docente); // Guardamos el docente creado
-            setStep(2); // Avanzamos al siguiente paso
+            setCreatedDocente(docente);
+            setStep(2);
         } catch (err) {
             setError(err.message || 'No se pudo guardar el perfil.');
         } finally {
@@ -75,15 +88,13 @@ const DocenteWizardModal = ({ onClose, onSave }) => {
         }
     };
 
-    // Al presionar "Guardar" (Paso 2)
     const handleStep2Submit = async (e) => {
         e.preventDefault();
         setIsSaving(true);
         setError(null);
         try {
-            // Llama al nuevo servicio para crear y vincular el usuario
             await createUsuarioParaDocente(createdDocente.id_docente, usuarioData);
-            onSave(); // Llama a 'handleSaveSuccess' del padre
+            onSave();
         } catch (err) {
             setError(err.message || 'No se pudo crear el usuario.');
         } finally {
@@ -105,19 +116,32 @@ const DocenteWizardModal = ({ onClose, onSave }) => {
               <h3 data-step="Paso 1 de 2">Alta de Docente: Perfil</h3>
               <fieldset>
                 <legend>Datos Personales del Docente</legend>
+                
                 <div className="form-group">
-                  <label htmlFor="dni_docente">DNI:</label>
+                  <label htmlFor="dni_docente">
+                    DNI <span className="required">*</span>
+                  </label>
                   <input
                     type="text"
                     id="dni_docente"
                     name="dni_docente"
                     value={perfilData.dni_docente}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      if (value.length <= 8) {
+                        handleChange({ target: { name: 'dni_docente', value: value } });
+                      }
+                    }}
+                    maxLength={8}
+                    placeholder="Ej: 12345678"
                     required
                   />
                 </div>
+
                 <div className="form-group">
-                  <label htmlFor="nombre">Nombre:</label>
+                  <label htmlFor="nombre">
+                    Nombre <span className="required">*</span>
+                  </label>
                   <input
                     type="text"
                     id="nombre"
@@ -127,8 +151,11 @@ const DocenteWizardModal = ({ onClose, onSave }) => {
                     required
                   />
                 </div>
+
                 <div className="form-group">
-                  <label htmlFor="apellido">Apellido:</label>
+                  <label htmlFor="apellido">
+                    Apellido <span className="required">*</span>
+                  </label>
                   <input
                     type="text"
                     id="apellido"
@@ -140,24 +167,73 @@ const DocenteWizardModal = ({ onClose, onSave }) => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="telefono">Teléfono (Opcional):</label>
+                  <label htmlFor="telefono">Teléfono</label>
                   <input
                     type="text"
                     id="telefono"
                     name="telefono"
                     value={perfilData.telefono}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      if (value.length <= 10) {
+                        handleChange({ target: { name: 'telefono', value: value } });
+                      }
+                    }}
+                    maxLength={10}
+                    placeholder="Ej: 3814123456"
                   />
                 </div>
+
                 <div className="form-group">
-                  <label htmlFor="especialidad">Especialidad (Opcional):</label>
+                  <label htmlFor="email">Email de Contacto</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={perfilData.email}
+                    onChange={handleChange}
+                    placeholder="ejemplo@email.com"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="especialidad">Especialidad</label>
                   <input
                     type="text"
                     id="especialidad"
                     name="especialidad"
                     value={perfilData.especialidad}
                     onChange={handleChange}
+                    placeholder="Ej: Matemática, Lengua, etc."
                   />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="estado">
+                    Estado <span className="required">*</span>
+                  </label>
+                  <select
+                    id="estado"
+                    name="estado"
+                    value={perfilData.estado}
+                    onChange={handleChange}
+                    disabled={loadingEstados}
+                    required
+                  >
+                    {loadingEstados ? (
+                      <option>Cargando...</option>
+                    ) : (
+                      listaEstados.map((est) => {
+                        // ✅ Validar que est sea string
+                        const estadoStr = typeof est === 'string' ? est : (est?.nombre || String(est));
+                        return (
+                          <option key={estadoStr} value={estadoStr}>
+                            {estadoStr.charAt(0).toUpperCase() + estadoStr.slice(1)}
+                          </option>
+                        );
+                      })
+                    )}
+                  </select>
                 </div>
               </fieldset>
 
@@ -182,7 +258,7 @@ const DocenteWizardModal = ({ onClose, onSave }) => {
           {/* --- PASO 2: CUENTA DE USUARIO --- */}
           {step === 2 && (
             <form onSubmit={handleStep2Submit}>
-              <h3>Alta de Docente (Paso 2 de 2: Cuenta)</h3>
+              <h3 data-step="Paso 2 de 2">Alta de Docente: Cuenta</h3>
               <p>
                 Creando cuenta para:{" "}
                 <strong>
@@ -191,9 +267,12 @@ const DocenteWizardModal = ({ onClose, onSave }) => {
               </p>
 
               <fieldset>
-                <legend>Datos de Acceso (Cuenta)</legend>
+                <legend>Datos de Acceso</legend>
+                
                 <div className="form-group">
-                  <label htmlFor="username">Username:</label>
+                  <label htmlFor="username">
+                    Username <span className="required">*</span>
+                  </label>
                   <input
                     type="text"
                     id="username"
@@ -203,19 +282,25 @@ const DocenteWizardModal = ({ onClose, onSave }) => {
                     required
                   />
                 </div>
+
                 <div className="form-group">
-                  <label htmlFor="email_usuario">Email (para login):</label>
+                  <label htmlFor="email">
+                    Email (para login) <span className="required">*</span>
+                  </label>
                   <input
                     type="email"
-                    id="email_usuario"
+                    id="email"
                     name="email"
                     value={usuarioData.email}
                     onChange={handleChange}
                     required
                   />
                 </div>
+
                 <div className="form-group">
-                  <label htmlFor="password">Contraseña:</label>
+                  <label htmlFor="password">
+                    Contraseña <span className="required">*</span>
+                  </label>
                   <input
                     type="password"
                     id="password"

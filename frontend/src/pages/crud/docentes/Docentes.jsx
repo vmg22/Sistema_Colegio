@@ -39,7 +39,11 @@ const Docentes = () => {
         params.buscar = buscar.trim();
       }
       const data = await docenteService.getDocentes(params);
-      setDocentes(data);
+      
+      // ✅ Ordenar del más nuevo al más viejo (por id_docente descendente)
+      const ordenados = data.sort((a, b) => b.id_docente - a.id_docente);
+      
+      setDocentes(ordenados);
 
       if (data.length === 0 && buscar && buscar.trim() !== "") {
         setError("No se encontraron docentes.");
@@ -162,11 +166,18 @@ const Docentes = () => {
     { 
       header: 'Estado', 
       accessor: 'estado_docente',
-      cell: (item) => (
-        <span className={`status-badge ${item.estado_docente?.toLowerCase() || 'inactivo'}`}>
-          {item.estado_docente}
-        </span>
-      )
+      cell: (item) => {
+        // ✅ Convertir a string si es objeto
+        const estado = typeof item.estado_docente === 'object' 
+          ? (item.estado_docente?.nombre || 'inactivo')
+          : (item.estado_docente || 'inactivo');
+        
+        return (
+          <span className={`status-badge ${estado.toLowerCase()}`}>
+            {estado}
+          </span>
+        );
+      }
     }
   ];
 

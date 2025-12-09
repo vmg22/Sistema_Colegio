@@ -52,6 +52,21 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
         setError('Complete los campos obligatorios del alumno');
         return;
       }
+      if (formData.alumno.dni_alumno.length < 7 || formData.alumno.dni_alumno.length > 8) {
+        setError('El DNI debe tener 7 u 8 dígitos');
+        return;
+      }
+    }
+    if (step === 2) {
+      // Validar datos del tutor
+      if (!formData.tutor.dni_tutor || !formData.tutor.nombre || !formData.tutor.apellido || !formData.tutor.telefono) {
+        setError('Complete los campos obligatorios del tutor');
+        return;
+      }
+      if (formData.tutor.dni_tutor.length < 7 || formData.tutor.dni_tutor.length > 8) {
+        setError('El DNI del tutor debe tener 7 u 8 dígitos');
+        return;
+      }
     }
     setError(null);
     setStep(step + 1);
@@ -64,12 +79,6 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validar datos del tutor
-    if (!formData.tutor.dni_tutor || !formData.tutor.nombre || !formData.tutor.apellido) {
-      setError('Complete los campos obligatorios del tutor');
-      return;
-    }
 
     setIsSaving(true);
     setError(null);
@@ -90,7 +99,7 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
       <div className="wizard-content large" onClick={(e) => e.stopPropagation()}>
         <form onSubmit={handleSubmit} className="wizard-form">
           <div className="wizard-header">
-            <h3 className='text-center'>Agregar Nuevo Alumno</h3>
+            <h3 className='text-center'>Agregar Nuevo Alumno - Paso {step} de 3</h3>
           </div>
 
           {/* PASO 1: DATOS DEL ALUMNO */}
@@ -105,8 +114,14 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
                     type="text"
                     className="wizard-input"
                     value={formData.alumno.dni_alumno}
-                    onChange={(e) => handleChange('alumno', 'dni_alumno', e.target.value)}
-                    pattern="[0-9]{7,8}"
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      if (value.length <= 8) {
+                        handleChange('alumno', 'dni_alumno', value);
+                      }
+                    }}
+                    maxLength={8}
+                    placeholder="Ej: 12345678"
                     required
                   />
                 </div>
@@ -174,15 +189,23 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
                     className="wizard-input"
                     value={formData.alumno.email}
                     onChange={(e) => handleChange('alumno', 'email', e.target.value)}
+                    placeholder="ejemplo@email.com"
                   />
                 </div>
                 <div className="wizard-form-group">
                   <label className="wizard-label">Teléfono:</label>
                   <input
-                    type="tel"
+                    type="text"
                     className="wizard-input"
                     value={formData.alumno.telefono}
-                    onChange={(e) => handleChange('alumno', 'telefono', e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      if (value.length <= 10) {
+                        handleChange('alumno', 'telefono', value);
+                      }
+                    }}
+                    maxLength={10}
+                    placeholder="Ej: 3814123456"
                   />
                 </div>
               </div>
@@ -201,8 +224,14 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
                     type="text"
                     className="wizard-input"
                     value={formData.tutor.dni_tutor}
-                    onChange={(e) => handleChange('tutor', 'dni_tutor', e.target.value)}
-                    pattern="[0-9]{7,8}"
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      if (value.length <= 8) {
+                        handleChange('tutor', 'dni_tutor', value);
+                      }
+                    }}
+                    maxLength={8}
+                    placeholder="Ej: 12345678"
                     required
                   />
                 </div>
@@ -264,15 +293,23 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
                     className="wizard-input"
                     value={formData.tutor.email}
                     onChange={(e) => handleChange('tutor', 'email', e.target.value)}
+                    placeholder="ejemplo@email.com"
                   />
                 </div>
                 <div className="wizard-form-group">
                   <label className="wizard-label">Teléfono: *</label>
                   <input
-                    type="tel"
+                    type="text"
                     className="wizard-input"
                     value={formData.tutor.telefono}
-                    onChange={(e) => handleChange('tutor', 'telefono', e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      if (value.length <= 10) {
+                        handleChange('tutor', 'telefono', value);
+                      }
+                    }}
+                    maxLength={10}
+                    placeholder="Ej: 3814123456"
                     required
                   />
                 </div>
@@ -283,7 +320,7 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
           {/* PASO 3: CREAR USUARIO (OPCIONAL) */}
           {step === 3 && (
             <fieldset className="wizard-fieldset">
-              <legend className="wizard-legend">Crear Usuario para el Tutor (Opcional)</legend>
+              <legend className="wizard-legend text-center">Crear Usuario para el Tutor (Opcional)</legend>
               
               <div className="wizard-form-group">
                 <label className="wizard-checkbox">
@@ -321,7 +358,7 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
                   </div>
 
                   <div className="wizard-form-group">
-                    <label className="wizard-label">Contraseña: *</label>
+                    <label className="wizard-label">Contraseña:</label>
                     <input
                       type="password"
                       className="wizard-input"
@@ -352,7 +389,7 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="btn btn-primary"
+                className="wizard-btn wizard-btn-save"
               >
                 Siguiente
               </button>
