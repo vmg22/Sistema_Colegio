@@ -456,7 +456,7 @@ const Dashboard = () => {
           </div>
           <span className="btn-texto">Consulta por Curso</span>
         </button>
-        {/* CARD ENVIAR MAIL GENERAL (visible para todos) */}
+        {userRole === "admin" && (
         <button
           className={`btn-tipo ${tipoConsulta === "mail" ? "activo" : ""}`}
           onClick={() => navigate("/generar-mail")}
@@ -466,8 +466,7 @@ const Dashboard = () => {
             <span className="material-symbols-outlined mail">mail</span>
           </div>
           <span className="btn-texto">Enviar Mail General</span>
-        </button>
-        {/* ✅ CARD GESTIÓN DE DATOS (SOLO ADMIN) */}
+        </button>)}
         {userRole === "admin" && (
           <button
             className={`btn-tipo ${tipoConsulta === "gestion" ? "activo" : ""}`}
