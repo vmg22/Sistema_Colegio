@@ -164,6 +164,8 @@ actualizarDocenteParcial: async (solicitud, respuesta) => {
       const { id } = solicitud.params;
       const { id_materia } = solicitud.query;
       
+      console.log('🔍 Obteniendo cursos para docente:', id, 'materia:', id_materia);
+      
       let cursos;
       if (id_materia) {
         cursos = await servicioDocentes.obtenerCursosPorDocenteYMateria(id, id_materia);
@@ -171,8 +173,10 @@ actualizarDocenteParcial: async (solicitud, respuesta) => {
         cursos = await servicioDocentes.obtenerCursosPorDocente(id);
       }
       
+      console.log('✅ Cursos obtenidos:', cursos);
       exito(respuesta, 'Cursos del docente obtenidos correctamente', cursos);
     } catch (err) {
+      console.error('❌ Error al obtener cursos:', err);
       error(respuesta, 'Error al obtener cursos del docente', 500, err.message);
     }
   },
@@ -242,7 +246,24 @@ actualizarDocenteParcial: async (solicitud, respuesta) => {
     } catch (err) {
       error(respuesta, 'Error al verificar acceso', 500, err.message);
     }
+  },
+
+  // Obtener docente por id_usuario (para login)
+  obtenerDocentePorIdUsuario: async (solicitud, respuesta) => {
+    try {
+      const { id_usuario } = solicitud.params;
+      const docente = await servicioDocentes.obtenerDocentePorIdUsuario(id_usuario);
+      
+      if (!docente) {
+        return error(respuesta, 'Docente no encontrado', 404);
+      }
+      
+      exito(respuesta, 'Docente obtenido correctamente', docente);
+    } catch (err) {
+      error(respuesta, 'Error al obtener docente', 500, err.message);
+    }
   }
 };
 
 module.exports = controladorDocentes;
+

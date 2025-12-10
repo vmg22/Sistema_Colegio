@@ -130,8 +130,6 @@ const consultasDocentes = {
     JOIN materia m ON dcm.id_materia = m.id_materia
     WHERE dcm.id_docente = ?
       AND dcm.estado = 'activo'
-      AND dcm.deleted_at IS NULL
-      AND c.deleted_at IS NULL
     ORDER BY c.anio, c.division
   `,
 
@@ -226,6 +224,22 @@ const consultasDocentes = {
       AND dcm.id_materia = ?
       AND dcm.estado = 'activo'
       AND dcm.deleted_at IS NULL
+  `,
+
+  // Obtener docente por id_usuario (para login)
+  obtenerPorIdUsuario: `
+    SELECT 
+      id_docente, 
+      id_usuario, 
+      dni_docente, 
+      nombre, 
+      apellido, 
+      email, 
+      telefono, 
+      especialidad, 
+      estado
+    FROM docente 
+    WHERE id_usuario = ?
   `
 };
 

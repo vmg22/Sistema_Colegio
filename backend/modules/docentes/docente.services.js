@@ -249,3 +249,9 @@ exports.verificarAccesoMateria = async (idDocente, idMateria) => {
   const [rows] = await db.query(consultas.verificarAccesoMateria, [idDocente, idMateria]);
   return rows[0].tiene_acceso > 0;
 };
+
+// Obtener docente por id_usuario (para login)
+exports.obtenerDocentePorIdUsuario = async (idUsuario) => {
+  const [rows] = await db.query(consultas.obtenerPorIdUsuario, [idUsuario]);
+  return rows[0];
+};

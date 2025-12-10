@@ -16,6 +16,10 @@ import { getMaterias } from "../../services/materiasServices";
 import { getCursos } from "../../services/cursosService";
 import { getAniosLectivos } from "../../services/aniosServices";
 import { getMateriasAsignadas } from "../../services/cursoMateriaService";
+import { buscarAlumnoPorDNI } from "../../services/docenteService";
+import { esDocente, getIdDocente, getUsuario } from "../../services/authService";
+
+
 
 const ROLE_CONFIG = {
   admin: {
@@ -124,11 +128,62 @@ const Dashboard = () => {
 
     const cargarDatosEstaticos = async () => {
       try {
-        // SOLO cargamos cursos y años lectivos
-        const [dataCursos, dataAnios] = await Promise.all([
-          getCursos(),
-          getAniosLectivos(),
-        ]);
+        // Lógica condicional según el rol del usuario
+        let dataCursos;
+        
+        // Debug: Verificar usuario
+        const usuario = getUsuario();
+        console.log("🔍 Usuario actual:", usuario);
+        console.log("🔍 Es docente?:", esDocente());
+        console.log("🔍 ID Docente:", getIdDocente());
+        
+        // Si es docente pero no tiene id_docente, obtenerlo
+        let idDocente = getIdDocente();
+        if (esDocente() && !idDocente && usuario?.id_usuario) {
+          console.log("⚠️ Docente sin id_docente, obteniendo...");
+          try {
+            const response = await fetch(
+              `http://localhost:3000/api/v1/docentes/usuario/${usuario.id_usuario}`
+            );
+            if (response.ok) {
+              const data = await response.json();
+              idDocente = data.datos.id_docente;
+              // Actualizar localStorage
+              usuario.id_docente = idDocente;
+              localStorage.setItem("usuario", JSON.stringify(usuario));
+              console.log("✅ ID Docente obtenido y guardado:", idDocente);
+            }
+          } catch (err) {
+            console.error("❌ Error al obtener id_docente:", err);
+          }
+        }
+        
+        if (esDocente() && idDocente) {
+          console.log("✅ Cargando cursos filtrados para docente ID:", idDocente);
+          // DOCENTE: Cargar solo los cursos donde dicta
+          const { getCursosPorDocente } = await import("../../services/docenteService");
+          const cursosDocente = await getCursosPorDocente(idDocente);
+          
+          console.log("📚 Cursos del docente:", cursosDocente);
+          
+          // Transformar al formato esperado
+          dataCursos = {
+            datos: cursosDocente.map(curso => ({
+              id_curso: curso.id_curso,
+              nombre: curso.curso_nombre,
+              anio: curso.anio,
+              division: curso.division,
+              turno: curso.turno
+            }))
+          };
+        } else {
+          console.log("ℹ️ Cargando todos los cursos (admin/sin login)");
+          // ADMIN u otro rol: Cargar todos los cursos
+          dataCursos = await getCursos();
+        }
+        
+        const dataAnios = await getAniosLectivos();
+        
         console.log("Datos recibidos de la API:", dataCursos, dataAnios);
 
         setCursos(dataCursos.datos);
@@ -147,12 +202,33 @@ const Dashboard = () => {
           setLoading(true);
           setError("");
           const id_curso = parseInt(selectedCurso);
-          const dataMaterias = await getMateriasAsignadas(id_curso);
+          
+          // Lógica condicional según el rol del usuario
+          let dataMaterias;
+          
+          if (esDocente() && getIdDocente()) {
+            // DOCENTE: Filtrar solo las materias que dicta en este curso
+            const todasLasMaterias = await getMateriasAsignadas(id_curso);
+            
+            // Obtener las materias que el docente dicta en este curso específico
+            const { getMateriasPorDocente } = await import("../../services/docenteService");
+            const materiasDocente = await getMateriasPorDocente(getIdDocente());
+            
+            // Filtrar solo las materias del curso que el docente dicta
+            dataMaterias = todasLasMaterias.filter(materia =>
+              materiasDocente.some(md => md.id_materia === materia.id_materia)
+            );
+          } else {
+            // ADMIN u otro rol: Mostrar todas las materias del curso
+            dataMaterias = await getMateriasAsignadas(id_curso);
+          }
+          
           setMateriasCursoSeleccionado(dataMaterias);
         } catch (error) {
           console.error("Error al cargar materias asignadas:", error);
           setMateriasCursoSeleccionado([]); // Opcional: setError("Error al cargar las materias del curso.");
         } finally {
+
           setLoading(false);
         }
       };
@@ -215,7 +291,25 @@ const Dashboard = () => {
     setError("");
 
     try {
-      const data = await getReporteAlumno(dniInput, anioInput);
+      // Lógica condicional según el rol del usuario
+      let data;
+      
+      if (esDocente() && getIdDocente()) {
+        // DOCENTE: Verificar acceso antes de obtener el reporte
+        try {
+          await buscarAlumnoPorDNI(getIdDocente(), dniInput);
+          // Si llega aquí, tiene acceso, obtener el reporte
+          data = await getReporteAlumno(dniInput, anioInput);
+        } catch (accessError) {
+          if (accessError.message === 'No tiene acceso a este alumno') {
+            throw new Error("No tiene acceso a este alumno.");
+          }
+          throw accessError;
+        }
+      } else {
+        // ADMIN u otro rol: Acceso completo sin restricciones
+        data = await getReporteAlumno(dniInput, anioInput);
+      }
 
       if (!data) {
         throw new Error("No se encontró información para ese alumno.");
@@ -231,6 +325,7 @@ const Dashboard = () => {
       console.error("❌ Error al traer reporte:", err);
       setError(err?.message || "No se pudo obtener el reporte del alumno.");
     } finally {
+
       setLoading(false);
     }
   };

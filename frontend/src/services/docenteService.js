@@ -135,3 +135,102 @@ export const getDocenteEstados = async () => {
     handleError(err, "Error al obtener estados de docente");
   }
 };
+
+// ============================================================
+// NUEVAS FUNCIONES PARA FILTRADO POR DOCENTE
+// ============================================================
+
+const DOCENTE_URL = `${API}/docentes`;
+
+/**
+ * Obtener materias asignadas a un docente
+ * @param {number} idDocente - ID del docente
+ * @returns {Promise} Lista de materias
+ */
+export const getMateriasPorDocente = async (idDocente) => {
+  try {
+    const response = await axios.get(`${DOCENTE_URL}/${idDocente}/materias`);
+    return response.data.datos || [];
+  } catch (err) {
+    handleError(err, "Error al obtener materias del docente");
+  }
+};
+
+/**
+ * Obtener cursos asignados a un docente
+ * @param {number} idDocente - ID del docente
+ * @param {number|null} idMateria - ID de materia para filtrar (opcional)
+ * @returns {Promise} Lista de cursos
+ */
+export const getCursosPorDocente = async (idDocente, idMateria = null) => {
+  try {
+    const url = idMateria 
+      ? `${DOCENTE_URL}/${idDocente}/cursos?id_materia=${idMateria}`
+      : `${DOCENTE_URL}/${idDocente}/cursos`;
+    const response = await axios.get(url);
+    return response.data.datos || [];
+  } catch (err) {
+    handleError(err, "Error al obtener cursos del docente");
+  }
+};
+
+/**
+ * Obtener alumnos de los cursos donde el docente dicta
+ * @param {number} idDocente - ID del docente
+ * @param {number|null} idCurso - ID de curso para filtrar (opcional)
+ * @returns {Promise} Lista de alumnos
+ */
+export const getAlumnosPorDocente = async (idDocente, idCurso = null) => {
+  try {
+    const url = idCurso
+      ? `${DOCENTE_URL}/${idDocente}/alumnos?id_curso=${idCurso}`
+      : `${DOCENTE_URL}/${idDocente}/alumnos`;
+    const response = await axios.get(url);
+    return response.data.data || [];
+  } catch (err) {
+    handleError(err, "Error al obtener alumnos del docente");
+  }
+};
+
+/**
+ * Buscar un alumno por DNI y verificar acceso del docente
+ * @param {number} idDocente - ID del docente
+ * @param {string} dni - DNI del alumno
+ * @returns {Promise} Datos del alumno si tiene acceso
+ */
+export const buscarAlumnoPorDNI = async (idDocente, dni) => {
+  try {
+    // Primero obtener el alumno
+    const responseAlumno = await axios.get(`${API}/alumnos/dni/${dni}`);
+    const alumno = responseAlumno.data;
+    
+    // Verificar acceso
+    await axios.get(
+      `${DOCENTE_URL}/${idDocente}/verificar-acceso/alumno/${alumno.id_alumno}`
+    );
+    
+    return alumno;
+  } catch (error) {
+    if (error.response?.status === 403) {
+      throw new Error('No tiene acceso a este alumno');
+    }
+    handleError(error, "Error al buscar alumno");
+  }
+};
+
+/**
+ * Verificar si un docente tiene acceso a un alumno
+ * @param {number} idDocente - ID del docente
+ * @param {number} idAlumno - ID del alumno
+ * @returns {Promise<boolean>} true si tiene acceso
+ */
+export const verificarAccesoAlumno = async (idDocente, idAlumno) => {
+  try {
+    const response = await axios.get(
+      `${DOCENTE_URL}/${idDocente}/verificar-acceso/alumno/${idAlumno}`
+    );
+    return response.data.data.tiene_acceso;
+  } catch (error) {
+    return false;
+  }
+};

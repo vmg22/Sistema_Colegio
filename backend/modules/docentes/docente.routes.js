@@ -4,6 +4,11 @@ const docenteController = require('./docente.controller');
 
 router.get('/', docenteController.obtenerTodosDocentes);
 router.get('/eliminados/listar', docenteController.obtenerDocentesEliminados);
+
+// IMPORTANTE: Esta ruta debe estar ANTES de /:id
+// Obtener docente por id_usuario (para login)
+router.get('/usuario/:id_usuario', docenteController.obtenerDocentePorIdUsuario);
+
 router.get('/:id', docenteController.obtenerDocentePorId);
 router.post('/', docenteController.crearDocente);
 router.post('/:id/restaurar', docenteController.restaurarDocente);
@@ -30,3 +35,4 @@ router.get('/:id/verificar-acceso/curso/:id_curso', docenteController.verificarA
 router.get('/:id/verificar-acceso/materia/:id_materia', docenteController.verificarAccesoMateria);
 
 module.exports = router;
+
