@@ -178,13 +178,6 @@ const Materias = () => {
       <>
         <button
           onClick={() => handleOpenEdit(materia)}
-          className="action-button view"
-          title="Ver Materia"
-        >
-          <span className="material-symbols-outlined">visibility</span>
-        </button>
-        <button
-          onClick={() => handleOpenEdit(materia)}
           className="action-button edit"
           title="Editar"
         >

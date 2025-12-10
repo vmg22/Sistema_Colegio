@@ -165,13 +165,6 @@ const GestionCursos = () => {
       <>
         <button 
           onClick={() => handleOpenEdit(curso)} 
-          className="action-button view"
-          title="Ver Curso"
-        >
-          <span className="material-symbols-outlined">visibility</span>
-        </button>
-        <button 
-          onClick={() => handleOpenEdit(curso)} 
           className="action-button edit"
           title="Editar"
         >
