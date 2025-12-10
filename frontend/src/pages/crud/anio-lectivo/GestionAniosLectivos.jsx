@@ -110,7 +110,7 @@ const GestionAniosLectivos = () => {
   const handleDelete = async (id) => {
     Swal.fire({
       title: "¿Estás seguro?",
-      text: "Se eliminará el año lectivo.",
+      text: "¿Quieres eliminar este año lectivo?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",

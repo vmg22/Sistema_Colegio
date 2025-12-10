@@ -69,10 +69,6 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
         
         <form onSubmit={handleSubmit}>
           {error && <p className="error-message">{error}</p>}
-          
-          <fieldset>
-            <legend>Datos del Curso</legend>
-            
             {/* Fila 1: Nombre y Año */}
             <div style={{ display: 'flex', gap: '15px', marginBottom: '18px' }}>
               <div className="form-group" style={{ flex: 1 }}>
@@ -161,7 +157,6 @@ const CursoModal = ({ show, onHide, onSave, cursoAEditar }) => {
                 </select>
               </div>
             </div>
-          </fieldset>
 
           {/* Botones de acción */}
           <div className="modal-actions">

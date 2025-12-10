@@ -74,7 +74,7 @@ const Docentes = () => {
   const handleDelete = async (id_docente) => {
     Swal.fire({
       title: "¿Estás seguro?",
-      text: "¿Quieres eliminar este docente? (borrado lógico)",
+      text: "¿Quieres eliminar este docente?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",

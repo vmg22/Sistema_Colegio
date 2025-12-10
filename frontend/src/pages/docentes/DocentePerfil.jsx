@@ -280,8 +280,7 @@ const DocentePerfil = () => {
             onClick={() => handleOpenAsignacionModal()}
             className="add-button"
           >
-            <span className="add-icon"></span>
-            Asignar Materia/Curso
+           + Asignar Materia/Curso
           </button>
         </div>
 
@@ -295,8 +294,6 @@ const DocentePerfil = () => {
           emptyMessage="Este docente no tiene materias asignadas."
         />
       </div>
-
-      {/* --- Modales --- */}
 
       {/* Modal para CREAR o EDITAR una ASIGNACIÓN */}
       {showAsignacionModal && (

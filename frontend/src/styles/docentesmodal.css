@@ -1,165 +1,348 @@
 /* --- Base del Modal (Reutilizado) --- */
-.modal-overlay{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background-color:rgba(0,0,0,0.6);
-display:flex;
-justify-content:center;
-align-items:center;
-z-index:1000;
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 20, 40, 0.7); /* Azul oscuro semitransparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px); /* Efecto de desenfoque moderno */
 }
-.modal-content{
-background-color:#fff;
-border-radius:10px;
-box-shadow:0 5px 20px rgba(0,0,0,0.2);
-width:90%;
-max-width:550px;
-animation:fadeIn 0.3s ease-out;
-overflow:hidden;
-max-height:85vh;
-overflow-y:auto;
+
+.modal-content {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 50, 100, 0.3); /* Sombra azulada */
+    width: 90%;
+    max-width: 550px;
+    animation: fadeIn 0.3s ease-out;
+    overflow: hidden;
+    max-height: 85vh;
+    overflow-y: auto;
+    border: 1px solid #d1e3f8; /* Borde azul claro */
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
 }
-@keyframes fadeIn{
-from{opacity:0;transform:translateY(-20px);}
-to{opacity:1;transform:translateY(0);}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
 /* --- ESTILOS DEL WIZARD --- */
-.modal-content h3{
-margin:0;
-padding:20px 25px;
-background-color:#f7f9fc;
-border-bottom:1px solid #e0e0e0;
-color:#333;
-font-size:22px;
-font-weight:600;
-position:sticky;
-top:0;
-z-index:10;
+.modal-content h3 {
+    margin: 0;
+    padding: 22px 28px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); /* Degradado azul */
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 3px solid #3a6bc8; /* Línea azul más intensa */
 }
-.modal-content h3::after{
-content:attr(data-step);
-float:right;
-font-size:14px;
-font-weight:500;
-color:#666;
+
+.modal-content h2 {
+    margin: 0;
+    padding: 22px 28px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); /* Degradado azul */
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 3px solid #3a6bc8; /* Línea azul más intensa */
 }
-.modal-content form{
-padding:25px;
+
+
+.modal-content form {
+    padding: 28px;
+    background-color: #f8fbff; /* Fondo azul muy claro */
 }
-.modal-content p{
-font-size:16px;
-color:#555;
-background-color:#f7f9fc;
-border:1px solid #e0e0e0;
-padding:12px;
-border-radius:6px;
-margin-bottom:20px;
-text-align:center;
+
+.modal-content p {
+    font-size: 16px;
+    color: #1e3c72; /* Azul oscuro */
+    background-color: #e8f0fe; /* Azul más claro */
+    border: 2px solid #c5d8f0; /* Borde azul suave */
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    text-align: center;
+    font-weight: 500;
+    line-height: 1.5;
 }
-.modal-content fieldset{
-border:1px solid #ddd;
-border-radius:8px;
-padding:20px;
-margin-bottom:20px;
+
+.modal-content fieldset {
+    border: 2px solid #c5d8f0; /* Borde azul suave */
+    border-radius: 10px;
+    padding: 22px;
+    margin-bottom: 24px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(30, 60, 114, 0.08);
 }
-.modal-content legend{
-font-size:18px;
-font-weight:600;
-color:#303F9F;
-padding:0 10px;
-margin-left:10px;
+.modal-content legend {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e3c72; /* Azul oscuro */
+    padding: 0 0 8px 0; /* Solo padding inferior */
+    margin: 0 0 16px 0; /* Margen inferior para separación */
+    border: none; /* Sin borde completo */
+    border-bottom: 2px solid #3a6bc8; /* Solo línea inferior */
+    display: inline-block; /* Ancho basado en contenido */
+    width: auto;
+    position: relative; /* Para efectos adicionales si los necesitas */
 }
+
+/* Opcional: efecto decorativo */
+.modal-content legend::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #3a6bc8;
+}
+
 /* --- Campos del Formulario (Reutilizado) --- */
-.form-group{
-margin-bottom:18px;
+.form-group {
+    margin-bottom: 22px;
 }
-.form-group label{
-display:block;
-margin-bottom:8px;
-font-weight:600;
-color:#555;
-font-size:15px;
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #1e3c72; /* Azul oscuro */
+    font-size: 15px;
+    letter-spacing: 0.2px;
 }
+
+.form-group label span.required {
+    color: #ff4757;
+    margin-left: 4px;
+}
+
 .form-group input[type="text"],
 .form-group input[type="email"],
 .form-group input[type="password"],
-.form-group select{
-width:100%;
-padding:12px;
-border:1px solid #ccc;
-border-radius:6px;
-font-size:16px;
-box-sizing:border-box;
-transition:border-color 0.3s ease,box-shadow 0.3s ease;
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #c5d8f0; /* Borde azul claro */
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    background-color: #ffffff;
+    color: #2c3e50;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    font-family: 'Segoe UI', sans-serif;
 }
+
+.form-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231e3c72'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 20px;
+    padding-right: 48px;
+    cursor: pointer;
+}
+
 .form-group input:focus,
-.form-group select:focus{
-border-color:#0d6efd;
-outline:none;
-box-shadow:0 0 0 3px rgba(13,110,253,0.2);
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #3a6bc8; /* Azul más intenso al enfocar */
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(58, 107, 200, 0.15);
 }
-.form-group select[disabled]{
-background-color:#f0f0f0;
-color:#999;
+
+.form-group select[disabled],
+.form-group input[disabled] {
+    background-color: #f0f5ff; /* Azul muy claro para deshabilitado */
+    color: #7a8ca8;
+    border-color: #d1e3f8;
+    cursor: not-allowed;
 }
+
 /* --- Mensaje de Error (Reutilizado) --- */
-.error-message{
-color:#dc3545;
-background-color:#f8d7da;
-border:1px solid #f5c6cb;
-padding:12px 20px;
-border-radius:6px;
-margin:10px 0 20px 0;
-font-weight:500;
-text-align:center;
+.error-message {
+    color: #c92a2a;
+    background-color: #ffe3e3;
+    border: 2px solid #ffa8a8;
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin: 14px 0 24px 0;
+    font-weight: 600;
+    text-align: center;
+    font-size: 15px;
+    box-shadow: 0 2px 4px rgba(201, 42, 42, 0.1);
 }
+
+.success-message {
+    color: #2b8a3e;
+    background-color: #ebfbee;
+    border: 2px solid #a9e9b8;
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin: 14px 0 24px 0;
+    font-weight: 600;
+    text-align: center;
+    font-size: 15px;
+    box-shadow: 0 2px 4px rgba(43, 138, 62, 0.1);
+}
+
 /* --- Botones (Reutilizado) --- */
-.modal-actions{
-display:flex;
-justify-content:flex-end;
-gap:15px;
-margin-top:30px;
-padding-top:20px;
-border-top:1px solid #f0f0f0;
-position:sticky;
-bottom:0;
-z-index:10;
-background-color:#fff;
-padding-right:25px;
-padding-bottom:25px;
-margin-bottom:-25px;
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 32px;
+    padding-top: 22px;
+    border-top: 2px solid #e8f0fe; /* Línea divisoria azul */
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    background-color: #f8fbff; /* Mismo fondo que el form */
+    padding-right: 28px;
+    padding-bottom: 28px;
+    margin-bottom: -28px;
+    margin-left: -28px;
+    margin-right: -28px;
+    padding-left: 28px;
 }
-.modal-actions button{
-padding:12px 25px;
-border-radius:6px;
-font-size:16px;
-font-weight:600;
-cursor:pointer;
-border:none;
-transition:background-color 0.3s ease,transform 0.2s ease;
+
+.modal-actions button {
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    min-width: 120px;
+    text-transform: uppercase;
+    font-family: 'Segoe UI', sans-serif;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-.modal-actions button:hover{
-transform:translateY(-2px);
+
+.modal-actions button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
-.btn-cancel{
-background-color:#6c757d;
-color:white;
+
+.btn-cancel {
+    background: linear-gradient(to right, #6c757d, #5a6268);
+    color: white;
 }
-.btn-cancel:hover{
-background-color:#5a6268;
+
+.btn-cancel:hover:not(:disabled) {
+    background: linear-gradient(to right, #5a6268, #4e555b);
+    box-shadow: 0 6px 8px rgba(108, 117, 125, 0.3);
 }
-.btn-save{
-background-color:#303F9F;
-color:white;
+
+.btn-save {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
 }
-.btn-save:hover{
-background-color:#303F9F;
+
+.btn-save:hover:not(:disabled) {
+    background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+    box-shadow: 0 6px 12px rgba(30, 60, 114, 0.3);
 }
-.modal-actions button:disabled{
-opacity:0.6;
-cursor:not-allowed;
-transform:none;
+
+.btn-next {
+    background: linear-gradient(135deg, #2a5298 0%, #3a6bc8 100%);
+    color: white;
 }
+
+.btn-next:hover:not(:disabled) {
+    background: linear-gradient(135deg, #3a6bc8 0%, #2a5298 100%);
+    box-shadow: 0 6px 12px rgba(58, 107, 200, 0.3);
+}
+
+.btn-back {
+    background: linear-gradient(to right, #495057, #343a40);
+    color: white;
+}
+
+.btn-back:hover:not(:disabled) {
+    background: linear-gradient(to right, #343a40, #212529);
+    box-shadow: 0 6px 8px rgba(52, 58, 64, 0.3);
+}
+
+.modal-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* --- Estilos para grupos de botones especiales (como en wizard) --- */
+.modal-actions.wizard-buttons {
+    justify-content: space-between;
+}
+
+.modal-actions.wizard-buttons .left-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.modal-actions.wizard-buttons .right-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+/* --- Estilos para pasos del wizard --- */
+.wizard-steps {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 28px;
+    padding: 0 28px;
+}
+
+.step-indicator {
+    display: flex;
+    align-items: center;
+    margin: 0 8px;
+    color: #7a8ca8;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.step-indicator.active {
+    color: #1e3c72;
+    font-weight: 600;
+}
+
+.step-indicator.active .step-number {
+    background: #1e3c72;
+    color: white;
+}
+
+.step-number {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c5d8f0;
+    color: #1e3c72;
+    text-align: center;
+    line-height: 28px;
+    margin-right: 8px;
+    font-weight: 600;
+}
+

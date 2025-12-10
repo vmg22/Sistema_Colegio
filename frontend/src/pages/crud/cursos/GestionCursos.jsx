@@ -79,7 +79,7 @@ const GestionCursos = () => {
   const handleDelete = (id) => {
     Swal.fire({
       title: '¿Estás seguro?',
-      text: "Se eliminará el curso (borrado lógico).",
+      text: "¿Quieres eliminar este curso?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
