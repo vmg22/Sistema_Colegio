@@ -166,15 +166,23 @@ const Dashboard = () => {
           
           console.log("📚 Cursos del docente:", cursosDocente);
           
+          // Deduplicar cursos (un docente puede tener múltiples materias en el mismo curso)
+          const cursosUnicos = new Map();
+          cursosDocente.forEach(curso => {
+            if (!cursosUnicos.has(curso.id_curso)) {
+              cursosUnicos.set(curso.id_curso, {
+                id_curso: curso.id_curso,
+                nombre: curso.curso_nombre,
+                anio: curso.anio,
+                division: curso.division,
+                turno: curso.turno
+              });
+            }
+          });
+          
           // Transformar al formato esperado
           dataCursos = {
-            datos: cursosDocente.map(curso => ({
-              id_curso: curso.id_curso,
-              nombre: curso.curso_nombre,
-              anio: curso.anio,
-              division: curso.division,
-              turno: curso.turno
-            }))
+            datos: Array.from(cursosUnicos.values())
           };
         } else {
           console.log("ℹ️ Cargando todos los cursos (admin/sin login)");
