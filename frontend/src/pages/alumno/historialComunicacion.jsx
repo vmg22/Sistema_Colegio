@@ -23,7 +23,7 @@ const HistorialComunicaciones = () => {
 
       console.log("🔍 Cargando comunicaciones para alumno ID:", idAlumno);
       
-      const url = `${API_URL}/api/v1/comunicaciones/alumno/${idAlumno}`;
+      const url = `${API_URL}/comunicaciones/alumno/${idAlumno}`;
       console.log("📡 URL de la petición:", url);
       
       const response = await fetch(url);

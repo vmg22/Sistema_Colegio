@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import { api } from "../../api/fetchConfig";
+import { getUserFromToken } from "../../utils/jwt";
 
 import logo from "../../assets/logoguidospano.png";
 import "../../styles/nav.css";
@@ -13,21 +15,21 @@ const Navv = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const userJSON = localStorage.getItem("usuario");
-    let currentUser = null;
-
-    if (userJSON) {
-      try {
-        currentUser = JSON.parse(userJSON);
-      } catch (e) {
-        console.error("Error al parsear el objeto de usuario:", e);
-      }
-    } // 2. Actualizar los estados
-
+    // ✅ Usar utilidad JWT para obtener usuario
+    const currentUser = getUserFromToken();
+    
     if (currentUser) {
-      setUser(currentUser); // Guarda el objeto completo
+      setUser(currentUser);
     } else {
-      // Si no hay objeto 'usuario', intenta leer el rol antiguo por si acaso
+      // Fallback: intentar leer de localStorage directamente
+      const userJSON = localStorage.getItem("usuario");
+      if (userJSON) {
+        try {
+          setUser(JSON.parse(userJSON));
+        } catch (e) {
+          console.error("Error al parsear el objeto de usuario:", e);
+        }
+      }
     }
   }, []);
 
@@ -35,19 +37,12 @@ const Navv = () => {
     setLoading(true);
 
     try {
-      // Obtener el token
       const token = localStorage.getItem("token");
 
       if (token) {
-        // Llamar al endpoint de logout (opcional)
         try {
-          await fetch("http://localhost:3000/api/v1/auth/logout", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          // ✅ Usar API centralizada para logout
+          await api.post("/auth/logout");
         } catch (error) {
           console.error("Error al cerrar sesión en el servidor:", error);
           // Continuar con el logout local aunque falle el servidor
@@ -55,8 +50,7 @@ const Navv = () => {
       }
 
       // Limpiar localStorage completamente
-      localStorage.removeItem("token");
-      localStorage.removeItem("usuario");
+      localStorage.clear();
 
       // Redirigir al login con replace: true para no dejar historial
       navigate("/login", { replace: true });

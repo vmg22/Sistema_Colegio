@@ -1,44 +1,56 @@
-/* src/styles/breadcrumb.css */
-
-.breadcrumb {
-    display: flex;
-    align-items: center;
-    padding: 10px 0;
-    margin-bottom: 20px;
-    list-style: none;
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 14px;
-    color: #6c757d; /* Gris suave */
+/* Estilos personalizados para Breadcrumbs */
+.breadcrumb-container {
+  background-color: #f8f9fa;
+  padding: 0.75rem 1rem;
+  margin: 0;
+  border-bottom: 1px solid #dee2e6;
 }
 
-.breadcrumb-item {
-    display: flex;
-    align-items: center;
+.custom-breadcrumb {
+  margin-bottom: 0;
+  background-color: transparent;
+  padding: 0;
+  font-size: 0.9rem;
 }
 
-/* El separador (/) entre items */
+/* Links de breadcrumb clickeables */
+.breadcrumb-link {
+  color: #3f51b5 !important;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+  color: #303f9f !important;
+  text-decoration: underline;
+}
+
+/* Elemento activo (último breadcrumb) */
+.breadcrumb-active {
+  color: #6c757d !important;
+  font-weight: 500;
+}
+
+/* Separadores entre breadcrumbs */
 .breadcrumb-item + .breadcrumb-item::before {
-    content: "›"; /* Usamos un carácter más elegante que la barra / */
-    margin: 0 8px;
-    color: #ccc;
-    font-size: 18px;
-    line-height: 1;
+  color: #6c757d;
+  content: "›";
+  font-size: 1.1rem;
+  padding: 0 0.5rem;
 }
 
-/* Enlaces en el breadcrumb */
-.breadcrumb-item a {
-    color: #0d6efd; /* Tu color azul principal */
-    text-decoration: none;
-    transition: color 0.2s;
+/* Icono de inicio */
+.breadcrumb-item i {
+  font-size: 0.95rem;
 }
 
-.breadcrumb-item a:hover {
-    color: #0a58ca; /* Azul más oscuro al pasar el mouse */
-    text-decoration: underline;
-}
-
-/* El último item (página actual) */
-.breadcrumb-item.active {
-    color: #333; /* Color oscuro, no es un enlace */
-    font-weight: 500;
+/* Responsive: en móviles hacer texto más pequeño */
+@media (max-width: 768px) {
+  .custom-breadcrumb {
+    font-size: 0.8rem;
+  }
+  
+  .breadcrumb-container {
+    padding: 0.5rem 0.75rem;
+  }
 }

@@ -689,10 +689,11 @@ import {
 import axios from "axios";
 import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import { useConsultaStore } from "../../store/consultaStore.js";
+import { getUserId } from "../../utils/jwt";
+import { API_BASE_URL } from "../../api/fetchConfig";
 
-// Constantes
-const API_BASE_URL = "http://localhost:3000/api/v1/mail";
-const ID_USUARIO = 1;
+// API específica para mail
+const API_MAIL_URL = `${API_BASE_URL}/mail`;
 
 // Opciones de envío de mail
 const OpcionesEnvio = [
@@ -845,7 +846,7 @@ const GenerarMail = () => {
     setIsLoadingData(true);
     setResponseMessage(null);
     try {
-      const { data } = await axios.get(`${API_BASE_URL}/cursos/${currentAnio}`);
+      const { data } = await axios.get(`${API_MAIL_URL}/cursos/${currentAnio}`);
       setCursosDisponibles(data.data);
     } catch (error) {
       console.error("Error al cargar cursos:", error);
@@ -875,7 +876,7 @@ const GenerarMail = () => {
 
       setIsLoadingData(true);
       try {
-        const url = `${API_BASE_URL}/curso/${anio_curso}/${division}/${anioLectivoActual}/alumnos`;
+        const url = `${API_MAIL_URL}/curso/${anio_curso}/${division}/${anioLectivoActual}/alumnos`;
         const { data } = await axios.get(url);
         setAlumnosFiltrados(data.data);
         setSelectedAlumnosDNI({});
@@ -956,7 +957,9 @@ const GenerarMail = () => {
   }, [tipoEnvio, mailData, tipoDestino, selectedAlumnosDNI, selectedCursosIds]);
 
   const construirRequestBody = () => {
-    const requestBody = { id_usuario: ID_USUARIO };
+    // ✅ Obtener ID del usuario autenticado desde el token
+    const id_usuario = getUserId();
+    const requestBody = { id_usuario: id_usuario || 1 }; // Fallback a 1 si no hay usuario
 
     // Agregar destinatarios
     if (tipoDestino === "alumnos") {
@@ -1047,7 +1050,7 @@ const GenerarMail = () => {
     try {
       const endpoint = obtenerEndpoint();
       const requestBody = construirRequestBody();
-      const fullUrl = API_BASE_URL + endpoint;
+      const fullUrl = API_MAIL_URL + endpoint;
 
       console.log("=== DEBUG INFO ===");
       console.log("Tipo de envío:", tipoEnvio);

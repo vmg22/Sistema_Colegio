@@ -1,4 +1,4 @@
-// const nodemailer = require("nodemailer");
+﻿// const nodemailer = require("nodemailer");
 // const dotenv = require("dotenv");
 // const pool = require("../config/db");
 // const {
@@ -2038,11 +2038,11 @@ const obtenerAlumnosPorCurso = async (anio_curso, division, anio_lectivo) => {
       [anio_curso, division, anio_lectivo]
     );
 
-    if (rows.length === 0) {
-      throw new Error(
-        `No se encontraron alumnos activos en el curso ${anio_curso} "${division}" para el año lectivo ${anio_lectivo}`
-      );
-    }
+    if (rows.length === 0) {
+      console.warn(`⚠️ Curso ${anio_curso}"${division}" (${anio_lectivo}): sin alumnos activos`);
+      return []; // Retornar vacío en lugar de error
+    }
+
 
     return rows.map((row) => ({
       id: row.id_alumno, dni: row.dni_alumno, nombre: row.nombre_alumno, apellido: row.apellido_alumno, email: row.email,

@@ -142,11 +142,11 @@ const Dashboard = () => {
         if (esDocente() && !idDocente && usuario?.id_usuario) {
           console.log("⚠️ Docente sin id_docente, obteniendo...");
           try {
-            const response = await fetch(
-              `http://localhost:3000/api/v1/docentes/usuario/${usuario.id_usuario}`
-            );
-            if (response.ok) {
-              const data = await response.json();
+            // ✅ CORRECCIÓN: Usar api.get en lugar de fetch con URL hardcodeada
+            const { api } = await import("../../api/fetchConfig");
+            const data = await api.get(`/docentes/usuario/${usuario.id_usuario}`);
+            
+            if (data && data.datos) {
               idDocente = data.datos.id_docente;
               // Actualizar localStorage
               usuario.id_docente = idDocente;
