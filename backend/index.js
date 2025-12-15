@@ -15,8 +15,8 @@ const PORT = process.env.PORT || 3000;
 // --- MIDDLEWARES ---
 // CONFIGURACIÓN CORS - Usa variable de entorno para permitir orígenes dinámicos
 const allowedOrigins = process.env.FRONTEND_URL 
-  ? [process.env.FRONTEND_URL, 'http://localhost:5173', 'http://127.0.0.1:5173']
-  : ['http://localhost:5173', 'http://127.0.0.1:5173'];
+  ? [process.env.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174']
+  : ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'];
 
 app.use(cors({
   origin: (origin, callback) => {
