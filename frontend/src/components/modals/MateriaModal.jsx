@@ -115,9 +115,6 @@ const MateriaModal = ({ show, onHide, onSave, materiaAEditar }) => {
             </p>
           )}
 
-          <fieldset>
-            <legend>Información Básica</legend>
-
             {/* Fila 1: Nombre y Nivel */}
             <div style={{ display: 'flex', gap: '15px', marginBottom: '18px' }}>
               <div className="form-group" style={{ flex: 1 }}>
@@ -232,7 +229,6 @@ const MateriaModal = ({ show, onHide, onSave, materiaAEditar }) => {
                 }}
               />
             </div>
-          </fieldset>
 
           {/* Botones de acción */}
           <div className="modal-actions">

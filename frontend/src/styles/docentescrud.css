@@ -138,30 +138,39 @@
 .data-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed; 
 }
+
 .data-table th, .data-table td {
     padding: 14px 18px;
     text-align: left;
     border-bottom: 1px solid #f0f0f0; 
     vertical-align: middle;
+    word-wrap: break-word; 
 }
+
 .data-table th {
     color: #666; 
     font-weight: 600;
     background-color: #fcfcfc;
     font-size: 13px;
     letter-spacing: 0.5px;
-    white-space: nowrap;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es muy largo */
 }
+
 .data-table td {
     font-size: 15px;
     color: #555;
-    white-space: nowrap; 
+    white-space: normal; 
+    overflow: hidden;
+    text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es muy largo */
 }
+
 .data-table tbody tr:hover {
     background-color: #f9f9f9;
 }
-
 /* --- Badges de Estado --- */
 .status-badge {
     padding: 5px 12px;

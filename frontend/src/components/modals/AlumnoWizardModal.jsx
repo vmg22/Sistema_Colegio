@@ -1,7 +1,7 @@
 // AlumnoWizardModal.jsx
 import React, { useState } from 'react';
 import { createAlumnoConTutor } from '../../services/alumnosService';
-import '../../styles/alumnosModalEdit.css';
+import '../../styles/docentesmodal.css';
 
 const AlumnoWizardModal = ({ onClose, onSave }) => {
   const [step, setStep] = useState(1);
@@ -47,12 +47,27 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
 
   const handleNext = () => {
     if (step === 1) {
-      // Validar datos del alumno
-      if (!formData.alumno.dni_alumno || !formData.alumno.nombre_alumno || !formData.alumno.apellido_alumno) {
-        setError('Complete los campos obligatorios del alumno');
+      if (!formData.alumno.dni_alumno || !formData.alumno.nombre_alumno || !formData.alumno.apellido_alumno || !formData.alumno.fecha_nacimiento) {
+        setError('Complete los campos obligatorios del alumno (marcados con *)');
+        return;
+      }
+      if (formData.alumno.dni_alumno.length < 7 || formData.alumno.dni_alumno.length > 8) {
+        setError('El DNI debe tener 7 u 8 dígitos');
         return;
       }
     }
+
+    if (step === 2) {
+      if (!formData.tutor.dni_tutor || !formData.tutor.nombre || !formData.tutor.apellido || !formData.tutor.telefono || !formData.tutor.parentesco) {
+        setError('Complete los campos obligatorios del tutor (marcados con *)');
+        return;
+      }
+      if (formData.tutor.dni_tutor.length < 7 || formData.tutor.dni_tutor.length > 8) {
+        setError('El DNI del tutor debe tener 7 u 8 dígitos');
+        return;
+      }
+    }
+
     setError(null);
     setStep(step + 1);
   };
@@ -64,10 +79,9 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validar datos del tutor
-    if (!formData.tutor.dni_tutor || !formData.tutor.nombre || !formData.tutor.apellido) {
-      setError('Complete los campos obligatorios del tutor');
+
+    if (formData.tutor.crear_usuario && (!formData.tutor.username || !formData.tutor.email_usuario)) {
+      setError('Si desea crear cuenta, debe ingresar Username y Email de Login.');
       return;
     }
 
@@ -79,218 +93,228 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
       onSave();
     } catch (err) {
       console.error('Error al crear alumno:', err);
-      setError(err.response?.data?.mensaje || 'No se pudo crear el alumno');
+      setError(err.response?.data?.mensaje || 'No se pudo crear el alumno. Verifique los datos.');
     } finally {
       setIsSaving(false);
     }
   };
 
+  const requiredStar = <span style={{ color: '#dc3545' }}>*</span>;
+
   return (
-    <div className="wizard-overlay" onClick={onClose}>
-      <div className="wizard-content large" onClick={(e) => e.stopPropagation()}>
-        <form onSubmit={handleSubmit} className="wizard-form">
-          <div className="wizard-header">
-            <h3 className='text-center'>Agregar Nuevo Alumno</h3>
-          </div>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <h3>Agregar Nuevo Alumno - Paso {step} de 3</h3>
 
-          {/* PASO 1: DATOS DEL ALUMNO */}
+        <form onSubmit={handleSubmit}>
+          {error && <p className="error-message">{error}</p>}
+
           {step === 1 && (
-            <fieldset className="wizard-fieldset">
-              <legend className="wizard-legend text-center">Datos del Alumno</legend>
-              
-              <div className="form-row">
-                <div className="wizard-form-group">
-                  <label className="wizard-label">DNI: *</label>
-                  <input
-                    type="text"
-                    className="wizard-input"
-                    value={formData.alumno.dni_alumno}
-                    onChange={(e) => handleChange('alumno', 'dni_alumno', e.target.value)}
-                    pattern="[0-9]{7,8}"
-                    required
-                  />
-                </div>
-                <div className="wizard-form-group">
-                  <label className="wizard-label">Fecha de Nacimiento: *</label>
-                  <input
-                    type="date"
-                    className="wizard-input"
-                    value={formData.alumno.fecha_nacimiento}
-                    onChange={(e) => handleChange('alumno', 'fecha_nacimiento', e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="wizard-form-group">
-                  <label className="wizard-label">Nombre: *</label>
-                  <input
-                    type="text"
-                    className="wizard-input"
-                    value={formData.alumno.nombre_alumno}
-                    onChange={(e) => handleChange('alumno', 'nombre_alumno', e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="wizard-form-group">
-                  <label className="wizard-label">Apellido: *</label>
-                  <input
-                    type="text"
-                    className="wizard-input"
-                    value={formData.alumno.apellido_alumno}
-                    onChange={(e) => handleChange('alumno', 'apellido_alumno', e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="wizard-form-group">
-                <label className="wizard-label">Lugar de Nacimiento:</label>
+            <>
+              <div className="form-group">
+                <label htmlFor="dni_alumno">DNI: {requiredStar}</label>
                 <input
                   type="text"
-                  className="wizard-input"
+                  id="dni_alumno"
+                  value={formData.alumno.dni_alumno}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 8) handleChange('alumno', 'dni_alumno', value);
+                  }}
+                  maxLength={8}
+                  placeholder="Ej: 12345678"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="nombre_alumno">Nombre: {requiredStar}</label>
+                <input
+                  type="text"
+                  id="nombre_alumno"
+                  value={formData.alumno.nombre_alumno}
+                  onChange={(e) => handleChange('alumno', 'nombre_alumno', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="apellido_alumno">Apellido: {requiredStar}</label>
+                <input
+                  type="text"
+                  id="apellido_alumno"
+                  value={formData.alumno.apellido_alumno}
+                  onChange={(e) => handleChange('alumno', 'apellido_alumno', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="fecha_nacimiento">Fecha de Nacimiento: {requiredStar}</label>
+                <input
+                  type="date"
+                  id="fecha_nacimiento"
+                  value={formData.alumno.fecha_nacimiento}
+                  onChange={(e) => handleChange('alumno', 'fecha_nacimiento', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="lugar_nacimiento">Lugar de Nacimiento:</label>
+                <input
+                  type="text"
+                  id="lugar_nacimiento"
                   value={formData.alumno.lugar_nacimiento}
                   onChange={(e) => handleChange('alumno', 'lugar_nacimiento', e.target.value)}
                   placeholder="Ciudad, Provincia"
                 />
               </div>
 
-              <div className="wizard-form-group">
-                <label className="wizard-label">Domicilio:</label>
+              <div className="form-group">
+                <label htmlFor="direccion_alumno">Domicilio:</label>
                 <input
                   type="text"
-                  className="wizard-input"
+                  id="direccion_alumno"
                   value={formData.alumno.direccion}
                   onChange={(e) => handleChange('alumno', 'direccion', e.target.value)}
                 />
               </div>
 
-              <div className="form-row">
-                <div className="wizard-form-group">
-                  <label className="wizard-label">Email:</label>
-                  <input
-                    type="email"
-                    className="wizard-input"
-                    value={formData.alumno.email}
-                    onChange={(e) => handleChange('alumno', 'email', e.target.value)}
-                  />
-                </div>
-                <div className="wizard-form-group">
-                  <label className="wizard-label">Teléfono:</label>
-                  <input
-                    type="tel"
-                    className="wizard-input"
-                    value={formData.alumno.telefono}
-                    onChange={(e) => handleChange('alumno', 'telefono', e.target.value)}
-                  />
-                </div>
-              </div>
-            </fieldset>
-          )}
-
-          {/* PASO 2: DATOS DEL TUTOR */}
-          {step === 2 && (
-            <fieldset className="wizard-fieldset">
-              <legend className="wizard-legend text-center">Datos del Tutor</legend>
-              
-              <div className="form-row">
-                <div className="wizard-form-group">
-                  <label className="wizard-label">DNI: *</label>
-                  <input
-                    type="text"
-                    className="wizard-input"
-                    value={formData.tutor.dni_tutor}
-                    onChange={(e) => handleChange('tutor', 'dni_tutor', e.target.value)}
-                    pattern="[0-9]{7,8}"
-                    required
-                  />
-                </div>
-                <div className="wizard-form-group">
-                  <label className="wizard-label">Parentesco: *</label>
-                  <select
-                    className="wizard-select"
-                    value={formData.tutor.parentesco}
-                    onChange={(e) => handleChange('tutor', 'parentesco', e.target.value)}
-                    required
-                  >
-                    <option value="padre">Padre</option>
-                    <option value="madre">Madre</option>
-                    <option value="tutor_legal">Tutor Legal</option>
-                    <option value="abuelo/a">Abuelo/a</option>
-                    <option value="otro">Otro</option>
-                  </select>
-                </div>
+              <div className="form-group">
+                <label htmlFor="email_alumno">Email:</label>
+                <input
+                  type="email"
+                  id="email_alumno"
+                  value={formData.alumno.email}
+                  onChange={(e) => handleChange('alumno', 'email', e.target.value)}
+                  placeholder="ejemplo@email.com"
+                />
               </div>
 
-              <div className="form-row">
-                <div className="wizard-form-group">
-                  <label className="wizard-label">Nombre: *</label>
-                  <input
-                    type="text"
-                    className="wizard-input"
-                    value={formData.tutor.nombre}
-                    onChange={(e) => handleChange('tutor', 'nombre', e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="wizard-form-group">
-                  <label className="wizard-label">Apellido: *</label>
-                  <input
-                    type="text"
-                    className="wizard-input"
-                    value={formData.tutor.apellido}
-                    onChange={(e) => handleChange('tutor', 'apellido', e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="wizard-form-group">
-                <label className="wizard-label">Domicilio:</label>
+              <div className="form-group">
+                <label htmlFor="telefono_alumno">Teléfono:</label>
                 <input
                   type="text"
-                  className="wizard-input"
+                  id="telefono_alumno"
+                  value={formData.alumno.telefono}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 10) handleChange('alumno', 'telefono', value);
+                  }}
+                  maxLength={10}
+                  placeholder="Ej: 3814123456"
+                />
+              </div>
+            </>
+          )}
+
+          {step === 2 && (
+            <>
+              <div className="form-group">
+                <label htmlFor="dni_tutor">DNI del Tutor: {requiredStar}</label>
+                <input
+                  type="text"
+                  id="dni_tutor"
+                  value={formData.tutor.dni_tutor}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 8) handleChange('tutor', 'dni_tutor', value);
+                  }}
+                  maxLength={8}
+                  placeholder="Ej: 12345678"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="nombre_tutor">Nombre del Tutor: {requiredStar}</label>
+                <input
+                  type="text"
+                  id="nombre_tutor"
+                  value={formData.tutor.nombre}
+                  onChange={(e) => handleChange('tutor', 'nombre', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="apellido_tutor">Apellido del Tutor: {requiredStar}</label>
+                <input
+                  type="text"
+                  id="apellido_tutor"
+                  value={formData.tutor.apellido}
+                  onChange={(e) => handleChange('tutor', 'apellido', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="parentesco">Parentesco: {requiredStar}</label>
+                <select
+                  id="parentesco"
+                  value={formData.tutor.parentesco}
+                  onChange={(e) => handleChange('tutor', 'parentesco', e.target.value)}
+                  required
+                >
+                  <option value="padre">Padre</option>
+                  <option value="madre">Madre</option>
+                  <option value="tutor_legal">Tutor Legal</option>
+                  <option value="abuelo/a">Abuelo/a</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="telefono_tutor">Teléfono: {requiredStar}</label>
+                <input
+                  type="text"
+                  id="telefono_tutor"
+                  value={formData.tutor.telefono}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 10) handleChange('tutor', 'telefono', value);
+                  }}
+                  maxLength={10}
+                  placeholder="Ej: 3814123456"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="direccion_tutor">Domicilio:</label>
+                <input
+                  type="text"
+                  id="direccion_tutor"
                   value={formData.tutor.direccion}
                   onChange={(e) => handleChange('tutor', 'direccion', e.target.value)}
                 />
               </div>
 
-              <div className="form-row">
-                <div className="wizard-form-group">
-                  <label className="wizard-label">Email de Contacto:</label>
-                  <input
-                    type="email"
-                    className="wizard-input"
-                    value={formData.tutor.email}
-                    onChange={(e) => handleChange('tutor', 'email', e.target.value)}
-                  />
-                </div>
-                <div className="wizard-form-group">
-                  <label className="wizard-label">Teléfono: *</label>
-                  <input
-                    type="tel"
-                    className="wizard-input"
-                    value={formData.tutor.telefono}
-                    onChange={(e) => handleChange('tutor', 'telefono', e.target.value)}
-                    required
-                  />
-                </div>
+              <div className="form-group">
+                <label htmlFor="email_tutor">Email de Contacto:</label>
+                <input
+                  type="email"
+                  id="email_tutor"
+                  value={formData.tutor.email}
+                  onChange={(e) => handleChange('tutor', 'email', e.target.value)}
+                  placeholder="ejemplo@email.com"
+                />
               </div>
-            </fieldset>
+            </>
           )}
 
-          {/* PASO 3: CREAR USUARIO (OPCIONAL) */}
           {step === 3 && (
-            <fieldset className="wizard-fieldset">
-              <legend className="wizard-legend">Crear Usuario para el Tutor (Opcional)</legend>
-              
-              <div className="wizard-form-group">
-                <label className="wizard-checkbox">
+            <>
+              <p>Opcional: Si desea que el tutor pueda acceder al sistema, active esta opción y complete los datos de usuario.</p>
+
+              <div className="form-group" style={{ marginBottom: '25px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', fontWeight: 400, color: '#333' }}>
                   <input
                     type="checkbox"
                     checked={formData.tutor.crear_usuario}
                     onChange={(e) => handleChange('tutor', 'crear_usuario', e.target.checked)}
+                    style={{ width: 'auto', marginRight: '10px' }}
                   />
                   <span>¿Crear cuenta de acceso para el tutor?</span>
                 </label>
@@ -298,33 +322,33 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
 
               {formData.tutor.crear_usuario && (
                 <>
-                  <div className="wizard-form-group">
-                    <label className="wizard-label">Username: *</label>
+                  <div className="form-group">
+                    <label htmlFor="username">Username: {requiredStar}</label>
                     <input
                       type="text"
-                      className="wizard-input"
+                      id="username"
                       value={formData.tutor.username}
                       onChange={(e) => handleChange('tutor', 'username', e.target.value)}
-                      required={formData.tutor.crear_usuario}
+                      required
                     />
                   </div>
 
-                  <div className="wizard-form-group">
-                    <label className="wizard-label">Email (Login): *</label>
+                  <div className="form-group">
+                    <label htmlFor="email_usuario">Email (Login): {requiredStar}</label>
                     <input
                       type="email"
-                      className="wizard-input"
+                      id="email_usuario"
                       value={formData.tutor.email_usuario}
                       onChange={(e) => handleChange('tutor', 'email_usuario', e.target.value)}
-                      required={formData.tutor.crear_usuario}
+                      required
                     />
                   </div>
 
-                  <div className="wizard-form-group">
-                    <label className="wizard-label">Contraseña: *</label>
+                  <div className="form-group">
+                    <label htmlFor="password_tutor">Contraseña:</label>
                     <input
                       type="password"
-                      className="wizard-input"
+                      id="password_tutor"
                       value={formData.tutor.password}
                       onChange={(e) => handleChange('tutor', 'password', e.target.value)}
                       placeholder="Dejar vacío para usar contraseña por defecto (123456)"
@@ -332,34 +356,32 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
                   </div>
                 </>
               )}
-            </fieldset>
+            </>
           )}
 
-          {error && <p className="wizard-error">{error}</p>}
-
-          {/* BOTONES DE NAVEGACIÓN */}
-          <div className="wizard-actions">
+          <div className="modal-actions">
             <button
               type="button"
               onClick={step === 1 ? onClose : handleBack}
-              className="wizard-btn wizard-btn-cancel"
+              className="btn-cancel"
               disabled={isSaving}
             >
-              {step === 1 ? 'Cancelar' : 'Anterior'}
+              {step === 1 ? 'Cancelar' : 'Atrás'}
             </button>
-            
+
             {step < 3 ? (
               <button
                 type="button"
                 onClick={handleNext}
-                className="btn btn-primary"
+                className="btn-save"
+                disabled={isSaving}
               >
                 Siguiente
               </button>
             ) : (
               <button
                 type="submit"
-                className="wizard-btn wizard-btn-save"
+                className="btn-save"
                 disabled={isSaving}
               >
                 {isSaving ? 'Guardando...' : 'Crear Alumno'}

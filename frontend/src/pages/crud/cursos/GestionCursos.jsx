@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { getCursos, deleteCurso } from '../../../services/cursosService';
 import CursoModal from '../../../components/modals/CursoModal';
 import TableCrud from '../../../components/crud/TableCrud';
+import Paginador from '../../../components/ui/Paginador';
 import Swal from 'sweetalert2';
 import '../../../styles/docentescrud.css';
 import BtnVolver from '../../../components/ui/BtnVolver';
@@ -14,6 +15,11 @@ const GestionCursos = () => {
   
   const [showModal, setShowModal] = useState(false);
   const [cursoAEditar, setCursoAEditar] = useState(null);
+  
+  // Estados para paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
   const cargarCursos = async () => {
     try {
       setLoading(true);
@@ -23,7 +29,6 @@ const GestionCursos = () => {
     } catch (err) {
       const errorMsg = err.message || 'Error al cargar los cursos.';
       setError(errorMsg);
-      // <-- MODIFICADO: Notificación de error si falla la carga inicial -->
       Swal.fire(
         "Error de Carga",
         errorMsg,
@@ -51,36 +56,30 @@ const GestionCursos = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    // Reseteamos el estado de edición al cerrar
     setCursoAEditar(null);
   };
 
-  // <-- MODIFICADO: Notificación de éxito al guardar (Crear / Editar) -->
   const handleSave = () => {
-    // 1. Verificamos si era una edición ANTES de cerrar el modal
     const isEdit = cursoAEditar !== null;
     
-    // 2. Cerramos modal y recargamos
     handleCloseModal();
     cargarCursos(); 
 
-    // 3. Mostramos la alerta de éxito
     Swal.fire({
       title: isEdit ? "¡Actualizado!" : "¡Creado!",
       text: isEdit
         ? "El curso se actualizó correctamente."
         : "El curso se creó correctamente.",
       icon: "success",
-      timer: 1500, // Se cierra solo después de 1.5 seg
+      timer: 1500,
       showConfirmButton: false,
     });
   };
 
-  // <-- SIN CAMBIOS: Esta función ya usaba Swal correctamente -->
   const handleDelete = (id) => {
     Swal.fire({
       title: '¿Estás seguro?',
-      text: "Se eliminará el curso (borrado lógico).",
+      text: "¿Quieres eliminar este curso?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -100,10 +99,11 @@ const GestionCursos = () => {
   };
 
   const handleSearch = () => {
+    setCurrentPage(1); // Resetear a página 1 al buscar
     cargarCursos();
   };
 
-  // --- LÓGICA DE FILTRADO MEMOIZADA ---
+  // Filtrado memoizado
   const cursosFiltrados = useMemo(() => {
     return cursos.filter(curso => 
       searchTerm === '' || 
@@ -112,6 +112,21 @@ const GestionCursos = () => {
       curso.division?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [cursos, searchTerm]); 
+
+  // Calcular paginación
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentCursos = cursosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(cursosFiltrados.length / itemsPerPage);
+
+  const handlePageChange = (page, newItemsPerPage) => {
+    if (newItemsPerPage) {
+      setItemsPerPage(newItemsPerPage);
+      setCurrentPage(1);
+    } else {
+      setCurrentPage(page);
+    }
+  };
 
   // Definición de columnas para TableCrud
   const columns = [
@@ -145,17 +160,9 @@ const GestionCursos = () => {
     }
   ];
 
-  // Función para renderizar los botones de acción
   const renderActions = (curso) => {
     return (
       <>
-        <button 
-          onClick={() => handleOpenEdit(curso)} 
-          className="action-button view"
-          title="Ver Curso"
-        >
-          <span className="material-symbols-outlined">visibility</span>
-        </button>
         <button 
           onClick={() => handleOpenEdit(curso)} 
           className="action-button edit"
@@ -213,18 +220,26 @@ const GestionCursos = () => {
 
         <TableCrud
           columns={columns}
-          data={cursosFiltrados} 
+          data={currentCursos} 
           isLoading={loading}
-          error={error} // El TableCrud debería mostrar este error
+          error={error}
           renderActions={renderActions}
           getKey={(curso) => curso.id_curso}
+        />
+
+        <Paginador
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={cursosFiltrados.length}
         />
       </div>
 
       <CursoModal
         show={showModal}
         onHide={handleCloseModal}
-        onSave={handleSave} // Esta función ahora dispara el Swal
+        onSave={handleSave}
         cursoAEditar={cursoAEditar}
       />
     </div>

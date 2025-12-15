@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Swal from "sweetalert2"; // <-- 1. IMPORTADO
+import Swal from "sweetalert2";
 import BtnVolver from "../../../components/ui/BtnVolver";
 import {
   getAlumnoId,
   getCursoYMateriasActual,
-  matricularAlumnoEnCurso,
 } from "../../../services/alumnosService";
 import { useParams } from "react-router-dom";
 import { getAlumnoTutorId, getTutor } from "../../../services/alumnoTutor";
@@ -15,39 +14,61 @@ import "../../../styles/alumnoperfil.css";
 const AlumnosPerfil = () => {
   const [alumno, setAlumno] = useState({});
   const [tutor, setTutor] = useState({});
-  const [curso, setCurso] = useState(null); // Para guardar el curso actual
+  const [curso, setCurso] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal Tutor
-  const [isCursoModalOpen, setIsCursoModalOpen] = useState(false); // Modal Curso
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCursoModalOpen, setIsCursoModalOpen] = useState(false);
 
   const { id } = useParams();
 
   const traerDatos = useCallback(async () => {
     try {
       setIsLoading(true);
-      setCurso(null); // Resetea el curso
-      setTutor({}); // Resetea el tutor
+      setCurso(null);
+      setTutor({});
 
       // Traer datos del alumno
       const responseAlumno = await getAlumnoId(id);
       setAlumno(responseAlumno);
 
-      // 4. TRAER DATOS DEL TUTOR (en su propio try/catch)
+      // Traer datos del tutor
       try {
         const responseAlumnoTutor = await getAlumnoTutorId(id);
         const idTutor =
           responseAlumnoTutor?.datos[0]?.id_tutor ||
           responseAlumnoTutor?.id_tutor;
+        
         if (idTutor) {
           const responseTutor = await getTutor(idTutor);
-          const datosTutor = responseTutor?.datos || responseTutor;
-          setTutor(datosTutor);
+          
+          // 🔍 DEBUG
+          console.log("📌 responseTutor completo:", responseTutor);
+          
+          // ✅ SOLUCIÓN: Extraer correctamente los datos
+          let datosTutor;
+          
+          // El backend devuelve { success: true, datos: {...} }
+          if (responseTutor?.datos) {
+            datosTutor = responseTutor.datos;
+          } else {
+            datosTutor = responseTutor;
+          }
+
+          console.log("📌 datosTutor extraído:", datosTutor);
+
+          // ✅ Incluir id_tutor explícitamente
+          setTutor({
+            ...datosTutor,
+            id_tutor: idTutor,
+          });
+
+          console.log("✅ Tutor cargado con id_tutor:", idTutor);
         }
       } catch (tutorError) {
         console.warn("El alumno no tiene un tutor asignado.");
       }
 
-      // 5. TRAER DATOS DEL CURSO (en su propio try/catch)
+      // Traer datos del curso
       try {
         const responseCurso = await getCursoYMateriasActual(id);
         if (responseCurso && responseCurso.curso) {
@@ -58,7 +79,6 @@ const AlumnosPerfil = () => {
       }
     } catch (error) {
       console.error("Error al cargar datos del perfil:", error);
-      // <-- 2. ALERTA DE ERROR EN CARGA -->
       Swal.fire(
         "Error",
         error.message || "Error al cargar los datos del perfil.",
@@ -82,11 +102,9 @@ const AlumnosPerfil = () => {
     return `${day}-${month}-${year}`;
   };
 
-  // --- Handlers Modal Tutor ---
   const handleSaveTutor = () => {
     setIsModalOpen(false);
     traerDatos();
-    // <-- 3. ALERTA DE ÉXITO TUTOR -->
     Swal.fire({
       title: "¡Guardado!",
       text: "Los datos del tutor se actualizaron correctamente.",
@@ -95,25 +113,26 @@ const AlumnosPerfil = () => {
       showConfirmButton: false,
     });
   };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
 
-  // 6. AÑADIR HANDLERS PARA EL MODAL DE CURSO
   const handleOpenCursoModal = () => {
     setIsCursoModalOpen(true);
   };
+
   const handleCloseCursoModal = () => {
     setIsCursoModalOpen(false);
   };
+
   const handleSaveCurso = () => {
-    // Cuando el modal de curso guarda, cerramos y refrescamos todo
     setIsCursoModalOpen(false);
     traerDatos();
-    // <-- 4. ALERTA DE ÉXITO CURSO -->
     Swal.fire({
       title: "¡Guardado!",
       text: "El curso del alumno se actualizó correctamente.",
@@ -189,12 +208,6 @@ const AlumnosPerfil = () => {
                     {alumno.estado}
                   </span>
                 </dd>
-                {/* <div className="d-flex justify-content-end ">
-                  <button className="add-button" onClick={handleOpenModal}>
-                    <span className="add-icon"></span>
-                    Agregar curso/materia
-                  </button>
-                </div> */}
               </dl>
             </div>
 
@@ -202,7 +215,7 @@ const AlumnosPerfil = () => {
             <div className="perfil-alumno-box">
               <h4>Información del Tutor</h4>
 
-              {tutor ? (
+              {tutor && Object.keys(tutor).length > 0 && tutor.nombre ? (
                 <dl>
                   <dt>Nombre y Apellido</dt>
                   <dd>
@@ -234,7 +247,7 @@ const AlumnosPerfil = () => {
                       {tutor.estado}
                     </span>
                   </dd>
-                  <div className="d-flex justify-content-end ">
+                  <div className="d-flex justify-content-end">
                     <button
                       className="btn btn-primary"
                       onClick={handleOpenModal}
@@ -247,11 +260,11 @@ const AlumnosPerfil = () => {
                 <p>No hay tutor asignado.</p>
               )}
             </div>
+
             <div className="perfil-alumno-box">
               <h4>Curso asignado</h4>
 
               {curso ? (
-                // Si el alumno YA tiene un curso
                 <div>
                   <dl>
                     <dt>Curso Actual ({curso.anio_lectivo})</dt>
@@ -272,7 +285,6 @@ const AlumnosPerfil = () => {
                   </div>
                 </div>
               ) : (
-                // Si el alumno NO tiene curso
                 <div>
                   <p className="text-muted">
                     Este alumno no está matriculado en ningún curso para el año
@@ -302,15 +314,13 @@ const AlumnosPerfil = () => {
         />
       )}
 
-      {/* 8. AÑADIR EL MODAL DE CURSO */}
+      {/* Modal de Curso */}
       {isCursoModalOpen && (
         <ModalAddCursoMateria
           show={isCursoModalOpen}
           onClose={handleCloseCursoModal}
           onSave={handleSaveCurso}
           idAlumno={alumno.id_alumno}
-          // Si ya tiene un curso, se lo pasamos al modal (aún no lo usa, pero es buena práctica)
-          // cursoActual={curso}
         />
       )}
     </div>

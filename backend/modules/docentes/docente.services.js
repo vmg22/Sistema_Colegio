@@ -197,3 +197,61 @@ exports.restaurarDocente = async (id) => {
   const [docente] = await db.query(consultas.obtenerPorId, [id]);
   return docente[0];
 };
+
+// ============================================================
+// NUEVOS SERVICIOS PARA FILTRADO POR DOCENTE
+// ============================================================
+
+// Obtener materias asignadas a un docente
+exports.obtenerMateriasPorDocente = async (idDocente) => {
+  const [rows] = await db.query(consultas.obtenerMateriasPorDocente, [idDocente]);
+  return rows;
+};
+
+// Obtener cursos asignados a un docente
+exports.obtenerCursosPorDocente = async (idDocente) => {
+  const [rows] = await db.query(consultas.obtenerCursosPorDocente, [idDocente]);
+  return rows;
+};
+
+// Obtener cursos de un docente filtrados por materia
+exports.obtenerCursosPorDocenteYMateria = async (idDocente, idMateria) => {
+  const [rows] = await db.query(consultas.obtenerCursosPorDocenteYMateria, [idDocente, idMateria]);
+  return rows;
+};
+
+// Obtener alumnos de los cursos donde el docente dicta
+exports.obtenerAlumnosPorDocente = async (idDocente) => {
+  const [rows] = await db.query(consultas.obtenerAlumnosPorDocente, [idDocente]);
+  return rows;
+};
+
+// Obtener alumnos de un curso específico donde el docente dicta
+exports.obtenerAlumnosPorDocenteYCurso = async (idDocente, idCurso) => {
+  const [rows] = await db.query(consultas.obtenerAlumnosPorDocenteYCurso, [idDocente, idCurso]);
+  return rows;
+};
+
+// Verificar si un docente tiene acceso a un alumno específico
+exports.verificarAccesoAlumno = async (idDocente, idAlumno) => {
+  const [rows] = await db.query(consultas.verificarAccesoAlumno, [idDocente, idAlumno]);
+  return rows[0].tiene_acceso > 0;
+};
+
+// Verificar si un docente tiene acceso a un curso específico
+exports.verificarAccesoCurso = async (idDocente, idCurso) => {
+  const [rows] = await db.query(consultas.verificarAccesoCurso, [idDocente, idCurso]);
+  return rows[0].tiene_acceso > 0;
+};
+
+// Verificar si un docente tiene acceso a una materia específica
+exports.verificarAccesoMateria = async (idDocente, idMateria) => {
+  const [rows] = await db.query(consultas.verificarAccesoMateria, [idDocente, idMateria]);
+  return rows[0].tiene_acceso > 0;
+};
+
+// Obtener docente por id_usuario (para login)
+exports.obtenerDocentePorIdUsuario = async (idUsuario) => {
+  const [rows] = await db.query(consultas.obtenerPorIdUsuario, [idUsuario]);
+  return rows[0];
+};

@@ -53,6 +53,25 @@ const Login = () => {
 
       // Guardar token, datos del usuario y ROL
       localStorage.setItem("token", data.datos.token);
+      
+      // Si el usuario es docente, obtener su id_docente
+      if (data.datos.usuario.rol === 'docente') {
+        try {
+          const docenteResponse = await fetch(
+            `http://localhost:3000/api/v1/docentes/usuario/${data.datos.usuario.id_usuario}`
+          );
+          
+          if (docenteResponse.ok) {
+            const docenteData = await docenteResponse.json();
+            // Agregar id_docente al objeto usuario
+            data.datos.usuario.id_docente = docenteData.datos.id_docente;
+          }
+        } catch (err) {
+          console.error("Error al obtener datos del docente:", err);
+          // Continuar con el login aunque falle esto
+        }
+      }
+      
       localStorage.setItem("usuario", JSON.stringify(data.datos.usuario));
       localStorage.setItem("userRole", data.datos.usuario.rol); // 👈 Guardamos el rol
 
@@ -60,6 +79,7 @@ const Login = () => {
       navigate("/dashboard");
       
     } catch (err) {
+
       setError(err.message || "Error al iniciar sesión. Intente nuevamente.");
     } finally {
       setLoading(false);

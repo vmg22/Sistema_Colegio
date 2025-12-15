@@ -1,23 +1,28 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2"; // <-- Ya estaba importado, perfecto
+import Swal from "sweetalert2";
 import {
   getAniosLectivos,
   deleteAnioLectivo,
 } from "../../../services/aniosServices";
 import AnioLectorModal from "../../../components/modals/AnioLectivoModal";
 import TableCrud from "../../../components/crud/TableCrud";
+import Paginador from '../../../components/ui/Paginador';
 import "../../../styles/docentescrud.css";
 import BtnVolver from "../../../components/ui/BtnVolver";
 
 const GestionAniosLectivos = () => {
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const [aniosLectivos, setAniosLectivos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [anioAEditar, setAnioAEditar] = useState(null);
+  
+  // Estados para paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const loadAnios = async () => {
     setIsLoading(true);
@@ -27,7 +32,6 @@ const GestionAniosLectivos = () => {
       setAniosLectivos(response.datos || response || []);
     } catch (err) {
       setError(err.message || "Error al cargar los años lectivos.");
-      // Mostramos un Swal de error si falla la carga inicial
       Swal.fire(
         "Error",
         err.message || "Error al cargar los años lectivos.",
@@ -51,7 +55,23 @@ const GestionAniosLectivos = () => {
     );
   }, [searchTerm, aniosLectivos]);
 
+  // Calcular paginación
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentAnios = filteredAnios.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredAnios.length / itemsPerPage);
+
+  const handlePageChange = (page, newItemsPerPage) => {
+    if (newItemsPerPage) {
+      setItemsPerPage(newItemsPerPage);
+      setCurrentPage(1);
+    } else {
+      setCurrentPage(page);
+    }
+  };
+
   const handleSearch = () => {
+    setCurrentPage(1); // Resetear a página 1 al buscar
     loadAnios();
   };
 
@@ -70,56 +90,46 @@ const GestionAniosLectivos = () => {
     setAnioAEditar(null);
   };
 
-  // <-- MODIFICADO: Notificación de éxito al guardar (Crear / Editar) -->
   const handleSaveSuccess = () => {
-    // Verificamos si era una edición o creación ANTES de cerrar el modal
     const isEdit = anioAEditar !== null;
     
     handleCloseModal();
     loadAnios();
 
-    // Mostramos la alerta de éxito
     Swal.fire({
       title: isEdit ? "¡Actualizado!" : "¡Creado!",
       text: isEdit
         ? "El año lectivo se actualizó correctamente."
         : "El año lectivo se creó correctamente.",
       icon: "success",
-      timer: 1500, // Se cierra solo después de 1.5 seg
+      timer: 1500,
       showConfirmButton: false,
     });
   };
 
-  // <-- MODIFICADO: Notificación de confirmación y resultado al Eliminar -->
   const handleDelete = async (id) => {
-    // 1. Pedir confirmación
     Swal.fire({
       title: "¿Estás seguro?",
-      text: "Se eliminará el año lectivo.",
+      text: "¿Quieres eliminar este año lectivo?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonText: "Cancelar",
       confirmButtonText: "Sí, eliminar",
     }).then(async (result) => {
-      // 2. Si confirma...
       if (result.isConfirmed) {
         try {
-          // 3. Intentar eliminar
           await deleteAnioLectivo(id);
           
-          // 4. Notificar éxito
           Swal.fire(
             "¡Eliminado!",
             "El año lectivo ha sido eliminado.",
             "success"
           );
           
-          // 5. Recargar datos
           loadAnios();
 
         } catch (err) {
-          // 6. Notificar error
           Swal.fire(
             "Error",
             err.message || "No se pudo eliminar el año lectivo.",
@@ -211,12 +221,20 @@ const GestionAniosLectivos = () => {
 
         <TableCrud
           columns={columns}
-          data={filteredAnios}
+          data={currentAnios}
           isLoading={isLoading}
-          error={error} // El componente TableCrud debería saber mostrar este error
+          error={error}
           renderActions={renderActions}
           getKey={(item) => item.id_anio_lectivo}
           emptyMessage="No se encontraron años lectivos."
+        />
+
+        <Paginador
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={filteredAnios.length}
         />
       </div>
 
@@ -224,7 +242,7 @@ const GestionAniosLectivos = () => {
         <AnioLectorModal
           show={showModal}
           onHide={handleCloseModal}
-          onSave={handleSaveSuccess} // Esta función ahora dispara el Swal
+          onSave={handleSaveSuccess}
           anioAEditar={anioAEditar}
         />
       )}
