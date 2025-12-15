@@ -202,6 +202,7 @@ const CargaCalificaciones = () => {
                   {item.calificaciones.estado === "desaprobada" &&
                     "Desaprobado"}
                   {item.calificaciones.estado === "cursando" && "Cursando"}
+                  {item.calificaciones.estado === "final" && "Final"}
                   {item.calificaciones.estado === "libre" && "Libre"}
                 </td>
               ) : (

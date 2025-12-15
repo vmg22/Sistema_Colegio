@@ -179,6 +179,35 @@ exports.actualizarCalificacionParcial = async (id, data) => {
 
     await db.query(consultas.actualizarParcial, params);
 
+    // SINCRONIZAR con alumno_materia_estado
+    // Si se actualizó el estado o la calificación definitiva, sincronizar con alumno_materia_estado
+    if (data.estado !== undefined || data.calificacion_definitiva !== undefined) {
+      const estadoFinal = data.estado !== undefined ? data.estado : calificacionExistente.estado;
+      const notaFinal = data.calificacion_definitiva !== undefined ? data.calificacion_definitiva : calificacionExistente.calificacion_definitiva;
+      
+      // Actualizar o crear en alumno_materia_estado (MySQL 8 compatible)
+      await db.query(`
+        INSERT INTO alumno_materia_estado 
+          (id_alumno, id_materia, id_curso, anio_lectivo, estado, calificacion_final, fecha_estado)
+        VALUES (?, ?, ?, ?, ?, ?, CURDATE())
+        ON DUPLICATE KEY UPDATE
+          estado = ?,
+          calificacion_final = ?,
+          fecha_estado = CURDATE(),
+          updated_at = NOW()
+      `, [
+        calificacionExistente.id_alumno,
+        calificacionExistente.id_materia,
+        calificacionExistente.id_curso,
+        calificacionExistente.anio_lectivo,
+        estadoFinal,
+        notaFinal,
+        // Repetir para el UPDATE
+        estadoFinal,
+        notaFinal
+      ]);
+    }
+
     const [calificacionActualizada] = await db.query(consultas.obtenerPorId, [id]);
     return calificacionActualizada[0];
 

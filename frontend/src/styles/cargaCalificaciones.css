@@ -63,6 +63,19 @@
 }
 
 .reporte-curso-estado-libre {
-  color: #ff9800;
+  background-color: #ffc107;
+  color: #000;
+  font-weight: bold;
+}
+
+.reporte-curso-estado-final {
+  background-color: #ff9800;
+  color: #fff;
+  font-weight: bold;
+}
+
+.reporte-curso-estado-previa {
+  background-color: #9c27b0;
+  color: #fff;
   font-weight: bold;
 }

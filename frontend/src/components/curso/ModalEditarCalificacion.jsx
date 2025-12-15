@@ -237,6 +237,7 @@ const ModalEditarCalificacion = ({
                     <option value="cursando">Cursando</option>
                     <option value="aprobada">Aprobado</option>
                     <option value="desaprobada">Desaprobado</option>
+                    <option value="final">Final</option>
                     <option value="libre">Libre</option>
                   </select>
                 </div>

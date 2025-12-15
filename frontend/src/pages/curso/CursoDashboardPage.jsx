@@ -52,6 +52,11 @@ const CursoDashboardPage = () => {
           icono="mail"
           to="/reporte-curso/comunicacion"
         />
+        <AccionCard
+          titulo="Exámenes Finales"
+          icono="school"
+          to="/reporte-curso/examenes-finales"
+        />
       </div>
     </div>
   );

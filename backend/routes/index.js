@@ -24,6 +24,8 @@ const usuarioRoutes = require("../modules/usuario/usuario.routes.js");
 const authRoutes = require('../modules/usuario/auth.routes.js');
 const asignacionRoutes = require("../modules/CRUD/asignaciones/asignacion.routes");
 const cursoMateriaRoutes = require("../modules/CRUD/curso-materia/curso-materia.routes.js");
+const examenesFinalesRoutes = require("../modules/examenes_finales/examenFinal.routes");
+
 
 
 // Módulo de altas (Docente + Usuario)
@@ -67,6 +69,10 @@ router.use('/inscripciones', inscripcionesRoutes);
 // CRUD ASIGNAR MATERIA A DOCENTE 
 
 router.use("/asignaciones", asignacionRoutes);
+
+// EXÁMENES FINALES
+router.use("/examenes-finales", examenesFinalesRoutes);
+
 
 
 // Ruta principal de la API
