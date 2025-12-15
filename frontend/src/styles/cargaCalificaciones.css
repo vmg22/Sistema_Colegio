@@ -6,3 +6,63 @@
   padding: 8px 0;
 }
 
+/* Estilos para el input de búsqueda */
+.reporte-curso-search-input {
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  background-color: #fff;
+  transition: all 0.2s ease-in-out;
+  margin-right: 8px;
+  width: 250px;
+}
+
+.reporte-curso-search-input:focus {
+  outline: none;
+  border-color: #004b9b;
+  box-shadow: 0 0 0 2px rgba(0, 75, 155, 0.1);
+}
+
+/* Estilos para el botón de búsqueda */
+.reporte-curso-search-btn {
+  background-color: #004b9b;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.reporte-curso-search-btn:hover {
+  background-color: #003b7d;
+}
+
+.reporte-curso-search-btn:active {
+  background-color: #002c5e;
+}
+
+/* Estilos para estados */
+.reporte-curso-estado-aprobada {
+  color: #2e8b57;
+  font-weight: bold;
+}
+
+.reporte-curso-estado-desaprobada {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.reporte-curso-estado-cursando {
+  color: #004b9b;
+  font-weight: bold;
+}
+
+.reporte-curso-estado-libre {
+  color: #ff9800;
+  font-weight: bold;
+}

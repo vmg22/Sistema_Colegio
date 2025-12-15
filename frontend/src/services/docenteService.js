@@ -1,6 +1,6 @@
 import axios from "axios";
-import API from "../api/api"; // Tu string de URL base
-const ALTAS_URL = `${API}/altas`;
+import API from "../api/api";
+const ALTAS_URL = `${API}/altas-docentes`;
 
 /**
  * Función genérica para manejar errores y extraer el mensaje del backend.
@@ -18,8 +18,8 @@ const handleError = (error, defaultMessage) => {
  */
 export const getDocentes = async (params = {}) => {
   try {
-    const response = await axios.get(`${ALTAS_URL}/docentes`, { params });
-    // Corregido: Tu backend usa 'data', no 'datos'.
+    const response = await axios.get(`${ALTAS_URL}`, { params });
+    
     return response.data.data.docentes || []; 
   } catch (err) {
     handleError(err, "Error al obtener docentes");
@@ -99,7 +99,7 @@ export const getDocenteById = async (id) => {
 };
 
 
-// --- ¡AQUÍ ESTÁN LAS FUNCIONES QUE FALTABAN! ---
+
 
 /**
  * @route POST /api/v1/altas/docente/perfil

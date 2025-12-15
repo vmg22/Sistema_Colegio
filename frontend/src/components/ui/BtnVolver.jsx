@@ -28,7 +28,7 @@ const BtnVolver = ({ mostrarAgregar = false }) => {
           border: "none",
           cursor: "pointer",
           color: "#303F9F",
-          fontWeight: "500",
+          fontWeight: "700",
           padding: "8px 16px",
         }}
       >

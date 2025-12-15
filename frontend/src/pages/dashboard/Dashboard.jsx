@@ -15,6 +15,53 @@ import LineaSeparadora from "../../components/ui/LineaSeparadora";
 import { getMaterias } from "../../services/materiasServices";
 import { getCursos } from "../../services/cursosService";
 import { getAniosLectivos } from "../../services/aniosServices";
+import { getMateriasAsignadas } from "../../services/cursoMateriaService";
+
+const ROLE_CONFIG = {
+  admin: {
+    icon: "admin_panel_settings",
+    text: "Administrador",
+    className: "admin-badge",
+    iconClass: "admin-icon",
+    textClass: "admin-text"
+  },
+  docente: {
+    icon: "school",
+    text: "Docente",
+    className: "docente-badge",
+    iconClass: "docente-icon",
+    textClass: "docente-text"
+  },
+  preceptor: {
+    icon: "security",
+    text: "Preceptor",
+    className: "preceptor-badge",
+    iconClass: "preceptor-icon",
+    textClass: "preceptor-text"
+  },
+  secretario: {
+    icon: "edit_document",
+    text: "Secretario",
+    className: "secretario-badge",
+    iconClass: "secretario-icon",
+    textClass: "secretario-text"
+  },
+  tutor: {
+    icon: "person_add",
+    text: "Tutor",
+    className: "tutor-badge",
+    iconClass: "tutor-icon",
+    textClass: "tutor-text"
+  },
+  // Opcional: Define un valor por defecto para roles no reconocidos
+  default: {
+    icon: "person",
+    text: "Usuario",
+    className: "default-badge",
+    iconClass: "default-icon",
+    textClass: "default-text"
+  },
+};
 
 const Dashboard = () => {
   const [tipoConsulta, setConsulta] = useState("alumno");
@@ -32,10 +79,17 @@ const Dashboard = () => {
   const [selectedMateria, setSelectedMateria] = useState("");
   const [selectedPeriodo, setSelectedPeriodo] = useState("");
   const [selectedAnio, setSelectedAnio] = useState("");
+  const [materiasCursoSeleccionado, setMateriasCursoSeleccionado] = useState(
+    []
+  );
+
+  // Obtener rol del usuario
+  const [userRole, setUserRole] = useState("");
+  const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
 
-  // Zustand store  SETEAMOS LOS DATOS PARA GUARDARLOS GLOBALMENTE
+  // Zustand store
   const {
     setAlumnoDni,
     setAlumnoAnio,
@@ -48,42 +102,77 @@ const Dashboard = () => {
   } = useConsultaStore();
 
   useEffect(() => {
-    const cargarDatos = async () => {
+    const userJSON = localStorage.getItem("usuario");
+    let currentUser = null;
+
+    if (userJSON) {
       try {
-        const [dataMaterias, dataCursos, dataAnios] = await Promise.all([
-          getMaterias(),
+        currentUser = JSON.parse(userJSON);
+      } catch (e) {
+        console.error("Error al parsear el objeto de usuario:", e);
+      }
+    } // 2. Actualizar los estados
+
+    if (currentUser) {
+      setUser(currentUser); // Guarda el objeto completo
+      setUserRole(currentUser.rol || "usuario"); // Usa el rol del objeto si existe
+    } else {
+      // Si no hay objeto 'usuario', intenta leer el rol antiguo por si acaso
+      const role = localStorage.getItem("userRole") || "usuario";
+      setUserRole(role);
+    }
+
+    const cargarDatosEstaticos = async () => {
+      try {
+        // SOLO cargamos cursos y años lectivos
+        const [dataCursos, dataAnios] = await Promise.all([
           getCursos(),
           getAniosLectivos(),
         ]);
-        console.log(
-          "Datos recibidos de la API:",
-          dataMaterias,
-          dataCursos,
-          dataAnios
-        );
+        console.log("Datos recibidos de la API:", dataCursos, dataAnios);
 
-        setMaterias(dataMaterias);
-        setCursos(dataCursos);
-        setAnios(dataAnios);
+        setCursos(dataCursos.datos);
+        setAnios(dataAnios.datos);
       } catch (error) {
-        console.error("Error al cargar materias:", error);
+        console.error("Error al cargar datos estáticos:", error);
       }
     };
-    cargarDatos();
+    cargarDatosEstaticos();
   }, []);
 
-  //  FILTRADO DE MATERIAS según el curso seleccionado
+  useEffect(() => {
+    if (tipoConsulta === "curso" && selectedCurso) {
+      const cargarMaterias = async () => {
+        try {
+          setLoading(true);
+          setError("");
+          const id_curso = parseInt(selectedCurso);
+          const dataMaterias = await getMateriasAsignadas(id_curso);
+          setMateriasCursoSeleccionado(dataMaterias);
+        } catch (error) {
+          console.error("Error al cargar materias asignadas:", error);
+          setMateriasCursoSeleccionado([]); // Opcional: setError("Error al cargar las materias del curso.");
+        } finally {
+          setLoading(false);
+        }
+      };
+      cargarMaterias();
+    } else {
+      // Limpiar las materias si no hay curso seleccionado o si cambiamos de consulta
+      setMateriasCursoSeleccionado([]);
+    }
+  }, [selectedCurso, tipoConsulta]);
+
+  // FILTRADO DE MATERIAS según el curso seleccionado
   const materiasFiltradas = useMemo(() => {
     if (!selectedCurso) return [];
 
-    // Buscar el curso seleccionado para obtener su año
     const cursoActual = cursos.find(
       (c) => c.id_curso === parseInt(selectedCurso)
     );
 
     if (!cursoActual) return [];
 
-    // Filtrar materias que coincidan con el nivel del curso y estén activas
     return materias.filter(
       (materia) =>
         materia.nivel === cursoActual.anio && materia.estado === "activa"
@@ -97,11 +186,11 @@ const Dashboard = () => {
     setAnioInput("2025");
     setValidated(false);
 
-    // Resetear selecciones de curso cuando cambia el tipo de consulta
     setSelectedCurso("");
     setSelectedMateria("");
     setSelectedPeriodo("");
     setSelectedAnio("");
+    setMateriasCursoSeleccionado([]);
   };
 
   const handleSubmit = async (event) => {
@@ -119,7 +208,6 @@ const Dashboard = () => {
       return;
     }
 
-    // Guardar en Zustand
     setAlumnoDni(dniInput);
     setAlumnoAnio(anioInput);
 
@@ -136,10 +224,8 @@ const Dashboard = () => {
       console.log("✅ Reporte obtenido:", data);
       setReporteAlumno(data);
 
-      // Guardamos temporalmente en sessionStorage (por si recarga la página)
       sessionStorage.setItem("reporteAlumno", JSON.stringify(data));
 
-      // Redirigimos a la vista de resultados
       navigate("/perfilAlumno");
     } catch (err) {
       console.error("❌ Error al traer reporte:", err);
@@ -179,17 +265,15 @@ const Dashboard = () => {
 
       console.log("✅ Reporte de curso obtenido:", dataReporte);
 
-      // --- ¡NUEVO! Guardamos los nombres seleccionados ---
       const cursoObj = cursos.find(
         (c) => c.id_curso === parseInt(selectedCurso)
       );
-      const materiaObj = materiasFiltradas.find(
+      const materiaObj = materiasCursoSeleccionado.find(
         (m) => m.id_materia === parseInt(selectedMateria)
       );
       const periodoNombre =
         selectedPeriodo === "1" ? "1er Cuatrimestre" : "2do Cuatrimestre";
 
-      // Guardar en Zustand los datos del reporte y los nombres PARA UTILIZARLO EN UI
       setReporteCurso(dataReporte);
       setSelectedCursoNombre(
         cursoObj ? `${cursoObj.anio}° ${cursoObj.division}` : "Curso"
@@ -198,10 +282,8 @@ const Dashboard = () => {
       setSelectedPeriodoNombre(periodoNombre);
       setSelectedAnioNombre(selectedAnio);
 
-      // Guardar en sessionStorage (para recargas)
       sessionStorage.setItem("reporteCurso", JSON.stringify(dataReporte));
 
-      // Navegar a la página de resultados
       navigate("/cursoDashboard");
     } catch (err) {
       console.error("❌ Error al traer reporte de curso:", err);
@@ -211,34 +293,52 @@ const Dashboard = () => {
     }
   };
 
-  //  Resetear materia cuando cambia el curso
   const handleCursoChange = (e) => {
     setSelectedCurso(e.target.value);
-    setSelectedMateria(""); // Limpiar la materia seleccionada
+    setSelectedMateria("");
   };
 
+  const handleNavigateToCrud = () => {
+    navigate("/crud");
+  };
+
+  const currentRoleConfig = ROLE_CONFIG[userRole] || ROLE_CONFIG["default"];
+  console.log(user)
   return (
     <div className="nombre_vista">
       <div
         style={{
           display: "flex",
           alignItems: "center",
+          justifyContent: "space-between",
           marginLeft: "20px",
+          marginRight: "20px",
           gap: "10px",
         }}
       >
-        <span
-          className="material-symbols-outlined search"
-          style={{ marginRight: "15px" }}
-        >
-          search
-        </span>
-        <h4>Consulta Académica</h4>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span
+            className="material-symbols-outlined search"
+            style={{ marginRight: "15px" }}
+          >
+            search
+          </span>
+          <h4>Consulta Académica</h4>
+        </div>
+
+        {/* BADGE DE USUARIO  */}
+        <div className={currentRoleConfig.className}>
+          <span className="material-symbols-outlined icon">
+            {currentRoleConfig.icon}
+          </span>
+          <span className="text">{currentRoleConfig.text}</span>
+        </div>
       </div>
 
       <LineaSeparadora />
 
       <div className="contenedor-botones-dash">
+        {/* CARD ALUMNO */}
         <button
           className={`btn-tipo ${tipoConsulta === "alumno" ? "activo" : ""}`}
           onClick={() => setConsulta2("alumno")}
@@ -250,6 +350,7 @@ const Dashboard = () => {
           <span className="btn-texto">Consulta por Alumno</span>
         </button>
 
+        {/* CARD CURSO */}
         <button
           className={`btn-tipo ${tipoConsulta === "curso" ? "activo" : ""}`}
           onClick={() => setConsulta2("curso")}
@@ -260,6 +361,32 @@ const Dashboard = () => {
           </div>
           <span className="btn-texto">Consulta por Curso</span>
         </button>
+        {/* CARD ENVIAR MAIL GENERAL (visible para todos) */}
+        <button
+          className={`btn-tipo ${tipoConsulta === "mail" ? "activo" : ""}`}
+          onClick={() => navigate("/generar-mail")}
+          type="button"
+        >
+          <div className="icono-contenedor-mail">
+            <span className="material-symbols-outlined mail">mail</span>
+          </div>
+          <span className="btn-texto">Enviar Mail General</span>
+        </button>
+        {/* ✅ CARD GESTIÓN DE DATOS (SOLO ADMIN) */}
+        {userRole === "admin" && (
+          <button
+            className={`btn-tipo ${tipoConsulta === "gestion" ? "activo" : ""}`}
+            onClick={handleNavigateToCrud}
+            type="button"
+          >
+            <div className="icono-contenedor-settings">
+              <span className="material-symbols-outlined settings">
+                settings
+              </span>
+            </div>
+            <span className="btn-texto">Gestión de Datos</span>
+          </button>
+        )}
       </div>
 
       <div className="contenedor-busqueda">
@@ -286,13 +413,14 @@ const Dashboard = () => {
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Año</Form.Label>
                 <Form.Select
-                  value={anioInput}
-                  onChange={(e) => setAnioInput(e.target.value)}
                   required
+                  value={selectedAnio}
+                  onChange={(e) => setSelectedAnio(e.target.value)}
                 >
-                  {[2025, 2026].map((a) => (
-                    <option key={a} value={a}>
-                      {a}
+                  <option value="">Seleccione año</option>
+                  {anios?.map((anioObj) => (
+                    <option key={anioObj.id_anio_lectivo} value={anioObj.anio}>
+                      {anioObj.anio}
                     </option>
                   ))}
                 </Form.Select>
@@ -324,7 +452,6 @@ const Dashboard = () => {
             <h5 className="tituloForm">Buscar Curso</h5>
             <hr className="linea-separadora" />
             <Row className="mb-3 d-flex justify-content-around">
-              {/* 🎯 CURSO (DINÁMICO) */}
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Curso</Form.Label>
                 <Form.Select
@@ -342,36 +469,40 @@ const Dashboard = () => {
                 </Form.Select>
               </Form.Group>
 
-              {/* 🎯 MATERIA (FILTRADA DINÁMICAMENTE) */}
               <Form.Group as={Col} md="4">
-                <Form.Label className="formLabel">Materia</Form.Label>
+                               {" "}
+                <Form.Label className="formLabel">Materia</Form.Label>         
+                     {" "}
                 <Form.Select
                   required
                   value={selectedMateria}
-                  onChange={(e) => setSelectedMateria(e.target.value)}
-                  disabled={!selectedCurso}
+                  onChange={(e) => setSelectedMateria(e.target.value)} // También deshabilita si está cargando las materias
+                  disabled={!selectedCurso || loading}
                 >
                   <option value="">
                     {!selectedCurso
                       ? "Primero seleccione un curso"
+                      : loading
+                      ? "Cargando materias..." // <-- Mensaje de carga
                       : "Seleccione materia"}
                   </option>
-                  {materiasFiltradas?.map((materia) => (
+                  {materiasCursoSeleccionado?.map((materia) => (
                     <option key={materia.id_materia} value={materia.id_materia}>
                       {materia.nombre}
                     </option>
                   ))}
                 </Form.Select>
-                {selectedCurso && materiasFiltradas.length === 0 && (
-                  <Form.Text className="text-warning">
-                    No hay materias activas para este curso
-                  </Form.Text>
-                )}
+                {selectedCurso &&
+                  !loading &&
+                  materiasCursoSeleccionado.length === 0 && (
+                    <Form.Text className="text-warning">
+                      No hay materias asignadas a este curso.
+                    </Form.Text>
+                  )}
               </Form.Group>
             </Row>
 
             <Row className="mb-3 d-flex justify-content-around">
-              {/* PERIODO (ESTÁTICO) */}
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Periodo</Form.Label>
                 <Form.Select
@@ -385,7 +516,6 @@ const Dashboard = () => {
                 </Form.Select>
               </Form.Group>
 
-              {/* AÑO (DINÁMICO) */}
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Año</Form.Label>
                 <Form.Select
@@ -407,7 +537,6 @@ const Dashboard = () => {
               <p style={{ color: "red", textAlign: "center" }}>{error}</p>
             )}
 
-            {/* BOTÓN */}
             <div className="d-flex justify-content-center my-4">
               <Button
                 type="submit"

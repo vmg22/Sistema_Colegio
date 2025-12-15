@@ -48,16 +48,6 @@ app.get(['/reset-password', '/login', '/solicitar-reset'], (req, res) => {
   res.redirect(frontendUrl);
 });
 
-// --- MANEJO DE ERRORES (el orden es crucial) ---
-// 1. Middleware para rutas no encontradas (404)
-app.use((req, res, next) => {
-  console.log(`❌ Ruta no manejada: ${req.method} ${req.originalUrl}`);
-  res.status(404).json({
-    error: 'Ruta no encontrada',
-    mensaje: `El recurso ${req.method} ${req.originalUrl} no fue encontrado en el servidor.`,
-    nota: 'Las rutas del frontend están en: http://localhost:5173'
-  });
-});
 
 // 2. Middleware de manejo de errores global (siempre al final)
 app.use(manejadorErrores);
@@ -107,6 +97,17 @@ const cerrarSistema = async () => {
 
 process.on('SIGINT', cerrarSistema);
 process.on('SIGTERM', cerrarSistema);
+
+
+// 2. Middleware de manejo de errores global (siempre al final)
+app.use(manejadorErrores);
+
+app.use((req, res, next) => {
+  res.status(404).json({
+    error: 'Ruta no encontrada',
+    mensaje: `El recurso ${req.method} ${req.originalUrl} no fue encontrado en el servidor.`
+  });
+});
 
 // --- ARRANQUE DEL SISTEMA ---
 iniciarSistema();

@@ -5,6 +5,7 @@ import { getReporteAlumno } from "../../services/reportesService";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "../../styles/constAluTramite.css";
+import BtnVolver from "../../components/ui/BtnVolver";
 
 const Constancia = () => {
   const navigate = useNavigate();
@@ -135,7 +136,7 @@ const Constancia = () => {
   // 🧩 Estados visuales
   if (cargando) {
     return (
-      <div className="constancia-body">
+      <div className="constancia-body-escolar"> {/* <-- CAMBIADO */}
         <div className="certificate-container">
           <div className="loading-container">
             <div className="spinner"></div>
@@ -148,7 +149,7 @@ const Constancia = () => {
 
   if (error) {
     return (
-      <div className="constancia-body">
+      <div className="constancia-body-escolar"> {/* <-- CAMBIADO */}
         <div className="certificate-container">
           <div className="error-container">
             <span className="material-symbols-outlined error-icon">error</span>
@@ -165,27 +166,73 @@ const Constancia = () => {
 
   // 🧾 Render principal
   return (
-    <div className="constancia-body">
+    <div>
+      <div className="no-print">
+        <BtnVolver/>
+      </div>
+    <div className="constancia-body-escolar"> {/* <-- CAMBIADO */}
       {/* Campos editables ARRIBA A LA IZQUIERDA */}
       <div className="edit-panel no-print">
         <h3>Datos Editables</h3>
+        <div className="form-group editable">
+          <label>Rector:</label>
+          <input
+            type="text"
+            name="rector"
+            placeholder="Ej: Juan Pérez"
+            value={datosFormulario.rector}
+            onChange={manejarCambio}
+          />
+        </div>
+
+        <div className="form-group editable">
+          <label>Bachiller:</label>
+          <input
+            type="text"
+            name="bachiller"
+            placeholder="Ej: Economia"
+            value={datosFormulario.bachiller}
+            onChange={manejarCambio}
+          />
+        </div>
+
+        <div className="form-group editable">
+          <label>Materias:</label>
+          <input
+            type="text"
+            name="materias"
+            placeholder="Ej: Biologia"
+            value={datosFormulario.materias}
+            onChange={manejarCambio}
+          />
+        </div>
+        <div className="form-group editable">
+          <label>Idioma extranjero:</label>
+          <input
+            type="text"
+            name="idioma"
+            placeholder="Ej: Ingles"
+            value={datosFormulario.idioma}
+            onChange={manejarCambio}
+          />
+        </div>
         <div className="form-group editable">
           <label>Solicitante:</label>
           <input
             type="text"
             name="solicitante"
-            placeholder="Ej: Juan Pérez"
+            placeholder="Ej: Ines Perez"
             value={datosFormulario.solicitante}
             onChange={manejarCambio}
           />
         </div>
 
         <div className="form-group editable">
-          <label>Autoridad destinataria:</label>
+          <label>Autoridades:</label>
           <input
             type="text"
             name="autoridad"
-            placeholder="Ej: Ministerio de Educación"
+            placeholder="Ej: Ines Perez"
             value={datosFormulario.autoridad}
             onChange={manejarCambio}
           />
@@ -193,38 +240,41 @@ const Constancia = () => {
       </div>
 
       <div className="certificate-container" ref={refCertificado}>
-        <h1 className="certificate-header">Constancia de Alumno Tramite</h1>
+        <h1 className="certificate-header">Constancia de Certificado de estudios en tramite</h1>
 
         <p>
-          Se deja constancia de que{" "}
-          <b>{datosFormulario.nombreEstudiante}</b>, DNI{" "}
-          <b>{datosFormulario.numeroDocumento}</b>, cursa el año{" "}
-          <b>{datosFormulario.curso}</b> división{" "}
-          <b>{datosFormulario.division}</b>, turno{" "}
-          <b>{datosFormulario.turno}</b>, correspondiente al ciclo lectivo{" "}
-          <b>{datosFormulario.anioLectivo}</b>.
+          <b>{datosFormulario.rector}</b> RECTOR{" "}
+          
+        </p>
+        <p>
+          Se hace constar que{" "}
+          <b>{datosFormulario.nombreEstudiante}</b>,
+           de{" "}
+          <b>{datosFormulario.curso}</b>
+          , turno{" "}
+          tiene en trámite su certificado de estudios de <b>{datosFormulario.bachiller}</b>
+        </p>
+
+        <p className="text-center">
+         <strong>DATOS CORRESPONDIENTES</strong> 
         </p>
 
         <p>
-          Materias adeudadas: <b>{datosFormulario.materiasAdeudadas}</b>
+          N° de Documento de Identidad: <b>{datosFormulario.numeroDocumento}</b>
         </p>
-
         <p>
-          Idioma extranjero: <b>{datosFormulario.idiomaExtranjero}</b>
+          Materias que adeuda: <b>{datosFormulario.materias}</b>
         </p>
-
         <p>
-          A pedido de{" "}
-          <b>{datosFormulario.solicitante || "..."}</b> se extiende la presente
-          constancia para ser presentada ante las autoridades de{" "}
-          <b>{datosFormulario.autoridad || "..."}</b>.
+          Idioma extranjero cursado: <b>{datosFormulario.idioma}</b>
         </p>
-
         <p>
-          En la ciudad de {datosFormulario.ciudad}, a los{" "}
-          {datosFormulario.dia} días del mes de {datosFormulario.mes} de 20
-          {datosFormulario.anioActual}.
+          A pedido de: <b>{datosFormulario.solicitante}</b> interesada/o se extiende la presente constancia
+          sin enmiendas ni raspaduras en la ciudad de <b>{datosFormulario.ciudad}</b>, a los{" "}
+          <b>{datosFormulario.dia}</b> días del mes de <b>{datosFormulario.mes}</b> de{" "}
+          <b>20{datosFormulario.anioActual}</b>, para ser presentado ante las autoridades de  <b>{datosFormulario.autoridad}</b>
         </p>
+        
         <br />
         <br />
         <br />
@@ -248,20 +298,18 @@ const Constancia = () => {
 
       {/* Botones de acción */}
       <div className="actions no-print">
-        <button onClick={manejarVolver} className="btn-secondary">
-          <span className="material-symbols-outlined">arrow_back</span>
-          Volver
-        </button>
-        <button onClick={manejarDescargarPDF} className="btn-primary">
+        <button onClick={manejarDescargarPDF} className="btn btn-primary">
           <span className="material-symbols-outlined">download</span>
           Descargar PDF
         </button>
-        <button onClick={manejarImprimir} className="btn-primary">
+        <button onClick={manejarImprimir} className="btn btn-primary">
           <span className="material-symbols-outlined">print</span>
           Imprimir
         </button>
       </div>
     </div>
+    </div>
+
   );
 };
 

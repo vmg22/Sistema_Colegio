@@ -8,12 +8,12 @@ const ReporteCursoTable = ({ alumnos = [] }) => {
     return "reporte-curso-nota-insuficiente";
   };
 
-  const getAsistenciaClass = (asistencia) => {
-    const porcentaje = asistencia?.porcentaje ?? 0;
-    if (porcentaje >= 85) return "reporte-curso-asistencia-excelente";
-    if (porcentaje >= 70) return "reporte-curso-asistencia-regular";
-    return "reporte-curso-asistencia-insuficiente";
-  };
+  const getAsistenciaClass = (porcentaje) => {
+// El console.log que tenías ya no iría aquí, sino en el map
+ if (porcentaje >= 85) return "reporte-curso-asistencia-excelente";
+ if (porcentaje >= 70) return "reporte-curso-asistencia-regular";
+return "reporte-curso-asistencia-insuficiente";
+ };
 
   const formatNota = (nota) => {
     if (nota === undefined || nota === null || isNaN(nota)) return "-";
@@ -43,6 +43,7 @@ const ReporteCursoTable = ({ alumnos = [] }) => {
             <th className="reporte-curso-th">Nota 2</th>
             <th className="reporte-curso-th">Nota 3</th>
             <th className="reporte-curso-th">Promedio</th>
+            <th className="reporte-curso-th">Nota Final</th>
             <th className="reporte-curso-th">Asistencia (%)</th>
             <th className="reporte-curso-th">Faltas</th>
           </tr>
@@ -53,8 +54,15 @@ const ReporteCursoTable = ({ alumnos = [] }) => {
               const { alumno = {}, calificaciones, asistencias } = item || {};
               const safeCalificaciones = calificaciones ?? {};
               const safeAsistencias = asistencias ?? {};
-              const asistenciaClass = getAsistenciaClass(safeAsistencias);
-              const faltas = Number(safeAsistencias.ausentes ?? 0);
+              const presentes = Number(safeAsistencias.presentes ?? 0);
+              const ausentes = Number(safeAsistencias.ausentes ?? 0);
+              const totalClases = presentes + ausentes;
+              const porcentajeAsistencia = (totalClases === 0) 
+                ? 0 
+                : (presentes / totalClases) * 100;
+
+ const asistenciaClass = getAsistenciaClass(porcentajeAsistencia); // Le pasamos el número
+ const faltas = ausentes; // Usamos la variable que ya teníamos
 
               const rowClass = index % 2 === 0 ? "reporte-curso-tr-even" : "";
 
@@ -80,10 +88,13 @@ const ReporteCursoTable = ({ alumnos = [] }) => {
                   <td className={`reporte-curso-td reporte-curso-nota-promedio ${getNotaClass(safeCalificaciones.promedio)}`}>
                     {formatNota(safeCalificaciones.promedio)}
                   </td>
-                  <td className={`reporte-curso-td reporte-curso-asistencia ${asistenciaClass}`}>
-                    {safeAsistencias.porcentaje ?? 0}%
+                  <td className={`reporte-curso-td reporte-curso-nota-promedio ${getNotaClass(safeCalificaciones.promedio)}`}>
+                    {formatNota(safeCalificaciones.definitiva)}
                   </td>
-                  <td className="reporte-curso-td">{faltas}</td>
+                  <td className={`reporte-curso-td reporte-curso-asistencia ${asistenciaClass}`}>
+{porcentajeAsistencia.toFixed(0)}%
+ </td>
+ <td className="reporte-curso-td">{faltas}</td>
                 </tr>
               );
             })

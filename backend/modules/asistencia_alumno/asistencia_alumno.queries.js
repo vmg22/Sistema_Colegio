@@ -56,6 +56,7 @@ const consultasAsistencia = {
       a.id_alumno,
       a.apellido_alumno,
       a.nombre_alumno,
+      a.dni_alumno,
       aa.id_asistencia, 
       aa.estado
     FROM 

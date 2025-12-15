@@ -5,6 +5,7 @@ import { getReporteAlumno } from "../../services/reportesService";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "../../styles/CertificadoComprobanteDeVacante.css";
+import BtnVolver from "../../components/ui/BtnVolver";
 
 const CertificadoComprobanteDeVacante = () => {
   const navigate = useNavigate();
@@ -53,7 +54,6 @@ const CertificadoComprobanteDeVacante = () => {
         } else {
           console.log("✅ Usando datos del store de Zustand");
         }
-
 
         // 🔁 Construir datos del formulario
         setDatosFormulario({
@@ -148,13 +148,17 @@ const CertificadoComprobanteDeVacante = () => {
 
   // 🧾 Render principal
   return (
-    <div className="constancia-body">
+    <div>
+      <div className="no-print">
+        <BtnVolver/>
+      </div>
+        <div className="constancia-body-vacante">
       {/* 📝 PANEL DE EDICIÓN - ARRIBA A LA IZQUIERDA (FIJO) */}
-      <div className="edit-panel no-print">
+      <div className="edit-panel no-print mt-3">
         <h3>✏️ Datos Editables</h3>
         
         <div className="form-group editable">
-          <label>alumno:</label>
+          <label>Alumno:</label>
           <input
             type="text"
             name="alumno"
@@ -165,11 +169,11 @@ const CertificadoComprobanteDeVacante = () => {
         </div>
 
         <div className="form-group editable">
-          <label>grado:</label>
+          <label>Grado:</label>
           <input
             type="text"
             name="grado"
-            placeholder="Ej: Ministerio de Educación"
+            placeholder="Ej: 1° A"
             value={datosFormulario.grado}
             onChange={manejarCambio}
           />
@@ -178,7 +182,7 @@ const CertificadoComprobanteDeVacante = () => {
 
       {/* 📄 CERTIFICADO PRINCIPAL */}
       <div className="certificate-container" ref={refCertificado}>
-        <h1 className="certificate-header">Comprobante de vacante </h1>
+        <h1 className="certificate-header">COMPROBANTE DE VACANTE</h1>
 
         <p>
           {datosFormulario.ciudad}, a los{" "}
@@ -187,22 +191,18 @@ const CertificadoComprobanteDeVacante = () => {
         </p>
         
         <p>
-          La dirección de la escuela Instituto Carlos Guido Spano{" "}
+          La dirección de la escuela Instituto Carlos Guido Spano
         </p>
         
         <p>
-          Deja constancia que puede ser inscripto el o la alumno(a) {" "}
+          deja constancia que puede ser inscripto el o la alumno(a){" "}
           <b>{datosFormulario.alumno || "..."}</b>
         </p>
         
         <p>
-          Por existir vacante en el grado <b>{datosFormulario.grado || "..."}</b> 
+          Por existir vacante en el grado <b>{datosFormulario.grado || "..."}</b>
         </p>
 
-        <br />
-        <br />
-        <br />
-        <br />
         <br />
         <br />
         <br />
@@ -210,8 +210,8 @@ const CertificadoComprobanteDeVacante = () => {
         <br />
 
         <div className="signature-space">
-          <div className="signature-box">Firma del Secretario / Prosecretario</div>
-          <div className="signature-box">Firma del Rector</div>
+          <div className="signature-box">Sello</div>
+          <div className="signature-box">Firma del Director o Vice</div>
         </div>
 
         <div className="seal-space">
@@ -222,20 +222,18 @@ const CertificadoComprobanteDeVacante = () => {
 
       {/* 🎯 BOTONES DE ACCIÓN */}
       <div className="actions no-print">
-        <button onClick={manejarVolver} className="btn-secondary">
-          <span className="material-symbols-outlined">arrow_back</span>
-          Volver
-        </button>
-        <button onClick={manejarDescargarPDF} className="btn-primary">
+        <button onClick={manejarDescargarPDF} className="btn btn-primary">
           <span className="material-symbols-outlined">download</span>
           Descargar PDF
         </button>
-        <button onClick={manejarImprimir} className="btn-primary">
+        <button onClick={manejarImprimir} className="btn btn-primary">
           <span className="material-symbols-outlined">print</span>
           Imprimir
         </button>
       </div>
     </div>
+    </div>
+    
   );
 };
 

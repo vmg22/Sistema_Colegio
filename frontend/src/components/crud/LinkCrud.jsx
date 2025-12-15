@@ -6,16 +6,16 @@ import '../../styles/LinkCrud.css';
 
 const cardData = [
     {
-    to: "/alumnos",
-    label: "Alumnos",
-    icon: "group", // Ícono de Google para Alumnos
+    to: "/anio-lectivo",
+    label: "Año Lectivo",
+    icon: "calendar_add_on", // Ícono de Google para Alumnos
     color: "#2563EB", // azul-600
     },
     {
-    to: "/docentes",
-    label: "Docentes",
-    icon: "work", // Ícono de Google para Docentes
-    color: "#2563EB", // verde-600
+    to: "/cursos-crud",
+    label: "Cursos",
+    icon: "group", // Ícono de Google para Alumnos
+    color: "#2563EB", // azul-600
     },
     {
     to: "/materias",
@@ -24,11 +24,23 @@ const cardData = [
     color: "#2563EB", // indigo-600
     },
     {
-    to: "/plan-de-equivalencias",
-    label: "Plan de Equivalencias",
-    icon: "description", // Ícono de Google para Plan de Equivalencias
-    color: "#2563EB", // rojo-600
+    to: "/curso-materia",
+    label: "Asignacion Materia-Curso",
+    icon: "group", // Ícono de Google para Alumnos
+    color: "#2563EB", // azul-600
     },
+    {
+    to: "/altas-docentes",
+    label: "Docentes",
+    icon: "work", // Ícono de Google para Docentes
+    color: "#2563EB", // verde-600
+    },
+    {
+    to: "/alumnos",
+    label: "Alumnos",
+    icon: "person", // Ícono de Google para Alumnos
+    color: "#2563EB", // azul-600
+    }
 ];
 
 

@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2'; // <-- Importado
+import { useDebounce } from 'use-debounce'; // <-- Importado
 
-// 1. Importa el NUEVO servicio
 import * as docenteService from '../../../services/docenteService'; 
+import DocenteWizardModal from '../../../components/modals/DocenteWizardModal'; 
+import DocenteEditModal from '../../../components/modals/DocenteEditModal'; 
 
-// 2. Importa AMBOS modales
-import DocenteWizardModal from '../../../components/modals/DocenteWizardModal'; // Para AGREGAR
-import DocenteEditModal from '../../../components/modals/DocenteEditModal'; // Para EDITAR
-
-// 3. Importa tu tabla y tu CSS
 import TableCrud from '../../../components/crud/TableCrud';
 import '../../../styles/docentescrud.css'; 
+import BtnVolver from '../../../components/ui/BtnVolver';
 
 const Docentes = () => {
     const navigate = useNavigate();
@@ -19,59 +18,95 @@ const Docentes = () => {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     
-    // --- Estados del Modal (separados) ---
-    const [showWizardModal, setShowWizardModal] = useState(false); // Para el alta
-    const [showEditModal, setShowEditModal] = useState(false);     // Para editar
-    const [currentDocente, setCurrentDocente] = useState(null); // Para editar
+    // --- 1. Lógica de Debounce para el buscador ---
+    const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+    const isInitialMount = useRef(true);
 
-    // --- (loadDocentes, handleSearch, handleDelete - sin cambios) ---
-    const loadDocentes = async () => {
+    const [showWizardModal, setShowWizardModal] = useState(false); 
+    const [showEditModal, setShowEditModal] = useState(false);     
+    const [currentDocente, setCurrentDocente] = useState(null); 
+
+    const loadDocentes = useCallback(async (buscar) => { // <-- Modificado para aceptar 'buscar'
         setIsLoading(true);
         setError(null);
         try {
             const params = {};
-            if (searchTerm.trim() !== '') {
-                // TODO: Implementar búsqueda en backend
-                params.buscar = searchTerm.trim();
+            // Usa el argumento 'buscar' en lugar de leer 'searchTerm'
+            if (buscar && buscar.trim() !== '') {
+                params.buscar = buscar.trim();
             }
             const data = await docenteService.getDocentes(params);
             setDocentes(data); 
 
-            if (data.length === 0 && searchTerm.trim() !== '') {
-                 setError("No se encontraron docentes.");
+            if (data.length === 0 && buscar && buscar.trim() !== '') {
+                setError("No se encontraron docentes.");
             }
         } catch (err) {
-            setError(err.message || 'Error al cargar docentes.');
+            const errorMsg = err.message || 'Error al cargar docentes.';
+            setError(errorMsg);
+            // --- 2. Alerta de error en carga ---
+            Swal.fire("Error", errorMsg, "error");
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []); // useCallback con dependencias vacías
 
-    useEffect(() => { loadDocentes(); }, []); 
-    const handleSearch = () => { loadDocentes(); };
-
-    const handleDelete = async (id_docente) => {
-        if (window.confirm('¿Estás seguro de que quieres eliminar este docente?')) {
-            try {
-                await docenteService.deleteDocente(id_docente);
-                loadDocentes(); 
-            } catch (err) {
-                setError(err.message || 'No se pudo eliminar el docente.');
-            }
+    // --- 1. useEffect para búsqueda en tiempo real ---
+    useEffect(() => {
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            loadDocentes(""); // Carga inicial
+            return;
         }
+        loadDocentes(debouncedSearchTerm);
+    }, [debouncedSearchTerm, loadDocentes]); 
+    
+    // Botón de búsqueda (opcional, ahora fuerza la búsqueda)
+    const handleSearch = () => { 
+        loadDocentes(searchTerm); 
     };
 
-    // --- Manejadores de Modales (Separados) ---
+    // --- 2. Alerta en Borrado ---
+    const handleDelete = async (id_docente) => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¿Quieres eliminar este docente? (borrado lógico)",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Sí, eliminar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await docenteService.deleteDocente(id_docente);
+                    Swal.fire(
+                        '¡Eliminado!',
+                        'El docente ha sido eliminado.',
+                        'success'
+                    );
+                    loadDocentes(debouncedSearchTerm); // Recarga la búsqueda actual
+                } catch (err) {
+                    Swal.fire(
+                        'Error',
+                        err.message || 'No se pudo eliminar el docente.',
+                        'error'
+                    );
+                }
+            }
+        });
+    };
+
     const handleOpenAddModal = () => {
         setCurrentDocente(null);
         setShowEditModal(false);
-        setShowWizardModal(true); // <-- Muestra el wizard
+        setShowWizardModal(true); 
     };
     
     const handleOpenEditModal = (docente) => {
         setCurrentDocente(docente);
         setShowWizardModal(false);
-        setShowEditModal(true); // <-- Muestra el modal de edición
+        setShowEditModal(true); 
     };
 
     const handleCloseModal = () => {
@@ -80,42 +115,58 @@ const Docentes = () => {
         setCurrentDocente(null);
     };
     
+    // --- 2. Alerta en Guardado (Crear/Editar) ---
     const handleSaveSuccess = () => {
+        // Verificamos si era edición ANTES de cerrar el modal
+        const isEdit = currentDocente !== null;
+
         handleCloseModal();
-        setSearchTerm('');
-        loadDocentes();
+        setSearchTerm(''); // Limpiamos la búsqueda
+        loadDocentes(""); // Recargamos la lista principal
+
+        Swal.fire({
+            title: isEdit ? '¡Actualizado!' : '¡Creado!',
+            text: isEdit 
+                ? 'El docente se actualizó correctamente.' 
+                : 'El docente se creó correctamente.',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false
+        });
     };
 
-    // --- Definiciones de Tabla (Ajustadas a tu query) ---
+    
     const columns = [
         { header: 'ID', accessor: 'id_docente' },
         { 
-          header: 'Nombre y Apellido', 
-          accessor: 'nombre',
-          cell: (item) => `${item.nombre} ${item.apellido}`
+            header: 'Nombre y Apellido', 
+            accessor: 'nombre',
+            cell: (item) => `${item.nombre} ${item.apellido}`
         },
         { header: 'DNI', accessor: 'dni_docente' },
         
         { header: 'Email (Login)', accessor: 'email_usuario', cell: (item) => item.email_usuario || 'Sin vincular' },
         { 
-          header: 'Estado', 
-          accessor: 'estado_docente',
-          cell: (item) => (
+            header: 'Estado', 
+            accessor: 'estado_docente',
+            cell: (item) => (
             <span className={`status-badge ${item.estado_docente?.toLowerCase() || 'inactivo'}`}>
-              {item.estado_docente}
+                {item.estado_docente}
             </span>
-          )
+            )
         }
     ];
 
     const renderActions = (docente) => (
       <>
-        <button // Llama a 'navigate' con la ruta dinámica
+        <button
           onClick={() => navigate(`/docentes/${docente.id_docente}`)}
-          className="action-button view" // Clase para el icono (ver CSS)
-          title="Ver Perfil"
+          // 1. Usamos una NUEVA clase CSS
+          className="action-button-text view"
+          title="Ver Asignaciones"
         >
-         👁️ 
+          {/* 2. El icono va primero */}
+          <span className="material-symbols-outlined">visibility</span>
         </button>
 
         <button
@@ -123,46 +174,47 @@ const Docentes = () => {
           className="action-button edit"
           title="Editar"
         >
-          ✏️
+          <span className="material-symbols-outlined">edit</span>
         </button>
         <button
           onClick={() => handleDelete(docente.id_docente)}
           className="action-button delete"
           title="Eliminar"
         >
-          🗑️
+          <span className="material-symbols-outlined">delete</span>
         </button>
       </>
     );
 
     return (
         <div className="gestion-page-container">
-            {/* ... Header ... */}
+        
             <div className="gestion-header">
-                <button onClick={() => navigate(-1)} className="back-button">← VOLVER</button>
-                <h2>Gestión de Docentes</h2>
+                <BtnVolver/>
+                <h2 className='mx-4'>Gestión de Docentes</h2>
             </div>
             
-            {/* ... Barra de Búsqueda ... */}
+        
             <div className="search-add-bar">
                 <div className="search-box">
-                    <span className="search-icon">👤</span>
+                    <span className="search-icon material-symbols-outlined">search</span>
                     <input 
                         type="text" 
                         placeholder="Buscar docente..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                        // onKeyPress se mantiene por si quieren usar Enter
+                        onKeyPress={(e) => e.key === 'Enter' && handleSearch()} 
                     />
                 </div>
                 <button onClick={handleSearch} className="search-button">Buscar</button>
                 <button onClick={handleOpenAddModal} className="add-button">
-                    <span className="add-icon"></span>
+                    <span className="material-symbols-outlined add-icon" style={{marginRight: '5px'}}>add</span>
                     Agregar docente
                 </button>
             </div>
 
-            {/* Contenedor de la Tabla */}
+        
             <div className="list-container">
                 <div className="list-header">
                     <h3>Listado de Docentes</h3>
@@ -179,9 +231,6 @@ const Docentes = () => {
                 />
             </div>
 
-            {/* --- Renderizado de Modales --- */}
-            
-            {/* Modal de 2 pasos para AGREGAR */}
             {showWizardModal && (
                 <DocenteWizardModal 
                     onClose={handleCloseModal}
@@ -189,7 +238,7 @@ const Docentes = () => {
                 />
             )}
             
-            {/* Modal simple para EDITAR */}
+            
             {showEditModal && (
                 <DocenteEditModal 
                     docenteToEdit={currentDocente}

@@ -1,22 +1,23 @@
-// utils/responses.js - VERSIÓN CORREGIDA
+// utils/responses.js - versión final correcta
+
 const exito = (respuesta, mensaje, datos = null, codigoEstado = 200) => {
   const respuestaEstandar = {
     exito: true,
     mensaje,
     datos,
-    marcaTiempo: new Date().toISOString()
+    marcaTiempo: new Date().toISOString(),
   };
   return respuesta.status(codigoEstado).json(respuestaEstandar);
 };
 
-const error = (respuesta, mensaje, codigoEstado = 500, detallesError = null) => {
+const error = (res, mensaje, codigoEstado = 500, detallesError = null) => {
   const respuestaEstandar = {
     exito: false,
     mensaje,
-    ...(detallesError && process.env.NODE_ENV === 'development' && { detallesError }),
+    ...(detallesError && { detallesError }),
     marcaTiempo: new Date().toISOString()
   };
-  return respuesta.status(codigoEstado).json(respuestaEstandar);
+  return res.status(codigoEstado).json(respuestaEstandar);
 };
 
 module.exports = { exito, error };

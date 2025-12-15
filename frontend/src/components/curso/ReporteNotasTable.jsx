@@ -7,7 +7,7 @@ const ReporteNotasTable = ({ alumnos = [] }) => {
     if (nota >= 4) return "reporte-notas-nota-regular";
     return "reporte-notas-nota-insuficiente";
   };
-
+console.log(alumnos)
   const formatNota = (nota) => {
     if (nota === undefined || nota === null || isNaN(nota)) return "-";
     return Number(nota).toFixed(1);
@@ -36,6 +36,7 @@ const ReporteNotasTable = ({ alumnos = [] }) => {
             <th className="reporte-notas-th">Nota 2</th>
             <th className="reporte-notas-th">Nota 3</th>
             <th className="reporte-notas-th">Promedio</th>
+            <th className="reporte-notas-th">Nota Final</th>
           </tr>
         </thead>
         <tbody>
@@ -67,6 +68,9 @@ const ReporteNotasTable = ({ alumnos = [] }) => {
                   </td>
                   <td className={`reporte-notas-td reporte-notas-nota-promedio ${getNotaClass(safeCalificaciones.promedio)}`}>
                     {formatNota(safeCalificaciones.promedio)}
+                  </td>
+                  <td className={`reporte-notas-td reporte-notas-nota-promedio ${getNotaClass(safeCalificaciones.promedio)}`}>
+                    {formatNota(safeCalificaciones.definitiva)}
                   </td>
                 </tr>
               );
