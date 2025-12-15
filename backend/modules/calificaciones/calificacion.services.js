@@ -179,14 +179,28 @@ exports.actualizarCalificacionParcial = async (id, data) => {
 
     await db.query(consultas.actualizarParcial, params);
 
+    console.log('🔍 DEBUG SYNC - Verificando sincronización con alumno_materia_estado');
+    console.log('  data.estado:', data.estado);
+    console.log('  data.calificacion_definitiva:', data.calificacion_definitiva);
+    console.log('  ¿Debe sincronizar?', data.estado !== undefined || data.calificacion_definitiva !== undefined);
+
     // SINCRONIZAR con alumno_materia_estado
     // Si se actualizó el estado o la calificación definitiva, sincronizar con alumno_materia_estado
     if (data.estado !== undefined || data.calificacion_definitiva !== undefined) {
+      console.log('✅ EJECUTANDO SINCRONIZACIÓN con alumno_materia_estado');
+      
       const estadoFinal = data.estado !== undefined ? data.estado : calificacionExistente.estado;
       const notaFinal = data.calificacion_definitiva !== undefined ? data.calificacion_definitiva : calificacionExistente.calificacion_definitiva;
       
+      console.log('  Estado final:', estadoFinal);
+      console.log('  Nota final:', notaFinal);
+      console.log('  id_alumno:', calificacionExistente.id_alumno);
+      console.log('  id_materia:', calificacionExistente.id_materia);
+      console.log('  id_curso:', calificacionExistente.id_curso);
+      console.log('  anio_lectivo:', calificacionExistente.anio_lectivo);
+      
       // Actualizar o crear en alumno_materia_estado (MySQL 8 compatible)
-      await db.query(`
+      const resultadoSync = await db.query(`
         INSERT INTO alumno_materia_estado 
           (id_alumno, id_materia, id_curso, anio_lectivo, estado, calificacion_final, fecha_estado)
         VALUES (?, ?, ?, ?, ?, ?, CURDATE())
@@ -206,6 +220,10 @@ exports.actualizarCalificacionParcial = async (id, data) => {
         estadoFinal,
         notaFinal
       ]);
+      
+      console.log('✅ Resultado de sincronización:', resultadoSync[0]);
+    } else {
+      console.log('❌ NO se ejecutó sincronización (condición no cumplida)');
     }
 
     const [calificacionActualizada] = await db.query(consultas.obtenerPorId, [id]);
