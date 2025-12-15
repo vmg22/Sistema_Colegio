@@ -19,9 +19,12 @@ const {
 
 // Función auxiliar para obtener el ID de usuario de forma segura
 const getUserId = (req) => {
-  // Intenta obtenerlo de req.body o usa 1 por defecto.
-  // En una aplicación real, se usaría req.user.id (desde el middleware de auth).
-  return req.body.id_usuario || 1;
+  // ✅ SEGURIDAD: Usar SOLO el usuario autenticado desde el JWT (req.user)
+  // Esto previene inyección de identidad desde req.body.id_usuario
+  if (!req.user || !req.user.id) {
+    throw new Error('Usuario no autenticado. Se requiere un token válido.');
+  }
+  return req.user.id;
 };
 
 // ========================================
