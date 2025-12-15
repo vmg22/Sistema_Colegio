@@ -19,6 +19,7 @@ import ResumenAsistenciasPage from './components/curso/ResumenAsistenciasPage.js
 import CargaCalificaciones from './pages/curso/CargaCalificaciones.jsx'
 import CargaAsistencia from './pages/curso/CargaAsistencia.jsx'
 import ExamenesFinales from './pages/curso/ExamenesFinales.jsx'
+import PreviasPage from './pages/curso/PreviasPage.jsx'
 
 
 import DocentePerfil from './pages/docentes/DocentePerfil.jsx'
@@ -121,6 +122,7 @@ function App() {
         <Route path="reporte-curso/carga-asistencias" element={<ProtectedRoute><CargaAsistencia /></ProtectedRoute>} />
         <Route path="reporte-curso/comunicacion" element={<ProtectedRoute><CursoComunicacion /></ProtectedRoute>} />
         <Route path="reporte-curso/examenes-finales" element={<ProtectedRoute><ExamenesFinales /></ProtectedRoute>} />
+        <Route path="/previas" element={<ProtectedRoute><PreviasPage /></ProtectedRoute>} />
         <Route path="/inscripcion-wizard" element={<ProtectedRoute><InscripcionWizard /></ProtectedRoute>} />
         <Route path="/docentes/:id" element={<ProtectedRoute><DocentePerfil /></ProtectedRoute>} />
         <Route path="/alumnos/:id" element={<ProtectedRoute><AlumnosPerfil /></ProtectedRoute>} />

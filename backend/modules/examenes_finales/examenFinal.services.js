@@ -54,6 +54,22 @@ const serviciosExamenFinal = {
   },
 
   /**
+   * Obtiene alumnos con previa por materia y año (sin curso)
+   */
+  obtenerAlumnosConPreviaPorMateria: async (idMateria, anioLectivo) => {
+    if (!idMateria || !anioLectivo) {
+      throw new Error('Materia y año lectivo son obligatorios');
+    }
+
+    const alumnos = await queriesExamenFinal.obtenerAlumnosConPreviaPorMateria(
+      idMateria, 
+      anioLectivo
+    );
+
+    return alumnos;
+  },
+
+  /**
    * Registra un examen final y actualiza el estado según corresponda
    */
   registrarExamenFinal: async (datosExamen) => {

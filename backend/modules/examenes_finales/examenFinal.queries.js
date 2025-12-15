@@ -93,6 +93,71 @@ const queriesExamenFinal = {
   },
 
   /**
+   * Obtiene alumnos con previa filtrado por materia y año (sin filtrar por curso)
+   */
+  obtenerAlumnosConPreviaPorMateria: async (idMateria, anioLectivo) => {
+    const query = `
+      SELECT 
+        a.id_alumno,
+        a.dni_alumno as dni,
+        CONCAT(a.apellido_alumno, ', ', a.nombre_alumno) as nombreCompleto,
+        c.anio as curso_anio,
+        c.division as curso_division,
+        ame.estado,
+        ame.calificacion_final,
+        ame.fecha_estado,
+        efDic.nota_obtenida as nota_diciembre,
+        efDic.aprobada as aprobada_diciembre,
+        efDic.fecha_examen as fecha_diciembre,
+        efFeb.nota_obtenida as nota_febrero,
+        efFeb.aprobada as aprobada_febrero,
+        efFeb.fecha_examen as fecha_febrero,
+        efMar.nota_obtenida as nota_marzo,
+        efMar.aprobada as aprobada_marzo,
+        efMar.fecha_examen as fecha_marzo
+      FROM alumno a
+      INNER JOIN alumno_materia_estado ame 
+        ON a.id_alumno = ame.id_alumno
+      INNER JOIN curso c
+        ON ame.id_curso = c.id_curso
+      LEFT JOIN examen_final efDic
+        ON a.id_alumno = efDic.id_alumno
+        AND ame.id_materia = efDic.id_materia
+        AND ame.id_curso = efDic.id_curso
+        AND ame.anio_lectivo = efDic.anio_lectivo
+        AND efDic.instancia = 'diciembre'
+        AND efDic.deleted_at IS NULL
+      LEFT JOIN examen_final efFeb
+        ON a.id_alumno = efFeb.id_alumno
+        AND ame.id_materia = efFeb.id_materia
+        AND ame.id_curso = efFeb.id_curso
+        AND ame.anio_lectivo = efFeb.anio_lectivo
+        AND efFeb.instancia = 'febrero'
+        AND efFeb.deleted_at IS NULL
+      LEFT JOIN examen_final efMar
+        ON a.id_alumno = efMar.id_alumno
+        AND ame.id_materia = efMar.id_materia
+        AND ame.id_curso = efMar.id_curso
+        AND ame.anio_lectivo = efMar.anio_lectivo
+        AND efMar.instancia = 'marzo'
+        AND efMar.deleted_at IS NULL
+      WHERE ame.id_materia = ?
+        AND ame.anio_lectivo = ?
+        AND ame.estado = 'previa'
+        AND (efDic.id_examen_final IS NOT NULL 
+             OR efFeb.id_examen_final IS NOT NULL 
+             OR efMar.id_examen_final IS NOT NULL)
+        AND a.deleted_at IS NULL
+        AND ame.deleted_at IS NULL
+        AND c.deleted_at IS NULL
+      ORDER BY c.anio, c.division, a.apellido_alumno, a.nombre_alumno
+    `;
+    
+    const [rows] = await pool.query(query, [idMateria, anioLectivo]);
+    return rows;
+  },
+
+  /**
    * Inserta un nuevo registro de examen final
    */
   insertarExamenFinal: async (datosExamen) => {

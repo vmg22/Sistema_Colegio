@@ -8,6 +8,9 @@ router.get('/alumnos-en-final', controladorExamenFinal.obtenerAlumnosEnEstadoFin
 // GET /examenes-finales/alumnos-aprobados?curso=X&materia=Y&anioLectivo=Z
 router.get('/alumnos-aprobados', controladorExamenFinal.obtenerAlumnosAprobadosPorFinal);
 
+// GET /examenes-finales/previas-por-materia?materia=Y&anioLectivo=Z
+router.get('/previas-por-materia', controladorExamenFinal.obtenerAlumnosConPreviaPorMateria);
+
 // POST /examenes-finales/registrar
 router.post('/registrar', controladorExamenFinal.registrarExamenFinal);
 

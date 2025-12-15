@@ -25,7 +25,7 @@ const authRoutes = require('../modules/usuario/auth.routes.js');
 const asignacionRoutes = require("../modules/CRUD/asignaciones/asignacion.routes");
 const cursoMateriaRoutes = require("../modules/CRUD/curso-materia/curso-materia.routes.js");
 const examenesFinalesRoutes = require("../modules/examenes_finales/examenFinal.routes");
-
+const previasRoutes = require('../modules/previas/previas.routes');
 
 
 // Módulo de altas (Docente + Usuario)
@@ -72,6 +72,9 @@ router.use("/asignaciones", asignacionRoutes);
 
 // EXÁMENES FINALES
 router.use("/examenes-finales", examenesFinalesRoutes);
+
+// PREVIAS
+router.use("/previas", previasRoutes);
 
 
 

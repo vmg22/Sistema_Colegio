@@ -625,3 +625,20 @@ h4 {
   font-size: 60px;
   color: #1976D2; /* Azul medio */
 }
+
+.icono-contenedor-assignment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  height: 90px;
+  width: 90px;
+  background-color: #f8e87078; /* Azul claro */
+}
+
+/* Ícono de mail */
+.assignment {
+  font-size: 60px;
+  color:#f59e0b /* Azul medio */
+}

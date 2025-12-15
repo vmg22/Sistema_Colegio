@@ -52,6 +52,29 @@ const controladorExamenFinal = {
   },
 
   /**
+   * GET /examenes-finales/previas-por-materia
+   * Obtiene alumnos con previa por materia y año (sin curso)
+   */
+  obtenerAlumnosConPreviaPorMateria: async (solicitud, respuesta) => {
+    try {
+      const { materia, anioLectivo } = solicitud.query;
+
+      if (!materia || !anioLectivo) {
+        return error(respuesta, 'Debe especificar materia y año lectivo', 400);
+      }
+
+      const alumnos = await serviciosExamenFinal.obtenerAlumnosConPreviaPorMateria(
+        materia,
+        anioLectivo
+      );
+
+      exito(respuesta, 'Alumnos con previa obtenidos correctamente', alumnos);
+    } catch (err) {
+      error(respuesta, 'Error al obtener alumnos con previa', 500, err.message);
+    }
+  },
+
+  /**
    * POST /examenes-finales/registrar
    * Registra un examen final
    */

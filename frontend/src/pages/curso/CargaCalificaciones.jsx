@@ -199,8 +199,6 @@ const CargaCalificaciones = () => {
                   className={`reporte-curso-td reporte-curso-estado-${item.calificaciones.estado}`}
                 >
                   {item.calificaciones.estado === "aprobada" && "Aprobado"}
-                  {item.calificaciones.estado === "desaprobada" &&
-                    "Desaprobado"}
                   {item.calificaciones.estado === "cursando" && "Cursando"}
                   {item.calificaciones.estado === "final" && "Final"}
                   {item.calificaciones.estado === "libre" && "Libre"}

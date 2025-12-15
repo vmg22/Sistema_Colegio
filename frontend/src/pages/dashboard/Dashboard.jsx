@@ -183,11 +183,13 @@ const Dashboard = () => {
         }
         
         const dataAnios = await getAniosLectivos();
+        const dataMaterias = await getMaterias();
         
-        console.log("Datos recibidos de la API:", dataCursos, dataAnios);
+        console.log("Datos recibidos de la API:", dataCursos, dataAnios, dataMaterias);
 
         setCursos(dataCursos.datos);
         setAnios(dataAnios.datos);
+        setMaterias(dataMaterias.datos);
       } catch (error) {
         console.error("Error al cargar datos estáticos:", error);
       }
@@ -196,7 +198,8 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (tipoConsulta === "curso" && selectedCurso) {
+    // Cargar materias por curso si hay curso seleccionado
+    if ((tipoConsulta === "curso" || tipoConsulta === "previas") && selectedCurso) {
       const cargarMaterias = async () => {
         try {
           setLoading(true);
@@ -234,14 +237,14 @@ const Dashboard = () => {
       };
       cargarMaterias();
     } else {
-      // Limpiar las materias si no hay curso seleccionado o si cambiamos de consulta
+      // Limpiar las materias si no hay curso seleccionado o si cambiamos a otro tipo de consulta
       setMateriasCursoSeleccionado([]);
     }
   }, [selectedCurso, tipoConsulta]);
 
   // FILTRADO DE MATERIAS según el curso seleccionado
   const materiasFiltradas = useMemo(() => {
-    if (!selectedCurso) return [];
+    if (!selectedCurso || !materias) return [];
 
     const cursoActual = cursos.find(
       (c) => c.id_curso === parseInt(selectedCurso)
@@ -379,7 +382,12 @@ const Dashboard = () => {
 
       sessionStorage.setItem("reporteCurso", JSON.stringify(dataReporte));
 
-      navigate("/cursoDashboard");
+      // Navegar según el tipo de consulta
+      if (tipoConsulta === "previas") {
+        navigate("/previas");
+      } else {
+        navigate("/cursoDashboard");
+      }
     } catch (err) {
       console.error("❌ Error al traer reporte de curso:", err);
       setError(err.message || "No se pudo obtener el reporte del curso.");
@@ -455,6 +463,16 @@ const Dashboard = () => {
             <span className="material-symbols-outlined group">group</span>
           </div>
           <span className="btn-texto">Consulta por Curso</span>
+        </button>
+        <button
+          className={`btn-tipo ${tipoConsulta === "previas" ? "activo" : ""}`}
+          onClick={() => setConsulta2("previas")}
+          type="button"
+        >
+          <div className="icono-contenedor-assignment">
+            <span className="material-symbols-outlined assignment">assignment</span>
+          </div>
+          <span className="btn-texto">Previas</span>
         </button>
         {userRole === "admin" && (
         <button
@@ -541,11 +559,12 @@ const Dashboard = () => {
               </Button>
             </div>
           </Form>
-        ) : (
+        ) : (tipoConsulta === "curso" || tipoConsulta === "previas") ? (
           <Form noValidate validated={validated} onSubmit={handleSubmitCurso}>
-            <h5 className="tituloForm">Buscar Curso</h5>
+            <h5 className="tituloForm">{tipoConsulta === "previas" ? "Buscar Previas" : "Buscar Curso"}</h5>
             <hr className="linea-separadora" />
             <Row className="mb-3 d-flex justify-content-around">
+              {/* Mostrar Curso siempre */}
               <Form.Group as={Col} md="4">
                 <Form.Label className="formLabel">Curso</Form.Label>
                 <Form.Select
@@ -570,14 +589,14 @@ const Dashboard = () => {
                 <Form.Select
                   required
                   value={selectedMateria}
-                  onChange={(e) => setSelectedMateria(e.target.value)} // También deshabilita si está cargando las materias
+                  onChange={(e) => setSelectedMateria(e.target.value)}
                   disabled={!selectedCurso || loading}
                 >
                   <option value="">
                     {!selectedCurso
                       ? "Primero seleccione un curso"
                       : loading
-                      ? "Cargando materias..." // <-- Mensaje de carga
+                      ? "Cargando materias..."
                       : "Seleccione materia"}
                   </option>
                   {materiasCursoSeleccionado?.map((materia) => (
@@ -647,7 +666,7 @@ const Dashboard = () => {
               </Button>
             </div>
           </Form>
-        )}
+        ) : null}
       </div>
     </div>
   );
