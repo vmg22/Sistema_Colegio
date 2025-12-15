@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../api/fetchConfig";
 import "../../styles/login.css";
 
 const SolicitarRecuperacion = () => {
@@ -16,24 +17,10 @@ const handleSubmit = async (e) => {
   setLoading(true);
 
   try {
-    const response = await fetch(
-      "http://localhost:3000/api/v1/auth/solicitar-reset",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email_usuario: email, // Solo enviar el email
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.mensaje || "Error al solicitar recuperación");
-    }
+    // ✅ Usar API centralizada
+    const data = await api.post("/auth/solicitar-reset", {
+      email_usuario: email,
+    });
 
     setSuccess(data.mensaje);
     setEmail("");

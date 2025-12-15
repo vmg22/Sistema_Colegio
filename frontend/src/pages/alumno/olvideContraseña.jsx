@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { api } from "../../api/fetchConfig";
 import "../../styles/login.css";
 
 const OlvideContrasena = () => {
@@ -79,23 +80,13 @@ const OlvideContrasena = () => {
     try {
       console.log('🔄 Enviando solicitud de reset...');
       
-      const response = await fetch("http://localhost:3000/api/v1/auth/reset-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token: token,
-          newPassword: formData.newPassword,
-        }),
+      // ✅ Usar API centralizada
+      const data = await api.post("/auth/reset-password", {
+        token: token,
+        newPassword: formData.newPassword,
       });
 
-      const data = await response.json();
       console.log('📨 Respuesta del servidor:', data);
-
-      if (!response.ok) {
-        throw new Error(data.mensaje || data.error || "Error al restablecer la contraseña");
-      }
 
       setSuccess(data.mensaje || "¡Contraseña actualizada exitosamente! Redirigiendo al login...");
       setFormData({ newPassword: "", confirmPassword: "" });

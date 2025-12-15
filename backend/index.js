@@ -13,9 +13,22 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // --- MIDDLEWARES ---
-// CONFIGURACIÓN CORS CORREGIDA - Permite frontend en puerto 5173
+// CONFIGURACIÓN CORS - Usa variable de entorno para permitir orígenes dinámicos
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? [process.env.FRONTEND_URL, 'http://localhost:5173', 'http://127.0.0.1:5173']
+  : ['http://localhost:5173', 'http://127.0.0.1:5173'];
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Frontend Vite
+  origin: (origin, callback) => {
+    // Permitir requests sin origin (como mobile apps o curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
@@ -32,7 +45,7 @@ app.get('/', (req, res) => {
       <h1 style="color: #333;"> Backend del Sistema Escolar SGGS</h1>
       <p style="color: #555; font-size: 1.2em;">¡El servidor está funcionando correctamente!</p>
       <p style="color: #777;">La API principal se encuentra en la ruta: <a href="/api/v1" style="color: #007bff; text-decoration: none;">/api/v1</a></p>
-      <p style="color: #777;">Frontend React: <a href="http://localhost:5173" style="color: #007bff; text-decoration: none;">http://localhost:5173</a></p>
+      <p style="color: #777;">Frontend React: <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}" style="color: #007bff; text-decoration: none;">${process.env.FRONTEND_URL || 'http://localhost:5173'}</a></p>
     </div>
   `);
 });
@@ -40,16 +53,18 @@ app.get('/', (req, res) => {
 // Usamos un prefijo para todas las rutas de la API, es una buena práctica.
 app.use('/api/v1', apiRoutes);
 
-// --- REDIRECCIÓN PARA RUTAS DEL FRONTEND ---
-// Esto evita que el backend capture rutas del frontend
-app.get(['/reset-password', '/login', '/solicitar-reset'], (req, res) => {
-  const frontendUrl = `http://localhost:5173${req.originalUrl}`;
-  console.log(`🔄 Redirigiendo al frontend: ${frontendUrl}`);
-  res.redirect(frontendUrl);
+// --- MIDDLEWARE DE RUTA NO ENCONTRADA (404) ---
+// Este middleware debe ir ANTES del manejador de errores
+app.use((req, res, next) => {
+  res.status(404).json({
+    exito: false,
+    error: 'Ruta no encontrada',
+    mensaje: `El recurso ${req.method} ${req.originalUrl} no fue encontrado en el servidor.`
+  });
 });
 
-
-// 2. Middleware de manejo de errores global (siempre al final)
+// --- MIDDLEWARE DE MANEJO DE ERRORES GLOBAL ---
+// Este debe ser el ÚLTIMO middleware (después del 404)
 app.use(manejadorErrores);
 
 // --- FUNCIÓN DE INICIO DEL SISTEMA ---
@@ -69,9 +84,9 @@ async function iniciarSistema() {
     app.listen(PORT, () => {
       console.log('='.repeat(50));
       console.log('   ✅ SISTEMA INICIADO CORRECTAMENTE');
-      console.log(`    Servidor escuchando en: http://localhost:${PORT}`);
-      console.log(`    API disponible en: http://localhost:${PORT}/api/v1`);
-      console.log(`    Frontend disponible en: http://localhost:5173`);
+      console.log(`    Servidor escuchando en: ${process.env.BACKEND_URL || `http://localhost:${PORT}`}`);
+      console.log(`    API disponible en: ${process.env.BACKEND_URL || `http://localhost:${PORT}`}/api/v1`);
+      console.log(`    Frontend disponible en: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
       console.log('='.repeat(50));
     });
     
@@ -99,15 +114,6 @@ process.on('SIGINT', cerrarSistema);
 process.on('SIGTERM', cerrarSistema);
 
 
-// 2. Middleware de manejo de errores global (siempre al final)
-app.use(manejadorErrores);
-
-app.use((req, res, next) => {
-  res.status(404).json({
-    error: 'Ruta no encontrada',
-    mensaje: `El recurso ${req.method} ${req.originalUrl} no fue encontrado en el servidor.`
-  });
-});
 
 // --- ARRANQUE DEL SISTEMA ---
 iniciarSistema();

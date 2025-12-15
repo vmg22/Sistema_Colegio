@@ -359,7 +359,7 @@ const controladorAuth = {
       );
 
       const encodedToken = encodeURIComponent(token);
-      const resetLink = `http://localhost:5173/reset-password?token=${encodedToken}`;
+      const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${encodedToken}`;
 
       console.log('🔐 Token original:', token);
       console.log('🔐 Token encoded:', encodedToken);

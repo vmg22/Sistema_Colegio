@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { Spinner, Button, Form, Card, Alert, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { useConsultaStore } from "../../store/consultaStore";
+import { getUserId } from "../../utils/jwt";
+import { API_BASE_URL } from "../../api/fetchConfig";
 import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
 import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx";
@@ -10,9 +12,9 @@ import DivBodyInfo from "../../components/alumno/DivBodyInfo.jsx";
 import "../../styles/perfilAlumno.css";
 import "../../styles/generarMailAlumno.css";
 import LineaSeparadora from "../../components/ui/LineaSeparadora.jsx";
-// --- Configuración general ---
-const API_BASE_URL = "http://localhost:3000/api/v1/mail";
-const ID_USUARIO = 1;
+
+// API específica para mail
+const API_MAIL_URL = `${API_BASE_URL}/mail`;
 
 // --- Tipos de mensajes ---
 const OpcionesEnvio = [
@@ -98,8 +100,11 @@ const GenerarMailAlumno = () => {
   }, [tipoEnvio, mailData]);
 
   const construirRequestBody = () => {
+    // ✅ Obtener ID del usuario autenticado desde el token
+    const id_usuario = getUserId();
+    
     const requestBody = {
-      id_usuario: ID_USUARIO,
+      id_usuario: id_usuario || 1, // Fallback a 1 si no hay usuario (no deberia pasar)
       dni: reporte.dni,
       anio: reporte.anio_lectivo || "2025",
     };
@@ -137,7 +142,7 @@ const GenerarMailAlumno = () => {
     try {
       const opcion = OpcionesEnvio.find((op) => op.key === tipoEnvio);
       const { data } = await axios.post(
-        `${API_BASE_URL}${opcion.endpoint}`,
+        `${API_MAIL_URL}${opcion.endpoint}`,
         construirRequestBody()
       );
 
