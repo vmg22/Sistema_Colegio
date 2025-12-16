@@ -9,8 +9,7 @@ import AnioLectorModal from "../../../components/modals/AnioLectivoModal";
 import TableCrud from "../../../components/crud/TableCrud";
 import Paginador from "../../../components/ui/Paginador";
 import "../../../styles/docentescrud.css";
-import BtnVolver from "../../../components/ui/BtnVolver";
-import Navv from "../../../components/layout/Navv";
+
 
 const GestionAniosLectivos = () => {
   const _navigate = useNavigate();
@@ -183,11 +182,8 @@ const GestionAniosLectivos = () => {
   );
 
   return (
-    <div>
-      <Navv />
       <div className="gestion-page-container">
         <div className="gestion-header">
-          <BtnVolver />
           <h2 className="mx-4">Gestión de Años Lectivos</h2>
         </div>
 
@@ -251,7 +247,7 @@ const GestionAniosLectivos = () => {
           />
         )}
       </div>
-    </div>
+
   );
 };
 

@@ -5,8 +5,7 @@ import TableCrud from '../../../components/crud/TableCrud';
 import Paginador from '../../../components/ui/Paginador';
 import Swal from 'sweetalert2';
 import '../../../styles/docentescrud.css';
-import BtnVolver from '../../../components/ui/BtnVolver';
-import Navv from '../../../components/layout/Navv';
+
 
 const GestionCursos = () => {
   const [cursos, setCursos] = useState([]);
@@ -183,12 +182,9 @@ const GestionCursos = () => {
   };
 
   return (
-    <div>
-      <Navv/>
  <div className="gestion-page-container">
       {/* Header */}
       <div className="gestion-header">
-<BtnVolver/>
         <h2 className='mx-4'>Gestión de Cursos</h2>
       </div>
 
@@ -245,7 +241,6 @@ const GestionCursos = () => {
         onSave={handleSave}
         cursoAEditar={cursoAEditar}
       />
-    </div>
     </div>
    
   );

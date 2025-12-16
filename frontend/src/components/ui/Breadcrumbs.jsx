@@ -23,6 +23,17 @@ const Breadcrumbs = () => {
     'constanciaAlumnoTramite'
   ];
   
+  // 🧠 BREADCRUMBS CRUD: Páginas que pertenecen al CRUD y necesitan mostrar /crud antes
+  const paginasCrud = [
+    'alumnos',
+    'materias', 
+    'altas-docentes',
+    'anio-lectivo',
+    'cursos-crud',
+    'curso-materia',
+    'inscripcion-wizard'
+  ];
+  
   // Si estamos en una página de perfil de alumno (sin contexto previo)
   const firstSegment = pathnames[0];
   const shouldAddPerfilContext = paginasPerfilAlumno.includes(firstSegment) && 
@@ -32,6 +43,14 @@ const Breadcrumbs = () => {
   // Agregar "perfilAlumno" como contexto antes de la página actual
   if (shouldAddPerfilContext) {
     pathnames = ['perfilAlumno', ...pathnames];
+  }
+  
+  // 🔧 NUEVO: Si estamos en una página CRUD (sin contexto /crud previo), agregarlo
+  const shouldAddCrudContext = paginasCrud.includes(firstSegment) && 
+                                !pathnames.includes('crud');
+  
+  if (shouldAddCrudContext) {
+    pathnames = ['crud', ...pathnames];
   }
   
   // Si estamos en la raíz o dashboard, no mostrar breadcrumbs
@@ -111,6 +130,30 @@ const Breadcrumbs = () => {
     // Si el segmento tiene un padre mapeado, usarlo
     if (parentRouteMap[segment]) {
       return parentRouteMap[segment];
+    }
+
+    // 🔧 CORRECCIÓN: Mapeo de segmentos a sus rutas padre correctas
+    // Cuando estamos en una página de detalle (ej: /docentes/21),
+    // necesitamos redirigir al padre correcto
+    const segmentToParentMap = {
+      'docentes': '/altas-docentes',  // /docentes/:id → /altas-docentes
+      'alumnos': '/alumnos',           // /alumnos/:id → /alumnos
+      'crud': '/crud',                 // Para navegación a administración
+      'materias': '/materias',
+      'cursos': '/cursos-crud',
+      'anio-lectivo': '/anio-lectivo',
+      'curso-materia': '/curso-materia',
+    };
+
+    // Si el siguiente segmento es un ID (número), usar el mapeo de padre
+    const nextSegment = pathnames[currentIndex + 1];
+    if (nextSegment && !isNaN(nextSegment) && segmentToParentMap[segment]) {
+      return segmentToParentMap[segment];
+    }
+
+    // Si el segmento actual tiene un mapeo directo, usarlo
+    if (segmentToParentMap[segment] && currentIndex === pathnames.length - 2) {
+      return segmentToParentMap[segment];
     }
 
     // Por defecto, construir la ruta normalmente

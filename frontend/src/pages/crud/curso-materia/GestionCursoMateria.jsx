@@ -6,8 +6,6 @@ import Swal from 'sweetalert2';
 import { getCursos } from '../../../services/cursosService';
 import { getMaterias } from '../../../services/materiasaltasService';
 import { getMateriasAsignadas, actualizarAsignaciones } from '../../../services/cursoMateriaService';
-import BtnVolver from '../../../components/ui/BtnVolver';
-import Navv from '../../../components/layout/Navv';
 
 const GestionCursoMateria = () => {
   // Listas maestras
@@ -268,12 +266,9 @@ const GestionCursoMateria = () => {
   }
 
   return (
-    <div>
-      <Navv/>
-<div style={styles.container}>
 
+<div style={styles.container}>
       <div className="gestion-header">
-        <BtnVolver/>
         <h2 className='mx-4'>Gestión de Planes de Estudio</h2>
         
       </div>
@@ -396,9 +391,7 @@ const GestionCursoMateria = () => {
           </div>
         </Col>
       </Row>
-    </div>
-    </div>
-    
+    </div>    
   );
 };
 

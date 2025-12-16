@@ -67,7 +67,7 @@ function App() {
   const location = useLocation()
   
   // Rutas donde NO queremos mostrar el Header
-  const rutasSinHeader = ['/', '/login', '/reset-password', '/solicitar-reset', '/certificadoEscolar', '/constanciaAlumnoRegular', '/certificados-AbnEsc' , '/certificados-cCVac', '/constanciaAlumnoTramite', '/anio-lectivo','/cursos-crud', '/materias', '/curso-materia', '/altas-docentes'];
+  const rutasSinHeader = ['/', '/login', '/reset-password', '/solicitar-reset', '/certificadoEscolar', '/constanciaAlumnoRegular', '/certificados-AbnEsc' , '/certificados-cCVac', '/constanciaAlumnoTramite'];
   
   const mostrarHeader = !rutasSinHeader.includes(location.pathname)
 
