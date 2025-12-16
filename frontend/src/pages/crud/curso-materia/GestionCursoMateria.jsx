@@ -7,6 +7,7 @@ import { getCursos } from '../../../services/cursosService';
 import { getMaterias } from '../../../services/materiasaltasService';
 import { getMateriasAsignadas, actualizarAsignaciones } from '../../../services/cursoMateriaService';
 import BtnVolver from '../../../components/ui/BtnVolver';
+import Navv from '../../../components/layout/Navv';
 
 const GestionCursoMateria = () => {
   // Listas maestras
@@ -267,7 +268,9 @@ const GestionCursoMateria = () => {
   }
 
   return (
-    <div style={styles.container}>
+    <div>
+      <Navv/>
+<div style={styles.container}>
 
       <div className="gestion-header">
         <BtnVolver/>
@@ -394,6 +397,8 @@ const GestionCursoMateria = () => {
         </Col>
       </Row>
     </div>
+    </div>
+    
   );
 };
 

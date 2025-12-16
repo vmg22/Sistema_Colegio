@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import BtnVolver from "../../components/ui/BtnVolver";
-import EncabezadoCurso from "../../components/curso/EncabezadoCurso";
 import { useConsultaStore } from "../../store/consultaStore";
 import { obtenerAlumnosPendientes, obtenerAlumnosAprobados } from "../../services/previasService";
 import ModalRegistrarPrevia from "../../components/curso/ModalRegistrarPrevia";
 import { Spinner, Button } from "react-bootstrap";
 import "../../styles/cargaCalificaciones.css";
+import EncabezadoPreviasCurso from "../../components/curso/EncabezadoPreviasCurso";
 
 const PreviasPage = () => {
   const [alumnosPendientes, setAlumnosPendientes] = useState([]);
@@ -89,20 +88,22 @@ const PreviasPage = () => {
       </div>
     );
   }
-
+console.log(reporteCurso)
   return (
     <div className="nombre_vista">
-      <EncabezadoCurso />
-      
-      <div className="contenedor-boton-volver">
-        <BtnVolver />
+      <div className="curso-dashboard-header">
+        <span className="material-symbols-outlined curso-dashboard-icon">
+          assignment
+        </span>
+        <h2 className="curso-dashboard-title">Previas</h2>
       </div>
+      <EncabezadoPreviasCurso />
 
       {/* SECCIÓN 1: ALUMNOS PENDIENTES */}
       <div className="contenedor-tabla-calificaciones mb-5">
-        <h3 className="titulo-seccion mb-4">
+        <h2 className="curso-dashboard-title">
           📋 Alumnos con Previas Pendientes
-        </h3>
+        </h2>
 
         {alumnosPendientes.length === 0 ? (
           <div className="alert alert-info">
@@ -163,9 +164,9 @@ const PreviasPage = () => {
 
       {/* SECCIÓN 2: HISTORIAL DE APROBADOS */}
       <div className="contenedor-tabla-calificaciones">
-        <h3 className="titulo-seccion mb-4">
-          ✅ Historial: Aprobados por Previa
-        </h3>
+        <h2 className="curso-dashboard-title">
+          ✅ Historial: Alumnos Aprobados con Previa
+        </h2>
 
         {alumnosAprobados.length === 0 ? (
           <div className="alert alert-info">

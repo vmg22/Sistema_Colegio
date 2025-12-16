@@ -196,7 +196,7 @@ const DocentePerfil = () => {
     <div className="gestion-page-container">
       {/* Header */}
       <div className="gestion-header">
-        <BtnVolver/>
+
         <h2 className='mx-4'>Perfil del Docente</h2>
       </div>
 

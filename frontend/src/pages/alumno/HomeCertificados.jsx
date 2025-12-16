@@ -1,6 +1,5 @@
 import React from 'react'
 import AccionCard from '../../components/ui/AccionCard';
-import BtnVolver from '../../components/ui/BtnVolver';
 import EncabezadoEstudiante from '../../components/ui/EncabezadoEstudiante';
 import DivHeaderInfo from '../../components/alumno/DivHeaderInfo';
 
@@ -50,8 +49,7 @@ const styles = {
     
     <div style={styles.pageContainer}>
       {/* 1. Botón Volver (sin prop 'rutaVolver') */}
-      <BtnVolver />
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
          <span className="material-symbols-outlined calificaciones-page-icon">badge</span>
         <h2 className="perfil-alumno-title">Certificados</h2>
       </div>

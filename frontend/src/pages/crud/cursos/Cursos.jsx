@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import BtnVolver from "../../../components/ui/BtnVolver";
 import TableCrud from "../../../components/crud/TableCrud";
 import Paginador from "../../../components/crud/Paginador";
 import { getAllCursos, deleteCurso } from "../../../services/cursosService";
@@ -179,7 +178,7 @@ const Cursos = () => {
   return (
     <div className="gestion-page-container">
       <div className="gestion-header">
-        <BtnVolver />
+
         <h2>Gestión de Cursos</h2>
       </div>
 

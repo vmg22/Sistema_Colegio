@@ -11,6 +11,7 @@ import TableCrud from '../../../components/crud/TableCrud';
 import '../../../styles/docentescrud.css'; 
 import BtnVolver from '../../../components/ui/BtnVolver';
 import Paginador from '../../../components/ui/Paginador';
+import Navv from "../../../components/layout/Navv";
 
 const Docentes = () => {
   const navigate = useNavigate();
@@ -209,7 +210,9 @@ const Docentes = () => {
   );
 
   return (
-    <div className="gestion-page-container">
+    <div>
+<Navv/>
+<div className="gestion-page-container">
       <div className="gestion-header">
         <BtnVolver/>
         <h2 className='mx-4'>Gestión de Docentes</h2>
@@ -272,6 +275,8 @@ const Docentes = () => {
         />
       )}
     </div>
+    </div>
+    
   );
 };
 

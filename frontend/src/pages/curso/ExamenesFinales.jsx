@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
-import BtnVolver from "../../components/ui/BtnVolver";
 import EncabezadoCurso from "../../components/curso/EncabezadoCurso";
 import { useConsultaStore } from "../../store/consultaStore";
 import { obtenerAlumnosEnFinal, obtenerAlumnosAprobados } from "../../services/examenesFinalesService";
@@ -138,8 +137,7 @@ const ExamenesFinales = () => {
 
   return (
     <div className="curso-dashboard-container">
-      <BtnVolver />
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
         <span className="material-symbols-outlined curso-dashboard-icon">
           school
         </span>

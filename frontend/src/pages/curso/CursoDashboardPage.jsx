@@ -1,5 +1,4 @@
 import React from "react";
-import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import AccionCard from "../../components/ui/AccionCard.jsx";
 import EncabezadoCurso from "../../components/curso/EncabezadoCurso.jsx";
 import "../../styles/cursoDashboard.css"; // Importamos el archivo CSS
@@ -8,8 +7,7 @@ const CursoDashboardPage = () => {
   return (
     <div className="curso-dashboard-container">
       {/* 1. Botón Volver y Título */}
-      <BtnVolver />
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
         <span className="material-symbols-outlined curso-dashboard-icon">
           group
         </span>
@@ -48,14 +46,14 @@ const CursoDashboardPage = () => {
           to="/reporte-curso/carga-asistencias"
         />
         <AccionCard
-          titulo="Comunicación Grupal"
-          icono="mail"
-          to="/reporte-curso/comunicacion"
-        />
-        <AccionCard
           titulo="Exámenes Finales"
           icono="school"
           to="/reporte-curso/examenes-finales"
+        />
+        <AccionCard
+          titulo="Comunicación Grupal"
+          icono="mail"
+          to="/reporte-curso/comunicacion"
         />
       </div>
     </div>

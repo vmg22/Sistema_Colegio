@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Swal from "sweetalert2";
-import BtnVolver from "../../../components/ui/BtnVolver";
 import TableCrud from "../../../components/crud/TableCrud";
 import Paginador from "../../../components/crud/Paginador";
 import { getAllAniosLectivos, deleteAnioLectivo } from "../../../services/aniosLectivosService";
@@ -187,7 +185,7 @@ const AniosLectivos = () => {
   return (
     <div className="gestion-page-container">
       <div className="gestion-header">
-        <BtnVolver />
+
         <h2>Gestión de Años Lectivos</h2>
       </div>
 

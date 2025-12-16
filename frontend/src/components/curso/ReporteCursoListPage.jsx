@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Spinner, Button } from "react-bootstrap";
 import { useConsultaStore } from "../../store/consultaStore.js";
-import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import ReporteCursoTable from "../../components/curso/ReporteCursoTable.jsx";
 import EncabezadoCurso from "../../components/curso/EncabezadoCurso.jsx";
 import "../../styles/cursoDashboard.css"; 
@@ -68,8 +67,7 @@ const ReporteCursoListPage = () => {
 
   return (
     <div className="curso-dashboard-container">
-      <BtnVolver />
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
         <span className="material-symbols-outlined curso-dashboard-icon">list_alt</span>
         <h2 className="curso-dashboard-title">Listado de Alumnos </h2>
       </div>

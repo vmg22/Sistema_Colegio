@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import { useDebounce } from "use-debounce";
 import "../../../styles/docentescrud.css";
 import BtnVolver from "../../../components/ui/BtnVolver";
+import Navv from "../../../components/layout/Navv";
 
 const Materias = () => {
   const [materias, setMaterias] = useState([]);
@@ -195,7 +196,9 @@ const Materias = () => {
   };
 
   return (
-    <div className="gestion-page-container">
+    <div>
+      <Navv/>
+<div className="gestion-page-container">
       <div className="gestion-header">
         <BtnVolver/>
         <h2 className='mx-4'>Gestión de Materias</h2>
@@ -253,6 +256,8 @@ const Materias = () => {
         materiaAEditar={materiaAEditar}
       />
     </div>
+    </div>
+    
   );
 };
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import BtnVolver from "../../../components/ui/BtnVolver";
 import TableCrud from "../../../components/crud/TableCrud";
 import Paginador from "../../../components/ui/Paginador";
 import { getAllAlumnos, deleteAlumno } from "../../../services/alumnosService";
@@ -227,7 +226,7 @@ const Alumnos = () => {
   return (
     <div className="gestion-page-container">
       <div className="gestion-header">
-        <BtnVolver />
+
         <h2>Gestión de Alumnos</h2>
       </div>
 

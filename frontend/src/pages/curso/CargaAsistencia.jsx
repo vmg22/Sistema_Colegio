@@ -6,8 +6,7 @@ import { registerLocale, setDefaultLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
 registerLocale("es", es);
 setDefaultLocale("es", es);
-import Swal from "sweetalert2"; // <-- 1. IMPORTADO
-import BtnVolver from "../../components/ui/BtnVolver.jsx";
+import Swal from "sweetalert2";
 import EncabezadoCurso from "../../components/curso/EncabezadoCurso.jsx";
 import { useConsultaStore } from "../../store/consultaStore.js";
 import { obtenerListaClase , guardarAsistenciasClase} from "../../services/asistenciaService.js";
@@ -167,8 +166,7 @@ const CargaAsistencia = () => {
   alumnos.map((a)=>console.log(a))
   return (
     <div className="curso-dashboard-container">
-      <BtnVolver />
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
         <span className="material-symbols-outlined curso-dashboard-icon">
           event_available
         </span>

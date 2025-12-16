@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Spinner, Button } from "react-bootstrap";
 import { useConsultaStore } from "../../store/consultaStore.js";
-import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import EncabezadoCurso from "../curso/EncabezadoCurso.jsx";
@@ -142,8 +141,7 @@ const ResumenAsistenciasPage = () => {
 
   return (
     <div className="asistencias-page-container">
-      <BtnVolver />
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
         <span className="material-symbols-outlined asistencias-page-icon">event_available</span>
         <h2 className="curso-dashboard-title">Resumen de Asistencias</h2>
       </div>

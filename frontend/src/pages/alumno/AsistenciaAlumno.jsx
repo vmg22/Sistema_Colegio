@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Spinner, Button } from "react-bootstrap";
 import { useConsultaStore } from "../../store/consultaStore";
-import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import AsistenciaMateriaCard from "../../components/ui/AsistenciaMateriaCard.jsx"; 
 import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
 import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx"
@@ -93,9 +92,7 @@ const AsistenciasPage = () => {
   return (
     <div className="asistencias-page">
       {/* 1. Botón Volver */}
-      <BtnVolver />
-
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
          <span className="material-symbols-outlined calificaciones-page-icon">task_alt</span>
         <h2 className="perfil-alumno-title">Asistencia</h2>
       </div>

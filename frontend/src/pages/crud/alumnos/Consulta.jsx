@@ -7,7 +7,6 @@ import Button from "react-bootstrap/Button";
 import "../../../styles/consulta.css";
 import { Link } from "react-router-dom";
 import HeaderPages from "../../../components/ui/HeaderPages";
-import BtnVolver from "../../../components/ui/BtnVolver";
 import LineaSeparadora from "../../../components/ui/LineaSeparadora";
 import DivHeaderInfo from "../../../components/alumno/DivHeaderInfo";
 import DivBodyInfo from "../../../components/alumno/DivBodyInfo";
@@ -47,7 +46,7 @@ const Consulta = () => {
       <div className="text-center mt-5">
         <h5>No se encontraron datos del alumno.</h5>
         <p>Vuelve al panel e intenta realizar una nueva búsqueda.</p>
-        <BtnVolver rutaVolver={"/"}/>
+
       </div>
     );
   }
@@ -59,8 +58,7 @@ const Consulta = () => {
 
   return (
     <div className="perfil-alumno-container">
-      <BtnVolver rutaVolver={"/"} />
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
          <span className="material-symbols-outlined calificaciones-page-icon">search</span>
         <h2 className="perfil-alumno-title">Informacion Alumno</h2>
       </div>

@@ -5,7 +5,6 @@ import axios from "axios";
 import { useConsultaStore } from "../../store/consultaStore";
 import { getUserId } from "../../utils/jwt";
 import { API_BASE_URL } from "../../api/fetchConfig";
-import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
 import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx";
 import DivBodyInfo from "../../components/alumno/DivBodyInfo.jsx";
@@ -190,8 +189,7 @@ const GenerarMailAlumno = () => {
   // --- Render principal ---
   return (
     <div className="curso-dashboard-container" style={{ paddingBottom: "3rem" }}>
-      <BtnVolver />
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
         <span className="material-symbols-outlined curso-dashboard-icon">
           mail
         </span>

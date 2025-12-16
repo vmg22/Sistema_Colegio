@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import BtnVolver from "../../../components/ui/BtnVolver";
 import {
   getAlumnoId,
   getCursoYMateriasActual,
@@ -145,7 +144,7 @@ const AlumnosPerfil = () => {
   return (
     <div className="gestion-page-container">
       <div className="gestion-header">
-        <BtnVolver />
+
         <h2>Perfil del Alumno</h2>
       </div>
 

@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useConsultaStore } from '../../store/consultaStore.js';
-import BtnVolver from '../../components/ui/BtnVolver.jsx';
 import EncabezadoCurso from '../../components/curso/EncabezadoCurso.jsx';
 
 // --- NUEVAS IMPORTACIONES ---
@@ -184,18 +183,15 @@ const CursoComunicacion = () => {
 
   if (!reporte) {
     return (
-      <div>
-        No hay datos del reporte. <BtnVolver />
-      </div>
-    );
+      <div className="curso-dashboard-container">
+      <Alert variant="warning">No se encontró información del reporte.</Alert>
+    </div>
+    ); 
   }
 
-  // --- RENDERIZADO COMPLETO ---
   return (
     <div className='curso-dashboard-container'>
-      <BtnVolver />
-      
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
         <span className="material-symbols-outlined curso-dashboard-icon">
           mail
         </span>
@@ -331,7 +327,10 @@ const CursoComunicacion = () => {
         anioLectivo={anioLectivo}
       />
     </div>
+
   );
+
 };
+
 
 export default CursoComunicacion;

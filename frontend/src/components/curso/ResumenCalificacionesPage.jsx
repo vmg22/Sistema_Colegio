@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Spinner, Button } from "react-bootstrap";
 import { useConsultaStore } from "../../store/consultaStore.js";
-import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import EncabezadoCurso from "../curso/EncabezadoCurso.jsx";
@@ -126,8 +125,7 @@ const ResumenCalificacionesPage = () => {
 
   return (
     <div className="calificaciones-page-container">
-      <BtnVolver />
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
          <span className="material-symbols-outlined calificaciones-page-icon">bar_chart</span>
         <h2 className="curso-dashboard-title">Resumen de Calificaciones</h2>
       </div>

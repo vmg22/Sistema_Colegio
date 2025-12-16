@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useConsultaStore } from "../../store/consultaStore";
-import BtnVolver from "../../components/ui/BtnVolver.jsx"; 
 import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
 import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx";
 import { Spinner } from "react-bootstrap";
@@ -164,10 +163,8 @@ const HistorialComunicaciones = () => {
   return (
     <div className="perfil-alumno-container">
       {/* Botón Volver */}
-      <BtnVolver />
-
       {/* Encabezado con título e ícono */}
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
         <span className="material-symbols-outlined calificaciones-page-icon">chat</span>
         <h2 className="perfil-alumno-title">Historial de Comunicaciones</h2>
       </div>

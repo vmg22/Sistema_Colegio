@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Spinner, Button } from "react-bootstrap";
 import { useConsultaStore } from "../../store/consultaStore";
-import BtnVolver from "../../components/ui/BtnVolver.jsx";
 import DivHeaderInfo from "../../components/alumno/DivHeaderInfo.jsx";
 import EstadoAcademicoCard from "../../components/ui/EstadoAcademicoCard.jsx";
 import "../../styles/estadoAcademicoAlumno.css";
@@ -59,8 +58,7 @@ const EstadoAcademicoPage = () => {
   return (
     <div className="estado-academico-page">
       {/* 1. Botón Volver */}
-      <BtnVolver />
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
          <span className="material-symbols-outlined calificaciones-page-icon">trending_up</span>
         <h2 className="perfil-alumno-title">Estado Académico</h2>
       </div>

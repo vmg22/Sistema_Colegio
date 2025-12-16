@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Spinner, Button } from "react-bootstrap";
 import { useConsultaStore } from "../../store/consultaStore";
-import BtnVolver from "../../components/ui/BtnVolver.jsx"; 
 import AccionCard from "../../components/ui/AccionCard.jsx";
 import EncabezadoEstudiante from "../../components/ui/EncabezadoEstudiante.jsx";
 import "../../styles/perfilAlumno.css";
@@ -55,8 +54,7 @@ const PerfilAlumno = () => {
   return (
     <div className="perfil-alumno-container">
       {/* 1. Botón Volver */}
-      <BtnVolver />
-      <div className="curso-dashboard-header">
+      <div className="curso-dashboard-header mt-3">
          <span className="material-symbols-outlined calificaciones-page-icon">badge</span>
         <h2 className="perfil-alumno-title">Perfil de Alumno</h2>
       </div>
