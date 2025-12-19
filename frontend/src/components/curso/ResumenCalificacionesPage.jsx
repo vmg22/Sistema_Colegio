@@ -144,7 +144,7 @@ const ResumenCalificacionesPage = () => {
 
           <hr />
 
-          <div className="calificaciones-stat-row">
+          {/* <div className="calificaciones-stat-row">
             <div className="calificaciones-stat-small-box">
               <h4 className="calificaciones-stat-small-value calificaciones-stat-small-value--green">{stats.alumnosAprobados}</h4>
               <p className="calificaciones-stat-small-label">Aprobados (≥ 6)</p>
@@ -157,9 +157,9 @@ const ResumenCalificacionesPage = () => {
               <h4 className="calificaciones-stat-small-value calificaciones-stat-small-value--blue">{stats.alumnosDestacados}</h4>
               <p className="calificaciones-stat-small-label">Destacados (≥ 8)</p>
             </div>
-          </div>
+          </div> */}
 
-          <hr />
+          {/* <hr /> */}
 
           <ReporteNotasTable alumnos={reporte.alumnos} />
         </div>
