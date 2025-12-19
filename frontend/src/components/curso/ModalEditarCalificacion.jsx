@@ -68,6 +68,12 @@ const ModalEditarCalificacion = ({
         estado: formData.estado,
       };
 
+      // DEBUG: Log para ver qué se está enviando
+      console.log('🟢 FRONTEND - Enviando al backend:');
+      console.log('  formData.estado:', formData.estado);
+      console.log('  datosParaBackend:', JSON.stringify(datosParaBackend, null, 2));
+      console.log('  ID calificación:', alumno.calificaciones?.id);
+
       // CASO A: El alumno NO tiene calificaciones (CREAR)
       if (alumno.calificaciones === null) {
         const datosParaCrear = {
@@ -91,7 +97,11 @@ const ModalEditarCalificacion = ({
       handleClose(); // Cierra el modal (función del padre)
 
     } catch (error) {
-      console.error("Error al guardar la calificación:", error);
+      console.error('🔴 ERROR al guardar la calificación:', error);
+      console.error('  Error message:', error.message);
+      console.error('  Error response:', error.response);
+      console.error('  Error response data:', error.response?.data);
+      console.error('  Error response status:', error.response?.status);
       alert(`Error al guardar: ${error.message}`);
     } finally {
       setIsLoading(false); // Terminamos de cargar

@@ -104,7 +104,7 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <h3>Agregar Nuevo Alumno - Paso {step} de 3</h3>
+        <h3>Agregar Nuevo Alumno - Paso {step} de 2</h3>
 
         <form onSubmit={handleSubmit}>
           {error && <p className="error-message">{error}</p>}
@@ -304,7 +304,7 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
             </>
           )}
 
-          {step === 3 && (
+          {/* {step === 3 && (
             <>
               <p>Opcional: Si desea que el tutor pueda acceder al sistema, active esta opción y complete los datos de usuario.</p>
 
@@ -357,7 +357,7 @@ const AlumnoWizardModal = ({ onClose, onSave }) => {
                 </>
               )}
             </>
-          )}
+          )} */}
 
           <div className="modal-actions">
             <button

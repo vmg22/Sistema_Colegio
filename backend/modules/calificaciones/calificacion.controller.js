@@ -74,6 +74,14 @@ const controladorCalificaciones = {
     const { id } = solicitud.params;
     const datosActualizados = solicitud.body;
     
+    // DEBUG: Log para ver qué llega del frontend
+    console.log('🔵 CONTROLLER - actualizarCalificacionParcial');
+    console.log('  ID:', id);
+    console.log('  Body completo:', JSON.stringify(datosActualizados, null, 2));
+    console.log('  estado value:', datosActualizados.estado);
+    console.log('  estado type:', typeof datosActualizados.estado);
+    console.log('  keys in body:', Object.keys(datosActualizados));
+    
     const calificacionActualizada = await servicioCalificaciones.actualizarCalificacionParcial(id, datosActualizados);
     
     exito(respuesta, 'Calificación actualizada correctamente', calificacionActualizada);

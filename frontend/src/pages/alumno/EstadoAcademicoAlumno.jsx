@@ -40,7 +40,7 @@ const EstadoAcademicoPage = () => {
       </div>
     );
   }
-
+console.log(reporteAlumno)
   if (!reporte) {
     return (
       <div className="estado-academico-page__loading-container">

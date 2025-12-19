@@ -199,24 +199,32 @@ exports.actualizarCalificacionParcial = async (id, data) => {
       console.log('  id_curso:', calificacionExistente.id_curso);
       console.log('  anio_lectivo:', calificacionExistente.anio_lectivo);
       
-      // Actualizar o crear en alumno_materia_estado (MySQL 8 compatible)
+      // Primero eliminar cualquier registro existente
+      await db.query(`
+        DELETE FROM alumno_materia_estado 
+        WHERE id_alumno = ? 
+          AND id_materia = ? 
+          AND id_curso = ? 
+          AND anio_lectivo = ?
+      `, [
+        calificacionExistente.id_alumno,
+        calificacionExistente.id_materia,
+        calificacionExistente.id_curso,
+        calificacionExistente.anio_lectivo
+      ]);
+      
+      console.log('  ✓ Registro anterior eliminado (si existía)');
+      
+      // Luego insertar el nuevo registro
       const resultadoSync = await db.query(`
         INSERT INTO alumno_materia_estado 
           (id_alumno, id_materia, id_curso, anio_lectivo, estado, calificacion_final, fecha_estado)
         VALUES (?, ?, ?, ?, ?, ?, CURDATE())
-        ON DUPLICATE KEY UPDATE
-          estado = ?,
-          calificacion_final = ?,
-          fecha_estado = CURDATE(),
-          updated_at = NOW()
       `, [
         calificacionExistente.id_alumno,
         calificacionExistente.id_materia,
         calificacionExistente.id_curso,
         calificacionExistente.anio_lectivo,
-        estadoFinal,
-        notaFinal,
-        // Repetir para el UPDATE
         estadoFinal,
         notaFinal
       ]);
