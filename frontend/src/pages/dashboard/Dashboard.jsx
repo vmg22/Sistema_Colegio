@@ -73,7 +73,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [dniInput, setDniInput] = useState("");
-  const [anioInput, setAnioInput] = useState("2025");
+  const [anioInput, setAnioInput] = useState(String(new Date().getFullYear()));
   const [materias, setMaterias] = useState([]);
   const [cursos, setCursos] = useState([]);
   const [anios, setAnios] = useState([]);
@@ -130,13 +130,13 @@ const Dashboard = () => {
       try {
         // Lógica condicional según el rol del usuario
         let dataCursos;
-        
+
         // Debug: Verificar usuario
         const usuario = getUsuario();
         console.log("🔍 Usuario actual:", usuario);
         console.log("🔍 Es docente?:", esDocente());
         console.log("🔍 ID Docente:", getIdDocente());
-        
+
         // Si es docente pero no tiene id_docente, obtenerlo
         let idDocente = getIdDocente();
         if (esDocente() && !idDocente && usuario?.id_usuario) {
@@ -145,7 +145,7 @@ const Dashboard = () => {
             // ✅ CORRECCIÓN: Usar api.get en lugar de fetch con URL hardcodeada
             const { api } = await import("../../api/fetchConfig");
             const data = await api.get(`/docentes/usuario/${usuario.id_usuario}`);
-            
+
             if (data && data.datos) {
               idDocente = data.datos.id_docente;
               // Actualizar localStorage
@@ -157,15 +157,15 @@ const Dashboard = () => {
             console.error("❌ Error al obtener id_docente:", err);
           }
         }
-        
+
         if (esDocente() && idDocente) {
           console.log("✅ Cargando cursos filtrados para docente ID:", idDocente);
           // DOCENTE: Cargar solo los cursos donde dicta
           const { getCursosPorDocente } = await import("../../services/docenteService");
           const cursosDocente = await getCursosPorDocente(idDocente);
-          
+
           console.log("📚 Cursos del docente:", cursosDocente);
-          
+
           // Transformar al formato esperado
           dataCursos = {
             datos: cursosDocente.map(curso => ({
@@ -181,10 +181,10 @@ const Dashboard = () => {
           // ADMIN u otro rol: Cargar todos los cursos
           dataCursos = await getCursos();
         }
-        
+
         const dataAnios = await getAniosLectivos();
         const dataMaterias = await getMaterias();
-        
+
         console.log("Datos recibidos de la API:", dataCursos, dataAnios, dataMaterias);
 
         setCursos(dataCursos.datos);
@@ -205,18 +205,18 @@ const Dashboard = () => {
           setLoading(true);
           setError("");
           const id_curso = parseInt(selectedCurso);
-          
+
           // Lógica condicional según el rol del usuario
           let dataMaterias;
-          
+
           if (esDocente() && getIdDocente()) {
             // DOCENTE: Filtrar solo las materias que dicta en este curso
             const todasLasMaterias = await getMateriasAsignadas(id_curso);
-            
+
             // Obtener las materias que el docente dicta en este curso específico
             const { getMateriasPorDocente } = await import("../../services/docenteService");
             const materiasDocente = await getMateriasPorDocente(getIdDocente());
-            
+
             // Filtrar solo las materias del curso que el docente dicta
             dataMaterias = todasLasMaterias.filter(materia =>
               materiasDocente.some(md => md.id_materia === materia.id_materia)
@@ -225,7 +225,7 @@ const Dashboard = () => {
             // ADMIN u otro rol: Mostrar todas las materias del curso
             dataMaterias = await getMateriasAsignadas(id_curso);
           }
-          
+
           setMateriasCursoSeleccionado(dataMaterias);
         } catch (error) {
           console.error("Error al cargar materias asignadas:", error);
@@ -262,7 +262,7 @@ const Dashboard = () => {
     setConsulta(tipo);
     setError("");
     setDniInput("");
-    setAnioInput("2025");
+    setAnioInput(String(new Date().getFullYear()));
     setValidated(false);
 
     setSelectedCurso("");
@@ -296,7 +296,7 @@ const Dashboard = () => {
     try {
       // Lógica condicional según el rol del usuario
       let data;
-      
+
       if (esDocente() && getIdDocente()) {
         // DOCENTE: Verificar acceso antes de obtener el reporte
         try {
@@ -475,16 +475,16 @@ const Dashboard = () => {
           <span className="btn-texto">Previas</span>
         </button>
         {userRole === "admin" && (
-        <button
-          className={`btn-tipo ${tipoConsulta === "mail" ? "activo" : ""}`}
-          onClick={() => navigate("/generar-mail")}
-          type="button"
-        >
-          <div className="icono-contenedor-mail">
-            <span className="material-symbols-outlined mail">mail</span>
-          </div>
-          <span className="btn-texto">Enviar Mail General</span>
-        </button>)}
+          <button
+            className={`btn-tipo ${tipoConsulta === "mail" ? "activo" : ""}`}
+            onClick={() => navigate("/generar-mail")}
+            type="button"
+          >
+            <div className="icono-contenedor-mail">
+              <span className="material-symbols-outlined mail">mail</span>
+            </div>
+            <span className="btn-texto">Enviar Mail General</span>
+          </button>)}
         {userRole === "admin" && (
           <button
             className={`btn-tipo ${tipoConsulta === "gestion" ? "activo" : ""}`}
@@ -583,9 +583,9 @@ const Dashboard = () => {
               </Form.Group>
 
               <Form.Group as={Col} md="4">
-                               {" "}
-                <Form.Label className="formLabel">Materia</Form.Label>         
-                     {" "}
+                {" "}
+                <Form.Label className="formLabel">Materia</Form.Label>
+                {" "}
                 <Form.Select
                   required
                   value={selectedMateria}
@@ -596,8 +596,8 @@ const Dashboard = () => {
                     {!selectedCurso
                       ? "Primero seleccione un curso"
                       : loading
-                      ? "Cargando materias..."
-                      : "Seleccione materia"}
+                        ? "Cargando materias..."
+                        : "Seleccione materia"}
                   </option>
                   {materiasCursoSeleccionado?.map((materia) => (
                     <option key={materia.id_materia} value={materia.id_materia}>
