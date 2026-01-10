@@ -1,7 +1,10 @@
 /* --- Contenedor Principal --- */
 .gestion-page-container {
-    padding: 30px;
-    background-color: #f4f7fa; /* Fondo gris claro */
+    padding: 0px 20px 20px 20px;
+    margin-top: -20px;
+    /* Margen negativo para subir el contenedor */
+    background-color: #f4f7fa;
+    /* Fondo gris claro */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
     color: #333;
@@ -13,6 +16,7 @@
     align-items: center;
     margin-bottom: 25px;
 }
+
 .back-button {
     background: none;
     border: none;
@@ -37,6 +41,7 @@
     gap: 15px;
     margin-bottom: 30px;
 }
+
 .search-box {
     display: flex;
     flex-grow: 1;
@@ -47,15 +52,20 @@
     padding: 0 15px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
+
 .search-icon {
-    font-size: 24px;  /* Tamaño del icono */
-    color: #888;       /* Color del icono */
-    margin-right: 10px; /* Espacio entre el icono y el input */
-    
+    font-size: 24px;
+    /* Tamaño del icono */
+    color: #888;
+    /* Color del icono */
+    margin-right: 10px;
+    /* Espacio entre el icono y el input */
+
     /* Importante para alinear verticalmente */
     display: flex;
     align-items: center;
 }
+
 .search-box input {
     border: none;
     outline: none;
@@ -64,12 +74,14 @@
     font-size: 15px;
     color: #444;
 }
+
 .search-box input::placeholder {
     color: #aaa;
 }
 
 /* --- Botones "Buscar" y "Agregar" --- */
-.search-button, .add-button {
+.search-button,
+.add-button {
     color: white;
     border: none;
     border-radius: 8px;
@@ -83,22 +95,27 @@
 }
 
 .search-button {
-    background-color: #303F9F; /* Azul */
+    background-color: #303F9F;
+    /* Azul */
 }
+
 .search-button:hover {
     background-color: #1c2564;
 }
 
 .add-button {
-    background-color: #198754; /* Verde */
+    background-color: #198754;
+    /* Verde */
     display: flex;
     align-items: center;
     gap: 8px;
 }
+
 .add-button:hover {
     background-color: #157347;
 }
-.add-button .add-icon::before { 
+
+.add-button .add-icon::before {
     font-size: 24px;
     line-height: 1;
     font-weight: bold;
@@ -109,11 +126,12 @@
 .list-container {
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     padding: 25px;
     border: 1px solid #e0e0e0;
-    overflow-x: auto; 
+    overflow-x: auto;
 }
+
 .list-header {
     display: flex;
     justify-content: space-between;
@@ -122,14 +140,18 @@
     padding-bottom: 18px;
     margin-bottom: 20px;
 }
+
 .list-header h3 {
     margin: 0;
-    color: #303F9F; /* Título de la lista en azul */
+    color: #303F9F;
+    /* Título de la lista en azul */
     font-size: 20px;
     font-weight: 600;
 }
+
 .list-header span {
-    color: #666; /* Total en gris */
+    color: #666;
+    /* Total en gris */
     font-size: 14px;
     font-weight: 500;
 }
@@ -138,39 +160,43 @@
 .data-table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; 
+    table-layout: fixed;
 }
 
-.data-table th, .data-table td {
+.data-table th,
+.data-table td {
     padding: 14px 18px;
     text-align: left;
-    border-bottom: 1px solid #f0f0f0; 
+    border-bottom: 1px solid #f0f0f0;
     vertical-align: middle;
-    word-wrap: break-word; 
+    word-wrap: break-word;
 }
 
 .data-table th {
-    color: #666; 
+    color: #666;
     font-weight: 600;
     background-color: #fcfcfc;
     font-size: 13px;
     letter-spacing: 0.5px;
     white-space: normal;
     overflow: hidden;
-    text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es muy largo */
+    text-overflow: ellipsis;
+    /* Añade puntos suspensivos si el texto es muy largo */
 }
 
 .data-table td {
     font-size: 15px;
     color: #555;
-    white-space: normal; 
+    white-space: normal;
     overflow: hidden;
-    text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es muy largo */
+    text-overflow: ellipsis;
+    /* Añade puntos suspensivos si el texto es muy largo */
 }
 
 .data-table tbody tr:hover {
     background-color: #f9f9f9;
 }
+
 /* --- Badges de Estado --- */
 .status-badge {
     padding: 5px 12px;
@@ -183,69 +209,113 @@
     min-width: 70px;
     text-align: center;
 }
-.status-badge.activo { background-color: #198754; } 
-.status-badge.activa { background-color: #198754; } 
 
-.status-badge.inactivo { background-color: #dc3545; }
-.status-badge.inactiva { background-color: #dc3545; }
-.status-badge.licencia { background-color: #ffc107; color: #333; }
-.status-badge.completado { background-color: rgb(255, 153, 0);}
-.status-badge.baja-temporal { background-color: #fef0c7; color: #b54708; border: 1px solid #f7d28c; }
-.status-badge.planificacion { background-color: rgb(255, 153, 0);}
+.status-badge.activo {
+    background-color: #198754;
+}
+
+.status-badge.activa {
+    background-color: #198754;
+}
+
+.status-badge.inactivo {
+    background-color: #dc3545;
+}
+
+.status-badge.inactiva {
+    background-color: #dc3545;
+}
+
+.status-badge.licencia {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.status-badge.completado {
+    background-color: rgb(255, 153, 0);
+}
+
+.status-badge.baja-temporal {
+    background-color: #fef0c7;
+    color: #b54708;
+    border: 1px solid #f7d28c;
+}
+
+.status-badge.planificacion {
+    background-color: rgb(255, 153, 0);
+}
 
 /* --- Botones de Acción (Editar/Eliminar) --- */
 /* --- Estilos para la Célula de Acciones --- */
 .actions-cell {
     display: flex;
     align-items: center;
-    gap: 6px; /* Espacio entre los botones */
+    gap: 6px;
+    /* Espacio entre los botones */
 }
 
 /* --- Estilo Base del Botón --- */
 .action-button {
-    display: inline-flex; /* Permite centrar el icono */
+    display: inline-flex;
+    /* Permite centrar el icono */
     align-items: center;
     justify-content: center;
-    width: 36px;  /* Ancho del botón */
-    height: 36px; /* Alto del botón */
-    border: 1px solid; /* El color del borde se define abajo */
-    border-radius: 6px; /* Bordes redondeados */
+    width: 36px;
+    /* Ancho del botón */
+    height: 36px;
+    /* Alto del botón */
+    border: 1px solid;
+    /* El color del borde se define abajo */
+    border-radius: 6px;
+    /* Bordes redondeados */
     cursor: pointer;
-    font-size: 20px; /* Tamaño del icono */
-    transition: all 0.2s ease; /* Transición suave */
+    font-size: 20px;
+    /* Tamaño del icono */
+    transition: all 0.2s ease;
+    /* Transición suave */
 }
 
 /* --- Estilo Específico: Botones de Contorno (Editar y Ver) --- */
 .action-button.edit,
 .action-button.view {
-    background-color: #ffffff; /* Fondo blanco */
-    border-color: #0d6efd;   /* Borde azul (puedes cambiar este color) */
-    color: #0d6efd;           /* Color del icono azul */
+    background-color: #ffffff;
+    /* Fondo blanco */
+    border-color: #0d6efd;
+    /* Borde azul (puedes cambiar este color) */
+    color: #0d6efd;
+    /* Color del icono azul */
 }
 
 /* --- Estilo Específico: Botón de Relleno (Eliminar) --- */
 .action-button.delete {
-    background-color: #dc3545; /* Fondo rojo */
-    border-color: #dc3545;   /* Borde rojo */
-    color: #ffffff;           /* Icono blanco */
+    background-color: #dc3545;
+    /* Fondo rojo */
+    border-color: #dc3545;
+    /* Borde rojo */
+    color: #ffffff;
+    /* Icono blanco */
 }
 
 /* --- Efectos Hover (al pasar el mouse) --- */
 
 .action-button.edit:hover,
 .action-button.view:hover {
-    background-color: #8eb8f8; /* Fondo azul muy claro */
-    border-color: #0b5ed7;   /* Borde azul más oscuro */
+    background-color: #8eb8f8;
+    /* Fondo azul muy claro */
+    border-color: #0b5ed7;
+    /* Borde azul más oscuro */
 }
 
 .action-button.delete:hover {
-    background-color: #bb2d3b; /* Rojo más oscuro */
+    background-color: #bb2d3b;
+    /* Rojo más oscuro */
     border-color: #bb2d3b;
 }
 
 /* --- Para los Iconos (si usas Google Icons) --- */
 .action-button .material-symbols-outlined {
-    font-size: 20px; /* Asegura que el icono se ajuste */
+    font-size: 20px;
+    /* Asegura que el icono se ajuste */
     font-weight: 500;
 }
 
@@ -260,34 +330,43 @@
     font-weight: 500;
     text-align: center;
 }
+
 /* Estilo para "Cargando..." o "No se encontraron datos" */
-.list-container p { 
-  text-align: center;
-  margin: 20px 0;
-  font-size: 16px;
-  color: #666;
+.list-container p {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 16px;
+    color: #666;
 }
-.action-button.view { 
-  color: #6c757d; /* Un color gris neutro */
+
+.action-button.view {
+    color: #6c757d;
+    /* Un color gris neutro */
 }
-.action-button.view:hover { 
-  background-color: #e9ecef; 
-  border-color: #bbbfc3; 
+
+.action-button.view:hover {
+    background-color: #e9ecef;
+    border-color: #bbbfc3;
 }
 
 /* --- Estilo para Botones de Acción CON TEXTO --- */
 .action-button-text {
-    display: inline-flex;  /* Alinear icono y texto */
+    display: inline-flex;
+    /* Alinear icono y texto */
     align-items: center;
-    gap: 6px;             /* Espacio entre icono y texto */
-    padding: 6px 12px;    /* Padding para que el texto entre */
+    gap: 6px;
+    /* Espacio entre icono y texto */
+    padding: 6px 12px;
+    /* Padding para que el texto entre */
     border: 1px solid;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 14px;      /* Tamaño del texto */
+    font-size: 14px;
+    /* Tamaño del texto */
     font-weight: 500;
     transition: all 0.2s ease;
-    text-decoration: none; /* Quitar subrayado si se usa como Link */
+    text-decoration: none;
+    /* Quitar subrayado si se usa como Link */
 }
 
 /* Colores para el botón "view" (azul) */
@@ -296,6 +375,7 @@
     border-color: #0d6efd;
     color: #0d6efd;
 }
+
 .action-button-text.view:hover {
     background-color: #e6f0ff;
     border-color: #0b5ed7;
@@ -303,6 +383,7 @@
 
 /* Ajusta el tamaño del icono dentro de este botón */
 .action-button-text .material-symbols-outlined {
-    font-size: 18px; /* Un poco más pequeño que el texto */
+    font-size: 18px;
+    /* Un poco más pequeño que el texto */
     font-weight: 500;
 }

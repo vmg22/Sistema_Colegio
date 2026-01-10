@@ -1,56 +1,95 @@
-/* Estilos personalizados para Breadcrumbs */
+/* Estilos personalizados para Breadcrumbs - Diseño Minimalista */
 .breadcrumb-container {
-  background-color: #f8f9fa;
-  padding: 0.75rem 1rem;
-  margin: 0;
-  border-bottom: 1px solid #dee2e6;
+  background-color: transparent;
+  padding: 0rem 0.8rem;
+  margin: 0.5rem 20px -0.5rem 20px;
+  /* Margen inferior negativo para acercar el título */
+  /* Margen superior ajustado */
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  display: flex;
+  align-items: center;
 }
 
 .custom-breadcrumb {
   margin-bottom: 0;
   background-color: transparent;
   padding: 0;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  letter-spacing: 0.01em;
 }
 
 /* Links de breadcrumb clickeables */
-.breadcrumb-link {
-  color: #3f51b5 !important;
-  text-decoration: none;
+/* Links de breadcrumb clickeables */
+.breadcrumb-link,
+.breadcrumb-link a,
+.breadcrumb-item.breadcrumb-link {
+  color: #1a237e !important;
+  /* Azul primario del header */
+  text-decoration: none !important;
+  font-weight: 600;
   transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .breadcrumb-link:hover {
-  color: #303f9f !important;
-  text-decoration: underline;
+  color: #283593 !important;
+  /* Azul más oscuro al hover */
+  background-color: rgba(63, 81, 181, 0.08);
+  /* Fondo sutil al hover */
+  text-decoration: none;
 }
 
 /* Elemento activo (último breadcrumb) */
 .breadcrumb-active {
-  color: #6c757d !important;
-  font-weight: 500;
+  color: #1a237e !important;
+  /* Gris azulado elegante */
+  font-weight: 600;
+  padding: 4px 8px;
+  cursor: default;
 }
 
 /* Separadores entre breadcrumbs */
-.breadcrumb-item + .breadcrumb-item::before {
-  color: #6c757d;
+/* Separadores entre breadcrumbs */
+.breadcrumb-item+.breadcrumb-item {
+  padding-left: 0.5rem;
+  /* Reducir padding izquierdo del item */
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+  color: #1a237e;
+  /* Gris suave para el separador */
   content: "›";
-  font-size: 1.1rem;
-  padding: 0 0.5rem;
+  /* Chevron moderno */
+  font-size: 1.2rem;
+  font-weight: 300;
+  padding-right: 0.5rem;
+  /* Padding derecho del separador */
+  padding-left: 0;
+  /* Padding izquierdo controlado por el item */
+  vertical-align: middle;
+  line-height: 1;
 }
 
 /* Icono de inicio */
 .breadcrumb-item i {
-  font-size: 0.95rem;
+  font-size: 1rem;
+  margin-right: 4px;
+  color: #1a237e;
 }
 
-/* Responsive: en móviles hacer texto más pequeño */
+/* Responsive */
 @media (max-width: 768px) {
-  .custom-breadcrumb {
-    font-size: 0.8rem;
-  }
-  
   .breadcrumb-container {
-    padding: 0.5rem 0.75rem;
+    padding: 0.6rem 1rem;
+    margin: 0.8rem 10px;
+  }
+
+  .custom-breadcrumb {
+    font-size: 0.85rem;
   }
 }
