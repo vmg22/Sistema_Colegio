@@ -20,6 +20,8 @@ import CargaCalificaciones from './pages/curso/CargaCalificaciones.jsx'
 import CargaAsistencia from './pages/curso/CargaAsistencia.jsx'
 import ExamenesFinales from './pages/curso/ExamenesFinales.jsx'
 import PreviasPage from './pages/curso/PreviasPage.jsx'
+import PlanillasPage from './pages/curso/PlanillasPage.jsx'
+
 
 
 import DocentePerfil from './pages/docentes/DocentePerfil.jsx'
@@ -55,66 +57,66 @@ import Docentes from './pages/crud/docentes/Docentes.jsx'
 // Componente para proteger rutas
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
-  
+
   if (!token) {
     return <Navigate to="/login" replace />;
   }
-  
+
   return children;
 };
 
 function App() {
   const location = useLocation()
-  
+
   // Rutas donde NO queremos mostrar el Header
-  const rutasSinHeader = ['/', '/login', '/reset-password', '/solicitar-reset', '/certificadoEscolar', '/constanciaAlumnoRegular', '/certificados-AbnEsc' , '/certificados-cCVac', '/constanciaAlumnoTramite'];
-  
+  const rutasSinHeader = ['/', '/login', '/reset-password', '/solicitar-reset', '/certificadoEscolar', '/constanciaAlumnoRegular', '/certificados-AbnEsc', '/certificados-cCVac', '/constanciaAlumnoTramite'];
+
   const mostrarHeader = !rutasSinHeader.includes(location.pathname)
 
   return (
     <>
       {mostrarHeader && <Header />}
-      
 
-      
+
+
       <Routes>
         {/* Rutas públicas (sin protección) */}
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password" element={<OlvideContrasena />} />
         <Route path="/solicitar-reset" element={<SolicitarRecuperacion />} />
-        
+
         {/* Rutas protegidas (requieren autenticación) */}
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/crud" element={<ProtectedRoute><MainCrud /></ProtectedRoute>} />
         <Route path="/alumnos" element={<ProtectedRoute><Alumnos /></ProtectedRoute>} />
-        <Route path="/materias" element={<ProtectedRoute><Materias/></ProtectedRoute>} />
+        <Route path="/materias" element={<ProtectedRoute><Materias /></ProtectedRoute>} />
         <Route path="/botones" element={<ProtectedRoute><ButtonShowcase /></ProtectedRoute>} />
-        <Route path="/consulta" element={<ProtectedRoute><Consulta/></ProtectedRoute>} />
-        <Route path="/constanciaAlumnoTramite" element={<ProtectedRoute><ConstAluTramite/></ProtectedRoute>} />
-        <Route path="/perfilAlumno" element={<ProtectedRoute><PerfilAlumno/></ProtectedRoute>} />
-        <Route path="/asistenciasAlumno" element={<ProtectedRoute><AsistenciasAlumno/></ProtectedRoute>} />
-        <Route path="/estadoAcademicoAlumno" element={<ProtectedRoute><EstadoAcademicoPage/></ProtectedRoute>} />
-        <Route path="/asistencia-alumno" element={<ProtectedRoute><AsistenciaAlumno/></ProtectedRoute>} />
-        <Route path="/estado-academico" element={<ProtectedRoute><EstadoAcademicoAlumno/></ProtectedRoute>} />
-        <Route path="perfil-alumno/historial-comunicacion" element={<ProtectedRoute><HistorialComunicacion/></ProtectedRoute>} />
-        <Route path="/home-certificados" element={<ProtectedRoute><HomeCertificados/></ProtectedRoute>} />
-        <Route path="/certificados-AbnEsc" element={<ProtectedRoute><CertificadoAbonoEscolar/></ProtectedRoute>} />
+        <Route path="/consulta" element={<ProtectedRoute><Consulta /></ProtectedRoute>} />
+        <Route path="/constanciaAlumnoTramite" element={<ProtectedRoute><ConstAluTramite /></ProtectedRoute>} />
+        <Route path="/perfilAlumno" element={<ProtectedRoute><PerfilAlumno /></ProtectedRoute>} />
+        <Route path="/asistenciasAlumno" element={<ProtectedRoute><AsistenciasAlumno /></ProtectedRoute>} />
+        <Route path="/estadoAcademicoAlumno" element={<ProtectedRoute><EstadoAcademicoPage /></ProtectedRoute>} />
+        <Route path="/asistencia-alumno" element={<ProtectedRoute><AsistenciaAlumno /></ProtectedRoute>} />
+        <Route path="/estado-academico" element={<ProtectedRoute><EstadoAcademicoAlumno /></ProtectedRoute>} />
+        <Route path="perfil-alumno/historial-comunicacion" element={<ProtectedRoute><HistorialComunicacion /></ProtectedRoute>} />
+        <Route path="/home-certificados" element={<ProtectedRoute><HomeCertificados /></ProtectedRoute>} />
+        <Route path="/certificados-AbnEsc" element={<ProtectedRoute><CertificadoAbonoEscolar /></ProtectedRoute>} />
         {/* <Route path="/certificados-ActVolEx" element={<ProtectedRoute><ActaVolanteExamen/></ProtectedRoute>} /> */}
-        <Route path="/constanciaAlumnoRegular" element={<ProtectedRoute><ConstanciaAlumnoRegular/></ProtectedRoute>} />
-        <Route path="/certificadoEscolar" element={<ProtectedRoute><CertificadoEscolar/></ProtectedRoute>} />
-        <Route path="/certificados-cCVac" element={<ProtectedRoute><CertificadoComprobanteDeVacante/></ProtectedRoute>} />
-        <Route path="/generar-mail" element={<ProtectedRoute><GenerarMail/></ProtectedRoute>} />
-        <Route path="/enviar-alerta-tutores" element={<ProtectedRoute><EnviarAlertaTutoresPage/></ProtectedRoute>} />
-        <Route path="/anio-lectivo" element={<ProtectedRoute><GestionAniosLectivos/></ProtectedRoute>} />
-        <Route path="/cursos-crud" element={<ProtectedRoute><GestionCursos/></ProtectedRoute>} />
-        <Route path="/curso-materia" element={<ProtectedRoute><GestionCursoMateria/></ProtectedRoute>} />
-        <Route path="/altas-docentes" element={<ProtectedRoute><Docentes/></ProtectedRoute>} />
-        <Route path="/perfil-alumno/generar-mail-alumno" element={<GenerarMailAlumno/>} />
-        {/* <Route path="/admin-principal" element={<ProtectedRoute><AdminPrincipal/></ProtectedRoute>} /> */} 
-      
-        
-        <Route path="/cursoDashboard" element={<ProtectedRoute><CursoDashboardPage/></ProtectedRoute>} />
+        <Route path="/constanciaAlumnoRegular" element={<ProtectedRoute><ConstanciaAlumnoRegular /></ProtectedRoute>} />
+        <Route path="/certificadoEscolar" element={<ProtectedRoute><CertificadoEscolar /></ProtectedRoute>} />
+        <Route path="/certificados-cCVac" element={<ProtectedRoute><CertificadoComprobanteDeVacante /></ProtectedRoute>} />
+        <Route path="/generar-mail" element={<ProtectedRoute><GenerarMail /></ProtectedRoute>} />
+        <Route path="/enviar-alerta-tutores" element={<ProtectedRoute><EnviarAlertaTutoresPage /></ProtectedRoute>} />
+        <Route path="/anio-lectivo" element={<ProtectedRoute><GestionAniosLectivos /></ProtectedRoute>} />
+        <Route path="/cursos-crud" element={<ProtectedRoute><GestionCursos /></ProtectedRoute>} />
+        <Route path="/curso-materia" element={<ProtectedRoute><GestionCursoMateria /></ProtectedRoute>} />
+        <Route path="/altas-docentes" element={<ProtectedRoute><Docentes /></ProtectedRoute>} />
+        <Route path="/perfil-alumno/generar-mail-alumno" element={<GenerarMailAlumno />} />
+        {/* <Route path="/admin-principal" element={<ProtectedRoute><AdminPrincipal/></ProtectedRoute>} /> */}
+
+
+        <Route path="/cursoDashboard" element={<ProtectedRoute><CursoDashboardPage /></ProtectedRoute>} />
         <Route path="/reporte-curso/listado" element={<ProtectedRoute><ReporteCursoListPage /></ProtectedRoute>} />
         <Route path="/reporte-curso/Asistencias" element={<ProtectedRoute><ResumenAsistenciasPage /></ProtectedRoute>} />
         <Route path="/reporte-curso/calificaciones" element={<ProtectedRoute><ResumenCalificacionesPage /></ProtectedRoute>} />
@@ -123,10 +125,12 @@ function App() {
         <Route path="reporte-curso/comunicacion" element={<ProtectedRoute><CursoComunicacion /></ProtectedRoute>} />
         <Route path="reporte-curso/examenes-finales" element={<ProtectedRoute><ExamenesFinales /></ProtectedRoute>} />
         <Route path="/previas" element={<ProtectedRoute><PreviasPage /></ProtectedRoute>} />
+        <Route path="/planillas" element={<ProtectedRoute><PlanillasPage /></ProtectedRoute>} />
+
         <Route path="/inscripcion-wizard" element={<ProtectedRoute><InscripcionWizard /></ProtectedRoute>} />
         <Route path="/docentes/:id" element={<ProtectedRoute><DocentePerfil /></ProtectedRoute>} />
         <Route path="/alumnos/:id" element={<ProtectedRoute><AlumnosPerfil /></ProtectedRoute>} />
-        <Route path="*" element={<NotFountPage/>} />
+        <Route path="*" element={<NotFountPage />} />
       </Routes>
     </>
   )

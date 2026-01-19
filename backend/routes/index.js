@@ -19,13 +19,15 @@ const mailRoutes = require('../modules/mail/mail.routes');
 const materiaCorrelativaRoutes = require("../modules/materia_correlativa/materia_correlativa.routes");
 const destinatarioRoutes = require("../modules/comunicacion_destinatario/comunicacion_destinatario.routes");
 const logActividadRoutes = require("../modules/log_actividad/log_actividad.routes");
-const alumnoTutorRoutes = require("../modules/CRUD/alumno_tutor/alumno_tutor.routes.js"); 
+const alumnoTutorRoutes = require("../modules/CRUD/alumno_tutor/alumno_tutor.routes.js");
 const usuarioRoutes = require("../modules/usuario/usuario.routes.js");
 const authRoutes = require('../modules/usuario/auth.routes.js');
 const asignacionRoutes = require("../modules/CRUD/asignaciones/asignacion.routes");
 const cursoMateriaRoutes = require("../modules/CRUD/curso-materia/curso-materia.routes.js");
 const examenesFinalesRoutes = require("../modules/examenes_finales/examenFinal.routes");
 const previasRoutes = require('../modules/previas/previas.routes');
+const planillasRoutes = require('../modules/planillas/planillas.routes');
+
 
 
 // Módulo de altas (Docente + Usuario)
@@ -76,6 +78,11 @@ router.use("/examenes-finales", examenesFinalesRoutes);
 // PREVIAS
 router.use("/previas", previasRoutes);
 
+// PLANILLAS (Exámenes)
+router.use("/planillas", planillasRoutes);
+
+
+
 
 
 // Ruta principal de la API
@@ -101,7 +108,7 @@ router.get("/", (req, res) => {
       altasRoutesDocentes: "/api/v1/altas-docentes",
       usuarios: "/api/v1/usuarios",
       auth: "/api/v1/auth",
-      altasmateriasRoutes : "/api/v1/altasmaterias",
+      altasmateriasRoutes: "/api/v1/altasmaterias",
     },
   });
 });

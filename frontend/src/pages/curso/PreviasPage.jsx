@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { Link } from 'react-router-dom';
 import { useConsultaStore } from "../../store/consultaStore";
 import { obtenerAlumnosPendientes, obtenerAlumnosAprobados } from "../../services/previasService";
 import ModalRegistrarPrevia from "../../components/curso/ModalRegistrarPrevia";
@@ -40,17 +41,17 @@ const PreviasPage = () => {
 
     setIsLoading(true);
     console.log('🔍 Cargando datos de previas:', { curso, materia, anioLectivo });
-    
+
     try {
       // Cargar pendientes y aprobados en paralelo
       const [pendientes, aprobados] = await Promise.all([
         obtenerAlumnosPendientes(curso, materia, anioLectivo),
         obtenerAlumnosAprobados(curso, materia, anioLectivo)
       ]);
-      
+
       console.log('✅ Alumnos pendientes:', pendientes);
       console.log('✅ Alumnos aprobados:', aprobados);
-      
+
       setAlumnosPendientes(pendientes);
       setAlumnosAprobados(aprobados);
     } catch (error) {
@@ -69,7 +70,7 @@ const PreviasPage = () => {
     setShowModal(true);
   };
 
- const handleCloseModal = () => {
+  const handleCloseModal = () => {
     setShowModal(false);
     setAlumnoSeleccionado(null);
   };
@@ -88,7 +89,7 @@ const PreviasPage = () => {
       </div>
     );
   }
-console.log(reporteCurso)
+  console.log(reporteCurso)
   return (
     <div className="nombre_vista">
       <div className="curso-dashboard-header">
@@ -97,6 +98,14 @@ console.log(reporteCurso)
         </span>
         <h2 className="curso-dashboard-title">Previas</h2>
       </div>
+
+      <div className="d-flex justify-content-end mb-3 pe-3">
+        <Link to="/planillas" className="btn btn-outline-primary">
+          <span className="material-symbols-outlined align-middle me-1">description</span>
+          Ir a Actas Volantes / Planillas
+        </Link>
+      </div>
+
       <EncabezadoPreviasCurso />
 
       {/* SECCIÓN 1: ALUMNOS PENDIENTES */}
@@ -124,7 +133,7 @@ console.log(reporteCurso)
               {alumnosPendientes.map((alumno) => {
                 const totalIntentos = alumno.intentos?.length || 0;
                 const ultimoIntento = alumno.intentos?.[0]; // Ya viene ordenado DESC
-                
+
                 return (
                   <tr key={alumno.id_alumno}>
                     <td className="reporte-curso-td">{alumno.dni ?? "-"}</td>
@@ -146,8 +155,8 @@ console.log(reporteCurso)
                       )}
                     </td>
                     <td className="reporte-curso-td">
-                      <Button 
-                        variant="primary" 
+                      <Button
+                        variant="primary"
                         size="sm"
                         onClick={() => handleRegistrarIntento(alumno)}
                       >
@@ -197,10 +206,10 @@ console.log(reporteCurso)
                     <span className="badge bg-info">{alumno.total_intentos}</span>
                   </td>
                   <td className="reporte-curso-td">
-    { (alumno.fecha_aprobacion || alumno.fecha_ultimo_intento) &&
-(alumno.fecha_aprobacion ?? alumno.fecha_ultimo_intento).split('T')[0]
-    }
-</td>
+                    {(alumno.fecha_aprobacion || alumno.fecha_ultimo_intento) &&
+                      (alumno.fecha_aprobacion ?? alumno.fecha_ultimo_intento).split('T')[0]
+                    }
+                  </td>
                 </tr>
               ))}
             </tbody>
