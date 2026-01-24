@@ -7,6 +7,7 @@ node_modules/
 # Este archivo contiene variables sensibles como contraseñas de la base de datos,
 # API keys y secretos de JWT. ¡NUNCA lo subas!
 .env
+.env.example
 .env.local
 .env.development.local
 .env.test.local
