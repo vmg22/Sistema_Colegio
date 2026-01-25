@@ -17,7 +17,24 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
  * @returns {Promise<object>} - Respuesta JSON parseada
  */
 export const apiFetch = async (endpoint, options = {}) => {
-  const token = localStorage.getItem("token");
+  let token = localStorage.getItem("token");
+
+  // Fallback: buscar token en objeto usuario
+  if (!token) {
+    const usuarioJSON = localStorage.getItem("usuario");
+    if (usuarioJSON) {
+      try {
+        const usuario = JSON.parse(usuarioJSON);
+        if (usuario && usuario.token) {
+          token = usuario.token;
+        }
+      } catch (e) {
+        console.error("Error al parsear usuario de localStorage:", e);
+      }
+    }
+  }
+
+  console.log(`📡 Fetching ${endpoint} - Token found:`, token ? 'YES' : 'NO'); // DEBUG
 
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {

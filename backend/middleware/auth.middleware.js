@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { rateLimit, ipKeyGenerator } = require('express-rate-limit'); 
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 
 /**
  * Middleware para verificar la validez de un token JWT en la cabecera de autorización.
@@ -8,12 +8,14 @@ const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const authenticateToken = (req, res, next) => {
   // Obtenemos la cabecera 'Authorization', que debería tener el formato "Bearer TOKEN"
   const authHeader = req.headers['authorization'];
+  console.log('🔒 Auth Middleware - Header:', authHeader); // DEBUG
   // Extraemos el token, si la cabecera existe
   const token = authHeader && authHeader.split(' ')[1];
+  console.log('🔑 Auth Middleware - Token extracted:', token ? 'YES (len=' + token.length + ')' : 'NO'); // DEBUG
 
   if (!token) {
     // 401 Unauthorized: El cliente no ha proporcionado un token.
-    return res.status(401).json({ 
+    return res.status(401).json({
       exito: false,
       mensaje: 'Se requiere un token de autenticación para acceder a este recurso.',
       codigo: 'TOKEN_REQUERIDO'
@@ -24,20 +26,20 @@ const authenticateToken = (req, res, next) => {
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
       // 403 Forbidden: El cliente proporcionó un token, pero es inválido o ha expirado.
-      const mensaje = err.name === 'TokenExpiredError' 
+      const mensaje = err.name === 'TokenExpiredError'
         ? 'El token ha expirado. Por favor, inicie sesión nuevamente.'
         : 'Token inválido o corrupto.';
-      
+
       return res.status(403).json({
         exito: false,
         mensaje,
         codigo: err.name === 'TokenExpiredError' ? 'TOKEN_EXPIRADO' : 'TOKEN_INVALIDO'
       });
     }
-    
+
     // Si el token es válido, adjuntamos el payload del usuario al objeto de solicitud (req)
     req.user = user;
-    
+
     // Continuamos con la siguiente función en la cadena de middlewares
     next();
   });
@@ -52,10 +54,10 @@ const authenticateToken = (req, res, next) => {
 const authorizeRoles = (...allowedRoles) => {
   // Si se pasa un array como primer argumento, usarlo directamente
   const roles = Array.isArray(allowedRoles[0]) ? allowedRoles[0] : allowedRoles;
-  
+
   return (req, res, next) => {
     if (!req.user || !req.user.rol || !roles.includes(req.user.rol)) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         exito: false,
         mensaje: `Acceso denegado. Se requiere uno de estos roles: ${roles.join(', ')}`,
         codigo: 'PERMISO_DENEGADO',
@@ -103,8 +105,8 @@ const loginRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   // Usar IP del cliente
-    keyGenerator: ipKeyGenerator,
-  
+  keyGenerator: ipKeyGenerator,
+
 });
 
 /**
@@ -180,8 +182,8 @@ const checkTokenBlacklist = (req, res, next) => {
   next();
 };
 
-module.exports = { 
-  authenticateToken, 
+module.exports = {
+  authenticateToken,
   authorizeRoles,
   authorizeSelfOrAdmin,
   loginRateLimiter,
