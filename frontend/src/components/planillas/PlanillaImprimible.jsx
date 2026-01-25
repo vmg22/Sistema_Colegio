@@ -95,18 +95,18 @@ const PlanillaImprimible = ({ tipo, datos }) => {
             {/* TABLA DE CALIFICACIONES */}
             <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '11px' }}>
                 <thead>
-                    <tr style={{ backgroundColor: '#f0f0f0', height: '25px' }}>
-                        <th rowSpan="2" style={{ border: '1px solid black', padding: '3px', width: '25px' }}></th>
-                        <th rowSpan="2" style={{ border: '1px solid black', padding: '3px' }}>APELLIDO Y NOMBRE</th>
-                        <th colSpan="3" style={{ border: '1px solid black', textAlign: 'center' }}>Clasificaciones</th>
-                        <th style={{ border: '1px solid black', width: '60px', textAlign: 'center', fontSize: '10px' }}>Nº de<br />Bolilla</th>
-                        <th rowSpan="2" style={{ border: '1px solid black', width: '90px', textAlign: 'center' }}>DOCUMENTO<br />DE<br />IDENTIDAD</th>
+                    <tr style={{ backgroundColor: '#f0f0f0', height: '45px' }}>
+                        <th rowSpan="2" style={{ border: '1px solid black', padding: '3px', width: '25px', textAlign: 'center' }}></th>
+                        <th rowSpan="2" style={{ border: '1px solid black', padding: '3px', textAlign: 'center', verticalAlign: 'middle' }}>APELLIDO Y NOMBRE</th>
+                        <th colSpan="3" style={{ border: '1px solid black', textAlign: 'center', verticalAlign: 'middle' }}>Clasificaciones</th>
+                        <th style={{ border: '1px solid black', width: '50px', textAlign: 'center', fontSize: '9px', verticalAlign: 'middle', whiteSpace: 'normal' }}>Nº de<br />Bolilla</th>
+                        <th rowSpan="2" style={{ border: '1px solid black', width: '95px', textAlign: 'center', fontSize: '10px', verticalAlign: 'middle', lineHeight: '1.2', whiteSpace: 'normal', padding: '2px' }}>DOCUMENTO<br />DE IDENTIDAD</th>
                     </tr>
                     <tr style={{ backgroundColor: '#f0f0f0', height: '25px' }}>
-                        <th style={{ border: '1px solid black', width: '35px', textAlign: 'center' }}>Esc.</th>
-                        <th style={{ border: '1px solid black', width: '35px', textAlign: 'center' }}>Oral</th>
-                        <th style={{ border: '1px solid black', width: '35px', textAlign: 'center' }}>Prom</th>
-                        <th style={{ border: '1px solid black', textAlign: 'center', fontSize: '9px' }}>Esc-Oral</th>
+                        <th style={{ border: '1px solid black', width: '35px', textAlign: 'center', verticalAlign: 'middle' }}>Esc.</th>
+                        <th style={{ border: '1px solid black', width: '35px', textAlign: 'center', verticalAlign: 'middle' }}>Oral</th>
+                        <th style={{ border: '1px solid black', width: '35px', textAlign: 'center', verticalAlign: 'middle' }}>Prom</th>
+                        <th style={{ border: '1px solid black', textAlign: 'center', fontSize: '9px', verticalAlign: 'middle' }}>Esc-Oral</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -17,7 +17,12 @@ const queriesPlanillas = {
 
             if (data.detalles && data.detalles.length > 0) {
                 const values = data.detalles.map(d => [
-                    idPlanilla, d.nombre_completo, d.dni, d.nota_escrito, d.nota_oral, d.promedio
+                    idPlanilla,
+                    d.nombre_completo,
+                    d.dni,
+                    d.nota_escrito ?? null,
+                    d.nota_oral ?? null,
+                    d.promedio ?? null
                 ]);
                 await conn.query(
                     `INSERT INTO planilla_nivelacion_det (id_planilla, nombre_completo, dni, nota_escrito, nota_oral, promedio) 

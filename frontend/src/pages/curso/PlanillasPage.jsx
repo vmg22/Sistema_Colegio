@@ -55,7 +55,7 @@ const PlanillasPage = () => {
 
             <EncabezadoPreviasCurso />
 
-            <div className="container mt-4" style={{ maxWidth: '1000px' }}>
+            <div className="mt-4">
                 <Tabs
                     id="planillas-tabs"
                     activeKey={key}
@@ -73,7 +73,11 @@ const PlanillasPage = () => {
                         />
                     </Tab>
                     <Tab eventKey="nivelacion" title="Reg. Nivelación (Manual)">
-                        <PlanillaNivelacionForm filtros={filtros} />
+                        <PlanillaNivelacionForm
+                            filtros={filtros}
+                            cursoNombre={cursoNombre}
+                            materiaNombre={materiaNombre}
+                        />
                     </Tab>
                 </Tabs>
             </div>

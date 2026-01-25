@@ -87,12 +87,30 @@
   font-weight: 600;
   border: 1px solid transparent;
   border-radius: 4px 4px 0 0;
-  margin: 0 4px;
+  margin: 0;
+  /* Sin márgenes para alinear perfectamente a los bordes */
+  margin-right: 4px;
+  /* Solo separación a la derecha entre pestañas */
   opacity: 0.95;
   transition: all 0.2s ease-in-out;
   position: relative;
   /* Necesario para z-index */
   z-index: 1;
+}
+
+.custom-tabs .nav-link:last-child {
+  margin-right: 0;
+  /* El último sin margen derecho */
+}
+
+.custom-tabs .nav-item:first-child .nav-link.active {
+  transform-origin: bottom left;
+  /* El primero crece hacia la derecha */
+}
+
+.custom-tabs .nav-item:last-child .nav-link.active {
+  transform-origin: bottom right;
+  /* El último crece hacia la izquierda */
 }
 
 .custom-tabs .nav-link:hover {
@@ -111,6 +129,7 @@
   opacity: 1;
   transform: scale(1.05);
   transform-origin: bottom center;
+  /* Default para los del medio */
   z-index: 100 !important;
   /* Asegurar que esté por encima */
   box-shadow: 0 -4px 12px rgba(48, 63, 159, 0.2);
