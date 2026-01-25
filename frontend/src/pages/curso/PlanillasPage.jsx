@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Tabs, Tab, Button } from 'react-bootstrap';
 import { useConsultaStore } from "../../store/consultaStore";
-import { obtenerCandidatosRegular, obtenerCandidatosPrevia } from '../../services/planillasService';
+import { obtenerCandidatosPrevia } from '../../services/planillasService';
 import PlanillaNivelacionForm from '../../components/planillas/PlanillaNivelacionForm';
 import PlanillaRegularPreviaView from '../../components/planillas/PlanillaRegularPreviaView';
 import EncabezadoPreviasCurso from "../../components/curso/EncabezadoPreviasCurso"; // Reusar encabezado
@@ -12,10 +12,9 @@ const PlanillasPage = () => {
         selectedCursoNombre,
         selectedMateriaNombre
     } = useConsultaStore();
-    const [key, setKey] = useState('regular');
+    const [key, setKey] = useState('previa'); // Default ahora es previa
 
     // Datos data tables
-    const [datosRegular, setDatosRegular] = useState([]);
     const [datosPrevia, setDatosPrevia] = useState([]);
 
     // Filtros
@@ -34,11 +33,7 @@ const PlanillasPage = () => {
     useEffect(() => {
         if (!filtros) return;
 
-        if (key === 'regular') {
-            obtenerCandidatosRegular(filtros.anioLectivo, filtros.curso, filtros.materia)
-                .then(setDatosRegular)
-                .catch(err => console.error(err));
-        } else if (key === 'previa') {
+        if (key === 'previa') {
             obtenerCandidatosPrevia(filtros.anioLectivo, filtros.curso, filtros.materia)
                 .then(setDatosPrevia)
                 .catch(err => console.error(err));
@@ -68,15 +63,6 @@ const PlanillasPage = () => {
                     className="mb-3 custom-tabs"
                     fill
                 >
-                    <Tab eventKey="regular" title="Regular (Dic/Feb)">
-                        <PlanillaRegularPreviaView
-                            tipo="REGULAR"
-                            datos={datosRegular}
-                            cursoNombre={cursoNombre}
-                            materiaNombre={materiaNombre}
-                            anioLectivo={filtros.anioLectivo}
-                        />
-                    </Tab>
                     <Tab eventKey="previa" title="Reg. Previa (Dic/Feb/Mar)">
                         <PlanillaRegularPreviaView
                             tipo="PREVIA"

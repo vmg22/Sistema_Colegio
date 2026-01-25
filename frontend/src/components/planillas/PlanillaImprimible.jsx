@@ -9,18 +9,38 @@ const PlanillaImprimible = ({ tipo, datos }) => {
     };
 
     return (
-        <div style={{
-            padding: '15px 40px', // Aún menos padding vertical
+        <div className="planilla-container" style={{
+            padding: '15px 40px',
             fontFamily: 'Arial, sans-serif',
             color: 'black',
             backgroundColor: 'white',
             boxShadow: 'none',
-            height: '100%', // Intentar ocupar la hoja sin desbordar
-            boxSizing: 'border-box'
+            height: '100%',
+            boxSizing: 'border-box',
+            width: '100%'
         }}>
+            <style>
+                {`
+                    @media print {
+                        @page {
+                            size: A4;
+                            margin: 0;
+                        }
+                        body {
+                            margin: 0;
+                            -webkit-print-color-adjust: exact;
+                        }
+                        .planilla-container {
+                            width: 210mm !important;
+                            height: 297mm !important;
+                            padding: 15px 40px !important;
+                        }
+                    }
+                `}
+            </style>
             {/* CABECERA OFICIAL */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', alignItems: 'center' }}>
-                <div style={{ width: '110px', height: '110px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', alignItems: 'flex-start' }}>
+                <div style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <img
                         src={logoplanilla}
                         alt="Logo CGS"
@@ -33,26 +53,25 @@ const PlanillaImprimible = ({ tipo, datos }) => {
                     />
                 </div>
 
-                <div style={{ textAlign: 'center', flex: 1, padding: '0 5px' }}>
-                    <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>INSTITUTO CARLOS GUIDO SPANO F-33</h2>
+                <div style={{ textAlign: 'center', flex: 1, padding: '0 5px', paddingTop: '10px' }}>
+                    <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>INSTITUTO CARLOS GUIDO SPANO F-33</h2>
                     <p style={{ margin: 0, fontSize: '12px' }}>R.M. 910/5</p>
-                    <h3 style={{ marginTop: '5px', fontSize: '16px', textDecoration: 'underline', fontWeight: 'bold' }}>
-                        ACTA VOLANTE DE EXÁMEN: {tituloMapa[tipo] || tipo}
-                    </h3>
                 </div>
 
-                <div style={{ width: '120px' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', border: '2px solid black', fontSize: '10px', textAlign: 'center' }}>
+                <div style={{ width: '140px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 'bold', marginBottom: '2px' }}>
+                        ACTAS VOLANTES<br />DE EXÁMENES
+                    </div>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '10px', textAlign: 'center' }}>
                         <thead>
-                            <tr><th colSpan="3" style={{ borderBottom: '1px solid black', padding: '1px' }}>FECHA</th></tr>
+                            <tr>
+                                <th style={{ borderRight: '1px solid black', borderBottom: '1px solid black' }}>DIA</th>
+                                <th style={{ borderRight: '1px solid black', borderBottom: '1px solid black' }}>MES</th>
+                                <th style={{ borderBottom: '1px solid black' }}>AÑO</th>
+                            </tr>
                         </thead>
                         <tbody>
-                            <tr style={{ fontSize: '10px' }}>
-                                <td style={{ borderRight: '1px solid black', width: '33%' }}>D</td>
-                                <td style={{ borderRight: '1px solid black', width: '33%' }}>M</td>
-                                <td>A</td>
-                            </tr>
-                            <tr style={{ height: '25px', fontSize: '14px', fontWeight: 'bold' }}>
+                            <tr style={{ height: '20px', fontSize: '14px', fontWeight: 'bold' }}>
                                 <td style={{ borderRight: '1px solid black' }}>{datos?.dia}</td>
                                 <td style={{ borderRight: '1px solid black' }}>{datos?.mes}</td>
                                 <td>{datos?.anio}</td>
@@ -62,31 +81,42 @@ const PlanillaImprimible = ({ tipo, datos }) => {
                 </div>
             </div>
 
-            {/* DATOS DE LA MATERIA */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', borderBottom: '2px solid black', paddingBottom: '3px' }}>
-                <span style={{ fontSize: '13px' }}>Asignatura: <strong>{datos?.materia}</strong></span>
-                <span style={{ fontSize: '13px' }}>Curso: <strong>{datos?.curso}</strong></span>
+            {/* DATOS DE LA MATERIA Y EXAMEN */}
+            <div style={{ marginBottom: '10px' }}>
+                <div style={{ fontSize: '13px', marginBottom: '2px' }}>
+                    Exámenes de Alumnos: <strong>{tituloMapa[tipo] || tipo}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                    <span style={{ fontSize: '13px' }}>Asignatura: <strong>{datos?.materia}</strong></span>
+                    <span style={{ fontSize: '13px' }}>Curso: <strong>{datos?.curso}</strong></span>
+                </div>
             </div>
 
             {/* TABLA DE CALIFICACIONES */}
             <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black', fontSize: '11px' }}>
                 <thead>
-                    <tr style={{ backgroundColor: '#f0f0f0' }}>
-                        <th style={{ border: '1px solid black', padding: '3px', width: '30px' }}>Nº</th>
-                        <th style={{ border: '1px solid black', padding: '3px' }}>APELLIDO Y NOMBRE</th>
-                        <th style={{ border: '1px solid black', width: '45px' }}>ESC.</th>
-                        <th style={{ border: '1px solid black', width: '45px' }}>ORAL</th>
-                        <th style={{ border: '1px solid black', width: '45px' }}>PROM.</th>
-                        <th style={{ border: '1px solid black', width: '90px' }}>DNI</th>
+                    <tr style={{ backgroundColor: '#f0f0f0', height: '25px' }}>
+                        <th rowSpan="2" style={{ border: '1px solid black', padding: '3px', width: '25px' }}></th>
+                        <th rowSpan="2" style={{ border: '1px solid black', padding: '3px' }}>APELLIDO Y NOMBRE</th>
+                        <th colSpan="3" style={{ border: '1px solid black', textAlign: 'center' }}>Clasificaciones</th>
+                        <th style={{ border: '1px solid black', width: '60px', textAlign: 'center', fontSize: '10px' }}>Nº de<br />Bolilla</th>
+                        <th rowSpan="2" style={{ border: '1px solid black', width: '90px', textAlign: 'center' }}>DOCUMENTO<br />DE<br />IDENTIDAD</th>
+                    </tr>
+                    <tr style={{ backgroundColor: '#f0f0f0', height: '25px' }}>
+                        <th style={{ border: '1px solid black', width: '35px', textAlign: 'center' }}>Esc.</th>
+                        <th style={{ border: '1px solid black', width: '35px', textAlign: 'center' }}>Oral</th>
+                        <th style={{ border: '1px solid black', width: '35px', textAlign: 'center' }}>Prom</th>
+                        <th style={{ border: '1px solid black', textAlign: 'center', fontSize: '9px' }}>Esc-Oral</th>
                     </tr>
                 </thead>
                 <tbody>
                     {[...Array(25)].map((_, index) => {
                         const alumno = alumnosParaRender[index];
                         return (
-                            <tr key={index} style={{ height: '24px' }}>
+                            <tr key={index} style={{ height: '22px' }}>
                                 <td style={{ border: '1px solid black', textAlign: 'center', fontWeight: 'bold' }}>{index + 1}</td>
                                 <td style={{ border: '1px solid black', paddingLeft: '5px' }}>{alumno?.nombre || ''}</td>
+                                <td style={{ border: '1px solid black' }}></td>
                                 <td style={{ border: '1px solid black' }}></td>
                                 <td style={{ border: '1px solid black' }}></td>
                                 <td style={{ border: '1px solid black' }}></td>

@@ -6,10 +6,10 @@ import '../../styles/breadcrumb.css';
 const Breadcrumbs = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   // Obtener segmentos de la URL actual
   let pathnames = location.pathname.split('/').filter(x => x);
-  
+
   // 🧠 BREADCRUMBS INTELIGENTES: Detectar páginas relacionadas con Perfil de Alumno
   const paginasPerfilAlumno = [
     'consulta',
@@ -22,37 +22,49 @@ const Breadcrumbs = () => {
     'constanciaAlumnoRegular',
     'constanciaAlumnoTramite'
   ];
-  
+
   // 🧠 BREADCRUMBS CRUD: Páginas que pertenecen al CRUD y necesitan mostrar /crud antes
   const paginasCrud = [
     'alumnos',
-    'materias', 
+    'materias',
     'altas-docentes',
     'anio-lectivo',
     'cursos-crud',
     'curso-materia',
     'inscripcion-wizard'
   ];
-  
+
   // Si estamos en una página de perfil de alumno (sin contexto previo)
   const firstSegment = pathnames[0];
-  const shouldAddPerfilContext = paginasPerfilAlumno.includes(firstSegment) && 
-                                  pathnames.length === 1 && 
-                                  !pathnames.includes('perfilAlumno');
-  
+  const shouldAddPerfilContext = paginasPerfilAlumno.includes(firstSegment) &&
+    pathnames.length === 1 &&
+    !pathnames.includes('perfilAlumno');
+
   // Agregar "perfilAlumno" como contexto antes de la página actual
   if (shouldAddPerfilContext) {
     pathnames = ['perfilAlumno', ...pathnames];
   }
-  
+
+  // 🧠 BREADCRUMBS PREVIAS: Páginas que pertenecen al módulo de Previas
+  const paginasPrevias = [
+    'planillas'
+  ];
+
+  const shouldAddPreviasContext = paginasPrevias.includes(firstSegment) &&
+    !pathnames.includes('previas');
+
+  if (shouldAddPreviasContext) {
+    pathnames = ['previas', ...pathnames];
+  }
+
   // 🔧 NUEVO: Si estamos en una página CRUD (sin contexto /crud previo), agregarlo
-  const shouldAddCrudContext = paginasCrud.includes(firstSegment) && 
-                                !pathnames.includes('crud');
-  
+  const shouldAddCrudContext = paginasCrud.includes(firstSegment) &&
+    !pathnames.includes('crud');
+
   if (shouldAddCrudContext) {
     pathnames = ['crud', ...pathnames];
   }
-  
+
   // Si estamos en la raíz o dashboard, no mostrar breadcrumbs
   if (pathnames.length === 0 || (pathnames.length === 1 && pathnames[0] === 'dashboard')) {
     return null;
@@ -169,7 +181,7 @@ const Breadcrumbs = () => {
     <Container fluid className="breadcrumb-container">
       <Breadcrumb className="custom-breadcrumb">
         {/* Siempre mostrar "Inicio" como primer elemento */}
-        <Breadcrumb.Item 
+        <Breadcrumb.Item
           className="breadcrumb-link"
           onClick={() => handleNavigate('/dashboard')}
           style={{ cursor: 'pointer' }}
