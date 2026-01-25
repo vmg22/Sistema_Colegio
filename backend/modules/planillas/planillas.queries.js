@@ -96,7 +96,7 @@ const queriesPlanillas = {
       WHERE ame.id_curso = ?
         AND ame.id_materia = ?
         AND ame.anio_lectivo = ?
-        AND ame.estado IN ('desaprobada', 'regular') -- Estados que implican que debe rendir final
+        AND ame.estado IN ('desaprobada', 'regular', 'final') -- Estados que implican que debe rendir final
         AND ame.deleted_at IS NULL
         AND a.deleted_at IS NULL
       ORDER BY a.apellido_alumno, a.nombre_alumno
